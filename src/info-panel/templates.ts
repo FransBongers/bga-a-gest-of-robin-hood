@@ -1,0 +1,1 @@
+const tplInfoPanel = () => `<div class='player-board' id="info_panel"></div>`

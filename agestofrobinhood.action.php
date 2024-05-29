@@ -1,7 +1,8 @@
 <?php
+
 /**
  *------
- * BGA framework: Gregory Isabelli & Emmanuel Colin & BoardGameArena
+ * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
  * agestofrobinhood implementation : © <Your name here> <Your email address here>
  *
  * This code has been produced on the BGA studio platform for use on https://boardgamearena.com.
@@ -20,49 +21,93 @@
  * this.ajaxcall( "/agestofrobinhood/agestofrobinhood/myAction.html", ...)
  *
  */
-  
-  
-  class action_agestofrobinhood extends APP_GameAction
-  { 
-    // Constructor: please do not modify
-   	public function __default()
-  	{
-  	    if( $this->isArg( 'notifwindow') )
-  	    {
-            $this->view = "common_notifwindow";
-  	        $this->viewArgs['table'] = $this->getArg( "table", AT_posint, true );
-  	    }
-  	    else
-  	    {
-            $this->view = "agestofrobinhood_agestofrobinhood";
-            $this->trace( "Complete reinitialization of board game" );
-      }
-  	} 
-  	
-  	// TODO: defines your action entry points there
 
+use AGestOfRobinHood\Helpers\Utils;
 
-    /*
-    
-    Example:
-  	
-    public function myAction()
-    {
-        $this->setAjaxMode();     
-
-        // Retrieve arguments
-        // Note: these arguments correspond to what has been sent through the javascript "ajaxcall" method
-        $arg1 = $this->getArg( "myArgument1", AT_posint, true );
-        $arg2 = $this->getArg( "myArgument2", AT_posint, true );
-
-        // Then, call the appropriate method in your game logic, like "playCard" or "myAction"
-        $this->game->myAction( $arg1, $arg2 );
-
-        $this->ajaxResponse( );
+class action_agestofrobinhood extends APP_GameAction
+{
+  // Constructor: please do not modify
+  public function __default()
+  {
+    if (self::isArg('notifwindow')) {
+      $this->view = "common_notifwindow";
+      $this->viewArgs['table'] = self::getArg("table", AT_posint, true);
+    } else {
+      $this->view = "agestofrobinhood_agestofrobinhood";
+      self::trace("Complete reinitialization of board game");
     }
-    
-    */
-
   }
-  
 
+  /*************************
+   **** GENERIC METHODS ****
+   *************************/
+
+  // public function restart()
+  // {
+  //   self::setAjaxMode();
+  //   $result = $this->game->restart();
+  //   self::ajaxResponse();
+  // }
+
+  // public function passTurn()
+  // {
+  //   self::setAjaxMode();
+  //   $result = $this->game->passTurn();
+  //   self::ajaxResponse();
+  // }
+
+  // public function endGame()
+  // {
+  //   self::setAjaxMode();
+  //   $result = $this->game->endGame();
+  //   self::ajaxResponse();
+  // }
+
+  public function actConfirmTurn()
+  {
+    self::setAjaxMode();
+    $this->game->actConfirmTurn();
+    self::ajaxResponse();
+  }
+
+  public function actConfirmPartialTurn()
+  {
+    self::setAjaxMode();
+    $this->game->actConfirmPartialTurn();
+    self::ajaxResponse();
+  }
+
+  public function actPassOptionalAction()
+  {
+    self::setAjaxMode();
+    $result = $this->game->actPassOptionalAction();
+    self::ajaxResponse();
+  }
+
+  public function actRestart()
+  {
+    self::setAjaxMode();
+    $this->game->actRestart();
+    self::ajaxResponse();
+  }
+
+  public function actUndoToStep()
+  {
+    self::setAjaxMode();
+    $args = self::getArg('args', AT_json, true);
+    Utils::validateJSonAlphaNum($args, 'args');
+    $stepId = $args['stepId'];
+    $this->game->actUndoToStep($stepId);
+    self::ajaxResponse();
+  }
+
+  public function actTakeAtomicAction()
+  {
+    self::setAjaxMode();
+    $action = self::getArg('actionName', AT_alphanum, true);
+    $args = self::getArg('args', AT_json, true);
+    Utils::validateJSonAlphaNum($args, 'args');
+    $this->game->actTakeAtomicAction($action, $args);
+    self::ajaxResponse();
+  }
+}
