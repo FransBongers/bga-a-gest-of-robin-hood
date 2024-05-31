@@ -20,17 +20,34 @@ class Card extends \AGestOfRobinHood\Helpers\DB_Model
   protected $location;
   protected $state;
 
+  protected $eventType = null;
+  protected $title = '';
+  protected $titleLight = '';
+  protected $textLight = '';
+  protected $titleDark = '';
+  protected $textDark = '';
+  protected $type = null;
+  protected $carriageMoves = 0;
+  protected $strength = 0;
 
   protected $attributes = [
     'id' => ['card_id', 'str'],
     'location' => 'card_location',
     'state' => ['card_state', 'int'],
     'extraData' => ['extra_data', 'obj'],
-
   ];
 
   protected $staticAttributes = [
     'id',
+    'carriageMoves',
+    'eventType', 
+    'strength',
+    'title',
+    'titleLight',
+    'textLight',
+    'titleDark',
+    'textDark',
+    'type',
   ];
 
   public function jsonSerialize()

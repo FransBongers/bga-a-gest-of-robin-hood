@@ -32,6 +32,9 @@ CREATE TABLE IF NOT EXISTS `log` (
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 
+ALTER TABLE `gamelog`
+ADD `cancel` TINYINT(1) NOT NULL DEFAULT 0;
+
 CREATE TABLE IF NOT EXISTS `cards` (
   `card_id` varchar(100) NOT NULL,
   `card_location` varchar(32) NOT NULL,
@@ -40,5 +43,20 @@ CREATE TABLE IF NOT EXISTS `cards` (
   PRIMARY KEY (`card_id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 
-ALTER TABLE `gamelog`
-ADD `cancel` TINYINT(1) NOT NULL DEFAULT 0;
+CREATE TABLE IF NOT EXISTS `forces` (
+  `force_id` varchar(100)  NOT NULL,
+  `force_location` varchar(64) NOT NULL,
+  `force_state` int(10) DEFAULT 0,
+  `type` VARCHAR(32) NOT NULL,
+  `extra_data` JSON NULL,
+  PRIMARY KEY (`force_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `spaces` (
+  `space_id` varchar(100)  NOT NULL,
+  `space_location` varchar(32) NOT NULL,
+  `space_state` int(10) DEFAULT 0,
+  `status` VARCHAR(32),
+  -- `extra_data` JSON NULL,
+  PRIMARY KEY (`space_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -56,11 +56,7 @@ const ST_PLAYER_ACTION = 22;
 const PLAYER_ACTION = 'PLAYER_ACTION';
 
 
-const DIE_FACES = [
-
-];
-
-
+const DIE_FACES = [];
 
 /**
  * Log tokens
@@ -68,4 +64,58 @@ const DIE_FACES = [
 const LOG_TOKEN_BOLD_TEXT = 'boldText';
 const LOG_TOKEN_NEW_LINE = 'newLine';
 
+/**
+ * Space status
+ */
+const PASSIVE = 'passive';
+const REVOLTING = 'revolting';
+const SUBMISSIVE = 'submissive';
 
+const CAMPS_SUPPLY = 'camps_supply';
+const MERRY_MEN_SUPPLY = 'merryMen_supply';
+const HENCHMEN_SUPPLY = 'henchmen_supply';
+
+/**
+ * Card types
+ */
+const EVENT_CARD = 'eventCard';
+const TRAVELLER_CARD = 'travellerCard';
+
+const REGULAR_EVENT = 'regularEvent';
+const FORTUNE_EVENT = 'fortuneEvent';
+const ROYAL_INSPECTION = 'royalInspection';
+
+/**
+ * Force types
+ */
+const CAMP = 'camp';
+const MERRY_MEN = 'merryMen';
+const HENCHMEN = 'henchmen';
+const ROBIN_HOOD = 'robinHood';
+
+/**
+ * Spaces
+ */
+const BINGHAM = 'Bingham';
+const BLYTH = 'Blyth';
+const NEWARK = 'Newark';
+const NOTTINGHAM = 'Nottingham';
+const OLLERTON_HILL = 'OllertonHill';
+const REMSTON = 'Remston';
+const RETFORD = 'Retford';
+const SHIRE_WOOD = 'ShireWood';
+const SOUTHWELL_FOREST = 'SouthwellForest';
+const TUXFORD = 'Tuxford';
+
+const SPACES = [
+  BINGHAM,
+  BLYTH,
+  NEWARK,
+  NOTTINGHAM,
+  OLLERTON_HILL,
+  REMSTON,
+  RETFORD,
+  SHIRE_WOOD,
+  SOUTHWELL_FOREST,
+  TUXFORD,
+];

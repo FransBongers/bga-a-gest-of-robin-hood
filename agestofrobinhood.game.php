@@ -44,7 +44,7 @@ use AGestOfRobinHood\Managers\Players;
 
 // Game specific
 use AGestOfRobinHood\Managers\Cards;
-
+use AGestOfRobinHood\Managers\Spaces;
 
 class agestofrobinhood extends Table
 {
@@ -53,8 +53,7 @@ class agestofrobinhood extends Table
     use AGestOfRobinHood\States\TurnTrait;
 
     // Declare objects from material.inc.php to remove IntelliSense errors
-    public $spaces;
-
+    
     public static $instance = null;
     function __construct()
     {
@@ -104,6 +103,7 @@ class agestofrobinhood extends Table
         Players::setupNewGame($players, $options);
         Stats::checkExistence();
         Globals::setTest($options);
+        Spaces::setupNewGame();
         // Cards::setupNewGame();
 
         $this->setGameStateInitialValue('logging', false);
@@ -124,6 +124,7 @@ class agestofrobinhood extends Table
             'canceledNotifIds' => Log::getCanceledNotifIds(),
             'playerOrder' => Players::getPlayerOrder(),
             'players' => Players::getUiData($pId),
+            'spaces' => Spaces::getAll(),
         ];
 
         return $data;
