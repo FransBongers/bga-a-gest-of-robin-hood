@@ -29,18 +29,20 @@ class Card extends \AGestOfRobinHood\Helpers\DB_Model
   protected $type = null;
   protected $carriageMoves = 0;
   protected $strength = 0;
+  protected $setupLocation = null;
 
   protected $attributes = [
     'id' => ['card_id', 'str'],
     'location' => 'card_location',
     'state' => ['card_state', 'int'],
-    'extraData' => ['extra_data', 'obj'],
+    // 'extraData' => ['extra_data', 'obj'],
   ];
 
   protected $staticAttributes = [
     'id',
     'carriageMoves',
     'eventType', 
+    'setupLocation',
     'strength',
     'title',
     'titleLight',
@@ -55,7 +57,7 @@ class Card extends \AGestOfRobinHood\Helpers\DB_Model
     $data = parent::jsonSerialize();
 
     return array_merge($data, [
-
+      'eventType' => $this->eventType,
     ]);
   }
 

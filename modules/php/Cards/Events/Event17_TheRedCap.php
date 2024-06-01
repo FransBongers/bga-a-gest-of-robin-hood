@@ -1,6 +1,6 @@
 <?php
 
-namespace AGestOfRobinHood\Cards\EventCard;
+namespace AGestOfRobinHood\Cards\Events;
 
 class Event17_TheRedCap extends \AGestOfRobinHood\Models\EventCard
 {
@@ -15,5 +15,6 @@ class Event17_TheRedCap extends \AGestOfRobinHood\Models\EventCard
     $this->textDark = clienttranslate('Reveal Robin Hood and move up to two Henchmen to his space from any other space.');
     $this->carriageMoves = 1;
     $this->eventType = REGULAR_EVENT;
+    $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace AGestOfRobinHood\Cards\EventCard;
+namespace AGestOfRobinHood\Cards\Events;
 
 class Event12_BoatsAndBridges extends \AGestOfRobinHood\Models\EventCard
 {
@@ -15,5 +15,6 @@ class Event12_BoatsAndBridges extends \AGestOfRobinHood\Models\EventCard
     $this->textDark = clienttranslate('Place the Bridge across any River border, which is now treated as a regular border. Shift one step towards Order.');
     $this->carriageMoves = 1;
     $this->eventType = REGULAR_EVENT;
+    $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 }

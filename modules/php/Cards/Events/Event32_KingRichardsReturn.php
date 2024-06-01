@@ -1,6 +1,6 @@
 <?php
 
-namespace AGestOfRobinHood\Cards\EventCard;
+namespace AGestOfRobinHood\Cards\Events;
 
 class Event32_KingRichardsReturn extends \AGestOfRobinHood\Models\EventCard
 {
@@ -12,5 +12,6 @@ class Event32_KingRichardsReturn extends \AGestOfRobinHood\Models\EventCard
     $this->textLight = clienttranslate('Immediately conduct the Unrest Phase of a Royal Inspection Round, then determine victory.');
     $this->carriageMoves = 1;
     $this->eventType = ROYAL_INSPECTION;
+    $this->setupLocation = EVENTS_DECK;
   }
 }

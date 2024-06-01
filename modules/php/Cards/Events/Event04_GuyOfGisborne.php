@@ -1,6 +1,6 @@
 <?php
 
-namespace AGestOfRobinHood\Cards\EventCard;
+namespace AGestOfRobinHood\Cards\Events;
 
 class Event04_GuyOfGisborne extends \AGestOfRobinHood\Models\EventCard
 {
@@ -15,5 +15,6 @@ class Event04_GuyOfGisborne extends \AGestOfRobinHood\Models\EventCard
     $this->textDark = clienttranslate('Place Guy in the Travellers Deck and remove a Monk from the Travellers Deck or Discard from the game (if possible), then shuffle the Travellers Deck.');
     $this->carriageMoves = 1;
     $this->eventType = REGULAR_EVENT;
+    $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 }

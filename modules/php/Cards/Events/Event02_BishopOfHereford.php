@@ -1,6 +1,6 @@
 <?php
 
-namespace AGestOfRobinHood\Cards\EventCard;
+namespace AGestOfRobinHood\Cards\Events;
 
 class Event02_BishopOfHereford extends \AGestOfRobinHood\Models\EventCard
 {
@@ -15,5 +15,6 @@ class Event02_BishopOfHereford extends \AGestOfRobinHood\Models\EventCard
     $this->textDark = clienttranslate('Gain 2 Shillings and remove a Monk from the Travellers Deck or Discard to the Victims Pile.');
     $this->carriageMoves = 2;
     $this->eventType = REGULAR_EVENT;
+    $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 }

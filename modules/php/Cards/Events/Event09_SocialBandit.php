@@ -1,6 +1,6 @@
 <?php
 
-namespace AGestOfRobinHood\Cards\EventCard;
+namespace AGestOfRobinHood\Cards\Events;
 
 class Event09_SocialBandit extends \AGestOfRobinHood\Models\EventCard
 {
@@ -15,5 +15,6 @@ class Event09_SocialBandit extends \AGestOfRobinHood\Models\EventCard
     $this->textDark = clienttranslate('Reveal Robin Hood and set the space he is in to Submissive (if possible).');
     $this->carriageMoves = 2;
     $this->eventType = REGULAR_EVENT;
+    $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 }

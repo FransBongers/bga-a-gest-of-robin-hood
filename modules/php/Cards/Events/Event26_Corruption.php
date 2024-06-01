@@ -1,6 +1,6 @@
 <?php
 
-namespace AGestOfRobinHood\Cards\EventCard;
+namespace AGestOfRobinHood\Cards\Events;
 
 class Event26_Corruption extends \AGestOfRobinHood\Models\EventCard
 {
@@ -15,5 +15,6 @@ class Event26_Corruption extends \AGestOfRobinHood\Models\EventCard
     $this->textDark = clienttranslate('Pay 2 Shillings to replace up to 2 Merry Men in one space with 1 Henchmen each.');
     $this->carriageMoves = 2;
     $this->eventType = REGULAR_EVENT;
+    $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 }

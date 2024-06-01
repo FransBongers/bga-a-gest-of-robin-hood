@@ -1,6 +1,6 @@
 <?php
 
-namespace AGestOfRobinHood\Cards\EventCard;
+namespace AGestOfRobinHood\Cards\Events;
 
 class Event01_DayOfMarket extends \AGestOfRobinHood\Models\EventCard
 {
@@ -13,5 +13,6 @@ class Event01_DayOfMarket extends \AGestOfRobinHood\Models\EventCard
     $this->textLight = clienttranslate('The Sheriff may return any number of Henchmen to Available to gain one Shilling per Henchmen returned, up to the number of Submissive Parishes. Then, Robin Hood may return one Merry Man to Available to gain half that number of Shillings (rounded down).');
     $this->carriageMoves = 2;
     $this->eventType = FORTUNE_EVENT;
+    $this->setupLocation = FORTUNE_EVENTS_POOL;
   }
 }

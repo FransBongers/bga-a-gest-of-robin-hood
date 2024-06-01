@@ -1,6 +1,6 @@
 <?php
 
-namespace AGestOfRobinHood\Cards\EventCard;
+namespace AGestOfRobinHood\Cards\Events;
 
 class Event06_PrioressOfKirklees extends \AGestOfRobinHood\Models\EventCard
 {
@@ -15,5 +15,6 @@ class Event06_PrioressOfKirklees extends \AGestOfRobinHood\Models\EventCard
     $this->textDark = clienttranslate('Remove Robin Hood and any one Merry Man in the same space to Available.');
     $this->carriageMoves = 1;
     $this->eventType = REGULAR_EVENT;
+    $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 }

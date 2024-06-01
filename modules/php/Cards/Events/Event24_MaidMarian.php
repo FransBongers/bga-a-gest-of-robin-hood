@@ -1,6 +1,6 @@
 <?php
 
-namespace AGestOfRobinHood\Cards\EventCard;
+namespace AGestOfRobinHood\Cards\Events;
 
 class Event24_MaidMarian extends \AGestOfRobinHood\Models\EventCard
 {
@@ -15,5 +15,6 @@ class Event24_MaidMarian extends \AGestOfRobinHood\Models\EventCard
     $this->textDark = clienttranslate('Remove a Carriage from the map to the Used Carriages box to set any one Parish to Submissive. Move all Merry Men in that Parish to an adjacent space.');
     $this->carriageMoves = 1;
     $this->eventType = REGULAR_EVENT;
+    $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 }

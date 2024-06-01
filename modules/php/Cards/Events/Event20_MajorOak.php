@@ -1,6 +1,6 @@
 <?php
 
-namespace AGestOfRobinHood\Cards\EventCard;
+namespace AGestOfRobinHood\Cards\Events;
 
 class Event20_MajorOak extends \AGestOfRobinHood\Models\EventCard
 {
@@ -15,5 +15,6 @@ class Event20_MajorOak extends \AGestOfRobinHood\Models\EventCard
     $this->textDark = clienttranslate('Remove a Camp from a Forest space (shift one step towards Order).');
     $this->carriageMoves = 2;
     $this->eventType = REGULAR_EVENT;
+    $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace AGestOfRobinHood\Cards\TravellerCard;
+namespace AGestOfRobinHood\Cards\Travellers;
 
 class Traveller10_TheMillersSon extends \AGestOfRobinHood\Models\TravellerCard
 {
@@ -14,5 +14,6 @@ class Traveller10_TheMillersSon extends \AGestOfRobinHood\Models\TravellerCard
     $this->titleDark = clienttranslate('A new recruit');
     $this->textDark = clienttranslate('If successful, gain 1 Shilling, place a Hidden Merry Man in the Rob space or an adjacent space, and put the card in the Victims Pile. If failed, put a Henchman in the Rob space, then put the card in the discard pile.');
     $this->strength = 0;
+    $this->setupLocation = TRAVELLERS_DECK;
   }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace AGestOfRobinHood\Cards\TravellerCard;
+namespace AGestOfRobinHood\Cards\Travellers;
 
 class Traveller12_GuyOfGisborne extends \AGestOfRobinHood\Models\TravellerCard
 {
@@ -12,5 +12,6 @@ class Traveller12_GuyOfGisborne extends \AGestOfRobinHood\Models\TravellerCard
     $this->titleLight = clienttranslate('Fight!');
     $this->textLight = clienttranslate('If successful, remove the card from the game. If failed, place all Robbing Merry Men in Prison (+1 Order if Robin Hood is among them) and discard the card.');
     $this->strength = 3;
+    $this->setupLocation = TRAVELLERS_POOL;
   }
 }

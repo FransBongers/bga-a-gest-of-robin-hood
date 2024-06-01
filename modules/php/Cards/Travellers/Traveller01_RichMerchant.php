@@ -1,6 +1,6 @@
 <?php
 
-namespace AGestOfRobinHood\Cards\TravellerCard;
+namespace AGestOfRobinHood\Cards\Travellers;
 
 class Traveller01_RichMerchant extends \AGestOfRobinHood\Models\TravellerCard
 {
@@ -14,5 +14,6 @@ class Traveller01_RichMerchant extends \AGestOfRobinHood\Models\TravellerCard
     $this->titleDark = clienttranslate('Fleece him!');
     $this->textDark = clienttranslate('If successful, gain 4 Shillings and put the card in the Victims Pile. If failed, Sheriff gains 2 Shillings and put the card in the discard pile.');
     $this->strength = 1;
+    $this->setupLocation = TRAVELLERS_DECK;
   }
 }

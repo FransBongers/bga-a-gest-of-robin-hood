@@ -1,6 +1,6 @@
 <?php
 
-namespace AGestOfRobinHood\Cards\EventCard;
+namespace AGestOfRobinHood\Cards\Events;
 
 class Event29_ATaleOfTwoLovers extends \AGestOfRobinHood\Models\EventCard
 {
@@ -15,5 +15,6 @@ class Event29_ATaleOfTwoLovers extends \AGestOfRobinHood\Models\EventCard
     $this->textDark = clienttranslate('Gain 2 Shillings and place up to 2 Henchmen in any one Parish.');
     $this->carriageMoves = 1;
     $this->eventType = REGULAR_EVENT;
+    $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 }

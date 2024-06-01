@@ -1,6 +1,6 @@
 <?php
 
-namespace AGestOfRobinHood\Cards\EventCard;
+namespace AGestOfRobinHood\Cards\Events;
 
 class Event16_HeavyRain extends \AGestOfRobinHood\Models\EventCard
 {
@@ -13,5 +13,6 @@ class Event16_HeavyRain extends \AGestOfRobinHood\Models\EventCard
     $this->textLight = clienttranslate('Both players, in eligibility order, may either perform a Single Plot or gain 2 Shillings.');
     $this->carriageMoves = 0;
     $this->eventType = FORTUNE_EVENT;
+    $this->setupLocation = FORTUNE_EVENTS_POOL;
   }
 }

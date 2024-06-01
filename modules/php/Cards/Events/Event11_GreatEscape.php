@@ -1,6 +1,6 @@
 <?php
 
-namespace AGestOfRobinHood\Cards\EventCard;
+namespace AGestOfRobinHood\Cards\Events;
 
 class Event11_GreatEscape extends \AGestOfRobinHood\Models\EventCard
 {
@@ -15,5 +15,6 @@ class Event11_GreatEscape extends \AGestOfRobinHood\Models\EventCard
     $this->textDark = clienttranslate('Reveal all Merry Men in one space, then Capture there.');
     $this->carriageMoves = 1;
     $this->eventType = REGULAR_EVENT;
+    $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 }

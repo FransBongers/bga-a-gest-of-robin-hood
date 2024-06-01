@@ -20,7 +20,8 @@ trait DebugTrait
 
   function test()
   {
-    Forces::setupNewGame();
+    Cards::setupNewGame();
+    Notifications::log('cards', Cards::getInLocationOrdered(EVENTS_DECK)->toArray());
   }
 
   function ed()

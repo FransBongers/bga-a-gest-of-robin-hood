@@ -1,6 +1,6 @@
 <?php
 
-namespace AGestOfRobinHood\Cards\EventCard;
+namespace AGestOfRobinHood\Cards\Events;
 
 class Event27_WillStutely extends \AGestOfRobinHood\Models\EventCard
 {
@@ -15,5 +15,6 @@ class Event27_WillStutely extends \AGestOfRobinHood\Models\EventCard
     $this->textDark = clienttranslate('Place any two Revealed Merry Men in Prison (not Robin Hood).');
     $this->carriageMoves = 1;
     $this->eventType = REGULAR_EVENT;
+    $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 }

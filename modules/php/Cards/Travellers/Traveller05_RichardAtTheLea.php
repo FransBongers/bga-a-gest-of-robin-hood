@@ -1,6 +1,6 @@
 <?php
 
-namespace AGestOfRobinHood\Cards\TravellerCard;
+namespace AGestOfRobinHood\Cards\Travellers;
 
 class Traveller05_RichardAtTheLea extends \AGestOfRobinHood\Models\TravellerCard
 {
@@ -14,5 +14,6 @@ class Traveller05_RichardAtTheLea extends \AGestOfRobinHood\Models\TravellerCard
     $this->titleDark = clienttranslate('Lend money');
     $this->textDark = clienttranslate('Spend 3 Shillings without rolling to set Retford to Revolting and place a Camp there (shift one step towards Justice), then remove the card from the game.');
     $this->strength = 1;
+    $this->setupLocation = TRAVELLERS_DECK;
   }
 }

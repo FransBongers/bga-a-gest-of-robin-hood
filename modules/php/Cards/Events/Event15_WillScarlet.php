@@ -1,6 +1,6 @@
 <?php
 
-namespace AGestOfRobinHood\Cards\EventCard;
+namespace AGestOfRobinHood\Cards\Events;
 
 class Event15_WillScarlet extends \AGestOfRobinHood\Models\EventCard
 {
@@ -15,5 +15,6 @@ class Event15_WillScarlet extends \AGestOfRobinHood\Models\EventCard
     $this->textDark = clienttranslate('Reveal Robin Hood and perform a free Single Patrol.');
     $this->carriageMoves = 2;
     $this->eventType = REGULAR_EVENT;
+    $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 }

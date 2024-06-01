@@ -1,6 +1,6 @@
 <?php
 
-namespace AGestOfRobinHood\Cards\EventCard;
+namespace AGestOfRobinHood\Cards\Events;
 
 class Event22_FastCarriages extends \AGestOfRobinHood\Models\EventCard
 {
@@ -15,5 +15,6 @@ class Event22_FastCarriages extends \AGestOfRobinHood\Models\EventCard
     $this->textDark = clienttranslate('Immediately move one Carriage up to 2 spaces.');
     $this->carriageMoves = 1;
     $this->eventType = REGULAR_EVENT;
+    $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 }

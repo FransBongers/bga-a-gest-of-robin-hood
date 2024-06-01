@@ -16,7 +16,9 @@ class Cards extends \AGestOfRobinHood\Helpers\Pieces
 {
   protected static $table = 'cards';
   protected static $prefix = 'card_';
-  protected static $customFields = ['extra_data'];
+  protected static $customFields = [
+    // 'extra_data'
+  ];
   protected static $autoremovePrefix = false;
   protected static $autoreshuffle = false;
   protected static $autoIncrement = false;
@@ -26,22 +28,19 @@ class Cards extends \AGestOfRobinHood\Helpers\Pieces
     return self::getCardInstance($card['card_id'], $card);
   }
 
-  // private static function getClassPrefix($cardId)
-  // {
-  //   if (Utils::startsWith($cardId, 'Victory')) {
-  //     return 'Victory';
-  //   }
-  //   if (Utils::startsWith($cardId, 'Empire')) {
-  //     return 'Empire';
-  //   }
-  //   return 'Tableau';
-  // }
+  private static function getClassPrefix($cardId)
+  {
+    if (Utils::startsWith($cardId, 'Event')) {
+      return 'Events';
+    }
+    return 'Travellers';
+  }
 
   public static function getCardInstance($id, $data = null)
   {
-    // $prefix = self::getClassPrefix($id);
+    $prefix = self::getClassPrefix($id);
 
-    $className = "\AGestOfRobinHood\Cards\\$id";
+    $className = "\AGestOfRobinHood\Cards\\$prefix\\$id";
     return new $className($data);
   }
 
@@ -92,36 +91,72 @@ class Cards extends \AGestOfRobinHood\Helpers\Pieces
   // .##....##.##..........##....##.....##.##.......
   // ..######..########....##.....#######..##.......
 
+  private static function createEventsDeck()
+  {
+    // Create three piles with regular events and a fortune event
+    for ($i = 0; $i <= 2; $i++) {
+      $tempLocation = 'temp_pile_' . $i;
+      // Shuffle four regular events and one fortune event
+      self::pickForLocation(4, REGULAR_EVENTS_POOL, $tempLocation);
+      self::pickForLocation(1, FORTUNE_EVENTS_POOL, $tempLocation);
+      self::shuffle($tempLocation);
+      // Add two more regular events on top
+      self::insertOnTop(self::getTopOf(REGULAR_EVENTS_POOL)->getId(), $tempLocation);
+      self::insertOnTop(self::getTopOf(REGULAR_EVENTS_POOL)->getId(), $tempLocation);
+    }
+
+    // Add created stacks and Royal Inspections to events deck
+    for ($i = 0; $i <= 2; $i++) {
+      $tempLocation = 'temp_pile_' . $i;
+      // King Richard already is at bottom of events deck
+      // so only need to add the Royal Inspections
+      if ($i !== 0) {
+        self::insertOnTop(self::getTopOf(ROYAL_INSPECTIONS_POOL)->getId(), EVENTS_DECK);
+      }
+      $cardCountDeck = self::countInLocation(EVENTS_DECK);
+
+      $cardsInPile = self::getInLocation($tempLocation);
+      foreach ($cardsInPile as $cardId => $card) {
+        self::move($cardId, EVENTS_DECK, $card->getState() + $cardCountDeck);
+      }
+    }
+  }
+
   private static function setupLoadCards()
   {
     // Load list of cards
     include dirname(__FILE__) . '/../Cards/list.inc.php';
 
+    self::DB()
+      ->delete()
+      ->run();
+
     // return;
     foreach ($cardIds as $cId) {
-      // // $card = self::getCardInstance($cId);
+      $card = self::getCardInstance($cId);
 
-      // $location = Locations::cardPool();
-      // $extraData = null;
-      // // // $location = 'deck';
+      $location = $card->getSetupLocation();
 
-
-
-      // $cards[$cId] = [
-      //   'id' => $cId,
-      //   'location' => $location,
-      //   'extra_data' => json_encode($extraData)
-      // ];
+      $cards[$cId] = [
+        'id' => $cId,
+        'location' => $location,
+      ];
     }
-    Notifications::log('cards', $cards);
-    // // Create the cards
+
+    // Create the cards
     self::create($cards, null);
+
+    // Shuffle all piles
+    self::shuffle(REGULAR_EVENTS_POOL);
+    self::shuffle(FORTUNE_EVENTS_POOL);
+    self::shuffle(ROYAL_INSPECTIONS_POOL);
+    self::shuffle(TRAVELLERS_DECK);
   }
 
   /* Creation of the cards */
   public static function setupNewGame($players = null, $options = null)
   {
     self::setupLoadCards();
+    self::createEventsDeck();
   }
-
 }

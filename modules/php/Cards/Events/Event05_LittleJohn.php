@@ -1,6 +1,6 @@
 <?php
 
-namespace AGestOfRobinHood\Cards\EventCard;
+namespace AGestOfRobinHood\Cards\Events;
 
 class Event05_LittleJohn extends \AGestOfRobinHood\Models\EventCard
 {
@@ -15,5 +15,6 @@ class Event05_LittleJohn extends \AGestOfRobinHood\Models\EventCard
     $this->textDark = clienttranslate('Set a Revolting Parish with a Revealed Merry Man to Submissive.');
     $this->carriageMoves = 1;
     $this->eventType = REGULAR_EVENT;
+    $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 }

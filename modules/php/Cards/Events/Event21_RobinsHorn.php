@@ -1,6 +1,6 @@
 <?php
 
-namespace AGestOfRobinHood\Cards\EventCard;
+namespace AGestOfRobinHood\Cards\Events;
 
 class Event21_RobinsHorn extends \AGestOfRobinHood\Models\EventCard
 {
@@ -15,5 +15,6 @@ class Event21_RobinsHorn extends \AGestOfRobinHood\Models\EventCard
     $this->textDark = clienttranslate('Place Henchmen up to half the number of cards in the Victims Pile (rounded up) in any Parishes, then may Capture in one Parish where a Henchman was placed.');
     $this->carriageMoves = 2;
     $this->eventType = REGULAR_EVENT;
+    $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 }

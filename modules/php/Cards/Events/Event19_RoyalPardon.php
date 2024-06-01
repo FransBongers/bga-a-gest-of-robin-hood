@@ -1,6 +1,6 @@
 <?php
 
-namespace AGestOfRobinHood\Cards\EventCard;
+namespace AGestOfRobinHood\Cards\Events;
 
 class Event19_RoyalPardon extends \AGestOfRobinHood\Models\EventCard
 {
@@ -15,5 +15,6 @@ class Event19_RoyalPardon extends \AGestOfRobinHood\Models\EventCard
     $this->textDark = clienttranslate('Release any number of Merry Men from Prison to Available, then shift one step towards Order for every 2 released in this way.');
     $this->carriageMoves = 2;
     $this->eventType = REGULAR_EVENT;
+    $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 }

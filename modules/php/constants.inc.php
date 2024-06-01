@@ -86,6 +86,21 @@ const FORTUNE_EVENT = 'fortuneEvent';
 const ROYAL_INSPECTION = 'royalInspection';
 
 /**
+ * Card locations
+ */
+const REGULAR_EVENTS_POOL = 'regularEventsPool';
+const FORTUNE_EVENTS_POOL = 'fortuneEventsPool';
+const ROYAL_INSPECTIONS_POOL = 'royalInspectionsPool';
+const EVENTS_DECK = 'eventsDeck';
+const TRAVELLERS_DECK = 'travellersDeck';
+const TRAVELLERS_POOL = 'travellersPool';
+
+const EVENTS_DISCARD = 'eventsDiscard';
+const TRAVELLERS_DISCARD = 'travellersDiscard';
+const TRAVELLERS_VICTIMS_PILE = 'travellersVictimsPile';
+
+
+/**
  * Force types
  */
 const CAMP = 'camp';

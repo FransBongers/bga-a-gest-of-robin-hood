@@ -1,6 +1,6 @@
 <?php
 
-namespace AGestOfRobinHood\Cards\TravellerCard;
+namespace AGestOfRobinHood\Cards\Travellers;
 
 class Traveller07_Monks extends \AGestOfRobinHood\Models\TravellerCard
 {
@@ -14,5 +14,6 @@ class Traveller07_Monks extends \AGestOfRobinHood\Models\TravellerCard
     $this->titleDark = clienttranslate('Brutal punishment!');
     $this->textDark = clienttranslate('If successful, gain 3 Shillings and put the card in the Victims Pile. If failed, set the space to Submissive (if possible) and put the card in the discard pile.');
     $this->strength = 0;
+    $this->setupLocation = TRAVELLERS_DECK;
   }
 }

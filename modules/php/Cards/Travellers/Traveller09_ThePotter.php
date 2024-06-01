@@ -1,6 +1,6 @@
 <?php
 
-namespace AGestOfRobinHood\Cards\TravellerCard;
+namespace AGestOfRobinHood\Cards\Travellers;
 
 class Traveller09_ThePotter extends \AGestOfRobinHood\Models\TravellerCard
 {
@@ -14,5 +14,6 @@ class Traveller09_ThePotter extends \AGestOfRobinHood\Models\TravellerCard
     $this->titleDark = clienttranslate('A clever trick');
     $this->textDark = clienttranslate('If successful, place Robin Hood revealed adjacent to Nottingham, gain 2 Shillings from the Sheriff and +1 Justice, then put the card in the Victims Pile. If failed, send Robin Hood to Prison (+1 Order) and put the card in the discard pile.');
     $this->strength = 1;
+    $this->setupLocation = TRAVELLERS_DECK;
   }
 }

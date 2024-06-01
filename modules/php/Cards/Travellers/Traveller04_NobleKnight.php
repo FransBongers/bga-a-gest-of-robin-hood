@@ -1,6 +1,6 @@
 <?php
 
-namespace AGestOfRobinHood\Cards\TravellerCard;
+namespace AGestOfRobinHood\Cards\Travellers;
 
 class Traveller04_NobleKnight extends \AGestOfRobinHood\Models\TravellerCard
 {
@@ -14,5 +14,6 @@ class Traveller04_NobleKnight extends \AGestOfRobinHood\Models\TravellerCard
     $this->titleDark = clienttranslate('Mug him!');
     $this->textDark = clienttranslate('If successful, gain 5 Shillings and put the card in the Victims Pile. If failed, send the Robbing Merry Men to Prison and put the card in the discard pile.');
     $this->strength = 2;
+    $this->setupLocation = TRAVELLERS_DECK;
   }
 }

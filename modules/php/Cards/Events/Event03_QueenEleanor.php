@@ -1,6 +1,6 @@
 <?php
 
-namespace AGestOfRobinHood\Cards\EventCard;
+namespace AGestOfRobinHood\Cards\Events;
 
 class Event03_QueenEleanor extends \AGestOfRobinHood\Models\EventCard
 {
@@ -13,5 +13,6 @@ class Event03_QueenEleanor extends \AGestOfRobinHood\Models\EventCard
     $this->textLight = clienttranslate('The Sheriff may remove a Noble Knight from the Traveller deck to the Victims Pile. Shift one step towards Order if there are now four or more cards in the Victims Pile, otherwise shift one step towards Justice.');
     $this->carriageMoves = 0;
     $this->eventType = FORTUNE_EVENT;
+    $this->setupLocation = FORTUNE_EVENTS_POOL;
   }
 }
