@@ -1623,6 +1623,7 @@ var PREF_ANIMATION_SPEED = "animationSpeed";
 var PREF_CARD_SIZE_IN_LOG = "cardSizeInLog";
 var PREF_DISABLED = "disabled";
 var PREF_ENABLED = "enabled";
+var PREF_SINGLE_COLUMN_MAP_SIZE = 'singleColumnMapSize';
 define([
     'dojo',
     'dojo/_base/declare',
@@ -1964,6 +1965,7 @@ var AGestOfRobinHood = (function () {
             var LEFT_SIZE = (proportions[0] * WIDTH) / 100;
             var leftColumnScale = LEFT_SIZE / LEFT_COLUMN;
             ROOT.style.setProperty('--leftColumnScale', "".concat(leftColumnScale));
+            ROOT.style.setProperty("--mapSizeMultiplier", '1');
             var RIGHT_SIZE = (proportions[1] * WIDTH) / 100;
             var rightColumnScale = RIGHT_SIZE / RIGHT_COLUMN;
             ROOT.style.setProperty('--rightColumnScale', "".concat(rightColumnScale));
@@ -1973,9 +1975,10 @@ var AGestOfRobinHood = (function () {
             var LEFT_SIZE = WIDTH;
             var leftColumnScale = LEFT_SIZE / LEFT_COLUMN;
             ROOT.style.setProperty('--leftColumnScale', "".concat(leftColumnScale));
+            ROOT.style.setProperty("--mapSizeMultiplier", "".concat(Number(this.settings.get({ id: PREF_SINGLE_COLUMN_MAP_SIZE })) / 100));
             var RIGHT_SIZE = WIDTH;
             var rightColumnScale = RIGHT_SIZE / RIGHT_COLUMN;
-            ROOT.style.setProperty('--leftColumnScale', "".concat(rightColumnScale));
+            ROOT.style.setProperty('--rightColumnScale', "".concat(rightColumnScale));
         }
     };
     AGestOfRobinHood.prototype.onAddingNewUndoableStepToLog = function (notif) {
@@ -2449,6 +2452,25 @@ var getSettingsConfig = function () {
                         type: "slider",
                     }
                 },
+                _a[PREF_SINGLE_COLUMN_MAP_SIZE] = {
+                    id: PREF_SINGLE_COLUMN_MAP_SIZE,
+                    onChangeInSetup: true,
+                    label: _("Map size"),
+                    defaultValue: 100,
+                    visibleCondition: {
+                        id: "twoColumnsLayout",
+                        values: [DISABLED],
+                    },
+                    sliderConfig: {
+                        step: 5,
+                        padding: 0,
+                        range: {
+                            min: 30,
+                            max: 100,
+                        },
+                    },
+                    type: "slider",
+                },
                 _a[PREF_CARD_SIZE_IN_LOG] = {
                     id: PREF_CARD_SIZE_IN_LOG,
                     onChangeInSetup: true,
@@ -2661,6 +2683,9 @@ var Settings = (function () {
     Settings.prototype.onChangeColumnSizesSetting = function (value) {
         this.game.updateLayout();
     };
+    Settings.prototype.onChangeSingleColumnMapSizeSetting = function (value) {
+        this.game.updateLayout();
+    };
     Settings.prototype.onChangeCardSizeInLogSetting = function (value) {
         var ROOT = document.documentElement;
         ROOT.style.setProperty("--logCardScale", "".concat(Number(value) / 100));
@@ -2709,14 +2734,17 @@ var Settings = (function () {
     };
     Settings.prototype.checkColumnSizesVisisble = function () {
         var sliderNode = document.getElementById("setting_row_columnSizes");
-        if (!sliderNode) {
+        var mapSizeSliderNode = document.getElementById("setting_row_singleColumnMapSize");
+        if (!(sliderNode && mapSizeSliderNode)) {
             return;
         }
         if (this.settings["twoColumnsLayout"] === PREF_ENABLED) {
             sliderNode.style.display = "";
+            mapSizeSliderNode.style.display = "none";
         }
         else {
             sliderNode.style.display = "none";
+            mapSizeSliderNode.style.display = "";
         }
     };
     Settings.prototype.getMethodName = function (_a) {

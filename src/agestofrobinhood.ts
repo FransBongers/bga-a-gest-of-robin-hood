@@ -618,7 +618,7 @@
        const LEFT_SIZE = (proportions[0] * WIDTH) / 100;
        const leftColumnScale = LEFT_SIZE / LEFT_COLUMN;
        ROOT.style.setProperty('--leftColumnScale', `${leftColumnScale}`);
- 
+       ROOT.style.setProperty("--mapSizeMultiplier", '1');
        const RIGHT_SIZE = (proportions[1] * WIDTH) / 100;
        const rightColumnScale = RIGHT_SIZE / RIGHT_COLUMN;
        ROOT.style.setProperty('--rightColumnScale', `${rightColumnScale}`);
@@ -630,9 +630,10 @@
        const LEFT_SIZE = WIDTH;
        const leftColumnScale = LEFT_SIZE / LEFT_COLUMN;
        ROOT.style.setProperty('--leftColumnScale', `${leftColumnScale}`);
+       ROOT.style.setProperty("--mapSizeMultiplier", `${Number(this.settings.get({ id: PREF_SINGLE_COLUMN_MAP_SIZE })) / 100}`);
        const RIGHT_SIZE = WIDTH;
        const rightColumnScale = RIGHT_SIZE / RIGHT_COLUMN;
-       ROOT.style.setProperty('--leftColumnScale', `${rightColumnScale}`);
+       ROOT.style.setProperty('--rightColumnScale', `${rightColumnScale}`);
      }
    }
  
