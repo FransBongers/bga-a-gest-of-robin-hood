@@ -50,7 +50,7 @@ class Space extends \AGestOfRobinHood\Helpers\DB_Model
   {
     return [
       'id' => $this->id,
-      'setupStatus' => $this->setupStatus,
+      'status' => $this->getStatus(),
       'name' => $this->name,
       // 'top' => $this->top,
       // 'left' => $this->left,

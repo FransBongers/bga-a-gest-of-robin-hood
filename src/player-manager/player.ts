@@ -14,6 +14,7 @@ class GestPlayer {
   private playerName: string;
 
   public playerData: AGestOfRobinHoodPlayerData;
+  private side: 'robinHood' | 'sheriff';
 
   constructor({
     game,
@@ -29,6 +30,7 @@ class GestPlayer {
     this.playerData = player;
     this.playerName = player.name;
     this.playerColor = player.color;
+    this.side = player.side;
     // this.playerHexColor = player.hexColor;
     const gamedatas = game.gamedatas;
 
@@ -54,15 +56,6 @@ class GestPlayer {
     const playerGamedatas = gamedatas.players[this.playerId];
 
     this.setupPlayerPanel({ playerGamedatas });
-    this.setupHand({ playerGamedatas });
-  }
-
-  setupHand({
-    playerGamedatas,
-  }: {
-    playerGamedatas: AGestOfRobinHoodPlayerData;
-  }) {
-
   }
 
   setupPlayerPanel({
@@ -122,6 +115,10 @@ class GestPlayer {
   //  .##.....##....##.....##..##........##.....##.......##...
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
+
+  isRobinHood(): boolean {
+    return this.side === 'robinHood';
+  }
 
   // ....###.....######..########.####..#######..##....##..######.
   // ...##.##...##....##....##.....##..##.....##.###...##.##....##

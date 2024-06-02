@@ -1,0 +1,32 @@
+@use 'sass:math';
+@use "sass:map";
+
+.gest_marker {
+  height: calc(var(--gestMarkerScale)* 70px);
+  width: calc(var(--gestMarkerScale)* 70px);
+  // min-width: calc(var(--btMapScale)* 44px);
+  // max-width: calc(var(--btMapScale)* 44px);
+}
+
+.gest_marker_side {
+  // background-image: url('img/markers_2.webp');
+  height: calc(var(--gestMarkerScale)* 70px);
+  width: calc(var(--gestMarkerScale)* 70px);
+  // min-height: calc(var(--btMapScale) * 44px);
+  // max-height: calc(var(--btMapScale) * 44px);
+  // min-width: calc(var(--btMapScale) * 44px);
+  // max-width: calc(var(--btMapScale) * 44px);
+  // background-size: 800% 600%;
+  // position: absolute;
+  box-sizing: border-box;
+  border: calc(var(--gestMarkerScale) * 1px) solid black;
+  border-radius: 10%;
+}
+
+.gest_marker_side[data-type="parishStatusMarker"][data-side="front"] {
+  background-color: blue;
+}
+
+.gest_marker_side[data-type="parishStatusMarker"][data-side="back"] {
+  background-color: red;
+}

@@ -60,7 +60,122 @@
   width: calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 1500px);
   box-shadow: 1px 1px 5px #000;
   --gestMapScale: var(--leftColumnScale) * var(--mapSizeMultiplier);
+  --gestMarkerScale: var(--leftColumnScale) * var(--mapSizeMultiplier);
   --gestTokenScale: var(--leftColumnScale) * var(--mapSizeMultiplier);
+}
+
+.gest_marker_space {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gest_justice_order_track {
+  position: absolute;
+  height: calc(var(--gestMapScale) * 87px);
+  width: calc(var(--gestMapScale) * 87px);
+}
+
+.gest_royal_inspection_track {
+  position: absolute;
+  height: calc(var(--gestMapScale) * 80px);
+  width: calc(var(--gestMapScale) * 80px);
+  display: flex;
+}
+
+.gest_parish_status_box {
+  position: absolute;
+  height: calc(var(--gestMapScale) * 86px);
+  width: calc(var(--gestMapScale) * 86px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gest_initiative_track {
+  position: absolute;
+  height: calc(var(--gestMapScale) * 80px);
+  width: calc(var(--gestMapScale) * 80px);
+  display: flex;
+}
+
+#usedCarriages {
+  position: absolute;
+  height: calc(var(--gestMapScale) * 153px);
+  width: calc(var(--gestMapScale) * 153px);
+  display: flex;
+}
+
+#prison {
+  position: absolute;
+  height: calc(var(--gestMapScale) * 184px);
+  width: calc(var(--gestMapScale) * 177px);
+  display: flex;
+}
+
+.gest_track_marker {
+  box-sizing: border-box;
+  border-radius: 50%;
+  border: calc(var(--gestMapScale) * 1px) solid black;
+}
+
+#royalFavourMarker {
+  background-color: red;
+  height: calc(var(--gestMapScale) * 60px);
+  width: calc(var(--gestMapScale) * 60px);
+}
+
+#royalInspectionMarker {
+  background-color: #ffd700;
+  height: calc(var(--gestMapScale) * 50px);
+  width: calc(var(--gestMapScale) * 50px);
+}
+
+#robinHoodEligibilityMarker {
+  background-color: #008000;
+  height: calc(var(--gestMapScale) * 50px);
+  width: calc(var(--gestMapScale) * 50px);
+}
+
+#sheriffEligibilityMarker {
+  background-color: #c0c0c0;
+  height: calc(var(--gestMapScale) * 50px);
+  width: calc(var(--gestMapScale) * 50px);
+}
+
+.gest_forces {
+  position: absolute;
+  display: flex;
+  gap: calc(var(--gestMapScale) * 8px);
+  justify-content: center;
+  align-items: center;
+}
+
+.gest_force {
+  box-sizing: border-box;
+  height: calc(var(--gestMapScale) * 40px);
+  width: calc(var(--gestMapScale) * 40px);
+  border: calc(var(--gestMapScale) * 1px) solid black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.gest_force[data-type=henchmen] {
+  background-color: #c0c0c0;
+}
+
+.gest_force[data-type=camp] {
+  background-color: #008000;
+  border-radius: 50%;
+}
+
+.gest_force[data-type=merryMen] {
+  background-color: #008000;
+}
+
+.gest_force[data-type=robinHood] {
+  background-color: #008000;
 }
 
 #info_panel {
@@ -281,6 +396,27 @@
   padding: 8px;
   display: flex;
   flex-wrap: wrap;
+}
+
+.gest_marker {
+  height: calc(var(--gestMarkerScale) * 70px);
+  width: calc(var(--gestMarkerScale) * 70px);
+}
+
+.gest_marker_side {
+  height: calc(var(--gestMarkerScale) * 70px);
+  width: calc(var(--gestMarkerScale) * 70px);
+  box-sizing: border-box;
+  border: calc(var(--gestMarkerScale) * 1px) solid black;
+  border-radius: 10%;
+}
+
+.gest_marker_side[data-type=parishStatusMarker][data-side=front] {
+  background-color: blue;
+}
+
+.gest_marker_side[data-type=parishStatusMarker][data-side=back] {
+  background-color: red;
 }
 
 /*! nouislider - 14.6.0 - 6/27/2020 */
@@ -881,6 +1017,10 @@ html {
 /* Hide the "You may note something for next time..." popup that would appear. */
 #turnBasedNotesIncent {
   display: none;
+}
+
+.card-sides {
+  position: relative !important;
 }
 
 /*# sourceMappingURL=agestofrobinhood.css.map */

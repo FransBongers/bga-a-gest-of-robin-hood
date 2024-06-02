@@ -9,6 +9,10 @@ interface CommonArgs {
   previousSteps: number[];
 }
 
+interface OnEnteringConfirmTurnArgs extends CommonArgs {}
+
 /**
  * Game state interfaces
  */
+
+interface OnEnteringSetupRobinHoodArgs extends CommonArgs {}

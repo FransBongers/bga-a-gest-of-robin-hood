@@ -10,6 +10,7 @@ use AGestOfRobinHood\Helpers\Locations;
 use AGestOfRobinHood\Helpers\Utils;
 use AGestOfRobinHood\Managers\Cards;
 use AGestOfRobinHood\Managers\Players;
+use AGestOfRobinHood\Managers\PlayersExtra;
 
 /*
  * Player: all utility functions concerning a player
@@ -47,7 +48,8 @@ class Player extends \AGestOfRobinHood\Helpers\DB_Model
     return array_merge(
       $data,
       [
-
+        'shillings' => $this->getShillings(),
+        'side' => $this->getSide(),
       ],
     );
   }
@@ -57,5 +59,13 @@ class Player extends \AGestOfRobinHood\Helpers\DB_Model
     return (int) parent::getId();
   }
 
+  public function getShillings()
+  {
+    return intval(PlayersExtra::get($this->getId())['shillings']);
+  }
 
+  public function getSide()
+  {
+    return COLOR_SIDE_MAP[$this->getColor()];
+  }
 }

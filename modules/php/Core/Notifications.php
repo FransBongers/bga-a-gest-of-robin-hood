@@ -153,4 +153,29 @@ class Notifications
   // .##.....##.##..........##....##.....##.##.....##.##.....##.##....##
   // .##.....##.########....##....##.....##..#######..########...######.
 
+  public static function setupRobinHood($player, $robinHood, $merryMen)
+  {
+    self::notify($player, 'setupRobinHoodPrivate', clienttranslate('Private: ${player_name} places forces'), [
+      'player' => $player,
+      'you' => '${you}',
+      'robinHood' => $robinHood,
+      'merryMen' => $merryMen,
+    ]);
+
+    $merryMenCounts = [
+      SHIRE_WOOD => 0,
+      SOUTHWELL_FOREST => 0,
+      REMSTON => 0,
+    ];
+
+    $merryMenCounts[$robinHood->getLocation()] += 1;
+    foreach ($merryMen as $merryMan) {
+      $merryMenCounts[$merryMan->getLocation()] += 1;
+    }
+
+    self::notifyAll("setupRobinHood", clienttranslate('${player_name} places Forces'), [
+      'player' => $player,
+      'merryMenCounts' => $merryMenCounts,
+    ]);
+  }
 }

@@ -55,9 +55,15 @@
  
    // Game specific
    public gameMap: GameMap;
- 
-   public activeStates: {
+   public markerManager: MarkerManager;
 
+
+   public activeStates: {
+    // Boiler plate
+    confirmPartialTurn: ConfirmPartialTurnState;
+    confirmTurn: ConfirmTurnState;
+    // Game
+    setupRobinHood: SetupRobinHoodState;
    };
  
    constructor() {
@@ -90,7 +96,11 @@
  
      // Will store all data for active player and gets refreshed with entering player actions state
      this.activeStates = {
-
+      // Boiler plate
+      confirmPartialTurn: new ConfirmPartialTurnState(this),
+      confirmTurn: new ConfirmTurnState(this),
+      // Game
+      setupRobinHood: new SetupRobinHoodState(this)
      };
  
      this.infoPanel = new InfoPanel(this);
@@ -102,11 +112,13 @@
            ? 0
            : 2100 - (this.settings.get({ id: PREF_ANIMATION_SPEED }) as number),
      });
- 
+     
+     this.markerManager = new MarkerManager(this);
+
      this.gameMap = new GameMap(this);
      this.tooltipManager = new TooltipManager(this);
- 
      this.playerManager = new PlayerManager(this);
+     
  
      if (this.notificationManager != undefined) {
        this.notificationManager.destroy();

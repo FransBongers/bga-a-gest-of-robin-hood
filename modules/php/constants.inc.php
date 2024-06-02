@@ -48,15 +48,39 @@ const ST_CLEANUP = 88; // TODO: replace
 
 // Game
 const ST_PLAYER_ACTION = 22;
+const ST_SETUP_ROBIN_HOOD = 23;
 
 
 /**
  * Atomic actions
  */
 const PLAYER_ACTION = 'PLAYER_ACTION';
+const SETUP_ROBIN_HOOD = 'SETUP_ROBIN_HOOD';
 
 
 const DIE_FACES = [];
+
+/**
+ * Force types
+ */
+const CAMP = 'camp';
+const MERRY_MEN = 'merryMen';
+const HENCHMEN = 'henchmen';
+const ROBIN_HOOD = 'robinHood'; // also used for side
+
+/**
+ * Sides
+ */
+const SHERIFF = 'sheriff';
+
+
+const COLOR_SIDE_MAP = [
+  "008000" => ROBIN_HOOD, // blue
+  "c0c0c0" => SHERIFF, // green
+];
+
+const HIDDEN = 'hidden';
+const REVEALED = 'revealed';
 
 /**
  * Log tokens
@@ -101,18 +125,11 @@ const TRAVELLERS_VICTIMS_PILE = 'travellersVictimsPile';
 
 
 /**
- * Force types
- */
-const CAMP = 'camp';
-const MERRY_MEN = 'merryMen';
-const HENCHMEN = 'henchmen';
-const ROBIN_HOOD = 'robinHood';
-
-/**
  * Spaces
  */
 const BINGHAM = 'Bingham';
 const BLYTH = 'Blyth';
+const MANSFIELD = 'Mansfield';
 const NEWARK = 'Newark';
 const NOTTINGHAM = 'Nottingham';
 const OLLERTON_HILL = 'OllertonHill';
@@ -125,6 +142,7 @@ const TUXFORD = 'Tuxford';
 const SPACES = [
   BINGHAM,
   BLYTH,
+  MANSFIELD,
   NEWARK,
   NOTTINGHAM,
   OLLERTON_HILL,
@@ -134,3 +152,30 @@ const SPACES = [
   SOUTHWELL_FOREST,
   TUXFORD,
 ];
+
+/**
+ * Markers
+ */
+const ROYAL_FAVOUR_MARKER = 'royalFavourMarker';
+const ROYAL_INSPECTION_MARKER = 'royalInspectionMarker';
+const ROBIN_HOOD_ELIGIBILITY_MARKER = 'robinHoodEligibilityMarker';
+const SHERIFF_ELIGIBILITY_MARKER = 'sheriffEligibilityMarker';
+
+/**
+ * Initiative track locations
+ */
+const SINGLE_PLOT = 'singlePlot';
+const EVENT = 'event';
+const PLOTS_AND_DEEDS = 'plotsAndDeeds';
+const FIRST_ELIGIBLE = 'firstEligible';
+const SECOND_ELIGIBLE = 'secondEligible';
+
+/**
+ * Royal inspection track locations
+ */
+const UNREST = 'unrest';
+const MISCHIEF = 'mischief';
+const GOVERNANCE = 'governance';
+const REDEPLOYMENT = 'redeployment';
+const RESET = 'reset';
+const BALAD = 'balad';

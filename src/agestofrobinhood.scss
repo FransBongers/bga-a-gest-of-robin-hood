@@ -16,10 +16,12 @@
 @use 'sass:math';
 @use 'base';
 //  @use "card-managers/cards";
+@use 'forces';
 @use 'game-map/gamemap';
 @use 'info-panel/infoPanel';
 @use 'logs/logs';
 @use 'settings/settingsModal';
+@use 'marker-manager/markers';
 @use 'nouislider';
 @import '../node_modules/bga-cards/bga-cards';
 
@@ -66,4 +68,8 @@ html {
 /* Hide the "You may note something for next time..." popup that would appear. */
 #turnBasedNotesIncent {
   display: none;
+}
+
+.card-sides {
+  position: relative !important;
 }

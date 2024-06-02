@@ -58,28 +58,12 @@ class NotificationManager {
     //   // ],
     // ];
     const notifs: string[] = [
+      // Boilerplate
       'log',
-      'battle',
-      'battleCleanup',
-      'battleStart',
-      'battleSelectCommander',
-      'discardCardFromHand',
-      'discardCardFromHandPrivate',
-      'discardCardInPlay',
-      'drawCardPrivate',
-      'loseControl',
-      'moveRaidPointsMarker',
-      'moveRoundMarker',
-      'moveStack',
-      'moveYearMarker',
-      'moveUnit',
-      'placeUnitInLosses',
-      'raidPoints',
-      'revealCardsInPlay',
-      'scoreVictoryPoints',
-      'selectReserveCard',
-      'selectReserveCardPrivate',
-      'takeControl',
+      'refreshUI',
+      // Game
+      'setupRobinHood',
+      'setupRobinHoodPrivate',
     ];
 
     // example: https://github.com/thoun/knarr/blob/main/src/knarr.ts
@@ -125,7 +109,7 @@ class NotificationManager {
       this.game
         .framework()
         .notifqueue.setIgnoreNotificationCheck(
-          'discardCardFromHand',
+          'setupRobinHood',
           (notif: Notif<{ playerId: number }>) =>
             notif.args.playerId == this.game.getPlayerId()
         );
@@ -177,17 +161,44 @@ class NotificationManager {
   //   player.setupHand({ hand });
   // }
 
-  async notif_smallRefreshInterface(
-    notif: Notif<NotifSmallRefreshInterfaceArgs>
-  ) {
+  // async notif_smallRefreshInterface(
+  //   notif: Notif<NotifSmallRefreshInterfaceArgs>
+  // ) {
+  //   const updatedGamedatas = {
+  //     ...this.game.gamedatas,
+  //     ...notif.args,
+  //   };
+  //   this.game.clearInterface();
+  //   this.game.gamedatas = updatedGamedatas;
+  //   this.game.playerManager.updatePlayers({ gamedatas: updatedGamedatas });
+  //   this.game.gameMap.updateInterface({ gamedatas: updatedGamedatas });
+  // }
+  async notif_refreshUI(notif: Notif<NotifRefreshUIArgs>) {
+    const { datas: gamedatas } = notif.args;
     const updatedGamedatas = {
       ...this.game.gamedatas,
-      ...notif.args,
+      ...gamedatas,
     };
-    this.game.clearInterface();
     this.game.gamedatas = updatedGamedatas;
-    this.game.playerManager.updatePlayers({ gamedatas: updatedGamedatas });
-    this.game.gameMap.updateInterface({ gamedatas: updatedGamedatas });
+    this.game.clearInterface();
+    this.game.gameMap.updateInterface({ gamedatas });
+    this.game.playerManager.updatePlayers({ gamedatas });
   }
 
+  async notif_setupRobinHood(notif: Notif<NotifSetupRobinHoodArgs>) {
+    const { merryMenCounts } = notif.args;
+    Object.entries(merryMenCounts).forEach(([spaceId, countHidden]) => {
+      this.game.gameMap.addMerryMenPublic({ spaceId, countHidden });
+    });
+  }
+
+  async notif_setupRobinHoodPrivate(
+    notif: Notif<NotifSetupRobinHoodPrivateArgs>
+  ) {
+    const { robinHood, merryMen } = notif.args;
+    this.game.gameMap.addRobinHoodPrivate({ robinHood });
+    merryMen.forEach((merryMan) =>
+      this.game.gameMap.addMerryManPrivate({ merryMan })
+    );
+  }
 }

@@ -13,6 +13,7 @@ class AtomicActions
   // Mapping of actionId and corresponding class
   static $classes = [
     PLAYER_ACTION => 'PlayerAction',
+    SETUP_ROBIN_HOOD => 'SetupRobinHood',
   ];
 
   public static function get($actionId, $ctx = null)

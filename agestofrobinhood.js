@@ -1613,17 +1613,56 @@ var CardManager = (function () {
 }());
 var MIN_PLAY_AREA_WIDTH = 1500;
 var MIN_NOTIFICATION_MS = 1200;
-var DISABLED = "disabled";
-var GEST_SELECTABLE = "gest_selectable";
-var GEST_SELECTED = "gest_selected";
-var DISCARD = "discard";
-var PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY = "confirmEndOfTurnPlayerSwitchOnly";
-var PREF_SHOW_ANIMATIONS = "showAnimations";
-var PREF_ANIMATION_SPEED = "animationSpeed";
-var PREF_CARD_SIZE_IN_LOG = "cardSizeInLog";
-var PREF_DISABLED = "disabled";
-var PREF_ENABLED = "enabled";
+var DISABLED = 'disabled';
+var GEST_SELECTABLE = 'gest_selectable';
+var GEST_SELECTED = 'gest_selected';
+var DISCARD = 'discard';
+var PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY = 'confirmEndOfTurnPlayerSwitchOnly';
+var PREF_SHOW_ANIMATIONS = 'showAnimations';
+var PREF_ANIMATION_SPEED = 'animationSpeed';
+var PREF_CARD_SIZE_IN_LOG = 'cardSizeInLog';
+var PREF_DISABLED = 'disabled';
+var PREF_ENABLED = 'enabled';
 var PREF_SINGLE_COLUMN_MAP_SIZE = 'singleColumnMapSize';
+var ROYAL_FAVOUR_MARKER = 'royalFavourMarker';
+var ROYAL_INSPECTION_MARKER = 'royalInspectionMarker';
+var ROBIN_HOOD_ELIGIBILITY_MARKER = 'robinHoodEligibilityMarker';
+var SHERIFF_ELIGIBILITY_MARKER = 'sheriffEligibilityMarker';
+var GAME_MAP_MARKERS = [
+    ROYAL_FAVOUR_MARKER,
+    ROYAL_INSPECTION_MARKER,
+    ROBIN_HOOD_ELIGIBILITY_MARKER,
+    SHERIFF_ELIGIBILITY_MARKER,
+];
+var BINGHAM = 'Bingham';
+var BLYTH = 'Blyth';
+var MANSFIELD = 'Mansfield';
+var NEWARK = 'Newark';
+var NOTTINGHAM = 'Nottingham';
+var OLLERTON_HILL = 'OllertonHill';
+var REMSTON = 'Remston';
+var RETFORD = 'Retford';
+var SHIRE_WOOD = 'ShireWood';
+var SOUTHWELL_FOREST = 'SouthwellForest';
+var TUXFORD = 'Tuxford';
+var PARISHES = [BINGHAM, BLYTH, MANSFIELD, NEWARK, REMSTON, RETFORD, TUXFORD];
+var SPACES = [
+    BINGHAM,
+    BLYTH,
+    MANSFIELD,
+    NEWARK,
+    NOTTINGHAM,
+    OLLERTON_HILL,
+    REMSTON,
+    RETFORD,
+    SHIRE_WOOD,
+    SOUTHWELL_FOREST,
+    TUXFORD,
+];
+var CAMP = 'camp';
+var MERRY_MEN = 'merryMen';
+var HENCHMEN = 'henchmen';
+var ROBIN_HOOD = 'robinHood';
 define([
     'dojo',
     'dojo/_base/declare',
@@ -1659,7 +1698,11 @@ var AGestOfRobinHood = (function () {
         this.gamedatas = gamedatas;
         debug('gamedatas', gamedatas);
         this._connections = [];
-        this.activeStates = {};
+        this.activeStates = {
+            confirmPartialTurn: new ConfirmPartialTurnState(this),
+            confirmTurn: new ConfirmTurnState(this),
+            setupRobinHood: new SetupRobinHoodState(this)
+        };
         this.infoPanel = new InfoPanel(this);
         this.settings = new Settings(this);
         this.animationManager = new AnimationManager(this, {
@@ -1667,6 +1710,7 @@ var AGestOfRobinHood = (function () {
                 ? 0
                 : 2100 - this.settings.get({ id: PREF_ANIMATION_SPEED }),
         });
+        this.markerManager = new MarkerManager(this);
         this.gameMap = new GameMap(this);
         this.tooltipManager = new TooltipManager(this);
         this.playerManager = new PlayerManager(this);
@@ -2157,28 +2201,708 @@ var debug = isDebug ? console.info.bind(window.console) : function () { };
 var capitalizeFirstLetter = function (string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 };
+var ForceManager = (function (_super) {
+    __extends(ForceManager, _super);
+    function ForceManager(game) {
+        var _this = _super.call(this, game, {
+            getId: function (card) { return "".concat(card.id); },
+            setupDiv: function (card, div) { return _this.setupDiv(card, div); },
+            setupFrontDiv: function (card, div) { return _this.setupFrontDiv(card, div); },
+            setupBackDiv: function (card, div) { return _this.setupBackDiv(card, div); },
+            isCardVisible: function (card) { return _this.isCardVisible(card); },
+            animationManager: game.animationManager,
+        }) || this;
+        _this.game = game;
+        return _this;
+    }
+    ForceManager.prototype.clearInterface = function () { };
+    ForceManager.prototype.setupDiv = function (token, div) {
+        div.classList.add('gest_marker');
+    };
+    ForceManager.prototype.setupFrontDiv = function (token, div) {
+        div.classList.add('gest_marker_side');
+        div.setAttribute('data-side', 'front');
+        div.setAttribute('data-type', token.type);
+    };
+    ForceManager.prototype.setupBackDiv = function (token, div) {
+        div.classList.add('gest_marker_side');
+        div.setAttribute('data-side', 'back');
+        div.setAttribute('data-type', token.type);
+    };
+    ForceManager.prototype.isCardVisible = function (token) {
+        return token.side === 'front';
+    };
+    return ForceManager;
+}(CardManager));
+var _a;
+var SPACES_CONFIG = (_a = {},
+    _a[BINGHAM] = {
+        henchmen: {
+            top: 1271,
+            left: 737,
+            width: 89,
+            height: 143,
+        },
+        camps: {
+            top: 1219,
+            left: 869,
+            width: 50,
+            height: 50,
+        },
+        merryMen: {
+            top: 1255,
+            left: 931,
+            width: 82,
+            height: 170,
+        },
+    },
+    _a[BLYTH] = {
+        henchmen: {
+            top: 583,
+            left: 641,
+            width: 100,
+            height: 160,
+        },
+        camps: {
+            top: 488,
+            left: 585,
+            width: 50,
+            height: 50,
+        },
+        merryMen: {
+            top: 562,
+            left: 525,
+            width: 100,
+            height: 160,
+        },
+    },
+    _a[MANSFIELD] = {
+        henchmen: {
+            top: 1128,
+            left: 313,
+            width: 100,
+            height: 150,
+        },
+        camps: {
+            top: 855,
+            left: 273,
+            width: 50,
+            height: 50,
+        },
+        merryMen: {
+            top: 847,
+            left: 329,
+            width: 100,
+            height: 145,
+        },
+    },
+    _a[NEWARK] = {
+        henchmen: {
+            top: 706,
+            left: 1081,
+            width: 100,
+            height: 145,
+        },
+        camps: {
+            top: 1108,
+            left: 916,
+            width: 50,
+            height: 50,
+        },
+        merryMen: {
+            top: 1035,
+            left: 977,
+            width: 100,
+            height: 170,
+        },
+    },
+    _a[NOTTINGHAM] = {
+        henchmen: {
+            top: 1131,
+            left: 474,
+            width: 175,
+            height: 100,
+        },
+        merryMen: {
+            top: 1047,
+            left: 474,
+            width: 170,
+            height: 79,
+        },
+    },
+    _a[OLLERTON_HILL] = {
+        camps: {
+            top: 880,
+            left: 778,
+            width: 50,
+            height: 50,
+        },
+    },
+    _a[REMSTON] = {
+        henchmen: {
+            top: 1401,
+            left: 624,
+            width: 100,
+            height: 160,
+        },
+        camps: {
+            top: 1318,
+            left: 507,
+            width: 50,
+            height: 50,
+        },
+        merryMen: {
+            top: 1373,
+            left: 416,
+            width: 100,
+            height: 160,
+        },
+    },
+    _a[RETFORD] = {
+        henchmen: {
+            top: 335,
+            left: 971,
+            width: 100,
+            height: 143,
+        },
+        camps: {
+            top: 262,
+            left: 766,
+            width: 50,
+            height: 50,
+        },
+        merryMen: {
+            top: 335,
+            left: 866,
+            width: 100,
+            height: 143,
+        },
+    },
+    _a[SHIRE_WOOD] = {
+        henchmen: {
+            top: 787,
+            left: 467,
+            width: 160,
+            height: 68,
+        },
+        camps: {
+            top: 924,
+            left: 610,
+            width: 50,
+            height: 50,
+        },
+        merryMen: {
+            top: 904,
+            left: 467,
+            width: 140,
+            height: 100,
+        },
+    },
+    _a[SOUTHWELL_FOREST] = {
+        henchmen: {
+            top: 955,
+            left: 671,
+            width: 84,
+            height: 124,
+        },
+        camps: {
+            top: 1153,
+            left: 762,
+            width: 50,
+            height: 50,
+        },
+        merryMen: {
+            top: 1005,
+            left: 762,
+            width: 100,
+            height: 100,
+        },
+    },
+    _a[TUXFORD] = {
+        henchmen: {
+            top: 832,
+            left: 864,
+            width: 100,
+            height: 161,
+        },
+        camps: {
+            top: 645,
+            left: 864,
+            width: 50,
+            height: 50,
+        },
+        merryMen: {
+            top: 532,
+            left: 932,
+            width: 100,
+            height: 161,
+        },
+    },
+    _a);
+var JUSTICE_TRACK_CONFIG = [
+    {
+        id: 'justiceTrack_1',
+        top: 922,
+        left: 112,
+        extraClasses: 'gest_marker_space gest_justice_order_track',
+    },
+    {
+        id: 'justiceTrack_2',
+        top: 821,
+        left: 112,
+        extraClasses: 'gest_marker_space gest_justice_order_track',
+    },
+    {
+        id: 'justiceTrack_3',
+        top: 720,
+        left: 112,
+        extraClasses: 'gest_marker_space gest_justice_order_track',
+    },
+    {
+        id: 'justiceTrack_4',
+        top: 619,
+        left: 112,
+        extraClasses: 'gest_marker_space gest_justice_order_track',
+    },
+    {
+        id: 'justiceTrack_5',
+        top: 518,
+        left: 112,
+        extraClasses: 'gest_marker_space gest_justice_order_track',
+    },
+    {
+        id: 'justiceTrack_6',
+        top: 417,
+        left: 112,
+        extraClasses: 'gest_marker_space gest_justice_order_track',
+    },
+    {
+        id: 'justiceTrack_7',
+        top: 316,
+        left: 112,
+        extraClasses: 'gest_marker_space gest_justice_order_track',
+    },
+];
+var ORDER_TRACK = [
+    {
+        id: 'orderTrack_1',
+        top: 1047,
+        left: 112,
+        extraClasses: 'gest_marker_space gest_justice_order_track',
+    },
+    {
+        id: 'orderTrack_2',
+        top: 1148,
+        left: 112,
+        extraClasses: 'gest_marker_space gest_justice_order_track',
+    },
+    {
+        id: 'orderTrack_3',
+        top: 1249,
+        left: 112,
+        extraClasses: 'gest_marker_space gest_justice_order_track',
+    },
+    {
+        id: 'orderTrack_4',
+        top: 1350,
+        left: 112,
+        extraClasses: 'gest_marker_space gest_justice_order_track',
+    },
+    {
+        id: 'orderTrack_5',
+        top: 1451,
+        left: 112,
+        extraClasses: 'gest_marker_space gest_justice_order_track',
+    },
+    {
+        id: 'orderTrack_6',
+        top: 1552,
+        left: 112,
+        extraClasses: 'gest_marker_space gest_justice_order_track',
+    },
+    {
+        id: 'orderTrack_7',
+        top: 1653,
+        left: 112,
+        extraClasses: 'gest_marker_space gest_justice_order_track',
+    },
+];
+var ROYAL_INSPECTION_TRACK = [
+    {
+        id: 'royalInspectionTrack_unrest',
+        top: 880,
+        left: 1211,
+        extraClasses: 'gest_marker_space gest_royal_inspection_track',
+    },
+    {
+        id: 'royalInspectionTrack_mischief',
+        top: 974,
+        left: 1211,
+        extraClasses: 'gest_marker_space gest_royal_inspection_track',
+    },
+    {
+        id: 'royalInspectionTrack_governance',
+        top: 1065,
+        left: 1211,
+        extraClasses: 'gest_marker_space gest_royal_inspection_track',
+    },
+    {
+        id: 'royalInspectionTrack_redeployment',
+        top: 1156,
+        left: 1211,
+        extraClasses: 'gest_marker_space gest_royal_inspection_track',
+    },
+    {
+        id: 'royalInspectionTrack_reset',
+        top: 1246,
+        left: 1211,
+        extraClasses: 'gest_marker_space gest_royal_inspection_track',
+    },
+    {
+        id: 'royalInspectionTrack_balad',
+        top: 728,
+        left: 1233,
+        extraClasses: 'gest_marker_space gest_royal_inspection_track',
+    },
+];
+var PARISH_STATUS_BOXES = [
+    {
+        id: 'parishStatusBox_Retford',
+        top: 222,
+        left: 883,
+        extraClasses: 'gest_parish_status_box',
+    },
+    {
+        id: 'parishStatusBox_Blyth',
+        top: 461,
+        left: 669,
+        extraClasses: 'gest_parish_status_box',
+    },
+    {
+        id: 'parishStatusBox_Tuxford',
+        top: 716,
+        left: 890,
+        extraClasses: 'gest_parish_status_box',
+    },
+    {
+        id: 'parishStatusBox_Newark',
+        top: 904,
+        left: 1060,
+        extraClasses: 'gest_parish_status_box',
+    },
+    {
+        id: 'parishStatusBox_Mansfield',
+        top: 1004,
+        left: 311,
+        extraClasses: 'gest_parish_status_box',
+    },
+    {
+        id: 'parishStatusBox_Bingham',
+        top: 1294,
+        left: 834,
+        extraClasses: 'gest_parish_status_box',
+    },
+    {
+        id: 'parishStatusBox_Remston',
+        top: 1399,
+        left: 528,
+        extraClasses: 'gest_parish_status_box',
+    },
+];
+var INITIATIVE_TRACK = [
+    {
+        id: 'initiativeTrack_singlePlot',
+        top: 1614,
+        left: 1094,
+        extraClasses: 'gest_marker_space gest_initiative_track',
+    },
+    {
+        id: 'initiativeTrack_event',
+        top: 1606,
+        left: 1191,
+        extraClasses: 'gest_marker_space gest_initiative_track',
+    },
+    {
+        id: 'initiativeTrack_plotsAndDeeds',
+        top: 1598,
+        left: 1286,
+        extraClasses: 'gest_marker_space gest_initiative_track',
+    },
+    {
+        id: 'initiativeTrack_firstEligible',
+        top: 1803,
+        left: 1146,
+        extraClasses: 'gest_marker_space gest_initiative_track',
+    },
+    {
+        id: 'initiativeTrack_secondEligible',
+        top: 1791,
+        left: 1269,
+        extraClasses: 'gest_marker_space gest_initiative_track',
+    },
+];
+var UNIQUE_SPACES = [
+    {
+        id: 'usedCarriages',
+        top: 523,
+        left: 249,
+    },
+    {
+        id: 'prison',
+        top: 165,
+        left: 1182,
+    },
+];
 var GameMap = (function () {
     function GameMap(game) {
+        this.parishStatusMarkers = {};
         this.game = game;
         var gamedatas = game.gamedatas;
         this.setupGameMap({ gamedatas: gamedatas });
     }
     GameMap.prototype.clearInterface = function () {
+        var _this = this;
+        PARISHES.forEach(function (parishId) {
+            _this.parishStatusMarkers[parishId].removeAll();
+        });
+        SPACES.forEach(function (spaceId) {
+            [CAMP, MERRY_MEN, HENCHMEN].forEach(function (type) {
+                var node = document.getElementById("".concat(type, "_").concat(spaceId));
+                if (!node) {
+                    return;
+                }
+                node.replaceChildren();
+            });
+        });
+        [ROYAL_FAVOUR_MARKER, ROYAL_INSPECTION_MARKER, ROBIN_HOOD_ELIGIBILITY_MARKER, SHERIFF_ELIGIBILITY_MARKER].forEach(function (markerId) {
+            var node = document.getElementById(markerId);
+            if (!node) {
+                return;
+            }
+            node.remove();
+        });
     };
     GameMap.prototype.updateInterface = function (_a) {
         var gamedatas = _a.gamedatas;
+        this.updateParishStatusMarkers({ gamedatas: gamedatas });
+        this.updateTrackMarkers({ gamedatas: gamedatas });
+        this.updateForces({ gamedatas: gamedatas });
+    };
+    GameMap.prototype.setupParishStatusMarkers = function (_a) {
+        var _this = this;
+        var gamedatas = _a.gamedatas;
+        PARISHES.forEach(function (parishId) {
+            _this.parishStatusMarkers[parishId] = new LineStock(_this.game.markerManager, document.getElementById("parishStatusBox_".concat(parishId)), {
+                gap: '0px',
+                center: true,
+            });
+        });
+        this.updateParishStatusMarkers({ gamedatas: gamedatas });
+    };
+    GameMap.prototype.updateForces = function (_a) {
+        var gamedatas = _a.gamedatas;
+        var isRobinHoodPlayer = !!gamedatas.robinHoodForces;
+        SPACES.forEach(function (spaceId) {
+            var _a;
+            var forces = gamedatas.forces[spaceId];
+            var robinHoodForces = (_a = gamedatas.robinHoodForces) === null || _a === void 0 ? void 0 : _a[spaceId];
+            if (!forces) {
+                return;
+            }
+            var henchmenBox = document.getElementById("henchmen_".concat(spaceId));
+            if (henchmenBox && forces.henchmen.length > 0) {
+                forces.henchmen.forEach(function (henchman) {
+                    henchmenBox.insertAdjacentHTML('beforeend', tplForce({ id: henchman.id, type: henchman.type, hidden: false }));
+                });
+            }
+            var merryMenBox = document.getElementById("merryMen_".concat(spaceId));
+            if (merryMenBox && !isRobinHoodPlayer) {
+                for (var i = 0; i < forces.robinHood; i++) {
+                    merryMenBox.insertAdjacentHTML('beforeend', tplForce({ type: ROBIN_HOOD, hidden: false }));
+                }
+                for (var k = 0; k < forces.merryMen.revealed; k++) {
+                    merryMenBox.insertAdjacentHTML('beforeend', tplForce({ type: MERRY_MEN, hidden: false }));
+                }
+                for (var l = 0; l < forces.merryMen.hidden; l++) {
+                    merryMenBox.insertAdjacentHTML('beforeend', tplForce({ type: MERRY_MEN, hidden: true }));
+                }
+            }
+            else if (merryMenBox && isRobinHoodPlayer && robinHoodForces) {
+                robinHoodForces.robinHood.forEach(function (robinHood) {
+                    merryMenBox.insertAdjacentHTML('beforeend', tplForce({
+                        id: robinHood.id,
+                        type: robinHood.type,
+                        hidden: robinHood.hidden,
+                    }));
+                });
+                robinHoodForces.merryMen.forEach(function (merryMen) {
+                    merryMenBox.insertAdjacentHTML('beforeend', tplForce({
+                        id: merryMen.id,
+                        type: merryMen.type,
+                        hidden: merryMen.hidden,
+                    }));
+                });
+            }
+            var campBox = document.getElementById("camp_".concat(spaceId));
+            if (campBox && !isRobinHoodPlayer) {
+                for (var i = 0; i < forces.camp.revealed; i++) {
+                    campBox.insertAdjacentHTML('beforeend', tplForce({ type: CAMP, hidden: false }));
+                }
+                for (var j = 0; j < forces.camp.hidden; j++) {
+                    campBox.insertAdjacentHTML('beforeend', tplForce({ type: CAMP, hidden: true }));
+                }
+            }
+            else if (campBox && isRobinHoodPlayer && robinHoodForces) {
+                robinHoodForces.camp.forEach(function (camp) {
+                    campBox.insertAdjacentHTML('beforeend', tplForce({ id: camp.id, type: camp.type, hidden: camp.hidden }));
+                });
+            }
+        });
+    };
+    GameMap.prototype.updateParishStatusMarkers = function (_a) {
+        var _this = this;
+        var gamedatas = _a.gamedatas;
+        PARISHES.forEach(function (parishId) {
+            var spaceData = gamedatas.spaces[parishId];
+            if (!spaceData) {
+                return;
+            }
+            _this.parishStatusMarkers[parishId].addCard({
+                id: "parishStatusMarker_".concat(parishId),
+                location: "parishStatusBox_".concat(parishId),
+                side: spaceData.status === 'submissive' ? 'front' : 'back',
+                type: 'parishStatusMarker',
+            });
+        });
+    };
+    GameMap.prototype.updateTrackMarkers = function (_a) {
+        var gamedatas = _a.gamedatas;
+        GAME_MAP_MARKERS.forEach(function (markerId) {
+            var data = gamedatas.markers[markerId];
+            if (!data) {
+                return;
+            }
+            var location = document.getElementById(data.location);
+            if (!location) {
+                return;
+            }
+            location.insertAdjacentHTML('afterbegin', tplMarker({ id: data.id, extraClasses: 'gest_track_marker' }));
+        });
     };
     GameMap.prototype.setupGameMap = function (_a) {
         var gamedatas = _a.gamedatas;
         document
             .getElementById('play_area_container')
             .insertAdjacentHTML('afterbegin', tplGameMap({ gamedatas: gamedatas }));
+        this.setupParishStatusMarkers({ gamedatas: gamedatas });
+        this.updateTrackMarkers({ gamedatas: gamedatas });
+        this.updateForces({ gamedatas: gamedatas });
+    };
+    GameMap.prototype.addRobinHoodPrivate = function (_a) {
+        var robinHood = _a.robinHood;
+        var space = document.getElementById("merryMen_".concat(robinHood.location));
+        if (!space) {
+            return;
+        }
+        space.insertAdjacentHTML('beforeend', tplForce({
+            id: robinHood.id,
+            type: robinHood.type,
+            hidden: robinHood.hidden,
+        }));
+    };
+    GameMap.prototype.addMerryManPrivate = function (_a) {
+        var merryMan = _a.merryMan;
+        var space = document.getElementById("merryMen_".concat(merryMan.location));
+        if (!space) {
+            return;
+        }
+        space.insertAdjacentHTML('beforeend', tplForce({
+            id: merryMan.id,
+            type: merryMan.type,
+            hidden: merryMan.hidden,
+        }));
+    };
+    GameMap.prototype.addRobinHoodPublic = function (_a) {
+        var spaceId = _a.spaceId;
+        var space = document.getElementById("merryMen_".concat(spaceId));
+        if (!space) {
+            return;
+        }
+        space.insertAdjacentHTML('beforeend', tplForce({ type: ROBIN_HOOD, hidden: false }));
+    };
+    GameMap.prototype.addMerryMenPublic = function (_a) {
+        var spaceId = _a.spaceId, _b = _a.countHidden, countHidden = _b === void 0 ? 0 : _b, _c = _a.countRevealed, countRevealed = _c === void 0 ? 0 : _c;
+        var space = document.getElementById("merryMen_".concat(spaceId));
+        if (!space) {
+            return;
+        }
+        for (var i = 0; i < countRevealed; i++) {
+            space.insertAdjacentHTML('beforeend', tplForce({ type: MERRY_MEN, hidden: false }));
+        }
+        for (var k = 0; k < countHidden; k++) {
+            space.insertAdjacentHTML('beforeend', tplForce({ type: MERRY_MEN, hidden: true }));
+        }
     };
     return GameMap;
 }());
+var getRevealedText = function (type) {
+    switch (type) {
+        case CAMP:
+            return 'C';
+        case MERRY_MEN:
+            return 'M';
+        case ROBIN_HOOD:
+            return 'RH';
+        default:
+            return '';
+    }
+};
+var tplForce = function (_a) {
+    var id = _a.id, type = _a.type, hidden = _a.hidden;
+    return "\n  <div ".concat(id ? "id=\"".concat(id, "\"") : '', " data-type=\"").concat(type, "\" data-hidden=\"").concat(hidden ? 'true' : 'revealed', "\" class=\"gest_force\">").concat(type !== HENCHMEN && !hidden ? "<span>".concat(getRevealedText(type), "</span>") : '', "\n").concat(type === ROBIN_HOOD && hidden ? "<span>*</span>" : '', "\n</div>");
+};
+var tplMarkerSpace = function (_a) {
+    var id = _a.id, top = _a.top, left = _a.left, extraClasses = _a.extraClasses;
+    return "<div id=\"".concat(id, "\" class=\"").concat(extraClasses ? " ".concat(extraClasses) : '', "\" style=\"top: calc(var(--gestMapScale) * ").concat(top, "px); left: calc(var(--gestMapScale) * ").concat(left, "px);\"></div>");
+};
+var tplTrack = function (_a) {
+    var config = _a.config;
+    return config
+        .map(function (markerSpace) {
+        return tplMarkerSpace({
+            id: "".concat(markerSpace.id),
+            top: markerSpace.top,
+            left: markerSpace.left,
+            extraClasses: markerSpace.extraClasses,
+        });
+    })
+        .join('');
+};
+var tplMarker = function (_a) {
+    var id = _a.id, extraClasses = _a.extraClasses;
+    return "<div id=\"".concat(id, "\"").concat(extraClasses ? " class=\"".concat(extraClasses, "\"") : '', "></div>");
+};
+var tplSpaces = function () {
+    return Object.entries(SPACES_CONFIG)
+        .map(function (_a) {
+        var spaceId = _a[0], config = _a[1];
+        var html = '';
+        if (config.camps) {
+            html += "<div id=\"camp_".concat(spaceId, "\" class=\"gest_forces\" style=\"top: calc(var(--gestMapScale) * ").concat(config.camps.top, "px); left: calc(var(--gestMapScale) * ").concat(config.camps.left, "px); width: calc(var(--gestMapScale) * ").concat(config.camps.width, "px); height: calc(var(--gestMapScale) * ").concat(config.camps.height, "px);\"></div>");
+        }
+        if (config.henchmen) {
+            html += "<div id=\"henchmen_".concat(spaceId, "\" class=\"gest_forces\" style=\"top: calc(var(--gestMapScale) * ").concat(config.henchmen.top, "px); left: calc(var(--gestMapScale) * ").concat(config.henchmen.left, "px); width: calc(var(--gestMapScale) * ").concat(config.henchmen.width, "px); height: calc(var(--gestMapScale) * ").concat(config.henchmen.height, "px);\"></div>");
+        }
+        if (config.merryMen) {
+            html += "<div id=\"merryMen_".concat(spaceId, "\" class=\"gest_forces\" style=\"top: calc(var(--gestMapScale) * ").concat(config.merryMen.top, "px); left: calc(var(--gestMapScale) * ").concat(config.merryMen.left, "px); width: calc(var(--gestMapScale) * ").concat(config.merryMen.width, "px); height: calc(var(--gestMapScale) * ").concat(config.merryMen.height, "px);\"></div>");
+        }
+        return html;
+    })
+        .join('');
+};
 var tplGameMap = function (_a) {
     var gamedatas = _a.gamedatas;
-    return "\n  <div id=\"gest_game_map\">\n\n\n\n  </div>";
+    return "\n  <div id=\"gest_game_map\">\n    ".concat(tplTrack({ config: JUSTICE_TRACK_CONFIG }), "\n    ").concat(tplTrack({ config: ORDER_TRACK }), "\n    ").concat(tplTrack({ config: PARISH_STATUS_BOXES }), "\n    ").concat(tplTrack({ config: ROYAL_INSPECTION_TRACK }), "\n    ").concat(tplTrack({ config: INITIATIVE_TRACK }), "\n    ").concat(tplTrack({ config: UNIQUE_SPACES }), "\n    ").concat(tplSpaces(), "\n  </div>");
 };
 var InfoPanel = (function () {
     function InfoPanel(game) {
@@ -2231,6 +2955,39 @@ var tplLogTokenPlayerName = function (_a) {
 var tplLogTokenCard = function (id) {
     return "<div class=\"gest_log_card gest_card\" data-card-id=\"".concat(id, "\"></div>");
 };
+var MarkerManager = (function (_super) {
+    __extends(MarkerManager, _super);
+    function MarkerManager(game) {
+        var _this = _super.call(this, game, {
+            getId: function (card) { return "".concat(card.id); },
+            setupDiv: function (card, div) { return _this.setupDiv(card, div); },
+            setupFrontDiv: function (card, div) { return _this.setupFrontDiv(card, div); },
+            setupBackDiv: function (card, div) { return _this.setupBackDiv(card, div); },
+            isCardVisible: function (card) { return _this.isCardVisible(card); },
+            animationManager: game.animationManager,
+        }) || this;
+        _this.game = game;
+        return _this;
+    }
+    MarkerManager.prototype.clearInterface = function () { };
+    MarkerManager.prototype.setupDiv = function (token, div) {
+        div.classList.add('gest_marker');
+    };
+    MarkerManager.prototype.setupFrontDiv = function (token, div) {
+        div.classList.add('gest_marker_side');
+        div.setAttribute('data-side', 'front');
+        div.setAttribute('data-type', token.type);
+    };
+    MarkerManager.prototype.setupBackDiv = function (token, div) {
+        div.classList.add('gest_marker_side');
+        div.setAttribute('data-side', 'back');
+        div.setAttribute('data-type', token.type);
+    };
+    MarkerManager.prototype.isCardVisible = function (token) {
+        return token.side === 'front';
+    };
+    return MarkerManager;
+}(CardManager));
 var NotificationManager = (function () {
     function NotificationManager(game) {
         this.game = game;
@@ -2241,27 +2998,9 @@ var NotificationManager = (function () {
         console.log('notifications subscriptions setup');
         var notifs = [
             'log',
-            'battle',
-            'battleCleanup',
-            'battleStart',
-            'battleSelectCommander',
-            'discardCardFromHand',
-            'discardCardFromHandPrivate',
-            'discardCardInPlay',
-            'drawCardPrivate',
-            'loseControl',
-            'moveRaidPointsMarker',
-            'moveRoundMarker',
-            'moveStack',
-            'moveYearMarker',
-            'moveUnit',
-            'placeUnitInLosses',
-            'raidPoints',
-            'revealCardsInPlay',
-            'scoreVictoryPoints',
-            'selectReserveCard',
-            'selectReserveCardPrivate',
-            'takeControl',
+            'refreshUI',
+            'setupRobinHood',
+            'setupRobinHoodPrivate',
         ];
         notifs.forEach(function (notifName) {
             _this.subscriptions.push(dojo.subscribe(notifName, _this, function (notifDetails) {
@@ -2288,7 +3027,7 @@ var NotificationManager = (function () {
             _this.game.framework().notifqueue.setSynchronous(notifName, undefined);
             _this.game
                 .framework()
-                .notifqueue.setIgnoreNotificationCheck('discardCardFromHand', function (notif) {
+                .notifqueue.setIgnoreNotificationCheck('setupRobinHood', function (notif) {
                 return notif.args.playerId == _this.game.getPlayerId();
             });
         });
@@ -2308,15 +3047,44 @@ var NotificationManager = (function () {
             });
         });
     };
-    NotificationManager.prototype.notif_smallRefreshInterface = function (notif) {
+    NotificationManager.prototype.notif_refreshUI = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var updatedGamedatas;
+            var gamedatas, updatedGamedatas;
             return __generator(this, function (_a) {
-                updatedGamedatas = __assign(__assign({}, this.game.gamedatas), notif.args);
-                this.game.clearInterface();
+                gamedatas = notif.args.datas;
+                updatedGamedatas = __assign(__assign({}, this.game.gamedatas), gamedatas);
                 this.game.gamedatas = updatedGamedatas;
-                this.game.playerManager.updatePlayers({ gamedatas: updatedGamedatas });
-                this.game.gameMap.updateInterface({ gamedatas: updatedGamedatas });
+                this.game.clearInterface();
+                this.game.gameMap.updateInterface({ gamedatas: gamedatas });
+                this.game.playerManager.updatePlayers({ gamedatas: gamedatas });
+                return [2];
+            });
+        });
+    };
+    NotificationManager.prototype.notif_setupRobinHood = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var merryMenCounts;
+            var _this = this;
+            return __generator(this, function (_a) {
+                merryMenCounts = notif.args.merryMenCounts;
+                Object.entries(merryMenCounts).forEach(function (_a) {
+                    var spaceId = _a[0], countHidden = _a[1];
+                    _this.game.gameMap.addMerryMenPublic({ spaceId: spaceId, countHidden: countHidden });
+                });
+                return [2];
+            });
+        });
+    };
+    NotificationManager.prototype.notif_setupRobinHoodPrivate = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, robinHood, merryMen;
+            var _this = this;
+            return __generator(this, function (_b) {
+                _a = notif.args, robinHood = _a.robinHood, merryMen = _a.merryMen;
+                this.game.gameMap.addRobinHoodPrivate({ robinHood: robinHood });
+                merryMen.forEach(function (merryMan) {
+                    return _this.game.gameMap.addMerryManPrivate({ merryMan: merryMan });
+                });
                 return [2];
             });
         });
@@ -2366,6 +3134,7 @@ var GestPlayer = (function () {
         this.playerData = player;
         this.playerName = player.name;
         this.playerColor = player.color;
+        this.side = player.side;
         var gamedatas = game.gamedatas;
         this.setupPlayer({ gamedatas: gamedatas });
     }
@@ -2376,10 +3145,6 @@ var GestPlayer = (function () {
         var gamedatas = _a.gamedatas;
         var playerGamedatas = gamedatas.players[this.playerId];
         this.setupPlayerPanel({ playerGamedatas: playerGamedatas });
-        this.setupHand({ playerGamedatas: playerGamedatas });
-    };
-    GestPlayer.prototype.setupHand = function (_a) {
-        var playerGamedatas = _a.playerGamedatas;
     };
     GestPlayer.prototype.setupPlayerPanel = function (_a) {
         var playerGamedatas = _a.playerGamedatas;
@@ -2406,6 +3171,9 @@ var GestPlayer = (function () {
     };
     GestPlayer.prototype.getPlayerId = function () {
         return this.playerId;
+    };
+    GestPlayer.prototype.isRobinHood = function () {
+        return this.side === 'robinHood';
     };
     return GestPlayer;
 }());
@@ -2801,6 +3569,169 @@ var tplPlayerPrefenceSliderRow = function (_a) {
     var label = _a.label, id = _a.id, _b = _a.visible, visible = _b === void 0 ? true : _b;
     return "\n  <div id=\"setting_row_".concat(id, "\" class=\"player_preference_row\"").concat(!visible ? " style=\"display: none;\"" : '', ">\n    <div class=\"player_preference_row_label\">").concat(_(label), "</div>\n    <div class=\"player_preference_row_value slider\">\n      <div id=\"setting_").concat(id, "\"></div>\n    </div>\n  </div>\n  ");
 };
+var ConfirmPartialTurnState = (function () {
+    function ConfirmPartialTurnState(game) {
+        this.game = game;
+    }
+    ConfirmPartialTurnState.prototype.onEnteringState = function (args) {
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    ConfirmPartialTurnState.prototype.onLeavingState = function () {
+        debug("Leaving ConfirmTurnState");
+    };
+    ConfirmPartialTurnState.prototype.setDescription = function (activePlayerId) {
+    };
+    ConfirmPartialTurnState.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _("${you} must confirm the switch of player. You will not be able to restart your turn"),
+            args: {
+                you: "${you}",
+            },
+        });
+        this.game.addConfirmButton({
+            callback: function () {
+                return _this.game.takeAction({
+                    action: "actConfirmPartialTurn",
+                    atomicAction: false,
+                });
+            },
+        });
+        this.game.addUndoButtons(this.args);
+    };
+    return ConfirmPartialTurnState;
+}());
+var ConfirmTurnState = (function () {
+    function ConfirmTurnState(game) {
+        this.game = game;
+    }
+    ConfirmTurnState.prototype.onEnteringState = function (args) {
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    ConfirmTurnState.prototype.onLeavingState = function () {
+        debug("Leaving ConfirmTurnState");
+    };
+    ConfirmTurnState.prototype.setDescription = function (activePlayerId) {
+    };
+    ConfirmTurnState.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _("${you} must confirm or restart your turn"),
+            args: {
+                you: "${you}",
+            },
+        });
+        this.game.addConfirmButton({
+            callback: function () {
+                return _this.game.takeAction({ action: "actConfirmTurn", atomicAction: false });
+            },
+        });
+        this.game.addUndoButtons(this.args);
+    };
+    return ConfirmTurnState;
+}());
+var SetupRobinHoodState = (function () {
+    function SetupRobinHoodState(game) {
+        this.robinHoodLocation = null;
+        this.merryMenLocations = [];
+        this.game = game;
+    }
+    SetupRobinHoodState.prototype.onEnteringState = function (args) {
+        debug('Entering SetupRobinHoodState');
+        this.args = args;
+        this.robinHoodLocation = null;
+        this.merryMenLocations = [];
+        this.updateInterfaceInitialStep();
+    };
+    SetupRobinHoodState.prototype.onLeavingState = function () {
+        debug('Leaving SetupRobinHoodState');
+    };
+    SetupRobinHoodState.prototype.setDescription = function (activePlayerId) { };
+    SetupRobinHoodState.prototype.updateInterfaceInitialStep = function () {
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must select a Space to place Robin Hood'),
+            args: {
+                you: '${you}',
+            },
+        });
+        this.addSpaceButtons();
+        this.game.addPassButton({
+            optionalAction: this.args.optionalAction,
+        });
+        this.game.addUndoButtons(this.args);
+    };
+    SetupRobinHoodState.prototype.updateInterfacePlaceMerryMen = function () {
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must select a Space to place a Merry Man'),
+            args: {
+                you: '${you}',
+            },
+        });
+        this.addSpaceButtons();
+        this.game.addCancelButton();
+    };
+    SetupRobinHoodState.prototype.updateInterfaceConfirm = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('Place Robin Hood and Merry Men?'),
+            args: {},
+        });
+        var callback = function () {
+            _this.game.clearPossible();
+            _this.game.takeAction({
+                action: 'actSetupRobinHood',
+                args: {
+                    robinHood: _this.robinHoodLocation,
+                    merryMen: _this.merryMenLocations,
+                },
+            });
+        };
+        if (this.game.settings.get({
+            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+        }) === PREF_ENABLED) {
+            callback();
+        }
+        else {
+            this.game.addConfirmButton({
+                callback: callback,
+            });
+        }
+        this.game.addCancelButton();
+    };
+    SetupRobinHoodState.prototype.addSpaceButtons = function () {
+        var _this = this;
+        [SHIRE_WOOD, SOUTHWELL_FOREST, REMSTON].forEach(function (spaceId) {
+            _this.game.addPrimaryActionButton({
+                id: "".concat(spaceId, "_select"),
+                text: _(_this.game.gamedatas.spaces[spaceId].name),
+                callback: function () { return _this.handleButtonClick(spaceId); },
+            });
+        });
+    };
+    SetupRobinHoodState.prototype.handleButtonClick = function (spaceId) {
+        console.log('spaceId', spaceId);
+        if (this.robinHoodLocation === null) {
+            this.robinHoodLocation = spaceId;
+        }
+        else {
+            this.merryMenLocations.push(spaceId);
+        }
+        if (this.merryMenLocations.length >= 3) {
+            this.updateInterfaceConfirm();
+        }
+        else {
+            this.updateInterfacePlaceMerryMen();
+        }
+    };
+    return SetupRobinHoodState;
+}());
 var tplCardTooltipContainer = function (_a) {
     var card = _a.card, content = _a.content;
     return "<div class=\"gest_card_tooltip\">\n  <div class=\"gest_card_tooltip_inner_container\">\n    ".concat(content, "\n  </div>\n  ").concat(card, "\n</div>");

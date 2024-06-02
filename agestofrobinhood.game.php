@@ -44,6 +44,8 @@ use AGestOfRobinHood\Managers\Players;
 
 // Game specific
 use AGestOfRobinHood\Managers\Cards;
+use AGestOfRobinHood\Managers\Forces;
+use AGestOfRobinHood\Managers\Markers;
 use AGestOfRobinHood\Managers\Spaces;
 
 class agestofrobinhood extends Table
@@ -53,7 +55,7 @@ class agestofrobinhood extends Table
     use AGestOfRobinHood\States\TurnTrait;
 
     // Declare objects from material.inc.php to remove IntelliSense errors
-    
+
     public static $instance = null;
     function __construct()
     {
@@ -104,10 +106,13 @@ class agestofrobinhood extends Table
         Stats::checkExistence();
         Globals::setTest($options);
         Spaces::setupNewGame();
+        Markers::setupNewGame();
+        Forces::setupNewGame();
         Cards::setupNewGame();
 
         $this->setGameStateInitialValue('logging', false);
 
+        $this->gamestate->changeActivePlayer(Players::getRobinHoodPlayerId());
         $this->activeNextPlayer();
 
         /************ End of the game initialization *****/
@@ -120,12 +125,22 @@ class agestofrobinhood extends Table
     {
         $pId = $pId ?? Players::getCurrentId();
 
+        $isRobinHood = $pId === Players::getRobinHoodPlayerId();
+
+        $forces = Forces::getUiData();
+
         $data = [
             'canceledNotifIds' => Log::getCanceledNotifIds(),
             'playerOrder' => Players::getPlayerOrder(),
             'players' => Players::getUiData($pId),
+            'markers' => Markers::getAll(),
             'spaces' => Spaces::getAll(),
+            'forces' => $forces['public'],
         ];
+
+        if ($isRobinHood) {
+            $data['robinHoodForces'] = $forces['robinHood'];
+        }
 
         return $data;
     }

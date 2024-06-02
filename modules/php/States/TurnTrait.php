@@ -22,7 +22,22 @@ trait TurnTrait
   function stBeforeStartOfTurn()
   {
     // TODO: check end callback
+    // TODO: can probably be disabled?
     $this->initCustomDefaultTurnOrder('default', \ST_TURNACTION, ST_BEFORE_START_OF_TURN, true);
+
+    $player = Players::getActive();
+
+    $node = [
+      'children' => [
+        [
+          'action' => SETUP_ROBIN_HOOD,
+          'playerId' => $player->getId(),
+        ],
+      ],
+    ];
+
+    Engine::setup($node, ['method' => 'stTurnAction']);
+    Engine::proceed();
   }
 
 

@@ -15,4 +15,23 @@ abstract class Locations extends \APP_DbObject
     return 'discard';
   }
 
+  public static function justiceTrack($value)
+  {
+    return 'justiceTrack_' . $value;
+  }
+
+  public static function orderTrack($value)
+  {
+    return 'orderTrack_' . $value;
+  }
+
+  public static function royalInspectionTrack($spot)
+  {
+    return 'royalInspectionTrack_' . $spot;
+  }
+
+  public static function initiativeTrack($spot)
+  {
+    return 'initiativeTrack_' . $spot;
+  }
 }

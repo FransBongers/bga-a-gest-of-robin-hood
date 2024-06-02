@@ -22,6 +22,13 @@ CREATE TABLE IF NOT EXISTS `user_preferences` (
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 
+CREATE TABLE IF NOT EXISTS `player_extra` (
+  `player_id` int(10) unsigned NOT NULL,
+  `shillings` int(10) unsigned NOT NULL DEFAULT 0,
+  `side` varchar(32),
+  PRIMARY KEY (`player_id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8;
+
 CREATE TABLE IF NOT EXISTS `log` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `move_id` int(10) NOT NULL,
@@ -47,6 +54,7 @@ CREATE TABLE IF NOT EXISTS `forces` (
   `force_id` varchar(100)  NOT NULL,
   `force_location` varchar(64) NOT NULL,
   `force_state` int(10) DEFAULT 0,
+  `hidden` int(10) DEFAULT 0,
   `type` VARCHAR(32) NOT NULL,
   `extra_data` JSON NULL,
   PRIMARY KEY (`force_id`)
@@ -60,3 +68,11 @@ CREATE TABLE IF NOT EXISTS `spaces` (
   -- `extra_data` JSON NULL,
   PRIMARY KEY (`space_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `markers` (
+  `marker_id` varchar(100) NOT NULL,
+  `marker_location` varchar(32) NOT NULL,
+  `marker_state` int(10) DEFAULT 0,
+  `extra_data` JSON NULL,
+  PRIMARY KEY (`marker_id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8;

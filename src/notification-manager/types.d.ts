@@ -13,7 +13,24 @@ interface NotifWithPlayerArgs {
   player_name: string;
 }
 
-type NotifSmallRefreshInterfaceArgs = Omit<
-  AGestOfRobinHoodGamedatas,
-  'staticData'
->;
+interface NotifRefreshUIArgs {
+  datas: AGestOfRobinHoodGamedatas;
+}
+
+// type NotifSmallRefreshInterfaceArgs = Omit<
+//   AGestOfRobinHoodGamedatas,
+//   'staticData'
+// >;
+
+interface NotifSetupRobinHoodArgs extends NotifWithPlayerArgs {
+  merryMenCounts: {
+    Remston: number;
+    ShireWood: number;
+    SouthwellForest: number;
+  }
+}
+
+interface NotifSetupRobinHoodPrivateArgs extends NotifWithPlayerArgs {
+  robinHood: GestForce;
+  merryMen: GestForce[];
+}

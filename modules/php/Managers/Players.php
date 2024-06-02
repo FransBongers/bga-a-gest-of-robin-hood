@@ -7,6 +7,7 @@ use AGestOfRobinHood\Core\Globals;
 use AGestOfRobinHood\Core\Notifications;
 use AGestOfRobinHood\Helpers\Locations;
 use AGestOfRobinHood\Helpers\Utils;
+use AGestOfRobinHood\Managers\PlayersExtra;
 
 /*
  * Players manager : allows to easily access players ...
@@ -48,7 +49,7 @@ class Players extends \AGestOfRobinHood\Helpers\DB_Manager
 
     // Game::get()->reattributeColorsBasedOnPreferences($players, $gameInfos['player_colors']);
     Game::get()->reloadPlayersBasicInfos();
-    // PlayersExtra::setupNewGame();
+    PlayersExtra::setupNewGame();
   }
 
   public static function getActiveId()
@@ -58,7 +59,7 @@ class Players extends \AGestOfRobinHood\Helpers\DB_Manager
 
   public static function getCurrentId()
   {
-    return Game::get()->getCurrentPId();
+    return intval(Game::get()->getCurrentPId());
   }
 
   public static function getAll()
@@ -220,4 +221,12 @@ class Players extends \AGestOfRobinHood\Helpers\DB_Manager
   // .##.....##.##..........##....##.....##.##.....##.##.....##.......##
   // .##.....##.##..........##....##.....##.##.....##.##.....##.##....##
   // .##.....##.########....##....##.....##..#######..########...######.
+
+  public static function getRobinHoodPlayerId()
+  {
+    $robinHoodPlayerId = Utils::array_find(PlayersExtra::getAll()->toArray(), function ($playerExtra) {
+      return $playerExtra['side'] === ROBIN_HOOD;
+    })['player_id'];
+    return intval($robinHoodPlayerId);
+  }
 }

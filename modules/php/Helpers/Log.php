@@ -207,7 +207,7 @@ class Log extends \APP_DbObject
     $datas = Game::get()->getAllDatas();
     Notifications::refreshUI($datas);
     $player = Players::getCurrent();
-    Notifications::refreshHand($player, $player->getHand());
+    // Notifications::refreshHand($player, $player->getHand());
 
     // Force notif flush to be able to delete "restart turn" notif
     Game::get()->sendNotifications();

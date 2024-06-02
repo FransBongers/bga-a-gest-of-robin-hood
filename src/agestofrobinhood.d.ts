@@ -6,14 +6,20 @@ interface AddButtonProps {
 }
 
 interface AddActionButtonProps extends AddButtonProps {
-  color?: "blue" | "gray" | "red" | "none";
+  color?: 'blue' | 'gray' | 'red' | 'none';
 }
 
 interface AGestOfRobinHoodGame extends Game {
   addCancelButton: ({ callback }?: { callback?: Function }) => void;
   addConfirmButton: (props: { callback: Function | string }) => void;
   addPassButton: (props: { optionalAction: boolean; text?: string }) => void;
-  addPlayerButton: ({ player, callback }: { player: BgaPlayer; callback: Function | string }) => void; 
+  addPlayerButton: ({
+    player,
+    callback,
+  }: {
+    player: BgaPlayer;
+    callback: Function | string;
+  }) => void;
   addPrimaryActionButton: (props: AddButtonProps) => void;
   addSecondaryActionButton: (props: AddButtonProps) => void;
   addDangerActionButton: (props: AddButtonProps) => void;
@@ -50,10 +56,32 @@ interface AGestOfRobinHoodGame extends Game {
   updateLayout: () => void;
   animationManager: AnimationManager;
   gameMap: GameMap;
+  markerManager: MarkerManager;
   notificationManager: NotificationManager;
   playerManager: PlayerManager;
   settings: Settings;
   tooltipManager: TooltipManager;
+}
+
+interface GestForce {
+  id: string;
+  location: string;
+  hidden: boolean;
+  type: string;
+}
+
+interface GestMarker {
+  id: string;
+  location: string;
+  side: 'front' | 'back';
+  type: string;
+}
+
+interface GestSpace {
+  id: string;
+  location: string;
+  status: 'submissive' | 'revolting';
+  name: string;
 }
 
 interface AGestOfRobinHoodGamedatas extends Gamedatas {
@@ -62,8 +90,34 @@ interface AGestOfRobinHoodGamedatas extends Gamedatas {
   playerOrder: number[];
   players: Record<number, AGestOfRobinHoodPlayerData>;
   // Game specific
+  forces: Record<
+    string,
+    {
+      camp: {
+        hidden: number;
+        revealed: number;
+      };
+      henchmen: GestForce[];
+      merryMen: {
+        hidden: number;
+        revealed: number;
+      };
+      robinHood: number;
+    }
+  >;
+  markers: Record<string, GestMarker>;
+  robinHoodForces?: Record<
+    string,
+    {
+      camp: GestForce[];
+      merryMen: GestForce[];
+      robinHood: GestForce[];
+    }
+  >;
+  spaces: Record<string, GestSpace>;
 }
 
 interface AGestOfRobinHoodPlayerData extends BgaPlayer {
-
+  shillings: number;
+  side: 'robinHood' | 'sheriff';
 }

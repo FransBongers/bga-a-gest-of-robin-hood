@@ -199,4 +199,14 @@ $machinestates = array(
         'possibleactions' => ['actPlayerAction', 'actPassOptionalAction', 'actRestart'],
     ],
 
+    ST_SETUP_ROBIN_HOOD => [
+        'name' => 'setupRobinHood',
+        'description' => clienttranslate('${actplayer} must perform Robin Hood setup'),
+        'descriptionmyturn' => clienttranslate('${you}'),
+        'type' => 'activeplayer',
+        'args' => 'argsAtomicAction',
+        'action' => 'stAtomicAction',
+        // 'transitions' => [],
+        'possibleactions' => ['actSetupRobinHood', 'actPassOptionalAction', 'actRestart'],
+    ],
 );
