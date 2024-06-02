@@ -17,6 +17,13 @@
   background-color: #ef9a9a;
 }
 
+[style*="color: #c0c0c0"],
+[style*="color:#c0c0c0"] {
+  text-shadow: 1px 0 0 black, 0 1px 0 black, -1px 0 0 black, 0 -1px 0 black,
+    1px 1px 0 black, -1px 1px 0 black, 1px -1px 0 black, -1px -1px 0 black !important;
+  // background-color: transparent !important;
+}
+
 #logs .log.notif_newUndoableStep {
   margin-top: 0px;
 
