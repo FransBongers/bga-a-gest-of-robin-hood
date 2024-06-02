@@ -104,7 +104,7 @@ class agestofrobinhood extends Table
         Stats::checkExistence();
         Globals::setTest($options);
         Spaces::setupNewGame();
-        // Cards::setupNewGame();
+        Cards::setupNewGame();
 
         $this->setGameStateInitialValue('logging', false);
 

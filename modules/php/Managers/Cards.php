@@ -127,9 +127,9 @@ class Cards extends \AGestOfRobinHood\Helpers\Pieces
     // Load list of cards
     include dirname(__FILE__) . '/../Cards/list.inc.php';
 
-    self::DB()
-      ->delete()
-      ->run();
+    // self::DB()
+    //   ->delete()
+    //   ->run();
 
     // return;
     foreach ($cardIds as $cId) {
