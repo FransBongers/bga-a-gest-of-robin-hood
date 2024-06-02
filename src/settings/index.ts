@@ -229,6 +229,10 @@ class Settings {
     this.game.updateLayout();
   }
 
+  public onChangeSingleColumnMapSizeSetting(value: string) {
+    this.game.updateLayout();
+  }
+
   public onChangeCardSizeInLogSetting(value: number) {
     // console.log("onChangeCardSizeInLogSetting", value);
     const ROOT = document.documentElement;
@@ -305,13 +309,17 @@ class Settings {
 
   private checkColumnSizesVisisble() {
     const sliderNode = document.getElementById("setting_row_columnSizes");
-    if (!sliderNode) {
+    const mapSizeSliderNode = document.getElementById("setting_row_singleColumnMapSize");
+
+    if (!(sliderNode && mapSizeSliderNode)) {
       return;
     }
     if (this.settings["twoColumnsLayout"] === PREF_ENABLED) {
       sliderNode.style.display = "";
+      mapSizeSliderNode.style.display = "none";
     } else {
       sliderNode.style.display = "none";
+      mapSizeSliderNode.style.display = "";
     }
   }
 

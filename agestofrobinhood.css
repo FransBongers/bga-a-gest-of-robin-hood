@@ -52,14 +52,14 @@
  *
  */
 #gest_game_map {
-  background-size: calc(var(--leftColumnScale) * 1500px) calc(var(--leftColumnScale) * 2318px);
+  background-size: calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 1500px) calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 2318px);
   background-repeat: no-repeat;
   position: relative;
-  height: calc(var(--leftColumnScale) * 2318px);
-  width: calc(var(--leftColumnScale) * 1500px);
+  height: calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 2318px);
+  width: calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 1500px);
   box-shadow: 1px 1px 5px #000;
-  --gestMapScale: var(--leftColumnScale);
-  --gestTokenScale: var(--leftColumnScale);
+  --gestMapScale: var(--leftColumnScale) * var(--mapSizeMultiplier);
+  --gestTokenScale: var(--leftColumnScale) * var(--mapSizeMultiplier);
 }
 
 #info_panel {

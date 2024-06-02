@@ -25,5 +25,6 @@ const PREF_ANIMATION_SPEED = "animationSpeed";
 const PREF_CARD_SIZE_IN_LOG = "cardSizeInLog";
 const PREF_DISABLED = "disabled";
 const PREF_ENABLED = "enabled";
+const PREF_SINGLE_COLUMN_MAP_SIZE = 'singleColumnMapSize';
 
 
