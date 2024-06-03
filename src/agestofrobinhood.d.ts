@@ -47,6 +47,11 @@ interface AGestOfRobinHoodGame extends Game {
     callback: (event: PointerEvent) => void;
   }) => void;
   setLocationSelected: (props: { id: string }) => void;
+  setElementSelectable: (props: {
+    id: string;
+    callback: (event: PointerEvent) => void;
+  }) => void;
+  setElementSelected: (props: { id: string }) => void;
   takeAction: (props: {
     action: string;
     atomicAction?: boolean;
@@ -61,6 +66,12 @@ interface AGestOfRobinHoodGame extends Game {
   playerManager: PlayerManager;
   settings: Settings;
   tooltipManager: TooltipManager;
+}
+
+interface GestCard {
+  id: string;
+  location: string;
+  title: string;
 }
 
 interface GestForce {
@@ -93,31 +104,40 @@ interface AGestOfRobinHoodGamedatas extends Gamedatas {
   forces: Record<
     string,
     {
-      camp: {
+      Camp: {
         hidden: number;
         revealed: number;
       };
-      henchmen: GestForce[];
-      merryMen: {
+      Carriage: {
+        hidden: number;
+        TallageCarriage: number;
+        TrapCarriage: number;
+        TributeCarriage: number;
+      };
+      Henchmen: GestForce[];
+      MerryMen: {
         hidden: number;
         revealed: number;
       };
-      robinHood: number;
+      RobinHood: number;
     }
   >;
   markers: Record<string, GestMarker>;
   robinHoodForces?: Record<
     string,
     {
-      camp: GestForce[];
-      merryMen: GestForce[];
-      robinHood: GestForce[];
+      Camp: GestForce[];
+      MerryMen: GestForce[];
+      RobinHood: GestForce[];
     }
   >;
+  sheriffForces?: Record<string, {
+    Carriage: GestForce[]
+  }>;
   spaces: Record<string, GestSpace>;
 }
 
 interface AGestOfRobinHoodPlayerData extends BgaPlayer {
   shillings: number;
-  side: 'robinHood' | 'sheriff';
+  side: 'RobinHood' | 'Sheriff';
 }

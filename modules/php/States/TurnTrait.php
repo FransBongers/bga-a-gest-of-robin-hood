@@ -7,11 +7,14 @@ use AGestOfRobinHood\Core\Globals;
 use AGestOfRobinHood\Core\Notifications;
 use AGestOfRobinHood\Core\Engine;
 use AGestOfRobinHood\Core\Stats;
+use AGestOfRobinHood\Helpers\GameMap;
+use AGestOfRobinHood\Helpers\Locations;
 use AGestOfRobinHood\Helpers\Log;
 use AGestOfRobinHood\Managers\Cards;
+use AGestOfRobinHood\Managers\Markers;
 use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\AtomicActions;
-
+use AGestOfRobinHood\Spaces\Nottingham;
 
 trait TurnTrait
 {
@@ -23,23 +26,141 @@ trait TurnTrait
   {
     // TODO: check end callback
     // TODO: can probably be disabled?
-    $this->initCustomDefaultTurnOrder('default', \ST_TURNACTION, ST_BEFORE_START_OF_TURN, true);
 
-    $player = Players::getActive();
+
+    // $player = Players::getActive();
 
     $node = [
       'children' => [
         [
           'action' => SETUP_ROBIN_HOOD,
-          'playerId' => $player->getId(),
+          'playerId' => Players::getRobinHoodPlayerId(),
         ],
       ],
     ];
 
-    Engine::setup($node, ['method' => 'stTurnAction']);
+    Engine::setup($node, ['method' => 'stStartOfRound']);
     Engine::proceed();
   }
 
+  function stStartOfRound()
+  {
+    $card = Cards::drawAndRevealCard();
+
+    $node = [
+      'children' => []
+    ];
+
+    $carriageMoves = $card->getCarriageMoves();
+    $numberOfCarriagesOnMap = GameMap::getNumberOfCarriages();
+
+    for ($i = 0; $i < min($carriageMoves, $numberOfCarriagesOnMap); $i++) {
+      $node['children'][] = [
+        'action' => MOVE_CARRIAGE,
+        'playerId' => Players::getSheriffPlayerId(),
+      ];
+    }
+
+
+    // Sheriff must move carriages
+    // Fortune event resolve
+    // Resolve Royal inspection
+    
+    if (count($node['children']) > 0) {
+      Engine::setup($node, ['method' => 'stInitTurnOrder']);
+      Engine::proceed();
+    } else {
+      $this->stInitTurnOrder();
+    }
+  }
+
+  function stInitTurnOrder()
+  {
+    $this->initCustomTurnOrder('default', Players::getEligibilityOrder(), \ST_TURNACTION, ST_END_OF_ROUND, false);
+  }
+
+  // function stTurnAction()
+  // {
+  //   $firstEligible = Markers::getTopOf(Locations::initiativeTrack(FIRST_ELIGIBLE));
+
+  //   $playerId = null;
+  //   if ($firstEligible->getId() === ROBIN_HOOD_ELIGIBILITY_MARKER) {
+  //     $playerId = Players::getRobinHoodPlayerId();
+  //   } else if ($firstEligible->getId() === SHERIFF_ELIGIBILITY_MARKER) {
+  //     $playerId = Players::getSheriffPlayerId();
+  //   }
+
+  //   $this->gamestate->changeActivePlayer($playerId);
+  //   self::giveExtraTime($playerId);
+
+  //   $node = [
+  //     'children' => [
+  //       [
+  //         'action' => CHOOSE_ACTION,
+  //         'playerId' => $playerId,
+  //       ],
+  //     ],
+  //   ];
+
+  //   Engine::setup($node, ['method' => 'stSecondEligible']);
+  //   Engine::proceed();
+  // }
+
+  // function stSecondEligible()
+  // {
+  //   $secondEligible = Markers::getTopOf(Locations::initiativeTrack(SECOND_ELIGIBLE));
+
+  //   $playerId = null;
+  //   if ($secondEligible->getId() === ROBIN_HOOD_ELIGIBILITY_MARKER) {
+  //     $playerId = Players::getRobinHoodPlayerId();
+  //   } else if ($secondEligible->getId() === SHERIFF_ELIGIBILITY_MARKER) {
+  //     $playerId = Players::getSheriffPlayerId();
+  //   }
+
+  //   $this->gamestate->changeActivePlayer($playerId);
+  //   self::giveExtraTime($playerId);
+
+  //   $node = [
+  //     'children' => [
+  //       [
+  //         'action' => CHOOSE_ACTION,
+  //         'playerId' => $playerId,
+  //       ],
+  //     ],
+  //   ];
+
+  //   Engine::setup($node, ['method' => 'stEndOfRound']);
+  //   Engine::proceed();
+  // }
+
+  function stEndOfRound()
+  {
+    $markers = Markers::get([ROBIN_HOOD_ELIGIBILITY_MARKER, SHERIFF_ELIGIBILITY_MARKER])->toArray();
+
+    $locationValues = [
+      Locations::initiativeTrack(SINGLE_PLOT) => 0,
+      Locations::initiativeTrack(EVENT) => 1,
+      Locations::initiativeTrack(PLOTS_AND_DEEDS) => 2,
+    ];
+
+    usort($markers, function ($a, $b) use ($locationValues) {
+      return $locationValues[$a->getLocation()] - $locationValues[$b->getLocation()];
+    });
+
+    foreach ($markers as $index => $marker) {
+      if ($index === 0) {
+        $marker->setLocation(Locations::initiativeTrack(FIRST_ELIGIBLE));
+      } else {
+        $marker->setLocation(Locations::initiativeTrack(SECOND_ELIGIBLE));
+      }
+    }
+
+    Notifications::firstEligible($markers[0]);
+    Notifications::secondEligible($markers[1]);
+
+    $this->gamestate->jumpToState(ST_START_OF_ROUND);
+    // $this->initCustomDefaultTurnOrder('default', \ST_TURNACTION, ST_END_OF_ROUND, false);
+  }
 
   /**
    * Activate next player
@@ -52,14 +173,14 @@ trait TurnTrait
     $node = [
       'children' => [
         [
-          'action' => PLAYER_ACTION,
+          'action' => CHOOSE_ACTION,
           'playerId' => $player->getId(),
         ],
       ],
     ];
 
     // Inserting leaf Action card
-    Engine::setup($node, ['method' => 'stTurnAction']);
+    Engine::setup($node, ['method' => 'stEndOfTurn']);
     Engine::proceed();
   }
 

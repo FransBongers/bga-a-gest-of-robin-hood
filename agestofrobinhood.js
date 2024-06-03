@@ -1659,10 +1659,21 @@ var SPACES = [
     SOUTHWELL_FOREST,
     TUXFORD,
 ];
-var CAMP = 'camp';
-var MERRY_MEN = 'merryMen';
-var HENCHMEN = 'henchmen';
-var ROBIN_HOOD = 'robinHood';
+var USED_CARRIAGES = 'usedCarriages';
+var PRISION = 'prison';
+var CAMP = 'Camp';
+var MERRY_MEN = 'MerryMen';
+var HENCHMEN = 'Henchmen';
+var ROBIN_HOOD = 'RobinHood';
+var CARRIAGE = 'Carriage';
+var TALLAGE_CARRIAGE = 'TallageCarriage';
+var TRIBUTE_CARRIAGE = 'TributeCarriage';
+var TRAP_CARRIAGE = 'TrapCarriage';
+var SINGLE_PLOT = 'singlePlot';
+var EVENT = 'event';
+var PLOTS_AND_DEEDS = 'plotsAndDeeds';
+var FIRST_ELIGIBLE = 'firstEligible';
+var SECOND_ELIGIBLE = 'secondEligible';
 define([
     'dojo',
     'dojo/_base/declare',
@@ -1701,7 +1712,9 @@ var AGestOfRobinHood = (function () {
         this.activeStates = {
             confirmPartialTurn: new ConfirmPartialTurnState(this),
             confirmTurn: new ConfirmTurnState(this),
-            setupRobinHood: new SetupRobinHoodState(this)
+            chooseAction: new ChooseActionState(this),
+            moveCarriage: new MoveCarriageState(this),
+            setupRobinHood: new SetupRobinHoodState(this),
         };
         this.infoPanel = new InfoPanel(this);
         this.settings = new Settings(this);
@@ -1957,6 +1970,25 @@ var AGestOfRobinHood = (function () {
         }
         node.classList.add(GEST_SELECTED);
     };
+    AGestOfRobinHood.prototype.setElementSelectable = function (_a) {
+        var id = _a.id, callback = _a.callback;
+        var node = $(id);
+        if (node === null) {
+            return;
+        }
+        node.classList.add(GEST_SELECTABLE);
+        this._connections.push(dojo.connect(node, 'onclick', this, function (event) {
+            return callback(event);
+        }));
+    };
+    AGestOfRobinHood.prototype.setElementSelected = function (_a) {
+        var id = _a.id;
+        var node = $(id);
+        if (node === null) {
+            return;
+        }
+        node.classList.add(GEST_SELECTED);
+    };
     AGestOfRobinHood.prototype.connect = function (node, action, callback) {
         this._connections.push(dojo.connect($(node), action, callback));
     };
@@ -2009,7 +2041,7 @@ var AGestOfRobinHood = (function () {
             var LEFT_SIZE = (proportions[0] * WIDTH) / 100;
             var leftColumnScale = LEFT_SIZE / LEFT_COLUMN;
             ROOT.style.setProperty('--leftColumnScale', "".concat(leftColumnScale));
-            ROOT.style.setProperty("--mapSizeMultiplier", '1');
+            ROOT.style.setProperty('--mapSizeMultiplier', '1');
             var RIGHT_SIZE = (proportions[1] * WIDTH) / 100;
             var rightColumnScale = RIGHT_SIZE / RIGHT_COLUMN;
             ROOT.style.setProperty('--rightColumnScale', "".concat(rightColumnScale));
@@ -2019,7 +2051,7 @@ var AGestOfRobinHood = (function () {
             var LEFT_SIZE = WIDTH;
             var leftColumnScale = LEFT_SIZE / LEFT_COLUMN;
             ROOT.style.setProperty('--leftColumnScale', "".concat(leftColumnScale));
-            ROOT.style.setProperty("--mapSizeMultiplier", "".concat(Number(this.settings.get({ id: PREF_SINGLE_COLUMN_MAP_SIZE })) / 100));
+            ROOT.style.setProperty('--mapSizeMultiplier', "".concat(Number(this.settings.get({ id: PREF_SINGLE_COLUMN_MAP_SIZE })) / 100));
             var RIGHT_SIZE = WIDTH;
             var rightColumnScale = RIGHT_SIZE / RIGHT_COLUMN;
             ROOT.style.setProperty('--rightColumnScale', "".concat(rightColumnScale));
@@ -2201,39 +2233,9 @@ var debug = isDebug ? console.info.bind(window.console) : function () { };
 var capitalizeFirstLetter = function (string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 };
-var ForceManager = (function (_super) {
-    __extends(ForceManager, _super);
-    function ForceManager(game) {
-        var _this = _super.call(this, game, {
-            getId: function (card) { return "".concat(card.id); },
-            setupDiv: function (card, div) { return _this.setupDiv(card, div); },
-            setupFrontDiv: function (card, div) { return _this.setupFrontDiv(card, div); },
-            setupBackDiv: function (card, div) { return _this.setupBackDiv(card, div); },
-            isCardVisible: function (card) { return _this.isCardVisible(card); },
-            animationManager: game.animationManager,
-        }) || this;
-        _this.game = game;
-        return _this;
-    }
-    ForceManager.prototype.clearInterface = function () { };
-    ForceManager.prototype.setupDiv = function (token, div) {
-        div.classList.add('gest_marker');
-    };
-    ForceManager.prototype.setupFrontDiv = function (token, div) {
-        div.classList.add('gest_marker_side');
-        div.setAttribute('data-side', 'front');
-        div.setAttribute('data-type', token.type);
-    };
-    ForceManager.prototype.setupBackDiv = function (token, div) {
-        div.classList.add('gest_marker_side');
-        div.setAttribute('data-side', 'back');
-        div.setAttribute('data-type', token.type);
-    };
-    ForceManager.prototype.isCardVisible = function (token) {
-        return token.side === 'front';
-    };
-    return ForceManager;
-}(CardManager));
+var lowerCaseFirstLetter = function (string) {
+    return string.charAt(0).toLowerCase() + string.slice(1);
+};
 var _a;
 var SPACES_CONFIG = (_a = {},
     _a[BINGHAM] = {
@@ -2255,6 +2257,12 @@ var SPACES_CONFIG = (_a = {},
             width: 82,
             height: 170,
         },
+        carriages: {
+            top: 1419,
+            left: 805,
+            width: 100,
+            height: 50,
+        }
     },
     _a[BLYTH] = {
         henchmen: {
@@ -2275,6 +2283,12 @@ var SPACES_CONFIG = (_a = {},
             width: 100,
             height: 160,
         },
+        carriages: {
+            top: 500,
+            left: 772,
+            width: 50,
+            height: 100,
+        }
     },
     _a[MANSFIELD] = {
         henchmen: {
@@ -2295,6 +2309,12 @@ var SPACES_CONFIG = (_a = {},
             width: 100,
             height: 145,
         },
+        carriages: {
+            top: 1028,
+            left: 253,
+            width: 50,
+            height: 100,
+        }
     },
     _a[NEWARK] = {
         henchmen: {
@@ -2315,6 +2335,12 @@ var SPACES_CONFIG = (_a = {},
             width: 100,
             height: 170,
         },
+        carriages: {
+            top: 650,
+            left: 1136,
+            width: 100,
+            height: 50,
+        }
     },
     _a[NOTTINGHAM] = {
         henchmen: {
@@ -2329,6 +2355,12 @@ var SPACES_CONFIG = (_a = {},
             width: 170,
             height: 79,
         },
+        carriages: {
+            top: 1108,
+            left: 634,
+            width: 50,
+            height: 100,
+        }
     },
     _a[OLLERTON_HILL] = {
         camps: {
@@ -2357,6 +2389,12 @@ var SPACES_CONFIG = (_a = {},
             width: 100,
             height: 160,
         },
+        carriages: {
+            top: 1537,
+            left: 511,
+            width: 100,
+            height: 50,
+        }
     },
     _a[RETFORD] = {
         henchmen: {
@@ -2377,6 +2415,12 @@ var SPACES_CONFIG = (_a = {},
             width: 100,
             height: 143,
         },
+        carriages: {
+            top: 227,
+            left: 989,
+            width: 50,
+            height: 100,
+        }
     },
     _a[SHIRE_WOOD] = {
         henchmen: {
@@ -2397,6 +2441,12 @@ var SPACES_CONFIG = (_a = {},
             width: 140,
             height: 100,
         },
+        carriages: {
+            top: 855,
+            left: 467,
+            width: 50,
+            height: 50,
+        }
     },
     _a[SOUTHWELL_FOREST] = {
         henchmen: {
@@ -2417,6 +2467,12 @@ var SPACES_CONFIG = (_a = {},
             width: 100,
             height: 100,
         },
+        carriages: {
+            top: 949,
+            left: 771,
+            width: 50,
+            height: 50,
+        }
     },
     _a[TUXFORD] = {
         henchmen: {
@@ -2437,6 +2493,12 @@ var SPACES_CONFIG = (_a = {},
             width: 100,
             height: 161,
         },
+        carriages: {
+            top: 724,
+            left: 823,
+            width: 50,
+            height: 100,
+        }
     },
     _a);
 var JUSTICE_TRACK_CONFIG = [
@@ -2643,7 +2705,7 @@ var INITIATIVE_TRACK = [
 ];
 var UNIQUE_SPACES = [
     {
-        id: 'usedCarriages',
+        id: 'carriage_usedCarriages',
         top: 523,
         left: 249,
     },
@@ -2666,15 +2728,21 @@ var GameMap = (function () {
             _this.parishStatusMarkers[parishId].removeAll();
         });
         SPACES.forEach(function (spaceId) {
-            [CAMP, MERRY_MEN, HENCHMEN].forEach(function (type) {
-                var node = document.getElementById("".concat(type, "_").concat(spaceId));
+            [CAMP, MERRY_MEN, HENCHMEN, CARRIAGE].forEach(function (type) {
+                var id = "".concat(lowerCaseFirstLetter(type), "_").concat(spaceId);
+                var node = document.getElementById(id);
                 if (!node) {
                     return;
                 }
                 node.replaceChildren();
             });
         });
-        [ROYAL_FAVOUR_MARKER, ROYAL_INSPECTION_MARKER, ROBIN_HOOD_ELIGIBILITY_MARKER, SHERIFF_ELIGIBILITY_MARKER].forEach(function (markerId) {
+        [
+            ROYAL_FAVOUR_MARKER,
+            ROYAL_INSPECTION_MARKER,
+            ROBIN_HOOD_ELIGIBILITY_MARKER,
+            SHERIFF_ELIGIBILITY_MARKER,
+        ].forEach(function (markerId) {
             var node = document.getElementById(markerId);
             if (!node) {
                 return;
@@ -2700,42 +2768,45 @@ var GameMap = (function () {
         this.updateParishStatusMarkers({ gamedatas: gamedatas });
     };
     GameMap.prototype.updateForces = function (_a) {
+        var _this = this;
         var gamedatas = _a.gamedatas;
         var isRobinHoodPlayer = !!gamedatas.robinHoodForces;
-        SPACES.forEach(function (spaceId) {
-            var _a;
+        var isSheriffPlayer = !!gamedatas.sheriffForces;
+        __spreadArray(__spreadArray([], SPACES, true), [USED_CARRIAGES], false).forEach(function (spaceId) {
+            var _a, _b;
             var forces = gamedatas.forces[spaceId];
             var robinHoodForces = (_a = gamedatas.robinHoodForces) === null || _a === void 0 ? void 0 : _a[spaceId];
+            var sheriffForces = (_b = gamedatas.sheriffForces) === null || _b === void 0 ? void 0 : _b[spaceId];
             if (!forces) {
                 return;
             }
             var henchmenBox = document.getElementById("henchmen_".concat(spaceId));
-            if (henchmenBox && forces.henchmen.length > 0) {
-                forces.henchmen.forEach(function (henchman) {
+            if (henchmenBox && forces.Henchmen.length > 0) {
+                forces.Henchmen.forEach(function (henchman) {
                     henchmenBox.insertAdjacentHTML('beforeend', tplForce({ id: henchman.id, type: henchman.type, hidden: false }));
                 });
             }
             var merryMenBox = document.getElementById("merryMen_".concat(spaceId));
             if (merryMenBox && !isRobinHoodPlayer) {
-                for (var i = 0; i < forces.robinHood; i++) {
+                for (var i = 0; i < forces.RobinHood; i++) {
                     merryMenBox.insertAdjacentHTML('beforeend', tplForce({ type: ROBIN_HOOD, hidden: false }));
                 }
-                for (var k = 0; k < forces.merryMen.revealed; k++) {
+                for (var k = 0; k < forces.MerryMen.revealed; k++) {
                     merryMenBox.insertAdjacentHTML('beforeend', tplForce({ type: MERRY_MEN, hidden: false }));
                 }
-                for (var l = 0; l < forces.merryMen.hidden; l++) {
+                for (var l = 0; l < forces.MerryMen.hidden; l++) {
                     merryMenBox.insertAdjacentHTML('beforeend', tplForce({ type: MERRY_MEN, hidden: true }));
                 }
             }
             else if (merryMenBox && isRobinHoodPlayer && robinHoodForces) {
-                robinHoodForces.robinHood.forEach(function (robinHood) {
+                robinHoodForces.RobinHood.forEach(function (robinHood) {
                     merryMenBox.insertAdjacentHTML('beforeend', tplForce({
                         id: robinHood.id,
                         type: robinHood.type,
                         hidden: robinHood.hidden,
                     }));
                 });
-                robinHoodForces.merryMen.forEach(function (merryMen) {
+                robinHoodForces.MerryMen.forEach(function (merryMen) {
                     merryMenBox.insertAdjacentHTML('beforeend', tplForce({
                         id: merryMen.id,
                         type: merryMen.type,
@@ -2745,16 +2816,44 @@ var GameMap = (function () {
             }
             var campBox = document.getElementById("camp_".concat(spaceId));
             if (campBox && !isRobinHoodPlayer) {
-                for (var i = 0; i < forces.camp.revealed; i++) {
+                for (var i = 0; i < forces.Camp.revealed; i++) {
                     campBox.insertAdjacentHTML('beforeend', tplForce({ type: CAMP, hidden: false }));
                 }
-                for (var j = 0; j < forces.camp.hidden; j++) {
+                for (var j = 0; j < forces.Camp.hidden; j++) {
                     campBox.insertAdjacentHTML('beforeend', tplForce({ type: CAMP, hidden: true }));
                 }
             }
             else if (campBox && isRobinHoodPlayer && robinHoodForces) {
-                robinHoodForces.camp.forEach(function (camp) {
+                robinHoodForces.Camp.forEach(function (camp) {
                     campBox.insertAdjacentHTML('beforeend', tplForce({ id: camp.id, type: camp.type, hidden: camp.hidden }));
+                });
+            }
+            var carriageBox = document.getElementById("carriage_".concat(spaceId));
+            if (carriageBox && !isSheriffPlayer) {
+                [TALLAGE_CARRIAGE, TRAP_CARRIAGE, TRIBUTE_CARRIAGE].forEach(function (subtype) {
+                    _this.addPublicForces({
+                        box: carriageBox,
+                        count: forces.Carriage[subtype],
+                        hidden: false,
+                        type: CARRIAGE,
+                        subtype: subtype,
+                    });
+                });
+                _this.addPublicForces({
+                    box: carriageBox,
+                    count: forces.Carriage.hidden,
+                    hidden: true,
+                    type: CARRIAGE,
+                });
+            }
+            else if (carriageBox && isSheriffPlayer && sheriffForces) {
+                sheriffForces.Carriage.forEach(function (carriage) {
+                    carriageBox.insertAdjacentHTML('beforeend', tplForce({
+                        id: carriage.id,
+                        type: CARRIAGE,
+                        hidden: carriage.hidden,
+                        subtype: carriage.type,
+                    }));
                 });
             }
         });
@@ -2797,6 +2896,12 @@ var GameMap = (function () {
         this.setupParishStatusMarkers({ gamedatas: gamedatas });
         this.updateTrackMarkers({ gamedatas: gamedatas });
         this.updateForces({ gamedatas: gamedatas });
+    };
+    GameMap.prototype.addPublicForces = function (_a) {
+        var box = _a.box, type = _a.type, subtype = _a.subtype, hidden = _a.hidden, count = _a.count;
+        for (var i = 0; i < count; i++) {
+            box.insertAdjacentHTML('beforeend', tplForce({ type: type, hidden: hidden, subtype: subtype }));
+        }
     };
     GameMap.prototype.addRobinHoodPrivate = function (_a) {
         var robinHood = _a.robinHood;
@@ -2843,6 +2948,119 @@ var GameMap = (function () {
             space.insertAdjacentHTML('beforeend', tplForce({ type: MERRY_MEN, hidden: true }));
         }
     };
+    GameMap.prototype.moveCarriagePrivate = function (_a) {
+        return __awaiter(this, arguments, void 0, function (_b) {
+            var carriageNode, toNode;
+            var carriageId = _b.carriageId, toSpaceId = _b.toSpaceId;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        carriageNode = document.getElementById(carriageId);
+                        toNode = document.getElementById("carriage_".concat(toSpaceId));
+                        if (!(carriageNode && toNode)) {
+                            return [2];
+                        }
+                        return [4, this.game.animationManager.attachWithAnimation(new BgaSlideAnimation({ element: carriageNode }), toNode)];
+                    case 1:
+                        _c.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    GameMap.prototype.getCarriageElement = function (_a) {
+        var spaceId = _a.spaceId, hidden = _a.hidden, type = _a.type;
+        var carriagesContainer = document.getElementById("carriage_".concat(spaceId));
+        if (!carriagesContainer) {
+            return null;
+        }
+        var carriages = [];
+        carriagesContainer.childNodes.forEach(function (element) {
+            if (!(element instanceof HTMLElement) ||
+                element.getAttribute('data-type') !== CARRIAGE) {
+                return;
+            }
+            var hiddenAttribute = element.getAttribute('data-hidden');
+            if ((hidden && hiddenAttribute) !== 'true' ||
+                (!hidden && hiddenAttribute !== 'false')) {
+                return;
+            }
+            if (type && element.getAttribute('data-subtype') !== type) {
+                return;
+            }
+            carriages.push(element);
+        });
+        if (carriages.length === 0) {
+            return null;
+        }
+        return carriages[carriages.length - 1];
+    };
+    GameMap.prototype.moveCarriagePublic = function (_a) {
+        return __awaiter(this, arguments, void 0, function (_b) {
+            var carriagesContainer, toNode, carriageNode;
+            var fromSpaceId = _b.fromSpaceId, toSpaceId = _b.toSpaceId, hidden = _b.hidden, type = _b.type;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        console.log('moveCarriagePublic');
+                        carriagesContainer = document.getElementById("carriage_".concat(fromSpaceId));
+                        toNode = document.getElementById("carriage_".concat(toSpaceId));
+                        carriageNode = this.getCarriageElement({
+                            spaceId: fromSpaceId,
+                            hidden: hidden,
+                            type: type,
+                        });
+                        if (!(toNode && carriageNode)) {
+                            return [2];
+                        }
+                        return [4, this.game.animationManager.attachWithAnimation(new BgaSlideAnimation({ element: carriageNode }), toNode)];
+                    case 1:
+                        _c.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    GameMap.prototype.moveHenchman = function (_a) {
+        return __awaiter(this, arguments, void 0, function (_b) {
+            var node, toNode;
+            var henchmanId = _b.henchmanId, toSpaceId = _b.toSpaceId;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        node = document.getElementById(henchmanId);
+                        toNode = document.getElementById("henchmen_".concat(toSpaceId));
+                        if (!(node && toNode)) {
+                            return [2];
+                        }
+                        return [4, this.game.animationManager.attachWithAnimation(new BgaSlideAnimation({ element: node }), toNode)];
+                    case 1:
+                        _c.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    GameMap.prototype.moveMarker = function (_a) {
+        return __awaiter(this, arguments, void 0, function (_b) {
+            var markerNode, toNode;
+            var id = _b.id, location = _b.location;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        markerNode = document.getElementById(id);
+                        toNode = document.getElementById(location);
+                        if (!(markerNode && toNode)) {
+                            return [2];
+                        }
+                        return [4, this.game.animationManager.attachWithAnimation(new BgaSlideAnimation({ element: markerNode }), toNode)];
+                    case 1:
+                        _c.sent();
+                        return [2];
+                }
+            });
+        });
+    };
     return GameMap;
 }());
 var getRevealedText = function (type) {
@@ -2853,13 +3071,19 @@ var getRevealedText = function (type) {
             return 'M';
         case ROBIN_HOOD:
             return 'RH';
+        case TALLAGE_CARRIAGE:
+            return 'TAL';
+        case TRAP_CARRIAGE:
+            return 'TRA';
+        case TRIBUTE_CARRIAGE:
+            return 'TRI';
         default:
             return '';
     }
 };
 var tplForce = function (_a) {
-    var id = _a.id, type = _a.type, hidden = _a.hidden;
-    return "\n  <div ".concat(id ? "id=\"".concat(id, "\"") : '', " data-type=\"").concat(type, "\" data-hidden=\"").concat(hidden ? 'true' : 'revealed', "\" class=\"gest_force\">").concat(type !== HENCHMEN && !hidden ? "<span>".concat(getRevealedText(type), "</span>") : '', "\n").concat(type === ROBIN_HOOD && hidden ? "<span>*</span>" : '', "\n</div>");
+    var id = _a.id, type = _a.type, subtype = _a.subtype, hidden = _a.hidden;
+    return "\n  <div ".concat(id ? "id=\"".concat(id, "\"") : '', " data-type=\"").concat(type, "\" data-hidden=\"").concat(hidden ? 'true' : 'false', "\" ").concat(subtype ? "data-subtype=\"".concat(subtype, "\" ") : '', "class=\"gest_force\">").concat(type !== HENCHMEN && !hidden ? "<span>".concat(getRevealedText(type), "</span>") : '', "\n").concat(type === ROBIN_HOOD && hidden ? "<span>*</span>" : '', "\n").concat(subtype && !hidden ? "<span>".concat(getRevealedText(subtype), "</span>") : '', "\n").concat(subtype && hidden ? "<span>*".concat(getRevealedText(subtype), "</span>") : '', "\n</div>");
 };
 var tplMarkerSpace = function (_a) {
     var id = _a.id, top = _a.top, left = _a.left, extraClasses = _a.extraClasses;
@@ -2895,6 +3119,9 @@ var tplSpaces = function () {
         }
         if (config.merryMen) {
             html += "<div id=\"merryMen_".concat(spaceId, "\" class=\"gest_forces\" style=\"top: calc(var(--gestMapScale) * ").concat(config.merryMen.top, "px); left: calc(var(--gestMapScale) * ").concat(config.merryMen.left, "px); width: calc(var(--gestMapScale) * ").concat(config.merryMen.width, "px); height: calc(var(--gestMapScale) * ").concat(config.merryMen.height, "px);\"></div>");
+        }
+        if (config.carriages) {
+            html += "<div id=\"carriage_".concat(spaceId, "\" class=\"gest_forces\" style=\"top: calc(var(--gestMapScale) * ").concat(config.carriages.top, "px); left: calc(var(--gestMapScale) * ").concat(config.carriages.left, "px); width: calc(var(--gestMapScale) * ").concat(config.carriages.width, "px); height: calc(var(--gestMapScale) * ").concat(config.carriages.height, "px);\"></div>");
         }
         return html;
     })
@@ -2999,6 +3226,14 @@ var NotificationManager = (function () {
         var notifs = [
             'log',
             'refreshUI',
+            'chooseAction',
+            'drawAndRevealCard',
+            'gainShillings',
+            'moveCarriage',
+            'moveCarriagePrivate',
+            'moveCarriagePublic',
+            'moveRoyalFavourMarker',
+            'revealCarriage',
             'setupRobinHood',
             'setupRobinHoodPrivate',
         ];
@@ -3030,6 +3265,11 @@ var NotificationManager = (function () {
                 .notifqueue.setIgnoreNotificationCheck('setupRobinHood', function (notif) {
                 return notif.args.playerId == _this.game.getPlayerId();
             });
+            _this.game
+                .framework()
+                .notifqueue.setIgnoreNotificationCheck('moveCarriage', function (notif) {
+                return notif.args.playerId == _this.game.getPlayerId();
+            });
         });
     };
     NotificationManager.prototype.destroy = function () {
@@ -3057,6 +3297,161 @@ var NotificationManager = (function () {
                 this.game.clearInterface();
                 this.game.gameMap.updateInterface({ gamedatas: gamedatas });
                 this.game.playerManager.updatePlayers({ gamedatas: gamedatas });
+                return [2];
+            });
+        });
+    };
+    NotificationManager.prototype.notif_chooseAction = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var marker, markerNode, toNode;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        marker = notif.args.marker;
+                        markerNode = document.getElementById(marker.id);
+                        toNode = document.getElementById(marker.location);
+                        if (!(markerNode && toNode)) {
+                            return [2];
+                        }
+                        return [4, this.game.animationManager.attachWithAnimation(new BgaSlideAnimation({ element: markerNode }), toNode)];
+                    case 1:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    NotificationManager.prototype.notif_drawAndRevealCard = function (notif) {
+        return __awaiter(this, void 0, void 0, function () { return __generator(this, function (_a) {
+            return [2];
+        }); });
+    };
+    NotificationManager.prototype.notif_gainShillings = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, amount, playerId;
+            return __generator(this, function (_b) {
+                _a = notif.args, amount = _a.amount, playerId = _a.playerId;
+                this.getPlayer({ playerId: playerId }).counters.shillings.incValue(amount);
+                return [2];
+            });
+        });
+    };
+    NotificationManager.prototype.notif_moveCarriage = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, carriage, henchman, toSpaceId, fromSpaceId, promises;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = notif.args, carriage = _a.carriage, henchman = _a.henchman, toSpaceId = _a.toSpaceId, fromSpaceId = _a.fromSpaceId;
+                        promises = [
+                            this.game.gameMap.moveCarriagePublic({
+                                hidden: carriage.hidden,
+                                type: carriage.type,
+                                toSpaceId: toSpaceId,
+                                fromSpaceId: fromSpaceId,
+                            }),
+                        ];
+                        if (henchman) {
+                            promises.push(this.game.gameMap.moveHenchman({ henchmanId: henchman.id, toSpaceId: toSpaceId }));
+                        }
+                        return [4, Promise.all(promises)];
+                    case 1:
+                        _b.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    NotificationManager.prototype.notif_moveCarriagePublic = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, carriage, toSpaceId, fromSpaceId;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = notif.args, carriage = _a.carriage, toSpaceId = _a.toSpaceId, fromSpaceId = _a.fromSpaceId;
+                        console.log('carriage', carriage);
+                        if (!(this.game.getPlayerId() === this.game.playerManager.getSheriffPlayerId())) return [3, 2];
+                        console.log('if');
+                        return [4, this.game.gameMap.moveCarriagePrivate({
+                                carriageId: carriage.id,
+                                toSpaceId: toSpaceId,
+                            })];
+                    case 1:
+                        _b.sent();
+                        return [3, 4];
+                    case 2:
+                        console.log('else');
+                        return [4, this.game.gameMap.moveCarriagePublic({
+                                hidden: carriage.hidden,
+                                type: carriage.hidden ? null : carriage.type,
+                                toSpaceId: toSpaceId,
+                                fromSpaceId: fromSpaceId,
+                            })];
+                    case 3:
+                        _b.sent();
+                        _b.label = 4;
+                    case 4: return [2];
+                }
+            });
+        });
+    };
+    NotificationManager.prototype.notif_moveCarriagePrivate = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, carriage, henchman, toSpaceId, promises;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = notif.args, carriage = _a.carriage, henchman = _a.henchman, toSpaceId = _a.toSpaceId;
+                        promises = [
+                            this.game.gameMap.moveCarriagePrivate({
+                                carriageId: carriage.id,
+                                toSpaceId: toSpaceId,
+                            }),
+                        ];
+                        if (henchman) {
+                            promises.push(this.game.gameMap.moveHenchman({ henchmanId: henchman.id, toSpaceId: toSpaceId }));
+                        }
+                        return [4, Promise.all(promises)];
+                    case 1:
+                        _b.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    NotificationManager.prototype.notif_moveRoyalFavourMarker = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var marker;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        marker = notif.args.marker;
+                        return [4, this.game.gameMap.moveMarker({ id: marker.id, location: marker.location })];
+                    case 1:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    NotificationManager.prototype.notif_revealCarriage = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, carriage, playerId, element;
+            return __generator(this, function (_b) {
+                _a = notif.args, carriage = _a.carriage, playerId = _a.playerId;
+                element = this.game.getPlayerId() === this.game.playerManager.getSheriffPlayerId()
+                    ? document.getElementById(carriage.id)
+                    : this.game.gameMap.getCarriageElement({
+                        spaceId: carriage.location,
+                        hidden: true,
+                        type: null,
+                    });
+                if (!element) {
+                    return [2];
+                }
+                element.setAttribute('data-hidden', 'false');
+                element.replaceChildren();
+                element.insertAdjacentHTML('afterbegin', "<span>".concat(carriage.type.substring(0, 3).toUpperCase(), "</span>"));
                 return [2];
             });
         });
@@ -3111,6 +3506,16 @@ var PlayerManager = (function () {
     PlayerManager.prototype.getPlayerIds = function () {
         return Object.keys(this.players).map(Number);
     };
+    PlayerManager.prototype.getRobinHoodPlayerId = function () {
+        return Object.values(this.players)
+            .filter(function (player) { return player.isRobinHood(); })[0]
+            .getPlayerId();
+    };
+    PlayerManager.prototype.getSheriffPlayerId = function () {
+        return Object.values(this.players)
+            .filter(function (player) { return !player.isRobinHood(); })[0]
+            .getPlayerId();
+    };
     PlayerManager.prototype.updatePlayers = function (_a) {
         var gamedatas = _a.gamedatas;
         for (var playerId in gamedatas.players) {
@@ -3128,6 +3533,9 @@ var PlayerManager = (function () {
 var GestPlayer = (function () {
     function GestPlayer(_a) {
         var game = _a.game, player = _a.player;
+        this.counters = {
+            shillings: new ebg.counter(),
+        };
         this.game = game;
         var playerId = player.id;
         this.playerId = Number(playerId);
@@ -3140,6 +3548,9 @@ var GestPlayer = (function () {
     }
     GestPlayer.prototype.updatePlayer = function (_a) {
         var gamedatas = _a.gamedatas;
+        this.updatePlayerPanel({
+            playerGamedatas: gamedatas.players[this.playerId],
+        });
     };
     GestPlayer.prototype.setupPlayer = function (_a) {
         var gamedatas = _a.gamedatas;
@@ -3148,6 +3559,9 @@ var GestPlayer = (function () {
     };
     GestPlayer.prototype.setupPlayerPanel = function (_a) {
         var playerGamedatas = _a.playerGamedatas;
+        var playerBoardDiv = document.getElementById("player_board_".concat(this.playerId));
+        playerBoardDiv.insertAdjacentHTML('beforeend', tplPlayerPanel({ playerId: this.playerId }));
+        this.counters.shillings.create("shillings_counter_".concat(this.playerId));
         this.updatePlayerPanel({ playerGamedatas: playerGamedatas });
     };
     GestPlayer.prototype.updatePlayerPanel = function (_a) {
@@ -3158,6 +3572,7 @@ var GestPlayer = (function () {
                 .framework()
                 .scoreCtrl[this.playerId].setValue(Number(playerGamedatas.score));
         }
+        this.counters.shillings.setValue(playerGamedatas.shillings);
     };
     GestPlayer.prototype.clearInterface = function () { };
     GestPlayer.prototype.getColor = function () {
@@ -3173,10 +3588,14 @@ var GestPlayer = (function () {
         return this.playerId;
     };
     GestPlayer.prototype.isRobinHood = function () {
-        return this.side === 'robinHood';
+        return this.side === 'RobinHood';
     };
     return GestPlayer;
 }());
+var tplPlayerPanel = function (_a) {
+    var playerId = _a.playerId;
+    return "<div id=\"gest_player_panel_".concat(playerId, "\" class=\"gest_player_panel\">\n            <div class=\"gest_player_panel_shillings_counter\">\n              <span>Shillings: </span><span id=\"shillings_counter_").concat(playerId, "\"></span>\n            </div>\n          </div>");
+};
 var getSettingsConfig = function () {
     var _a, _b;
     return ({
@@ -3569,6 +3988,91 @@ var tplPlayerPrefenceSliderRow = function (_a) {
     var label = _a.label, id = _a.id, _b = _a.visible, visible = _b === void 0 ? true : _b;
     return "\n  <div id=\"setting_row_".concat(id, "\" class=\"player_preference_row\"").concat(!visible ? " style=\"display: none;\"" : '', ">\n    <div class=\"player_preference_row_label\">").concat(_(label), "</div>\n    <div class=\"player_preference_row_value slider\">\n      <div id=\"setting_").concat(id, "\"></div>\n    </div>\n  </div>\n  ");
 };
+var ChooseActionState = (function () {
+    function ChooseActionState(game) {
+        this.game = game;
+    }
+    ChooseActionState.prototype.onEnteringState = function (args) {
+        debug('Entering ChooseActionState');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    ChooseActionState.prototype.onLeavingState = function () {
+        debug('Leaving ChooseActionState');
+    };
+    ChooseActionState.prototype.setDescription = function (activePlayerId) { };
+    ChooseActionState.prototype.updateInterfaceInitialStep = function () {
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must choose an action'),
+            args: {
+                you: '${you}',
+            },
+        });
+        this.addActionButtons();
+        this.game.addPassButton({
+            optionalAction: this.args.optionalAction,
+        });
+        this.game.addUndoButtons(this.args);
+    };
+    ChooseActionState.prototype.updateInterfaceConfirm = function (_a) {
+        var _this = this;
+        var action = _a.action;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('Perform ${actionName}?'),
+            args: {
+                actionName: this.getActionName({ action: action }),
+            },
+        });
+        var callback = function () {
+            _this.game.clearPossible();
+            _this.game.takeAction({
+                action: 'actChooseAction',
+                args: {
+                    action: action,
+                },
+            });
+        };
+        if (this.game.settings.get({
+            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+        }) === PREF_ENABLED) {
+            callback();
+        }
+        else {
+            this.game.addConfirmButton({
+                callback: callback,
+            });
+        }
+        this.game.addCancelButton();
+    };
+    ChooseActionState.prototype.getActionName = function (_a) {
+        var action = _a.action;
+        switch (action) {
+            case SINGLE_PLOT:
+                return _('Single Plot');
+            case EVENT:
+                return _('Event');
+            case PLOTS_AND_DEEDS:
+                return _('Plots & Deeds');
+            default:
+                return '';
+        }
+    };
+    ChooseActionState.prototype.addActionButtons = function () {
+        var _this = this;
+        [SINGLE_PLOT, EVENT, PLOTS_AND_DEEDS].forEach(function (action) {
+            if (_this.args[action]) {
+                _this.game.addPrimaryActionButton({
+                    id: "".concat(action, "_select"),
+                    text: _this.getActionName({ action: action }),
+                    callback: function () { return _this.updateInterfaceConfirm({ action: action }); },
+                });
+            }
+        });
+    };
+    return ChooseActionState;
+}());
 var ConfirmPartialTurnState = (function () {
     function ConfirmPartialTurnState(game) {
         this.game = game;
@@ -3633,6 +4137,137 @@ var ConfirmTurnState = (function () {
         this.game.addUndoButtons(this.args);
     };
     return ConfirmTurnState;
+}());
+var MoveCarriageState = (function () {
+    function MoveCarriageState(game) {
+        this.game = game;
+    }
+    MoveCarriageState.prototype.onEnteringState = function (args) {
+        debug('Entering MoveCarriageState');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    MoveCarriageState.prototype.onLeavingState = function () {
+        debug('Leaving MoveCarriageState');
+    };
+    MoveCarriageState.prototype.setDescription = function (activePlayerId) { };
+    MoveCarriageState.prototype.updateInterfaceInitialStep = function () {
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must select a Carriage to move'),
+            args: {
+                you: '${you}',
+            },
+        });
+        this.setCarriagesSelectable();
+        this.game.addPassButton({
+            optionalAction: this.args.optionalAction,
+        });
+        this.game.addUndoButtons(this.args);
+    };
+    MoveCarriageState.prototype.updateInterfaceBringHenchman = function (_a) {
+        var _this = this;
+        var carriage = _a.carriage, from = _a.from, to = _a.to;
+        this.game.clearPossible();
+        this.game.setElementSelected({ id: carriage.id });
+        this.game.clientUpdatePageTitle({
+            text: _('Bring one Henchman along with Carriage?'),
+            args: {},
+        });
+        this.game.addPrimaryActionButton({
+            id: 'yes_btn',
+            text: _('Yes'),
+            callback: function () {
+                return _this.updateInterfaceConfirm({
+                    carriage: carriage,
+                    from: from,
+                    to: to,
+                    bringHenchman: true,
+                });
+            },
+        });
+        this.game.addPrimaryActionButton({
+            id: 'no_btn',
+            text: _('No'),
+            callback: function () {
+                return _this.updateInterfaceConfirm({
+                    carriage: carriage,
+                    from: from,
+                    to: to,
+                    bringHenchman: false,
+                });
+            },
+        });
+        this.game.addCancelButton();
+    };
+    MoveCarriageState.prototype.updateInterfaceConfirm = function (_a) {
+        var _this = this;
+        var carriage = _a.carriage, from = _a.from, to = _a.to, bringHenchman = _a.bringHenchman;
+        this.game.clearPossible();
+        this.game.setElementSelected({ id: carriage.id });
+        this.game.clientUpdatePageTitle({
+            text: bringHenchman
+                ? _('Move Carriage and Henchman from ${fromName} to ${toName}?')
+                : _('Move Carriage from ${fromName} to ${toName}?'),
+            args: {
+                fromName: _(from.name),
+                toName: _(to.name),
+            },
+        });
+        var callback = function () {
+            _this.game.clearPossible();
+            _this.game.takeAction({
+                action: 'actMoveCarriage',
+                args: {
+                    carriageId: carriage.id,
+                    bringHenchman: bringHenchman,
+                },
+            });
+        };
+        if (this.game.settings.get({
+            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+        }) === PREF_ENABLED) {
+            callback();
+        }
+        else {
+            this.game.addConfirmButton({
+                callback: callback,
+            });
+        }
+        this.game.addCancelButton();
+    };
+    MoveCarriageState.prototype.setCarriagesSelectable = function () {
+        var _this = this;
+        var _a;
+        if (!((_a = this.args._private) === null || _a === void 0 ? void 0 : _a.options)) {
+            return;
+        }
+        Object.entries(this.args._private.options).forEach(function (_a) {
+            var carriageId = _a[0], option = _a[1];
+            _this.game.setElementSelectable({
+                id: carriageId,
+                callback: function () {
+                    if (option.canBringHenchman) {
+                        _this.updateInterfaceBringHenchman({
+                            carriage: option.carriage,
+                            from: option.from,
+                            to: option.to,
+                        });
+                    }
+                    else {
+                        _this.updateInterfaceConfirm({
+                            carriage: option.carriage,
+                            from: option.from,
+                            to: option.to,
+                            bringHenchman: false,
+                        });
+                    }
+                    console.log('option', option);
+                },
+            });
+        });
+    };
+    return MoveCarriageState;
 }());
 var SetupRobinHoodState = (function () {
     function SetupRobinHoodState(game) {

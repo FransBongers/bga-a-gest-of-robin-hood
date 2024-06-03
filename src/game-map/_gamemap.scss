@@ -22,6 +22,7 @@
   --gestMapScale: var(--leftColumnScale) * var(--mapSizeMultiplier);
   --gestMarkerScale: var(--leftColumnScale) * var(--mapSizeMultiplier);
   --gestTokenScale: var(--leftColumnScale) * var(--mapSizeMultiplier);
+  --gestForceScale: var(--leftColumnScale) * var(--mapSizeMultiplier);
 }
 
 .gest_marker_space {
@@ -72,7 +73,7 @@
   // opacity: 0.5;
 }
 
-#usedCarriages {
+#carriage_usedCarriages {
   position: absolute;
   height: calc(var(--gestMapScale) * 153px);
   width: calc(var(--gestMapScale) * 153px);
@@ -136,27 +137,43 @@
 
 .gest_force {
   box-sizing: border-box;
-  height: calc(var(--gestMapScale) * 40px);
-  width: calc(var(--gestMapScale) * 40px);
-  border: calc(var(--gestMapScale) * 1px) solid black;
+  height: calc(var(--gestForceScale) * 40px);
+  width: calc(var(--gestForceScale) * 40px);
+  border: calc(var(--gestForceScale) * 1px) solid black;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.gest_force[data-type=henchmen] {
+.gest_force[data-type=Henchmen] {
   background-color: #c0c0c0;
 }
 
-.gest_force[data-type=camp] {
+.gest_force[data-type=Camp] {
   background-color: #008000;
   border-radius: 50%;
 }
 
-.gest_force[data-type=merryMen] {
+.gest_force[data-type=MerryMen] {
   background-color: #008000;
 }
 
-.gest_force[data-type=robinHood] {
+.gest_force[data-type=RobinHood] {
   background-color: #008000;
+}
+
+.gest_force[data-type=Carriage] {
+  background-color: #c0c0c0;
+  border-radius: 50%;
+}
+
+.gest_force.gest_selectable {
+  cursor: pointer;
+  box-shadow: 0px 0px 0px calc(var(--gestForceScale) * 6px) base.$selectable-color !important;
+}
+
+.gest_force.gest_selectable:hover,
+.gest_force.gest_selected {
+  cursor: pointer;
+  box-shadow: 0px 0px 0px calc(var(--gestForceScale) * 6px) base.$selected-color !important;
 }

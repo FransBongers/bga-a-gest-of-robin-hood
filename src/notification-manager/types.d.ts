@@ -21,6 +21,48 @@ interface NotifRefreshUIArgs {
 //   AGestOfRobinHoodGamedatas,
 //   'staticData'
 // >;
+interface NotifChooseActionArgs {
+  marker: GestMarker;
+}
+
+interface NotifDrawAndRevealCardArgs {
+  card: GestCard;
+}
+
+interface NotifGainShillingsArgs extends NotifWithPlayerArgs {
+  amount: number;
+}
+
+interface NotifMoveCarriageArgs extends NotifWithPlayerArgs {
+  carriage: {
+    hidden: boolean;
+    type: string | null;
+  };
+  henchman: GestForce | null;
+  fromSpaceId: string;
+  toSpaceId: string;
+}
+
+
+interface NotifMoveCarriagePrivateArgs extends NotifWithPlayerArgs {
+  carriage: GestForce;
+  henchman: GestForce | null;
+  toSpaceId: string;
+}
+
+interface NotifMoveCarriagePublicArgs extends NotifWithPlayerArgs {
+  carriage: GestForce;
+  fromSpaceId: string;
+  toSpaceId: string;
+}
+
+interface NotifMoveRoyalFavourMarkerArgs extends NotifWithPlayerArgs {
+  marker: GestMarker;
+}
+
+interface NotifRevealCarriageArgs extends NotifWithPlayerArgs {
+  carriage: GestForce;
+}
 
 interface NotifSetupRobinHoodArgs extends NotifWithPlayerArgs {
   merryMenCounts: {

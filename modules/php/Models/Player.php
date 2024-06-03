@@ -9,6 +9,7 @@ use AGestOfRobinHood\Core\Preferences;
 use AGestOfRobinHood\Helpers\Locations;
 use AGestOfRobinHood\Helpers\Utils;
 use AGestOfRobinHood\Managers\Cards;
+use AGestOfRobinHood\Managers\Markers;
 use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\PlayersExtra;
 
@@ -67,5 +68,20 @@ class Player extends \AGestOfRobinHood\Helpers\DB_Model
   public function getSide()
   {
     return COLOR_SIDE_MAP[$this->getColor()];
+  }
+
+  public function getEligibilityMarker()
+  {
+    if ($this->getSide() === ROBIN_HOOD) {
+      return Markers::get(ROBIN_HOOD_ELIGIBILITY_MARKER);
+    } else {
+      return Markers::get(SHERIFF_ELIGIBILITY_MARKER);
+    }
+  }
+
+  public function gainShillings($amount)
+  {
+    Players::incShillings($this->getId(), $amount);
+    Notifications::gainShillings($this, $amount);
   }
 }

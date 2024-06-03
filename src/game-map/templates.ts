@@ -6,6 +6,12 @@ const getRevealedText = (type: string): string => {
       return 'M';
     case ROBIN_HOOD:
       return 'RH';
+    case TALLAGE_CARRIAGE:
+      return 'TAL';
+    case TRAP_CARRIAGE:
+      return 'TRA';
+    case TRIBUTE_CARRIAGE:
+      return 'TRI';
     default:
       return '';
   }
@@ -14,18 +20,22 @@ const getRevealedText = (type: string): string => {
 const tplForce = ({
   id,
   type,
+  subtype,
   hidden,
 }: {
   id?: string;
+  subtype?: string;
   type: string;
   hidden: boolean;
 }) => `
   <div ${id ? `id="${id}"` : ''} data-type="${type}" data-hidden="${
-  hidden ? 'true' : 'revealed'
-}" class="gest_force">${
+  hidden ? 'true' : 'false'
+}" ${subtype ? `data-subtype="${subtype}" ` : ''}class="gest_force">${
   type !== HENCHMEN && !hidden ? `<span>${getRevealedText(type)}</span>` : ''
 }
 ${type === ROBIN_HOOD && hidden ? `<span>*</span>` : ''}
+${subtype && !hidden ? `<span>${getRevealedText(subtype)}</span>` : ''}
+${subtype && hidden ? `<span>*${getRevealedText(subtype)}</span>` : ''}
 </div>`;
 
 const tplMarkerSpace = ({
@@ -76,6 +86,9 @@ const tplSpaces = () =>
       }
       if (config.merryMen) {
         html += `<div id="merryMen_${spaceId}" class="gest_forces" style="top: calc(var(--gestMapScale) * ${config.merryMen.top}px); left: calc(var(--gestMapScale) * ${config.merryMen.left}px); width: calc(var(--gestMapScale) * ${config.merryMen.width}px); height: calc(var(--gestMapScale) * ${config.merryMen.height}px);"></div>`;
+      }
+      if (config.carriages) {
+        html += `<div id="carriage_${spaceId}" class="gest_forces" style="top: calc(var(--gestMapScale) * ${config.carriages.top}px); left: calc(var(--gestMapScale) * ${config.carriages.left}px); width: calc(var(--gestMapScale) * ${config.carriages.width}px); height: calc(var(--gestMapScale) * ${config.carriages.height}px);"></div>`;
       }
       return html;
     })

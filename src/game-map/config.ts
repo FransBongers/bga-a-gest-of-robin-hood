@@ -4,6 +4,7 @@ const SPACES_CONFIG: Record<
     camps?: LocationConfig;
     henchmen?: LocationConfig;
     merryMen?: LocationConfig;
+    carriages?: LocationConfig;
   }
 > = {
   [BINGHAM]: {
@@ -25,6 +26,12 @@ const SPACES_CONFIG: Record<
       width: 82,
       height: 170,
     },
+    carriages: {
+      top: 1419,
+      left: 805,
+      width: 100,
+      height: 50,
+    }
   },
   [BLYTH]: {
     henchmen: {
@@ -45,6 +52,12 @@ const SPACES_CONFIG: Record<
       width: 100,
       height: 160,
     },
+    carriages: {
+      top: 500,
+      left: 772,
+      width: 50,
+      height: 100,
+    }
   },
   [MANSFIELD]: {
     henchmen: {
@@ -65,6 +78,12 @@ const SPACES_CONFIG: Record<
       width: 100,
       height: 145,
     },
+    carriages: {
+      top: 1028,
+      left: 253,
+      width: 50,
+      height: 100,
+    }
   },
   [NEWARK]: {
     henchmen: {
@@ -85,6 +104,12 @@ const SPACES_CONFIG: Record<
       width: 100,
       height: 170,
     },
+    carriages: {
+      top: 650,
+      left: 1136,
+      width: 100,
+      height: 50,
+    }
   },
   [NOTTINGHAM]: {
     henchmen: {
@@ -105,6 +130,12 @@ const SPACES_CONFIG: Record<
       width: 170,
       height: 79,
     },
+    carriages: {
+      top: 1108,
+      left: 634,
+      width: 50,
+      height: 100,
+    }
   },
   [OLLERTON_HILL]: {
     // henchmen: {
@@ -145,6 +176,12 @@ const SPACES_CONFIG: Record<
       width: 100,
       height: 160,
     },
+    carriages: {
+      top: 1537,
+      left: 511,
+      width: 100,
+      height: 50,
+    }
   },
   [RETFORD]: {
     henchmen: {
@@ -165,6 +202,12 @@ const SPACES_CONFIG: Record<
       width: 100,
       height: 143,
     },
+    carriages: {
+      top: 227,
+      left: 989,
+      width: 50,
+      height: 100,
+    }
   },
   [SHIRE_WOOD]: {
     henchmen: {
@@ -185,6 +228,12 @@ const SPACES_CONFIG: Record<
       width: 140,
       height: 100,
     },
+    carriages: {
+      top: 855,
+      left: 467,
+      width: 50,
+      height: 50,
+    }
   },
   [SOUTHWELL_FOREST]: {
     henchmen: {
@@ -205,6 +254,12 @@ const SPACES_CONFIG: Record<
       width: 100,
       height: 100,
     },
+    carriages: {
+      top: 949,
+      left: 771,
+      width: 50,
+      height: 50,
+    }
   },
   [TUXFORD]: {
     henchmen: {
@@ -225,6 +280,12 @@ const SPACES_CONFIG: Record<
       width: 100,
       height: 161,
     },
+    carriages: {
+      top: 724,
+      left: 823,
+      width: 50,
+      height: 100,
+    }
   },
 };
 
@@ -437,7 +498,7 @@ const INITIATIVE_TRACK: TrackConfig[] = [
 
 const UNIQUE_SPACES: TrackConfig[] = [
   {
-    id: 'usedCarriages',
+    id: 'carriage_usedCarriages',
     top: 523,
     left: 249,
   },

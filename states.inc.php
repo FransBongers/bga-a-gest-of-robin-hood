@@ -188,6 +188,43 @@ $machinestates = array(
     // .##.....##.##....##....##.....##..##.....##.##...###.##....##
     // .##.....##..######.....##....####..#######..##....##..######.
 
+    ST_CHOOSE_ACTION => [
+        'name' => 'chooseAction',
+        'description' => clienttranslate('${actplayer} must choose an action'),
+        'descriptionmyturn' => clienttranslate('${you}'),
+        'type' => 'activeplayer',
+        'args' => 'argsAtomicAction',
+        'action' => 'stAtomicAction',
+        // 'transitions' => [],
+        'possibleactions' => ['actChooseAction', 'actPassOptionalAction', 'actRestart'],
+    ],
+
+    ST_START_OF_ROUND => [
+        'name' => 'startOfRound',
+        'type' => 'game',
+        'action' => 'stStartOfRound',
+        'transitions' => [],
+    ],
+
+    ST_END_OF_ROUND => [
+        'name' => 'endOfRound',
+        'type' => 'game',
+        'action' => 'stEndOfRound',
+        "transitions" => ["startOfRound" => ST_START_OF_ROUND]
+    ],
+
+    
+    ST_MOVE_CARRIAGE => [
+        'name' => 'moveCarriage',
+        'description' => clienttranslate('${actplayer} must move a Carriage'),
+        'descriptionmyturn' => clienttranslate('${you}'),
+        'type' => 'activeplayer',
+        'args' => 'argsAtomicAction',
+        'action' => 'stAtomicAction',
+        // 'transitions' => [],
+        'possibleactions' => ['actMoveCarriage', 'actPassOptionalAction', 'actRestart'],
+    ],
+
     ST_PLAYER_ACTION => [
         'name' => 'playerAction',
         'description' => clienttranslate('${actplayer} may perform actions'),

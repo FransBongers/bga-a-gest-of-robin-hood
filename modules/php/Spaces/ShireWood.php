@@ -12,5 +12,6 @@ class ShireWood extends \AGestOfRobinHood\Models\Space
     $this->adjacentSpaces = [
 
     ];
+    $this->road = NOTTINGHAM;
   }
 }

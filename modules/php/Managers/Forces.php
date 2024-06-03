@@ -34,8 +34,10 @@ class Forces extends \AGestOfRobinHood\Helpers\Pieces
   {
     // $prefix = self::getClassPrefix($counterId);
 
-    // $className = "\AGestOfRobinHood\Forces\\$prefix\\$counterId";
-    return new Force($row);
+    $type = $row['type'];
+
+    $className = "\AGestOfRobinHood\Forces\\$type";
+    return new $className($row);
   }
 
   // ..######...########.########.########.########.########...######.
@@ -69,13 +71,28 @@ class Forces extends \AGestOfRobinHood\Helpers\Pieces
     $spaces = Spaces::getAll();
 
     $publicData = [];
+    $publicData[USED_CARRIAGES] = [
+      CARRIAGE => [
+        HIDDEN => 0,
+        TALLAGE_CARRIAGE => 0,
+        TRIBUTE_CARRIAGE => 0,
+        TRAP_CARRIAGE => 0,
+      ]
+    ];
     $robinHoodData = [];
+    $sheriffData = [];
 
     foreach ($spaces as $spaceId => $space) {
       $publicData[$spaceId] = [
         CAMP => [
           HIDDEN => 0,
           REVEALED => 0,
+        ],
+        CARRIAGE => [
+          HIDDEN => 0,
+          TALLAGE_CARRIAGE => 0,
+          TRIBUTE_CARRIAGE => 0,
+          TRAP_CARRIAGE => 0,
         ],
         MERRY_MEN => [
           HIDDEN => 0,
@@ -89,18 +106,23 @@ class Forces extends \AGestOfRobinHood\Helpers\Pieces
         CAMP => [],
         ROBIN_HOOD => [],
       ];
+      $sheriffData[$spaceId] = [
+        CARRIAGE => []
+      ];
     }
 
     $forces = self::getAll();
 
+    $locationsOnMap = array_merge(SPACES, [USED_CARRIAGES, PRISION]);
+
     foreach ($forces as $forceId => $force) {
       $location = $force->getLocation();
-      if (!in_array($location, SPACES)) {
+      if (!in_array($location, $locationsOnMap)) {
         continue;
       }
       $type = $force->getType();
       $isHidden = $force->isHidden();
-      Notifications::log('force type', $type);
+
       if ($type === HENCHMEN) {
         $publicData[$location][HENCHMEN][] = $force;
       } else if ($type === MERRY_MEN) {
@@ -116,12 +138,20 @@ class Forces extends \AGestOfRobinHood\Helpers\Pieces
         } else {
           $publicData[$location][ROBIN_HOOD] = 1;
         }
+      } else if (in_array($type, [TALLAGE_CARRIAGE, TRIBUTE_CARRIAGE, TRAP_CARRIAGE])) {
+        $sheriffData[$location][CARRIAGE][] = $force;
+        if ($isHidden) {
+          $publicData[$location][CARRIAGE][HIDDEN] += 1;
+        } else {
+          $publicData[$location][CARRIAGE][$type] += 1;
+        }
       }
     }
 
     return [
       'public' => $publicData,
-      'robinHood' => $robinHoodData,
+      ROBIN_HOOD => $robinHoodData,
+      SHERIFF => $sheriffData,
     ];
   }
 
@@ -157,6 +187,14 @@ class Forces extends \AGestOfRobinHood\Helpers\Pieces
   // .......##.##..........##.......##....##.......##...##.........##
   // .##....##.##..........##.......##....##.......##....##..##....##
   // ..######..########....##.......##....########.##.....##..######.
+
+  // ..######..########.########.##.....##.########.
+  // .##....##.##..........##....##.....##.##.....##
+  // .##.......##..........##....##.....##.##.....##
+  // ..######..######......##....##.....##.########.
+  // .......##.##..........##....##.....##.##.......
+  // .##....##.##..........##....##.....##.##.......
+  // ..######..########....##.....#######..##.......
 
   public static function createForces()
   {
@@ -202,6 +240,33 @@ class Forces extends \AGestOfRobinHood\Helpers\Pieces
       "hidden" => 1
     ];
 
+    $forces[] = [
+      "id" => "carriage_{INDEX}",
+      "nbr" => 2,
+      "nbrStart" => 1,
+      "location" => CARRIAGE_SUPPLY,
+      "type" => TALLAGE_CARRIAGE,
+      "hidden" => 1,
+    ];
+
+    $forces[] = [
+      "id" => "carriage_{INDEX}",
+      "nbr" => 2,
+      "nbrStart" => 3,
+      "location" => CARRIAGE_SUPPLY,
+      "type" => TRIBUTE_CARRIAGE,
+      "hidden" => 1,
+    ];
+
+    $forces[] = [
+      "id" => "carriage_{INDEX}",
+      "nbr" => 2,
+      "nbrStart" => 5,
+      "location" => CARRIAGE_SUPPLY,
+      "type" => TRAP_CARRIAGE,
+      "hidden" => 1,
+    ];
+
     self::create($forces, null);
 
     self::shuffle(MERRY_MEN_SUPPLY);
@@ -224,7 +289,9 @@ class Forces extends \AGestOfRobinHood\Helpers\Pieces
     // self::pickForLocation(1, MERRY_MEN_SUPPLY, REMSTON);
     // self::pickForLocation(1, MERRY_MEN_SUPPLY, SHIRE_WOOD);
     // self::pickForLocation(1, MERRY_MEN_SUPPLY, SOUTHWELL_FOREST);
-    
+    self::pickForLocation(1, CARRIAGE_SUPPLY, BINGHAM);
+    self::pickForLocation(1, CARRIAGE_SUPPLY, RETFORD);
+    self::pickForLocation(1, HENCHMEN_SUPPLY, RETFORD);
   }
 
   public static function setupNewGame($players = null, $options = null)

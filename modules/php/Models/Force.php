@@ -31,8 +31,10 @@ class Force extends \AGestOfRobinHood\Helpers\DB_Model
     // 'extraData' => ['extra_data', 'obj'],
   ];
 
+  protected $name = '';
+
   protected $staticAttributes = [
-    // 'type'
+    'name'
   ];
 
   public function jsonSerialize()
@@ -51,5 +53,17 @@ class Force extends \AGestOfRobinHood\Helpers\DB_Model
   public function isHidden()
   {
     return $this->getHidden() === 1;
+  }
+
+  public function reveal()
+  {
+  }
+
+  public function getCarriageGainsSheriff()
+  {
+    return [
+      'shillings' => 0,
+      'royalFavour' => 0,
+    ];
   }
 }

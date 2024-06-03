@@ -62,6 +62,14 @@ class NotificationManager {
       'log',
       'refreshUI',
       // Game
+      'chooseAction',
+      'drawAndRevealCard',
+      'gainShillings',
+      'moveCarriage',
+      'moveCarriagePrivate',
+      'moveCarriagePublic',
+      'moveRoyalFavourMarker',
+      'revealCarriage',
       'setupRobinHood',
       'setupRobinHoodPrivate',
     ];
@@ -110,6 +118,13 @@ class NotificationManager {
         .framework()
         .notifqueue.setIgnoreNotificationCheck(
           'setupRobinHood',
+          (notif: Notif<{ playerId: number }>) =>
+            notif.args.playerId == this.game.getPlayerId()
+        );
+      this.game
+        .framework()
+        .notifqueue.setIgnoreNotificationCheck(
+          'moveCarriage',
           (notif: Notif<{ playerId: number }>) =>
             notif.args.playerId == this.game.getPlayerId()
         );
@@ -183,6 +198,117 @@ class NotificationManager {
     this.game.clearInterface();
     this.game.gameMap.updateInterface({ gamedatas });
     this.game.playerManager.updatePlayers({ gamedatas });
+  }
+
+  async notif_chooseAction(notif: Notif<NotifChooseActionArgs>) {
+    const { marker } = notif.args;
+
+    const markerNode = document.getElementById(marker.id);
+    const toNode = document.getElementById(marker.location);
+
+    if (!(markerNode && toNode)) {
+      return;
+    }
+
+    await this.game.animationManager.attachWithAnimation(
+      new BgaSlideAnimation({ element: markerNode }),
+      toNode
+    );
+  }
+
+  async notif_drawAndRevealCard(notif: Notif<NotifDrawAndRevealCardArgs>) {}
+
+  async notif_gainShillings(notif: Notif<NotifGainShillingsArgs>) {
+    const { amount, playerId } = notif.args;
+    this.getPlayer({ playerId }).counters.shillings.incValue(amount);
+  }
+
+  async notif_moveCarriage(notif: Notif<NotifMoveCarriageArgs>) {
+    const { carriage, henchman, toSpaceId, fromSpaceId } = notif.args;
+
+    const promises = [
+      this.game.gameMap.moveCarriagePublic({
+        hidden: carriage.hidden,
+        type: carriage.type,
+        toSpaceId,
+        fromSpaceId,
+      }),
+    ];
+    if (henchman) {
+      promises.push(
+        this.game.gameMap.moveHenchman({ henchmanId: henchman.id, toSpaceId })
+      );
+    }
+
+    await Promise.all(promises);
+  }
+
+  async notif_moveCarriagePublic(notif: Notif<NotifMoveCarriagePublicArgs>) {
+    const { carriage, toSpaceId, fromSpaceId } = notif.args;
+    console.log('carriage', carriage);
+    if (
+      this.game.getPlayerId() === this.game.playerManager.getSheriffPlayerId()
+    ) {
+      console.log('if');
+      await this.game.gameMap.moveCarriagePrivate({
+        carriageId: carriage.id,
+        toSpaceId,
+      });
+    } else {
+      console.log('else');
+      await this.game.gameMap.moveCarriagePublic({
+        hidden: carriage.hidden,
+        type: carriage.hidden ? null : carriage.type,
+        toSpaceId,
+        fromSpaceId,
+      });
+    }
+  }
+
+  async notif_moveCarriagePrivate(notif: Notif<NotifMoveCarriagePrivateArgs>) {
+    const { carriage, henchman, toSpaceId } = notif.args;
+
+    const promises = [
+      this.game.gameMap.moveCarriagePrivate({
+        carriageId: carriage.id,
+        toSpaceId,
+      }),
+    ];
+    if (henchman) {
+      promises.push(
+        this.game.gameMap.moveHenchman({ henchmanId: henchman.id, toSpaceId })
+      );
+    }
+
+    await Promise.all(promises);
+  }
+
+  async notif_moveRoyalFavourMarker(notif: Notif<NotifMoveRoyalFavourMarkerArgs>) {
+    const { marker } = notif.args;
+    await this.game.gameMap.moveMarker({id: marker.id, location: marker.location});
+  }
+
+  async notif_revealCarriage(notif: Notif<NotifRevealCarriageArgs>) {
+    const { carriage, playerId } = notif.args;
+
+    const element =
+      this.game.getPlayerId() === this.game.playerManager.getSheriffPlayerId()
+        ? document.getElementById(carriage.id)
+        : this.game.gameMap.getCarriageElement({
+            spaceId: carriage.location,
+            hidden: true,
+            type: null,
+          });
+
+    if (!element) {
+      return;
+    }
+    element.setAttribute('data-hidden', 'false');
+    element.replaceChildren();
+    element.insertAdjacentHTML(
+      'afterbegin',
+      `<span>${carriage.type.substring(0, 3).toUpperCase()}</span>`
+    );
   }
 
   async notif_setupRobinHood(notif: Notif<NotifSetupRobinHoodArgs>) {

@@ -4,3 +4,7 @@ const debug = isDebug ? console.info.bind(window.console) : () => {};
 const capitalizeFirstLetter = (string: string) => {
   return string.charAt(0).toUpperCase() + string.slice(1);
 };
+
+const lowerCaseFirstLetter = (string: string) => {
+  return string.charAt(0).toLowerCase() + string.slice(1);
+};

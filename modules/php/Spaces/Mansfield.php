@@ -12,5 +12,6 @@ class Mansfield extends \AGestOfRobinHood\Models\Space
     $this->adjacentSpaces = [
 
     ];
+    $this->road = SHIRE_WOOD;
   }
 }

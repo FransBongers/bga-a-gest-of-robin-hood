@@ -2,6 +2,9 @@
 
 namespace AGestOfRobinHood\Core;
 
+use AGestOfRobinHood\Managers\Players;
+use AGestOfRobinHood\Managers\Spaces;
+
 class Notifications
 {
   // .########...#######..####.##.......########.########.
@@ -135,7 +138,15 @@ class Notifications
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
-
+  private static function getActionName($action)
+  {
+    $map = [
+      SINGLE_PLOT => clienttranslate('Single Plot'),
+      EVENT => clienttranslate('Event'),
+      PLOTS_AND_DEEDS => clienttranslate("Plots & Deeds"),
+    ];
+    return $map[$action];
+  }
 
   // ..######......###....##.....##.########
   // .##....##....##.##...###...###.##......
@@ -152,6 +163,130 @@ class Notifications
   // .##.....##.##..........##....##.....##.##.....##.##.....##.......##
   // .##.....##.##..........##....##.....##.##.....##.##.....##.##....##
   // .##.....##.########....##....##.....##..#######..########...######.
+
+  public static function chooseAction($player, $marker, $action)
+  {
+    self::notifyAll("chooseAction", clienttranslate('${player_name} chooses ${tkn_boldText_actionName}'), [
+      'player' => $player,
+      'tkn_boldText_actionName' => self::getActionName($action),
+      'marker' => $marker,
+      'i18n' => ['tkn_boldText_actionName']
+    ]);
+  }
+
+  public static function drawAndRevealCard($card)
+  {
+    self::notifyAll("drawAndRevealCard", clienttranslate('A new card is drawn from the Event deck: ${tkn_boldText_cardTitle}'), [
+      'card' => $card,
+      'tkn_boldText_cardTitle' => $card->getTitle(),
+    ]);
+  }
+
+  public static function firstEligible($marker)
+  {
+    $player = $marker->getId() === ROBIN_HOOD_ELIGIBILITY_MARKER ? Players::get(Players::getRobinHoodPlayerId()) : Players::get(Players::getSheriffPlayerId());
+
+    self::notifyAll("chooseAction", clienttranslate('${player_name} becomes ${tkn_boldText_eligible}'), [
+      'player' => $player,
+      'tkn_boldText_eligible' => clienttranslate('First Eligible'),
+      'marker' => $marker,
+      'i18n' => ['tkn_boldText_eligible']
+    ]);
+  }
+
+  public static function gainShillings($player, $amount)
+  {
+    self::notifyAll("gainShillings", clienttranslate('${player_name} gains ${amount} Shillings'), [
+      'player' => $player,
+      'amount' => $amount,
+    ]);
+  }
+
+  public static function moveCarriage($player, $carriage, $fromSpace, $toSpace, $henchman)
+  {
+    $privateText = $henchman !== null ?
+      clienttranslate('Private: ${player_name} moves a Carriage and a Henchman from ${tkn_boldText_from} to ${tkn_boldText_to}') :
+      clienttranslate('Private: ${player_name} moves a Carriage from ${tkn_boldText_from} to ${tkn_boldText_to}');
+
+    self::notify($player, 'moveCarriagePrivate', $privateText, [
+      'player' => $player,
+      'tkn_boldText_from' => $fromSpace->getName(),
+      'tkn_boldText_to' => $toSpace->getName(),
+      'carriage' => $carriage->jsonSerialize(),
+      'henchman' => $henchman,
+      'toSpaceId' => $toSpace->getId(),
+      'i18n' => ['tkn_boldText_from', 'tkn_boldText_to'],
+    ]);
+
+    $text = $henchman !== null ?
+      clienttranslate('${player_name} moves a Carriage and a Henchman from ${tkn_boldText_from} to ${tkn_boldText_to}') :
+      clienttranslate('${player_name} moves a Carriage from ${tkn_boldText_from} to ${tkn_boldText_to}');
+    $carriageIsHidden = $carriage->isHidden();
+
+    self::notifyAll('moveCarriage', $text, [
+      'player' => $player,
+      'tkn_boldText_from' => $fromSpace->getName(),
+      'tkn_boldText_to' => $toSpace->getName(),
+      'carriage' => [
+        'hidden' => $carriageIsHidden,
+        'type' => $carriageIsHidden ? null : $carriage->getType(),
+      ],
+      'henchman' => $henchman,
+      'toSpaceId' => $toSpace->getId(),
+      'fromSpaceId' => $fromSpace->getId(),
+      'i18n' => ['tkn_boldText_from', 'tkn_boldText_to'],
+    ]);
+  }
+
+  public static function revealCarriage($player, $carriage)
+  {
+    self::notifyAll("revealCarriage", clienttranslate('${player_name} reveals ${tkn_boldText_carriageName} in ${tkn_boldText_spaceName}'), [
+      'player' => $player,
+      'tkn_boldText_carriageName' => $carriage->getName(),
+      'tkn_boldText_spaceName' => Spaces::get($carriage->getLocation())->getName(),
+      'carriage' => $carriage->jsonSerialize(),
+      'i18n' => ['tkn_boldText_carriageName', 'tkn_boldText_spaceName']
+    ]);
+  }
+
+  public static function moveCarriageToUsedCarriages($player, $carriage, $fromSpaceId)
+  {
+    self::notifyAll('moveCarriagePublic', clienttranslate('${player_name} moves a Carriage to ${tkn_boldText_used}'), [
+      'player' => $player,
+      'tkn_boldText_used' => clienttranslate('Used Carriages'),
+      'carriage' => $carriage->jsonSerialize(),
+      'toSpaceId' => $carriage->getLocation(),
+      'fromSpaceId' => $fromSpaceId,
+      'i18n' => ['tkn_boldText_used'],
+    ]);
+  }
+
+  public static function moveRoyalFavourMarker($player, $marker, $steps, $direction)
+  {
+    $text = $steps === 1 ?
+      clienttranslate('${player_name} moves Royal Favour ${numberOfSteps} step towards ${tkn_boldText_direction}') :
+      clienttranslate('${player_name} moves Royal Favour ${numberOfSteps} steps towards ${tkn_boldText_direction}');
+
+    self::notifyAll("moveRoyalFavourMarker", $text, [
+      'player' => $player,
+      'tkn_boldText_direction' => $direction === ORDER ? clienttranslate('Order') : clienttranslate('Justice'),
+      'marker' => $marker,
+      'numberOfSteps' => $steps,
+      'i18n' => ['tkn_boldText_direction']
+    ]);
+  }
+
+  public static function secondEligible($marker)
+  {
+    $player = $marker->getId() === ROBIN_HOOD_ELIGIBILITY_MARKER ? Players::get(Players::getRobinHoodPlayerId()) : Players::get(Players::getSheriffPlayerId());
+
+    self::notifyAll("chooseAction", clienttranslate('${player_name} becomes ${tkn_boldText_eligible}'), [
+      'player' => $player,
+      'tkn_boldText_eligible' => clienttranslate('Second Eligible'),
+      'marker' => $marker,
+      'i18n' => ['tkn_boldText_eligible']
+    ]);
+  }
 
   public static function setupRobinHood($player, $robinHood, $merryMen)
   {

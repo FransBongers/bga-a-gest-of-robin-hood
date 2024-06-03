@@ -12,5 +12,6 @@ class Blyth extends \AGestOfRobinHood\Models\Space
     $this->adjacentSpaces = [
 
     ];
+    $this->road = TUXFORD;
   }
 }

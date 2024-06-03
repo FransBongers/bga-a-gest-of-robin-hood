@@ -49,12 +49,17 @@ const ST_CLEANUP = 88; // TODO: replace
 // Game
 const ST_PLAYER_ACTION = 22;
 const ST_SETUP_ROBIN_HOOD = 23;
-
+const ST_CHOOSE_ACTION = 24;
+const ST_START_OF_ROUND = 25;
+const ST_END_OF_ROUND = 26;
+const ST_MOVE_CARRIAGE = 27;
 
 /**
  * Atomic actions
  */
 const PLAYER_ACTION = 'PLAYER_ACTION';
+const CHOOSE_ACTION = 'CHOOSE_ACTION';
+const MOVE_CARRIAGE = 'MOVE_CARRIAGE';
 const SETUP_ROBIN_HOOD = 'SETUP_ROBIN_HOOD';
 
 
@@ -63,15 +68,23 @@ const DIE_FACES = [];
 /**
  * Force types
  */
-const CAMP = 'camp';
-const MERRY_MEN = 'merryMen';
-const HENCHMEN = 'henchmen';
-const ROBIN_HOOD = 'robinHood'; // also used for side
+const CAMP = 'Camp';
+const MERRY_MEN = 'MerryMen';
+const HENCHMEN = 'Henchmen';
+const ROBIN_HOOD = 'RobinHood'; // also used for side
+const CARRIAGE = 'Carriage';
+
+const TALLAGE_CARRIAGE = 'TallageCarriage';
+const TRIBUTE_CARRIAGE = 'TributeCarriage';
+const TRAP_CARRIAGE = 'TrapCarriage';
 
 /**
  * Sides
  */
-const SHERIFF = 'sheriff';
+const SHERIFF = 'Sheriff';
+
+const ORDER = 'order';
+const JUSTICE = 'justice';
 
 
 const COLOR_SIDE_MAP = [
@@ -98,6 +111,7 @@ const SUBMISSIVE = 'submissive';
 const CAMPS_SUPPLY = 'camps_supply';
 const MERRY_MEN_SUPPLY = 'merryMen_supply';
 const HENCHMEN_SUPPLY = 'henchmen_supply';
+const CARRIAGE_SUPPLY = 'carriage_supply';
 
 /**
  * Card types
@@ -152,6 +166,9 @@ const SPACES = [
   SOUTHWELL_FOREST,
   TUXFORD,
 ];
+
+const USED_CARRIAGES = 'usedCarriages';
+const PRISION = 'prison';
 
 /**
  * Markers

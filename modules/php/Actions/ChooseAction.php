@@ -9,17 +9,15 @@ use AGestOfRobinHood\Core\Globals;
 use AGestOfRobinHood\Core\Stats;
 use AGestOfRobinHood\Helpers\Locations;
 use AGestOfRobinHood\Helpers\Utils;
-use AGestOfRobinHood\Managers\Forces;
+use AGestOfRobinHood\Managers\Markers;
 use AGestOfRobinHood\Managers\Players;
 
-/**
- * TODO: check if this can be removed?
- */
-class SetupRobinHood extends \AGestOfRobinHood\Models\AtomicAction
+
+class ChooseAction extends \AGestOfRobinHood\Models\AtomicAction
 {
   public function getState()
   {
-    return ST_SETUP_ROBIN_HOOD;
+    return ST_CHOOSE_ACTION;
   }
 
   // ....###....########...######....######.
@@ -30,13 +28,13 @@ class SetupRobinHood extends \AGestOfRobinHood\Models\AtomicAction
   // .##.....##.##....##..##....##..##....##
   // .##.....##.##.....##..######....######.
 
-  public function argsSetupRobinHood()
+  public function argsChooseAction()
   {
-
     $data = [
+      SINGLE_PLOT => Markers::getTopOf(Locations::initiativeTrack(SINGLE_PLOT)) === null,
+      EVENT => Markers::getTopOf(Locations::initiativeTrack(EVENT)) === null,
+      PLOTS_AND_DEEDS => Markers::getTopOf(Locations::initiativeTrack(PLOTS_AND_DEEDS)) === null,
     ];
-
-    // args['_private'][specificPid]=
 
     return $data;
   }
@@ -57,43 +55,29 @@ class SetupRobinHood extends \AGestOfRobinHood\Models\AtomicAction
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function actPassSetupRobinHood()
+  public function actPassChooseAction()
   {
     $player = self::getPlayer();
     // Stats::incPassActionCount($player->getId(), 1);
     Engine::resolve(PASS);
   }
 
-  // public function actSetupRobinHood($cardId, $strength)
-  public function actSetupRobinHood($args)
+  // public function actPlayerAction($cardId, $strength)
+  public function actChooseAction($args)
   {
-    self::checkAction('actSetupRobinHood');
+    self::checkAction('actChooseAction');
+    $action = $args['action'];
 
-    $robinHoodLocation = $args['robinHood'];
-    $merryMenLocations = $args['merryMen'];
+    $stateArgs = $this->argsChooseAction();
 
-    $allowesSpaces = [SHIRE_WOOD, SOUTHWELL_FOREST, REMSTON];
-    if (!in_array($robinHoodLocation, $allowesSpaces)) {
-      throw new \feException("ERROR 001");
+    if (!$stateArgs[$action]) {
+      throw new \feException("ERROR 003");
     }
-
-    foreach($merryMenLocations as $spaceId) {
-      if (!in_array($spaceId, $allowesSpaces)) {
-        throw new \feException("ERROR 002");
-      }
-    }
-
-    $robinHood = Forces::get(ROBIN_HOOD);
-    $robinHood->setLocation($robinHoodLocation);
-    $merryMen = [];
+    $player = self::getPlayer();
+    $marker = $player->getEligibilityMarker();
+    $marker->setLocation(Locations::initiativeTrack($action));
     
-    foreach($merryMenLocations as $spaceId) {
-      $merryMan = Forces::getTopOf(MERRY_MEN_SUPPLY);
-      $merryMan->setLocation($spaceId);
-      $merryMen[] = $merryMan;
-    }
-
-    Notifications::setupRobinHood(self::getPlayer(), $robinHood, $merryMen);
+    Notifications::chooseAction($player, $marker, $action);
 
     $this->resolveAction($args);
   }

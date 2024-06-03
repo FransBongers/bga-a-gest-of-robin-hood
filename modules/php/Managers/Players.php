@@ -222,11 +222,109 @@ class Players extends \AGestOfRobinHood\Helpers\DB_Manager
   // .##.....##.##..........##....##.....##.##.....##.##.....##.##....##
   // .##.....##.########....##....##.....##..#######..########...######.
 
+  public static function getRobinHoodPlayer()
+  {
+    return self::get(self::getPlayerIdForSide(ROBIN_HOOD));
+  }
+
   public static function getRobinHoodPlayerId()
   {
-    $robinHoodPlayerId = Utils::array_find(PlayersExtra::getAll()->toArray(), function ($playerExtra) {
-      return $playerExtra['side'] === ROBIN_HOOD;
+    return self::getPlayerIdForSide(ROBIN_HOOD);
+  }
+
+  public static function getSheriffPlayer()
+  {
+    return self::get(self::getPlayerIdForSide(SHERIFF));
+  }
+
+  public static function getSheriffPlayerId()
+  {
+    return self::getPlayerIdForSide(SHERIFF);
+  }
+
+  public static function getPlayerIdForSide($side)
+  {
+    $playerId = Utils::array_find(PlayersExtra::getAll()->toArray(), function ($playerExtra) use ($side) {
+      return $playerExtra['side'] === $side;
     })['player_id'];
-    return intval($robinHoodPlayerId);
+    return intval($playerId);
+  }
+
+  public static function getEligibilityOrder()
+  {
+    $order = [];
+    $firstEligible = Markers::getTopOf(Locations::initiativeTrack(FIRST_ELIGIBLE));
+    if ($firstEligible->getId() === ROBIN_HOOD_ELIGIBILITY_MARKER) {
+      $order[] = Players::get(self::getRobinHoodPlayerId())->getId();
+    } else {
+      $order[] = Players::get(self::getSheriffPlayerId())->getId();
+    }
+    $secondEligible = Markers::getTopOf(Locations::initiativeTrack(SECOND_ELIGIBLE));
+    if ($secondEligible->getId() === ROBIN_HOOD_ELIGIBILITY_MARKER) {
+      $order[] = Players::get(self::getRobinHoodPlayerId())->getId();
+    } else {
+      $order[] = Players::get(self::getSheriffPlayerId())->getId();
+    };
+    return $order;
+  }
+
+  public static function incShillings($playerId, $increment)
+  {
+    $value = intval(PlayersExtra::get($playerId)['shillings']) + $increment;
+    return PlayersExtra::DB()->update(['shillings' => $value], $playerId);
+  }
+
+  public static function moveRoyalFavour($player, $steps, $direction)
+  {
+    $rfMarker = Markers::get(ROYAL_FAVOUR_MARKER);
+    Notifications::log('rfMarker', $rfMarker);
+    $currentLocation = $rfMarker->getLocation();
+    $splitLocation = explode('_', $currentLocation);
+    $sameDirection = Utils::startsWith($currentLocation, $direction);
+
+    $currentValue = intval($splitLocation[1]);
+    $currentTrack = $splitLocation[0];
+    $newValue = 0;
+
+    if ($sameDirection) {
+      $newValue = min($currentValue + $steps, 7);
+    } else {
+      $newValue = $currentValue - $steps;
+    }
+    $trackChanges = $newValue <= 0;
+
+    if ($trackChanges) {
+      $newValue = abs($newValue) + 1;
+    }
+
+    $otherDirection = Utils::startsWith($currentTrack, ORDER) ? JUSTICE : ORDER;
+
+    $newLocation = $trackChanges ? Locations::royalFavourTrack($otherDirection, $newValue) : implode('_', [$currentTrack, $newValue]);
+
+    $rfMarker->setLocation($newLocation);
+
+    Notifications::moveRoyalFavourMarker($player, $rfMarker, $steps, $direction);
+
+
+    // $otherPlayer = Players::getOther($player->getId());
+    // // $location = $vpMarker->getLocation();
+
+    // $score = $player->getScore();
+
+    // $updatedScore = 0;
+    // if ($score < 0) {
+    //   $updatedScore = $score + $points;
+    //   if ($updatedScore >= 0) {
+    //     $updatedScore += 1;
+    //   }
+    // } else {
+    //   $updatedScore = $score + $points;
+    // }
+    // $player->setScore($updatedScore);
+    // $otherPlayer->setScore($updatedScore * -1);
+
+    // $vpMarker->setLocation(Locations::victoryPointsTrack($updatedScore > 0 ? $player->getFaction() : $otherPlayer->getFaction(), abs($updatedScore)));
+
+    // Notifications::scoreVictoryPoints($player, $otherPlayer, $vpMarker, $points);
   }
 }

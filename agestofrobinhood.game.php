@@ -126,6 +126,7 @@ class agestofrobinhood extends Table
         $pId = $pId ?? Players::getCurrentId();
 
         $isRobinHood = $pId === Players::getRobinHoodPlayerId();
+        $isSheriff = $pId === Players::getSheriffPlayerId();
 
         $forces = Forces::getUiData();
 
@@ -139,8 +140,11 @@ class agestofrobinhood extends Table
         ];
 
         if ($isRobinHood) {
-            $data['robinHoodForces'] = $forces['robinHood'];
+            $data['robinHoodForces'] = $forces[ROBIN_HOOD];
+        } else if ($isSheriff) {
+            $data['sheriffForces'] = $forces[SHERIFF];
         }
+
 
         return $data;
     }

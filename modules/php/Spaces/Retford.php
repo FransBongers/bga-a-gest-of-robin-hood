@@ -12,5 +12,6 @@ class Retford extends \AGestOfRobinHood\Models\Space
     $this->adjacentSpaces = [
 
     ];
+    $this->road = TUXFORD;
   }
 }

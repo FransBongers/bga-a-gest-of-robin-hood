@@ -5,6 +5,7 @@ namespace AGestOfRobinHood\Models;
 use AGestOfRobinHood\Core\Notifications;
 use AGestOfRobinHood\Helpers\Utils;
 use AGestOfRobinHood\Managers\Connections;
+use AGestOfRobinHood\Managers\Forces;
 use AGestOfRobinHood\Managers\Spaces;
 use AGestOfRobinHood\Managers\Units;
 
@@ -30,12 +31,14 @@ class Space extends \AGestOfRobinHood\Helpers\DB_Model
   protected $staticAttributes = [
     'adjacentSpaces',
     'name',
+    'road',
     'setupStatus',
   ];
 
   protected $adjacentSpaces = [];
   protected $name = '';
   protected $setupStatus = null;
+  protected $road = null;
   
 
 
@@ -67,6 +70,33 @@ class Space extends \AGestOfRobinHood\Helpers\DB_Model
   public function getAdjacentSpacesIds()
   {
     return array_keys($this->adjacentSpaces);
+  }
+
+  public function getSingleForce($type) {
+    $forces = $this->getForces($type);
+    $count = count($forces);
+    if ($count === 0) {
+      return null;
+    }
+    return $forces[$count - 1];
+  }
+
+  public function getForces($type = null) {
+    $forces = Forces::getInLocationOrdered($this->id)->toArray();
+    if ($type === null) {
+      return $forces;
+    }
+    return Utils::filter($forces, function ($force) use ($type) {
+      return $force->getType() === $type;
+    });
+  }
+  
+  public function getNextSpaceAlongRoad()
+  {
+    if ($this->road === null) {
+      return null;
+    }
+    return Spaces::get($this->road);
   }
 
 }

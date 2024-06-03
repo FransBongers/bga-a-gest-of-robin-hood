@@ -25,10 +25,8 @@ class PlayerManager {
 
     for (const playerId in game.gamedatas.players) {
       const player = game.gamedatas.players[playerId];
-        this.players[playerId] = new GestPlayer({ player, game: this.game });
-     
+      this.players[playerId] = new GestPlayer({ player, game: this.game });
     }
-
   }
 
   getPlayer({ playerId }: { playerId: number }): GestPlayer {
@@ -41,6 +39,18 @@ class PlayerManager {
 
   getPlayerIds(): number[] {
     return Object.keys(this.players).map(Number);
+  }
+
+  getRobinHoodPlayerId() {
+    return Object.values(this.players)
+      .filter((player) => player.isRobinHood())[0]
+      .getPlayerId();
+  }
+
+  getSheriffPlayerId() {
+    return Object.values(this.players)
+      .filter((player) => !player.isRobinHood())[0]
+      .getPlayerId();
   }
 
   updatePlayers({ gamedatas }: { gamedatas: AGestOfRobinHoodGamedatas }) {

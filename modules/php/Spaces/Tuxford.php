@@ -12,5 +12,6 @@ class Tuxford extends \AGestOfRobinHood\Models\Space
     $this->adjacentSpaces = [
 
     ];
+    $this->road = SOUTHWELL_FOREST;
   }
 }

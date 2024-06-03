@@ -73,10 +73,27 @@ const SPACES = [
   TUXFORD,
 ];
 
+const USED_CARRIAGES = 'usedCarriages';
+const PRISION = 'prison';
+
 /**
  * Force types
  */
-const CAMP = 'camp';
-const MERRY_MEN = 'merryMen';
-const HENCHMEN = 'henchmen';
-const ROBIN_HOOD = 'robinHood'; // also used for side
+const CAMP = 'Camp';
+const MERRY_MEN = 'MerryMen';
+const HENCHMEN = 'Henchmen';
+const ROBIN_HOOD = 'RobinHood'; // also used for side
+const CARRIAGE = 'Carriage';
+
+const TALLAGE_CARRIAGE = 'TallageCarriage';
+const TRIBUTE_CARRIAGE = 'TributeCarriage';
+const TRAP_CARRIAGE = 'TrapCarriage';
+
+/**
+ * Initiative track locations
+ */
+const SINGLE_PLOT = 'singlePlot';
+const EVENT = 'event';
+const PLOTS_AND_DEEDS = 'plotsAndDeeds';
+const FIRST_ELIGIBLE = 'firstEligible';
+const SECOND_ELIGIBLE = 'secondEligible';
