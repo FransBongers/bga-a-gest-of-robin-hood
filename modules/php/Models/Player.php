@@ -60,6 +60,11 @@ class Player extends \AGestOfRobinHood\Helpers\DB_Model
     return (int) parent::getId();
   }
 
+  public function isRobinHood()
+  {
+    return $this->getSide() === ROBIN_HOOD;
+  }
+
   public function getShillings()
   {
     return intval(PlayersExtra::get($this->getId())['shillings']);
@@ -68,6 +73,11 @@ class Player extends \AGestOfRobinHood\Helpers\DB_Model
   public function getSide()
   {
     return COLOR_SIDE_MAP[$this->getColor()];
+  }
+
+  public function isSheriff()
+  {
+    return $this->getSide() === SHERIFF;
   }
 
   public function getEligibilityMarker()
@@ -79,9 +89,11 @@ class Player extends \AGestOfRobinHood\Helpers\DB_Model
     }
   }
 
-  public function gainShillings($amount)
+  public function incShillings($amount, $sendNotif = true)
   {
     Players::incShillings($this->getId(), $amount);
-    Notifications::gainShillings($this, $amount);
+    if ($sendNotif) {
+      Notifications::gainShillings($this, $amount);
+    }
   }
 }

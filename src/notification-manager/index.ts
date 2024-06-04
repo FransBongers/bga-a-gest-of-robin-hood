@@ -69,6 +69,7 @@ class NotificationManager {
       'moveCarriagePrivate',
       'moveCarriagePublic',
       'moveRoyalFavourMarker',
+      'passAction',
       'revealCarriage',
       'setupRobinHood',
       'setupRobinHoodPrivate',

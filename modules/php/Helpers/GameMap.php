@@ -6,6 +6,7 @@ use AGestOfRobinHood\Core\Notifications;
 use AGestOfRobinHood\Helpers\Utils;
 use AGestOfRobinHood\Managers\Forces;
 use AGestOfRobinHood\Managers\Players;
+use AGestOfRobinHood\Managers\Spaces;
 
 class GameMap extends \APP_DbObject
 {
@@ -28,5 +29,28 @@ class GameMap extends \APP_DbObject
   public static function getNumberOfCarriages()
   {
     return count(self::getCarriagesOnMap());
+  }
+
+  public static function getSpacesWithMerryMen($hidden = false)
+  {
+    $merryMen = Forces::getOfType(MERRY_MEN);
+    $merryMen[] = Forces::get(ROBIN_HOOD);
+
+    $spaceIds = [];
+
+    foreach ($merryMen as $merryMan) {
+      $location = $merryMan->getLocation();
+      if (!in_array($location, SPACES)) {
+        continue;
+      }
+      if ($hidden && !($merryMan->isHidden() || $merryMan->getId() === ROBIN_HOOD)) {
+        continue;
+      }
+      $spaceIds[] = $location;
+    }
+
+    $spaceIds = array_unique($spaceIds);
+
+    return Spaces::get($spaceIds)->toArray();
   }
 }

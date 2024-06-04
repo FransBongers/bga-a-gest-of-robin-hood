@@ -1714,7 +1714,12 @@ var AGestOfRobinHood = (function () {
             confirmTurn: new ConfirmTurnState(this),
             chooseAction: new ChooseActionState(this),
             moveCarriage: new MoveCarriageState(this),
+            recruit: new RecruitState(this),
+            rob: new RobState(this),
+            selectDeed: new SelectDeedState(this),
+            selectPlot: new SelectPlotState(this),
             setupRobinHood: new SetupRobinHoodState(this),
+            sneak: new SneakState(this),
         };
         this.infoPanel = new InfoPanel(this);
         this.settings = new Settings(this);
@@ -3233,6 +3238,7 @@ var NotificationManager = (function () {
             'moveCarriagePrivate',
             'moveCarriagePublic',
             'moveRoyalFavourMarker',
+            'passAction',
             'revealCarriage',
             'setupRobinHood',
             'setupRobinHoodPrivate',
@@ -4269,6 +4275,314 @@ var MoveCarriageState = (function () {
     };
     return MoveCarriageState;
 }());
+var RecruitState = (function () {
+    function RecruitState(game) {
+        this.game = game;
+    }
+    RecruitState.prototype.onEnteringState = function (args) {
+        debug('Entering RecruitState');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    RecruitState.prototype.onLeavingState = function () {
+        debug('Leaving RecruitState');
+    };
+    RecruitState.prototype.setDescription = function (activePlayerId) { };
+    RecruitState.prototype.updateInterfaceInitialStep = function () {
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must Recruit'),
+            args: {
+                you: '${you}',
+            },
+        });
+        this.game.addPassButton({
+            optionalAction: this.args.optionalAction,
+        });
+        this.game.addUndoButtons(this.args);
+    };
+    RecruitState.prototype.updateInterfaceConfirm = function (_a) {
+        var _this = this;
+        var plotId = _a.plotId, data = _a.data;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${plotName} in ${spacesLog}?'),
+            args: {
+                plotName: _(data.plotName),
+            },
+        });
+        var callback = function () {
+            _this.game.clearPossible();
+            _this.game.takeAction({
+                action: 'actRecruit',
+                args: {
+                    plotId: plotId,
+                },
+            });
+        };
+        if (this.game.settings.get({
+            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+        }) === PREF_ENABLED) {
+            callback();
+        }
+        else {
+            this.game.addConfirmButton({
+                callback: callback,
+            });
+        }
+        this.game.addCancelButton();
+    };
+    return RecruitState;
+}());
+var RobState = (function () {
+    function RobState(game) {
+        this.game = game;
+    }
+    RobState.prototype.onEnteringState = function (args) {
+        debug('Entering RobState');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    RobState.prototype.onLeavingState = function () {
+        debug('Leaving RobState');
+    };
+    RobState.prototype.setDescription = function (activePlayerId) { };
+    RobState.prototype.updateInterfaceInitialStep = function () {
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must Rob'),
+            args: {
+                you: '${you}',
+            },
+        });
+        this.game.addPassButton({
+            optionalAction: this.args.optionalAction,
+        });
+        this.game.addUndoButtons(this.args);
+    };
+    RobState.prototype.updateInterfaceConfirm = function (_a) {
+        var _this = this;
+        var plotId = _a.plotId, data = _a.data;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${plotName} in ${spacesLog}?'),
+            args: {
+                plotName: _(data.plotName),
+            },
+        });
+        var callback = function () {
+            _this.game.clearPossible();
+            _this.game.takeAction({
+                action: 'actRob',
+                args: {
+                    plotId: plotId,
+                },
+            });
+        };
+        if (this.game.settings.get({
+            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+        }) === PREF_ENABLED) {
+            callback();
+        }
+        else {
+            this.game.addConfirmButton({
+                callback: callback,
+            });
+        }
+        this.game.addCancelButton();
+    };
+    return RobState;
+}());
+var SelectDeedState = (function () {
+    function SelectDeedState(game) {
+        this.game = game;
+    }
+    SelectDeedState.prototype.onEnteringState = function (args) {
+        debug('Entering SelectDeedState');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    SelectDeedState.prototype.onLeavingState = function () {
+        debug('Leaving SelectDeedState');
+    };
+    SelectDeedState.prototype.setDescription = function (activePlayerId) { };
+    SelectDeedState.prototype.updateInterfaceInitialStep = function () {
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must select a Deed'),
+            args: {
+                you: '${you}',
+            },
+        });
+        this.game.addPassButton({
+            optionalAction: this.args.optionalAction,
+        });
+        this.game.addUndoButtons(this.args);
+    };
+    SelectDeedState.prototype.updateInterfaceConfirm = function (_a) {
+        var _this = this;
+        var action = _a.action;
+        this.game.clearPossible();
+        var callback = function () {
+            _this.game.clearPossible();
+            _this.game.takeAction({
+                action: 'actSelectDeed',
+                args: {
+                    action: action,
+                },
+            });
+        };
+        if (this.game.settings.get({
+            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+        }) === PREF_ENABLED) {
+            callback();
+        }
+        else {
+            this.game.addConfirmButton({
+                callback: callback,
+            });
+        }
+        this.game.addCancelButton();
+    };
+    return SelectDeedState;
+}());
+var SelectPlotState = (function () {
+    function SelectPlotState(game) {
+        this.selectedSpaces = [];
+        this.game = game;
+    }
+    SelectPlotState.prototype.onEnteringState = function (args) {
+        debug('Entering SelectPlotState');
+        this.args = args;
+        this.selectedSpaces = [];
+        this.updateInterfaceInitialStep();
+    };
+    SelectPlotState.prototype.onLeavingState = function () {
+        debug('Leaving SelectPlotState');
+    };
+    SelectPlotState.prototype.setDescription = function (activePlayerId) { };
+    SelectPlotState.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must select a Plot'),
+            args: {
+                you: '${you}',
+            },
+        });
+        Object.entries(this.args.options).forEach(function (_a) {
+            var plotId = _a[0], data = _a[1];
+            _this.game.addPrimaryActionButton({
+                id: "".concat(plotId, "_btn"),
+                text: _(data.plotName),
+                callback: function () { return _this.updateInterfaceSelectSpaces({ plotId: plotId, data: data }); },
+            });
+        });
+        this.game.addPassButton({
+            optionalAction: this.args.optionalAction,
+        });
+        this.game.addUndoButtons(this.args);
+    };
+    SelectPlotState.prototype.updateInterfaceSelectSpaces = function (_a) {
+        var _this = this;
+        var plotId = _a.plotId, data = _a.data;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: data.numberOfSpaces === 1
+                ? _('${you} must select a Space to target')
+                : _('${you} must select a Space to target (${number} remaining)'),
+            args: {
+                you: '${you}',
+                number: data.numberOfSpaces - this.selectedSpaces.length,
+            },
+        });
+        this.args.options[plotId].spaces.forEach(function (space) {
+            _this.game.addPrimaryActionButton({
+                id: "".concat(space.id, "_btn"),
+                text: _(space.name),
+                callback: function () {
+                    _this.selectedSpaces.push(space);
+                    if (_this.selectedSpaces.length >= data.numberOfSpaces) {
+                        _this.updateInterfaceConfirm({ plotId: plotId, data: data });
+                    }
+                    else {
+                        _this.updateInterfaceSelectSpaces({ plotId: plotId, data: data });
+                    }
+                },
+            });
+        });
+        this.game.addSecondaryActionButton({
+            id: 'done_btn',
+            text: _('Done'),
+            callback: function () { return _this.updateInterfaceConfirm({ plotId: plotId, data: data }); },
+        });
+        this.game.addCancelButton();
+    };
+    SelectPlotState.prototype.updateInterfaceConfirm = function (_a) {
+        var _this = this;
+        var plotId = _a.plotId, data = _a.data;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${plotName} in ${spacesLog}?'),
+            args: {
+                plotName: _(data.plotName),
+                spacesLog: this.createSpacesLog(),
+            },
+        });
+        var callback = function () {
+            _this.game.clearPossible();
+            _this.game.takeAction({
+                action: 'actSelectPlot',
+                args: {
+                    plotId: plotId,
+                    spaceIds: _this.selectedSpaces.map(function (space) { return space.id; }),
+                },
+            });
+        };
+        if (this.game.settings.get({
+            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+        }) === PREF_ENABLED) {
+            callback();
+        }
+        else {
+            this.game.addConfirmButton({
+                callback: callback,
+            });
+        }
+        this.game.addCancelButton();
+    };
+    SelectPlotState.prototype.createSpacesLog = function () {
+        switch (this.selectedSpaces.length) {
+            case 1:
+                return {
+                    log: '${spaceName}',
+                    args: {
+                        spaceName: _(this.selectedSpaces[0].name),
+                    },
+                };
+            case 2:
+                return {
+                    log: _('${spaceName} and ${spaceName2}'),
+                    args: {
+                        spaceName: _(this.selectedSpaces[0].name),
+                        spaceName2: _(this.selectedSpaces[1].name),
+                    },
+                };
+            case 3:
+                return {
+                    log: _('${spaceName}, ${spaceName2} and ${spaceName3}'),
+                    args: {
+                        spaceName: _(this.selectedSpaces[0].name),
+                        spaceName2: _(this.selectedSpaces[1].name),
+                        spaceName3: _(this.selectedSpaces[3].name),
+                    },
+                };
+            default:
+                return '';
+        }
+    };
+    return SelectPlotState;
+}());
 var SetupRobinHoodState = (function () {
     function SetupRobinHoodState(game) {
         this.robinHoodLocation = null;
@@ -4366,6 +4680,65 @@ var SetupRobinHoodState = (function () {
         }
     };
     return SetupRobinHoodState;
+}());
+var SneakState = (function () {
+    function SneakState(game) {
+        this.game = game;
+    }
+    SneakState.prototype.onEnteringState = function (args) {
+        debug('Entering SneakState');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    SneakState.prototype.onLeavingState = function () {
+        debug('Leaving SneakState');
+    };
+    SneakState.prototype.setDescription = function (activePlayerId) { };
+    SneakState.prototype.updateInterfaceInitialStep = function () {
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must Sneak'),
+            args: {
+                you: '${you}',
+            },
+        });
+        this.game.addPassButton({
+            optionalAction: this.args.optionalAction,
+        });
+        this.game.addUndoButtons(this.args);
+    };
+    SneakState.prototype.updateInterfaceConfirm = function (_a) {
+        var _this = this;
+        var plotId = _a.plotId, data = _a.data;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${plotName} in ${spacesLog}?'),
+            args: {
+                plotName: _(data.plotName),
+            },
+        });
+        var callback = function () {
+            _this.game.clearPossible();
+            _this.game.takeAction({
+                action: 'actSneak',
+                args: {
+                    plotId: plotId,
+                },
+            });
+        };
+        if (this.game.settings.get({
+            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+        }) === PREF_ENABLED) {
+            callback();
+        }
+        else {
+            this.game.addConfirmButton({
+                callback: callback,
+            });
+        }
+        this.game.addCancelButton();
+    };
+    return SneakState;
 }());
 var tplCardTooltipContainer = function (_a) {
     var card = _a.card, content = _a.content;

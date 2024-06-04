@@ -64,7 +64,12 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     // Game
     chooseAction: ChooseActionState;
     moveCarriage: MoveCarriageState;
+    recruit: RecruitState;
+    rob: RobState;
+    selectDeed: SelectDeedState;
+    selectPlot: SelectPlotState;
     setupRobinHood: SetupRobinHoodState;
+    sneak: SneakState;
   };
 
   constructor() {
@@ -103,7 +108,12 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
       // Game
       chooseAction: new ChooseActionState(this),
       moveCarriage: new MoveCarriageState(this),
+      recruit: new RecruitState(this),
+      rob: new RobState(this),
+      selectDeed: new SelectDeedState(this),
+      selectPlot: new SelectPlotState(this),
       setupRobinHood: new SetupRobinHoodState(this),
+      sneak: new SneakState(this),
     };
 
     this.infoPanel = new InfoPanel(this);

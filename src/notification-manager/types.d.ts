@@ -60,6 +60,10 @@ interface NotifMoveRoyalFavourMarkerArgs extends NotifWithPlayerArgs {
   marker: GestMarker;
 }
 
+interface NotifPassActionArgs extends NotifWithPlayerArgs {
+  amount: number;
+}
+
 interface NotifRevealCarriageArgs extends NotifWithPlayerArgs {
   carriage: GestForce;
 }

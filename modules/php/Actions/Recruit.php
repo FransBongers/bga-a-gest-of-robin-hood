@@ -11,13 +11,14 @@ use AGestOfRobinHood\Helpers\Locations;
 use AGestOfRobinHood\Helpers\Utils;
 use AGestOfRobinHood\Managers\Markers;
 use AGestOfRobinHood\Managers\Players;
+use AGestOfRobinHood\Managers\Spaces;
 
 
-class ChooseAction extends \AGestOfRobinHood\Models\AtomicAction
+class Recruit extends \AGestOfRobinHood\Models\AtomicAction
 {
   public function getState()
   {
-    return ST_CHOOSE_ACTION;
+    return ST_RECRUIT;
   }
 
   // ....###....########...######....######.
@@ -28,13 +29,9 @@ class ChooseAction extends \AGestOfRobinHood\Models\AtomicAction
   // .##.....##.##....##..##....##..##....##
   // .##.....##.##.....##..######....######.
 
-  public function argsChooseAction()
+  public function argsRecruit()
   {
-    $data = [
-      SINGLE_PLOT => Markers::getTopOf(Locations::initiativeTrack(SINGLE_PLOT)) === null,
-      EVENT => Markers::getTopOf(Locations::initiativeTrack(EVENT)) === null,
-      PLOTS_AND_DEEDS => Markers::getTopOf(Locations::initiativeTrack(PLOTS_AND_DEEDS)) === null,
-    ];
+    $data = [];
 
     return $data;
   }
@@ -55,52 +52,16 @@ class ChooseAction extends \AGestOfRobinHood\Models\AtomicAction
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function actPassChooseAction()
+  public function actPassRecruit()
   {
     $player = self::getPlayer();
     // Stats::incPassActionCount($player->getId(), 1);
     Engine::resolve(PASS);
   }
 
-  // public function actPlayerAction($cardId, $strength)
-  public function actChooseAction($args)
+  public function actRecruit($args)
   {
-    self::checkAction('actChooseAction');
-    $action = $args['action'];
-
-    $stateArgs = $this->argsChooseAction();
-
-    if (!$stateArgs[$action]) {
-      throw new \feException("ERROR 003");
-    }
-    $player = self::getPlayer();
-    $marker = $player->getEligibilityMarker();
-    $marker->setLocation(Locations::initiativeTrack($action));
-
-    Notifications::chooseAction($player, $marker, $action);
-
-    $parent = $this->ctx->getParent();
-
-    switch ($action) {
-      case SINGLE_PLOT:
-        $parent->pushChild(new LeafNode([
-          'action' => SELECT_PLOT,
-          'playerId' => $this->ctx->getPlayerId(),
-          'numberOfSpaces' => 1,
-          'optional' => true,
-        ]));
-        break;
-      case EVENT:
-        break;
-      case PLOTS_AND_DEEDS:
-        $parent->pushChild(new LeafNode([
-          'action' => SELECT_PLOT,
-          'playerId' => $this->ctx->getPlayerId(),
-          'numberOfSpaces' => 3,
-          'optional' => true,
-        ]));
-        break;
-    }
+    self::checkAction('actRecruit');
 
     $this->resolveAction($args);
   }
@@ -113,5 +74,10 @@ class ChooseAction extends \AGestOfRobinHood\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
-
+  public function getOptions()
+  {
+    return Utils::filter(Spaces::getAll()->toArray(), function ($space) {
+      return $space->getStatus() !== SUBMISSIVE && $space->getId() !== OLLERTON_HILL;
+    });
+  }
 }

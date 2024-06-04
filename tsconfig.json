@@ -59,7 +59,12 @@
     "src/states/ConfirmPartialTurn.ts",
     "src/states/ConfirmTurn.ts",
     "src/states/MoveCarriage.ts",
+    "src/states/Recruit.ts",
+    "src/states/Rob.ts",
+    "src/states/SelectDeed.ts",
+    "src/states/SelectPlot.ts",
     "src/states/SetupRobinHood.ts",
+    "src/states/Sneak.ts",
     "src/states/state.d.ts",
     "src/tooltip-manager/templates.ts",
     "src/tooltip-manager/index.ts"

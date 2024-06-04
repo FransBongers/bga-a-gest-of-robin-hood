@@ -276,6 +276,18 @@ class Notifications
     ]);
   }
 
+  public static function passAction($player, $shillings)
+  {
+    $text = $shillings === 1 ?
+      clienttranslate('${player_name} passes and gains ${amount} Shilling') :
+      clienttranslate('${player_name} passes and gains ${amount} Shillings');
+
+    self::notifyAll("gainShillings", $text, [
+      'player' => $player,
+      'amount' => $shillings,
+    ]);
+  }
+
   public static function secondEligible($marker)
   {
     $player = $marker->getId() === ROBIN_HOOD_ELIGIBILITY_MARKER ? Players::get(Players::getRobinHoodPlayerId()) : Players::get(Players::getSheriffPlayerId());
@@ -285,6 +297,33 @@ class Notifications
       'tkn_boldText_eligible' => clienttranslate('Second Eligible'),
       'marker' => $marker,
       'i18n' => ['tkn_boldText_eligible']
+    ]);
+  }
+
+  public static function selectedPlot($player, $plotName, $targetSpaces)
+  {
+    $count = count($targetSpaces);
+    $spacesLog = clienttranslate('${tkn_boldText_space0}');
+    if ($count === 2) {
+      $spacesLog = clienttranslate('${tkn_boldText_space0} and ${tkn_boldText_space1}');
+    } else if ($count === 3) {
+      $spacesLog = clienttranslate('${tkn_boldText_space0}, ${tkn_boldText_space1} and ${tkn_boldText_space2}');
+    }
+    $spacesArgs = [
+      'i18n' => [],
+    ];
+    foreach ($targetSpaces as $index => $space) {
+      $spacesArgs['tkn_boldText_space' . $index] = $space->getName();
+    }
+
+    self::message(clienttranslate('${player_name} chooses to ${tkn_boldText_plotName} in ${spacesLog}'), [
+      'player' => $player,
+      'tkn_boldText_plotName' => $plotName,
+      'spacesLog' => [
+        'log' => $spacesLog,
+        'args' => $spacesArgs,
+      ],
+      'i18n' => ['tkn_boldText_plotName']
     ]);
   }
 

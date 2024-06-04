@@ -35,4 +35,20 @@ interface OnEnteringMoveCarriageStateArgs extends CommonArgs {
   };
 }
 
+interface OnEnteringRecruitStateArgs extends CommonArgs {}
+
+interface OnEnteringRobStateArgs extends CommonArgs {}
+
+interface OnEnteringSelectDeedStateArgs extends CommonArgs {}
+
+interface OnEnteringSelectPlotStateArgs extends CommonArgs {
+  options: Record<string, {
+    spaces: GestSpace[];
+    numberOfSpaces: number;
+    plotName: string;
+  }>
+}
+
 interface OnEnteringSetupRobinHoodArgs extends CommonArgs {}
+
+interface OnEnteringSneakStateArgs extends CommonArgs {}

@@ -236,6 +236,51 @@ $machinestates = array(
         'possibleactions' => ['actPlayerAction', 'actPassOptionalAction', 'actRestart'],
     ],
 
+    
+    ST_RECRUIT => [
+        'name' => 'recruit',
+        'description' => clienttranslate('${actplayer} may Recruit'),
+        'descriptionmyturn' => clienttranslate('${you}'),
+        'type' => 'activeplayer',
+        'args' => 'argsAtomicAction',
+        'action' => 'stAtomicAction',
+        // 'transitions' => [],
+        'possibleactions' => ['actRecruit', 'actPassOptionalAction', 'actRestart'],
+    ],
+    
+    ST_ROB => [
+        'name' => 'rob',
+        'description' => clienttranslate('${actplayer} may Rob'),
+        'descriptionmyturn' => clienttranslate('${you}'),
+        'type' => 'activeplayer',
+        'args' => 'argsAtomicAction',
+        'action' => 'stAtomicAction',
+        // 'transitions' => [],
+        'possibleactions' => ['actRob', 'actPassOptionalAction', 'actRestart'],
+    ],
+
+    ST_SELECT_PLOT => [
+        'name' => 'selectPlot',
+        'description' => clienttranslate('${actplayer} must select a Plot or pass'),
+        'descriptionmyturn' => clienttranslate('${you}'),
+        'type' => 'activeplayer',
+        'args' => 'argsAtomicAction',
+        'action' => 'stAtomicAction',
+        // 'transitions' => [],
+        'possibleactions' => ['actSelectPlot', 'actPassOptionalAction', 'actRestart'],
+    ],
+
+    ST_SELECT_DEED => [
+        'name' => 'selectDeed',
+        'description' => clienttranslate('${actplayer} may select a Deed'),
+        'descriptionmyturn' => clienttranslate('${you}'),
+        'type' => 'activeplayer',
+        'args' => 'argsAtomicAction',
+        'action' => 'stAtomicAction',
+        // 'transitions' => [],
+        'possibleactions' => ['actSelectDeed', 'actPassOptionalAction', 'actRestart'],
+    ],
+
     ST_SETUP_ROBIN_HOOD => [
         'name' => 'setupRobinHood',
         'description' => clienttranslate('${actplayer} must perform Robin Hood setup'),
@@ -245,5 +290,16 @@ $machinestates = array(
         'action' => 'stAtomicAction',
         // 'transitions' => [],
         'possibleactions' => ['actSetupRobinHood', 'actPassOptionalAction', 'actRestart'],
+    ],
+
+    ST_SNEAK => [
+        'name' => 'sneak',
+        'description' => clienttranslate('${actplayer} may Sneak'),
+        'descriptionmyturn' => clienttranslate('${you}'),
+        'type' => 'activeplayer',
+        'args' => 'argsAtomicAction',
+        'action' => 'stAtomicAction',
+        // 'transitions' => [],
+        'possibleactions' => ['actSneak', 'actPassOptionalAction', 'actRestart'],
     ],
 );

@@ -179,6 +179,13 @@ class Forces extends \AGestOfRobinHood\Helpers\Pieces
 
   //   return parent::getMany($ids, $raiseExceptionIfNotEnough);
   // }
+  public static function getOfType($type)
+  {
+    return self::getSelectQuery()
+      ->where('type', 'LIKE', $type . '%')
+      ->get()
+      ->toArray();
+  }
 
   // ..######..########.########.########.########.########...######.
   // .##....##.##..........##.......##....##.......##.....##.##....##

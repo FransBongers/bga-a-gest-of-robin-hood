@@ -23,8 +23,10 @@ trait DebugTrait
 
   function test()
   {
+    
 
-    Players::moveRoyalFavour(Players::get(), 1, ORDER);
+    Notifications::log('args', AtomicActions::get(SELECT_PLOT)->getRobinHoodOptions(Players::getRobinHoodPlayer()));
+    // Notifications::log('args', GameMap::getSpacesWithMerryMen());
     // Forces::getUiData();
     // Notifications::log('order', GameMap::getNumberOfCarriages());
   }

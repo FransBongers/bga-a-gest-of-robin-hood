@@ -53,6 +53,11 @@ const ST_CHOOSE_ACTION = 24;
 const ST_START_OF_ROUND = 25;
 const ST_END_OF_ROUND = 26;
 const ST_MOVE_CARRIAGE = 27;
+const ST_SELECT_PLOT = 28;
+const ST_SELECT_DEED = 29;
+const ST_RECRUIT = 30;
+const ST_SNEAK = 31;
+const ST_ROB = 32;
 
 /**
  * Atomic actions
@@ -60,7 +65,14 @@ const ST_MOVE_CARRIAGE = 27;
 const PLAYER_ACTION = 'PLAYER_ACTION';
 const CHOOSE_ACTION = 'CHOOSE_ACTION';
 const MOVE_CARRIAGE = 'MOVE_CARRIAGE';
+const SELECT_DEED = 'SELECT_DEED';
+const SELECT_PLOT = 'SELECT_PLOT';
 const SETUP_ROBIN_HOOD = 'SETUP_ROBIN_HOOD';
+
+// Plots
+const RECRUIT = 'RECRUIT';
+const SNEAK = 'SNEAK';
+const ROB = 'ROB';
 
 
 const DIE_FACES = [];

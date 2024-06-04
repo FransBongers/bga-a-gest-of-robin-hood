@@ -15,7 +15,12 @@ class AtomicActions
     PLAYER_ACTION => 'PlayerAction',
     CHOOSE_ACTION => 'ChooseAction',
     MOVE_CARRIAGE => 'MoveCarriage',
+    RECRUIT => 'Recruit',
+    ROB => 'Rob',
+    SELECT_DEED => 'SelectDeed',
+    SELECT_PLOT => 'SelectPlot',
     SETUP_ROBIN_HOOD => 'SetupRobinHood',
+    SNEAK => 'Sneak',
   ];
 
   public static function get($actionId, $ctx = null)
