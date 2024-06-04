@@ -84,20 +84,26 @@ class SelectPlotState implements State {
       },
     });
 
-    this.args.options[plotId].spaces.forEach((space) => {
-      this.game.addPrimaryActionButton({
-        id: `${space.id}_btn`,
-        text: _(space.name),
-        callback: () => {
-          this.selectedSpaces.push(space);
-          if (this.selectedSpaces.length >= data.numberOfSpaces) {
-            this.updateInterfaceConfirm({ plotId, data });
-          } else {
-            this.updateInterfaceSelectSpaces({ plotId, data });
-          }
-        },
+    this.args.options[plotId].spaces
+      .filter((space) => {
+        return !this.selectedSpaces.some((selectedSpace) => {
+          return selectedSpace.id === space.id;
+        });
+      })
+      .forEach((space) => {
+        this.game.addPrimaryActionButton({
+          id: `${space.id}_btn`,
+          text: _(space.name),
+          callback: () => {
+            this.selectedSpaces.push(space);
+            if (this.selectedSpaces.length >= data.numberOfSpaces) {
+              this.updateInterfaceConfirm({ plotId, data });
+            } else {
+              this.updateInterfaceSelectSpaces({ plotId, data });
+            }
+          },
+        });
       });
-    });
     this.game.addSecondaryActionButton({
       id: 'done_btn',
       text: _('Done'),
@@ -184,7 +190,7 @@ class SelectPlotState implements State {
           args: {
             spaceName: _(this.selectedSpaces[0].name),
             spaceName2: _(this.selectedSpaces[1].name),
-            spaceName3: _(this.selectedSpaces[3].name),
+            spaceName3: _(this.selectedSpaces[2].name),
           },
         };
       default:
@@ -207,5 +213,4 @@ class SelectPlotState implements State {
   // .##.....##.#########.##..####.##.....##.##.......##.............##
   // .##.....##.##.....##.##...###.##.....##.##.......##.......##....##
   // .##.....##.##.....##.##....##.########..########.########..######.
-
 }

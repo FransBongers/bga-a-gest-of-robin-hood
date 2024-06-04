@@ -4496,7 +4496,13 @@ var SelectPlotState = (function () {
                 number: data.numberOfSpaces - this.selectedSpaces.length,
             },
         });
-        this.args.options[plotId].spaces.forEach(function (space) {
+        this.args.options[plotId].spaces
+            .filter(function (space) {
+            return !_this.selectedSpaces.some(function (selectedSpace) {
+                return selectedSpace.id === space.id;
+            });
+        })
+            .forEach(function (space) {
             _this.game.addPrimaryActionButton({
                 id: "".concat(space.id, "_btn"),
                 text: _(space.name),
@@ -4574,7 +4580,7 @@ var SelectPlotState = (function () {
                     args: {
                         spaceName: _(this.selectedSpaces[0].name),
                         spaceName2: _(this.selectedSpaces[1].name),
-                        spaceName3: _(this.selectedSpaces[3].name),
+                        spaceName3: _(this.selectedSpaces[2].name),
                     },
                 };
             default:
