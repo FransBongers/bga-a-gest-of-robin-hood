@@ -38,10 +38,18 @@ class RecruitState implements State {
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({
-      text: _('${you} must Recruit'),
+      text: _('${you} must select a space to Recruit in'),
       args: {
         you: '${you}',
       },
+    });
+
+    Object.entries(this.args._private.options).forEach(([spaceId, option]) => {
+      this.game.addPrimaryActionButton({
+        id: `${spaceId}_btn`,
+        text: _(option.space.name),
+        callback: () => this.updateInterfaceSelectOption(option),
+      });
     });
 
     this.game.addPassButton({
@@ -50,25 +58,144 @@ class RecruitState implements State {
     this.game.addUndoButtons(this.args);
   }
 
+  private updateInterfaceSelectOption({
+    space,
+    recruitOptions,
+    merryMen,
+  }: RecruitOption) {
+    this.game.clearPossible();
 
-  private updateInterfaceConfirm({
-    plotId,
-    data,
+    this.game.clientUpdatePageTitle({
+      text: _('${you} must select what to Recruit'),
+      args: {
+        you: '${you}',
+      },
+    });
+
+    recruitOptions.forEach((option) => {
+      this.game.addPrimaryActionButton({
+        id: `${option}_btn`,
+        text: this.getOptionName({ option }),
+        callback: () => {
+          if (
+            this.args._private.robinHoodInSupply &&
+            (option === PLACE_MERRY_MAN || option === PLACE_TWO_MERRY_MEN)
+          ) {
+            this.updateInterfaceRecruitRobinHood({
+              space,
+              recruitOption: option,
+            });
+          } else if (option === REPLACE_MERRY_MAN_WITH_CAMP) {
+            this.updateInterfaceSelectMerryMan({
+              space,
+              recruitOption: option,
+              merryMen,
+            });
+          } else {
+            this.updateInterfaceConfirm({ space, recruitOption: option });
+          }
+        },
+      });
+    });
+
+    this.game.addCancelButton();
+  }
+
+  private updateInterfaceRecruitRobinHood({
+    space,
+    recruitOption,
   }: {
-    plotId: string;
-    data: {
-      spaces: GestSpace[];
-      numberOfSpaces: number;
-      plotName: string;
-    };
+    space: GestSpace;
+    recruitOption: string;
   }) {
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({
-      text: _('${plotName} in ${spacesLog}?'),
+      text: _('Recruit Robin Hood?'),
       args: {
-        plotName: _(data.plotName),
+        you: '${you}',
+      },
+    });
 
+    this.game.addPrimaryActionButton({
+      id: 'yes_btn',
+      text: _('Yes'),
+      callback: () =>
+        this.updateInterfaceConfirm({
+          space,
+          recruitOption,
+          recruitRobinHood: true,
+        }),
+    });
+    this.game.addPrimaryActionButton({
+      id: 'no_btn',
+      text: _('No'),
+      callback: () =>
+        this.updateInterfaceConfirm({
+          space,
+          recruitOption,
+          recruitRobinHood: false,
+        }),
+    });
+
+    this.game.addCancelButton();
+  }
+
+  private updateInterfaceSelectMerryMan({
+    space,
+    recruitOption,
+    merryMen,
+  }: {
+    space: GestSpace;
+    recruitOption: string;
+    merryMen: GestForce[];
+  }) {
+    this.game.clearPossible();
+
+    this.game.clientUpdatePageTitle({
+      text: _('${you} must select a Merry Man'),
+      args: {
+        you: '${you}',
+      },
+    });
+
+    merryMen.forEach((merryMan) => {
+      this.game.setElementSelectable({
+        id: merryMan.id,
+        callback: () => {
+          this.updateInterfaceConfirm({
+            space,
+            recruitOption,
+            merryManId: merryMan.id,
+          });
+        },
+      });
+    });
+
+    this.game.addCancelButton();
+  }
+
+  private updateInterfaceConfirm({
+    space,
+    recruitOption,
+    merryManId,
+    recruitRobinHood,
+  }: {
+    space: GestSpace;
+    recruitOption: string;
+    merryManId?: string;
+    recruitRobinHood?: boolean;
+  }) {
+    this.game.clearPossible();
+    if (merryManId) {
+      this.game.setElementSelected({ id: merryManId });
+    }
+
+    this.game.clientUpdatePageTitle({
+      text: _('${recruitOption} in ${spaceName}?'),
+      args: {
+        recruitOption: this.getOptionName({ option: recruitOption }),
+        spaceName: _(space.name),
       },
     });
 
@@ -77,7 +204,10 @@ class RecruitState implements State {
       this.game.takeAction({
         action: 'actRecruit',
         args: {
-          plotId,
+          spaceId: space.id,
+          recruitOption,
+          merryManId,
+          recruitRobinHood,
         },
       });
     };
@@ -105,6 +235,20 @@ class RecruitState implements State {
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
+  private getOptionName({ option }: { option: string }) {
+    switch (option) {
+      case PLACE_MERRY_MAN:
+        return _('Place one Merry Man');
+      case PLACE_TWO_MERRY_MEN:
+        return _('Place two Merry Man');
+      case REPLACE_MERRY_MAN_WITH_CAMP:
+        return _('Replace one Merry Man with a Camp');
+      case FLIP_ALL_MERRY_MAN_TO_HIDDEN:
+        return _('Flip all Merry Men to hidden');
+      default:
+        return ';';
+    }
+  }
 
   //  ..######..##.......####..######..##....##
   //  .##....##.##........##..##....##.##...##.
@@ -121,5 +265,4 @@ class RecruitState implements State {
   // .##.....##.#########.##..####.##.....##.##.......##.............##
   // .##.....##.##.....##.##...###.##.....##.##.......##.......##....##
   // .##.....##.##.....##.##....##.########..########.########..######.
-
 }

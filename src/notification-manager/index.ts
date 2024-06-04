@@ -71,8 +71,9 @@ class NotificationManager {
       'moveRoyalFavourMarker',
       'passAction',
       'revealCarriage',
-      'setupRobinHood',
-      'setupRobinHoodPrivate',
+      'payShillings',
+      'placeMerryMen',
+      'placeMerryMenPrivate',
     ];
 
     // example: https://github.com/thoun/knarr/blob/main/src/knarr.ts
@@ -118,7 +119,7 @@ class NotificationManager {
       this.game
         .framework()
         .notifqueue.setIgnoreNotificationCheck(
-          'setupRobinHood',
+          'placeMerryMen',
           (notif: Notif<{ playerId: number }>) =>
             notif.args.playerId == this.game.getPlayerId()
         );
@@ -289,6 +290,11 @@ class NotificationManager {
     await this.game.gameMap.moveMarker({id: marker.id, location: marker.location});
   }
 
+  async notif_payShillings(notif: Notif<NotifPayShillingsArgs>) {
+    const { amount, playerId } = notif.args;
+    this.getPlayer({ playerId }).counters.shillings.incValue(-amount);
+  }
+
   async notif_revealCarriage(notif: Notif<NotifRevealCarriageArgs>) {
     const { carriage, playerId } = notif.args;
 
@@ -312,18 +318,20 @@ class NotificationManager {
     );
   }
 
-  async notif_setupRobinHood(notif: Notif<NotifSetupRobinHoodArgs>) {
+  async notif_placeMerryMen(notif: Notif<NotifPlaceMerryMenArgs>) {
     const { merryMenCounts } = notif.args;
     Object.entries(merryMenCounts).forEach(([spaceId, countHidden]) => {
       this.game.gameMap.addMerryMenPublic({ spaceId, countHidden });
     });
   }
 
-  async notif_setupRobinHoodPrivate(
-    notif: Notif<NotifSetupRobinHoodPrivateArgs>
+  async notif_placeMerryMenPrivate(
+    notif: Notif<NotifPlaceMerryMenPrivateArgs>
   ) {
     const { robinHood, merryMen } = notif.args;
-    this.game.gameMap.addRobinHoodPrivate({ robinHood });
+    if (robinHood) {
+      this.game.gameMap.addRobinHoodPrivate({ robinHood });
+    }
     merryMen.forEach((merryMan) =>
       this.game.gameMap.addMerryManPrivate({ merryMan })
     );

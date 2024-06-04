@@ -97,3 +97,11 @@ const EVENT = 'event';
 const PLOTS_AND_DEEDS = 'plotsAndDeeds';
 const FIRST_ELIGIBLE = 'firstEligible';
 const SECOND_ELIGIBLE = 'secondEligible';
+
+/**
+ * Recruit options
+ */
+const PLACE_MERRY_MAN = 'placeMerryMan';
+const REPLACE_MERRY_MAN_WITH_CAMP = 'replaceMerryManWithCamp';
+const PLACE_TWO_MERRY_MEN = 'placeTwoMerryMen';
+const FLIP_ALL_MERRY_MAN_TO_HIDDEN = 'flipAllMerryManToHidden';

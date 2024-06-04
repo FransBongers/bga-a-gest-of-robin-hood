@@ -96,4 +96,12 @@ class Player extends \AGestOfRobinHood\Helpers\DB_Model
       Notifications::gainShillings($this, $amount);
     }
   }
+
+  public function payShillings($amount, $sendNotif = true)
+  {
+    Players::incShillings($this->getId(), -$amount);
+    if ($sendNotif) {
+      Notifications::payShillings($this, $amount);
+    }
+  }
 }

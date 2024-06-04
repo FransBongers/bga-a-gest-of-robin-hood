@@ -131,6 +131,7 @@
   gap:  calc(var(--gestMapScale) * 8px);
   justify-content: center;
   align-items: center;
+  flex-wrap: wrap;
   // background-color: yellow;
   // opacity: 0.5;
 }

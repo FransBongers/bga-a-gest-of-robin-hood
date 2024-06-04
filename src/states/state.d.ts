@@ -35,7 +35,18 @@ interface OnEnteringMoveCarriageStateArgs extends CommonArgs {
   };
 }
 
-interface OnEnteringRecruitStateArgs extends CommonArgs {}
+interface RecruitOption {
+  space: GestSpace;
+  merryMen: GestForce[];
+  recruitOptions: string[];
+}
+
+interface OnEnteringRecruitStateArgs extends CommonArgs {
+  _private: {
+    options: Record<string, RecruitOption>;
+    robinHoodInSupply: boolean;
+  }
+}
 
 interface OnEnteringRobStateArgs extends CommonArgs {}
 

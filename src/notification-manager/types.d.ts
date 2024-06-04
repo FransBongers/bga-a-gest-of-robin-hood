@@ -64,19 +64,19 @@ interface NotifPassActionArgs extends NotifWithPlayerArgs {
   amount: number;
 }
 
+interface NotifPayShillingsArgs extends NotifWithPlayerArgs {
+  amount: number;
+}
+
 interface NotifRevealCarriageArgs extends NotifWithPlayerArgs {
   carriage: GestForce;
 }
 
-interface NotifSetupRobinHoodArgs extends NotifWithPlayerArgs {
-  merryMenCounts: {
-    Remston: number;
-    ShireWood: number;
-    SouthwellForest: number;
-  }
+interface NotifPlaceMerryMenArgs extends NotifWithPlayerArgs {
+  merryMenCounts: Record<string, number>;
 }
 
-interface NotifSetupRobinHoodPrivateArgs extends NotifWithPlayerArgs {
-  robinHood: GestForce;
+interface NotifPlaceMerryMenPrivateArgs extends NotifWithPlayerArgs {
+  robinHood: GestForce | null;
   merryMen: GestForce[];
 }

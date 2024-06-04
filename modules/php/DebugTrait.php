@@ -25,7 +25,8 @@ trait DebugTrait
   {
     
 
-    Notifications::log('args', AtomicActions::get(SELECT_PLOT)->getRobinHoodOptions(Players::getRobinHoodPlayer()));
+
+    // Notifications::log('spaceIds', $spaceIds);
     // Notifications::log('args', GameMap::getSpacesWithMerryMen());
     // Forces::getUiData();
     // Notifications::log('order', GameMap::getNumberOfCarriages());

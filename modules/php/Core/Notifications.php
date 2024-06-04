@@ -288,6 +288,16 @@ class Notifications
     ]);
   }
 
+  public static function payShillings($player, $amount)
+  {
+    $text = $amount === 1 ? clienttranslate('${player_name} pays ${amount} Shilling') : clienttranslate('${player_name} pays ${amount} Shillings');
+
+    self::notifyAll("payShillings", $text, [
+      'player' => $player,
+      'amount' => $amount,
+    ]);
+  }
+
   public static function secondEligible($marker)
   {
     $player = $marker->getId() === ROBIN_HOOD_ELIGIBILITY_MARKER ? Players::get(Players::getRobinHoodPlayerId()) : Players::get(Players::getSheriffPlayerId());
@@ -327,29 +337,79 @@ class Notifications
     ]);
   }
 
+  public static function recruitMerryMen($player, $originalNumber, $robinHood, $merryMenToPlace, $space)
+  {
+    $textPublic = $originalNumber === 1 ?
+      clienttranslate('${player_name} places ${number} Merry Man in ${tkn_boldText_spaceName}') :
+      clienttranslate('${player_name} places ${number} Merry Men in ${tkn_boldText_spaceName}');
+
+    $publicTextArgs = [
+      'tkn_boldText_spaceName' => $space->getName(),
+      'number' => $originalNumber,
+    ];
+
+
+    $privateMerryMenToPlace = count($merryMenToPlace);
+
+    $textPrivateSingle = clienttranslate('Private: ${player_name} places ${number} Merry Man in ${tkn_boldText_spaceName}');
+    $textPrivateMultiple = clienttranslate('Private: ${player_name} places ${number} Merry Men in ${tkn_boldText_spaceName}');
+    $textPrivateRobinHood = clienttranslate('Private: ${player_name} places Robin Hood in ${tkn_boldText_spaceName}');
+    $textPrivateRobinHoodAndMerryMan = clienttranslate('Private: ${player_name} places Robin Hood and ${number} Merry Man in ${tkn_boldText_spaceName}');
+
+    $textPrivate = $textPrivateSingle;
+    if ($privateMerryMenToPlace === 2) {
+      $textPrivate = $textPrivateMultiple;
+    } else if ($robinHood !== null && $privateMerryMenToPlace === 0) {
+      $textPrivate = $textPrivateRobinHood;
+    } else if ($robinHood !== null && $privateMerryMenToPlace === 1) {
+      $textPrivate = $textPrivateRobinHoodAndMerryMan;
+    }
+
+    $privateTextArgs = [
+      'tkn_boldText_spaceName' => $space->getName(),
+      'number' => $privateMerryMenToPlace,
+    ];
+
+    self::placeMerryMen($player, $robinHood, $merryMenToPlace, $textPublic, $textPrivate, $publicTextArgs, $privateTextArgs);
+  }
+
   public static function setupRobinHood($player, $robinHood, $merryMen)
   {
-    self::notify($player, 'setupRobinHoodPrivate', clienttranslate('Private: ${player_name} places forces'), [
+    $textPublic = clienttranslate('${player_name} places Forces');
+    $textPrivate = clienttranslate('Private: ${player_name} places forces');
+    self::placeMerryMen($player, $robinHood, $merryMen, $textPublic, $textPrivate);
+  }
+
+  public static function placeMerryMen($player, $robinHood, $merryMen, $textPublic, $textPrivate, $publicTextArgs = [],  $privateTextArgs = [])
+  {
+    self::notify($player, 'placeMerryMenPrivate', $textPrivate, array_merge($privateTextArgs, [
       'player' => $player,
       'you' => '${you}',
       'robinHood' => $robinHood,
       'merryMen' => $merryMen,
-    ]);
+    ]));
 
-    $merryMenCounts = [
-      SHIRE_WOOD => 0,
-      SOUTHWELL_FOREST => 0,
-      REMSTON => 0,
-    ];
+    $merryMenCounts = [];
 
-    $merryMenCounts[$robinHood->getLocation()] += 1;
-    foreach ($merryMen as $merryMan) {
-      $merryMenCounts[$merryMan->getLocation()] += 1;
+    if ($robinHood !== null) {
+      if (isset($merryMenCounts[$robinHood->getLocation()])) {
+        $merryMenCounts[$robinHood->getLocation()] += 1;
+      } else {
+        $merryMenCounts[$robinHood->getLocation()] = 1;
+      }
     }
 
-    self::notifyAll("setupRobinHood", clienttranslate('${player_name} places Forces'), [
+    foreach ($merryMen as $merryMan) {
+      if (isset($merryMenCounts[$merryMan->getLocation()])) {
+        $merryMenCounts[$merryMan->getLocation()] += 1;
+      } else {
+        $merryMenCounts[$merryMan->getLocation()] = 1;
+      }
+    }
+
+    self::notifyAll("placeMerryMen", $textPublic, array_merge($publicTextArgs, [
       'player' => $player,
       'merryMenCounts' => $merryMenCounts,
-    ]);
+    ]));
   }
 }

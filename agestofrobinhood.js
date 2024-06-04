@@ -1674,6 +1674,10 @@ var EVENT = 'event';
 var PLOTS_AND_DEEDS = 'plotsAndDeeds';
 var FIRST_ELIGIBLE = 'firstEligible';
 var SECOND_ELIGIBLE = 'secondEligible';
+var PLACE_MERRY_MAN = 'placeMerryMan';
+var REPLACE_MERRY_MAN_WITH_CAMP = 'replaceMerryManWithCamp';
+var PLACE_TWO_MERRY_MEN = 'placeTwoMerryMen';
+var FLIP_ALL_MERRY_MAN_TO_HIDDEN = 'flipAllMerryManToHidden';
 define([
     'dojo',
     'dojo/_base/declare',
@@ -3240,8 +3244,9 @@ var NotificationManager = (function () {
             'moveRoyalFavourMarker',
             'passAction',
             'revealCarriage',
-            'setupRobinHood',
-            'setupRobinHoodPrivate',
+            'payShillings',
+            'placeMerryMen',
+            'placeMerryMenPrivate',
         ];
         notifs.forEach(function (notifName) {
             _this.subscriptions.push(dojo.subscribe(notifName, _this, function (notifDetails) {
@@ -3268,7 +3273,7 @@ var NotificationManager = (function () {
             _this.game.framework().notifqueue.setSynchronous(notifName, undefined);
             _this.game
                 .framework()
-                .notifqueue.setIgnoreNotificationCheck('setupRobinHood', function (notif) {
+                .notifqueue.setIgnoreNotificationCheck('placeMerryMen', function (notif) {
                 return notif.args.playerId == _this.game.getPlayerId();
             });
             _this.game
@@ -3440,6 +3445,16 @@ var NotificationManager = (function () {
             });
         });
     };
+    NotificationManager.prototype.notif_payShillings = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, amount, playerId;
+            return __generator(this, function (_b) {
+                _a = notif.args, amount = _a.amount, playerId = _a.playerId;
+                this.getPlayer({ playerId: playerId }).counters.shillings.incValue(-amount);
+                return [2];
+            });
+        });
+    };
     NotificationManager.prototype.notif_revealCarriage = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
             var _a, carriage, playerId, element;
@@ -3462,7 +3477,7 @@ var NotificationManager = (function () {
             });
         });
     };
-    NotificationManager.prototype.notif_setupRobinHood = function (notif) {
+    NotificationManager.prototype.notif_placeMerryMen = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
             var merryMenCounts;
             var _this = this;
@@ -3476,13 +3491,15 @@ var NotificationManager = (function () {
             });
         });
     };
-    NotificationManager.prototype.notif_setupRobinHoodPrivate = function (notif) {
+    NotificationManager.prototype.notif_placeMerryMenPrivate = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
             var _a, robinHood, merryMen;
             var _this = this;
             return __generator(this, function (_b) {
                 _a = notif.args, robinHood = _a.robinHood, merryMen = _a.merryMen;
-                this.game.gameMap.addRobinHoodPrivate({ robinHood: robinHood });
+                if (robinHood) {
+                    this.game.gameMap.addRobinHoodPrivate({ robinHood: robinHood });
+                }
                 merryMen.forEach(function (merryMan) {
                     return _this.game.gameMap.addMerryManPrivate({ merryMan: merryMan });
                 });
@@ -4289,26 +4306,134 @@ var RecruitState = (function () {
     };
     RecruitState.prototype.setDescription = function (activePlayerId) { };
     RecruitState.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
         this.game.clearPossible();
         this.game.clientUpdatePageTitle({
-            text: _('${you} must Recruit'),
+            text: _('${you} must select a space to Recruit in'),
             args: {
                 you: '${you}',
             },
+        });
+        Object.entries(this.args._private.options).forEach(function (_a) {
+            var spaceId = _a[0], option = _a[1];
+            _this.game.addPrimaryActionButton({
+                id: "".concat(spaceId, "_btn"),
+                text: _(option.space.name),
+                callback: function () { return _this.updateInterfaceSelectOption(option); },
+            });
         });
         this.game.addPassButton({
             optionalAction: this.args.optionalAction,
         });
         this.game.addUndoButtons(this.args);
     };
-    RecruitState.prototype.updateInterfaceConfirm = function (_a) {
+    RecruitState.prototype.updateInterfaceSelectOption = function (_a) {
         var _this = this;
-        var plotId = _a.plotId, data = _a.data;
+        var space = _a.space, recruitOptions = _a.recruitOptions, merryMen = _a.merryMen;
         this.game.clearPossible();
         this.game.clientUpdatePageTitle({
-            text: _('${plotName} in ${spacesLog}?'),
+            text: _('${you} must select what to Recruit'),
             args: {
-                plotName: _(data.plotName),
+                you: '${you}',
+            },
+        });
+        recruitOptions.forEach(function (option) {
+            _this.game.addPrimaryActionButton({
+                id: "".concat(option, "_btn"),
+                text: _this.getOptionName({ option: option }),
+                callback: function () {
+                    if (_this.args._private.robinHoodInSupply &&
+                        (option === PLACE_MERRY_MAN || option === PLACE_TWO_MERRY_MEN)) {
+                        _this.updateInterfaceRecruitRobinHood({
+                            space: space,
+                            recruitOption: option,
+                        });
+                    }
+                    else if (option === REPLACE_MERRY_MAN_WITH_CAMP) {
+                        _this.updateInterfaceSelectMerryMan({
+                            space: space,
+                            recruitOption: option,
+                            merryMen: merryMen,
+                        });
+                    }
+                    else {
+                        _this.updateInterfaceConfirm({ space: space, recruitOption: option });
+                    }
+                },
+            });
+        });
+        this.game.addCancelButton();
+    };
+    RecruitState.prototype.updateInterfaceRecruitRobinHood = function (_a) {
+        var _this = this;
+        var space = _a.space, recruitOption = _a.recruitOption;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('Recruit Robin Hood?'),
+            args: {
+                you: '${you}',
+            },
+        });
+        this.game.addPrimaryActionButton({
+            id: 'yes_btn',
+            text: _('Yes'),
+            callback: function () {
+                return _this.updateInterfaceConfirm({
+                    space: space,
+                    recruitOption: recruitOption,
+                    recruitRobinHood: true,
+                });
+            },
+        });
+        this.game.addPrimaryActionButton({
+            id: 'no_btn',
+            text: _('No'),
+            callback: function () {
+                return _this.updateInterfaceConfirm({
+                    space: space,
+                    recruitOption: recruitOption,
+                    recruitRobinHood: false,
+                });
+            },
+        });
+        this.game.addCancelButton();
+    };
+    RecruitState.prototype.updateInterfaceSelectMerryMan = function (_a) {
+        var _this = this;
+        var space = _a.space, recruitOption = _a.recruitOption, merryMen = _a.merryMen;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must select a Merry Man'),
+            args: {
+                you: '${you}',
+            },
+        });
+        merryMen.forEach(function (merryMan) {
+            _this.game.setElementSelectable({
+                id: merryMan.id,
+                callback: function () {
+                    _this.updateInterfaceConfirm({
+                        space: space,
+                        recruitOption: recruitOption,
+                        merryManId: merryMan.id,
+                    });
+                },
+            });
+        });
+        this.game.addCancelButton();
+    };
+    RecruitState.prototype.updateInterfaceConfirm = function (_a) {
+        var _this = this;
+        var space = _a.space, recruitOption = _a.recruitOption, merryManId = _a.merryManId, recruitRobinHood = _a.recruitRobinHood;
+        this.game.clearPossible();
+        if (merryManId) {
+            this.game.setElementSelected({ id: merryManId });
+        }
+        this.game.clientUpdatePageTitle({
+            text: _('${recruitOption} in ${spaceName}?'),
+            args: {
+                recruitOption: this.getOptionName({ option: recruitOption }),
+                spaceName: _(space.name),
             },
         });
         var callback = function () {
@@ -4316,7 +4441,10 @@ var RecruitState = (function () {
             _this.game.takeAction({
                 action: 'actRecruit',
                 args: {
-                    plotId: plotId,
+                    spaceId: space.id,
+                    recruitOption: recruitOption,
+                    merryManId: merryManId,
+                    recruitRobinHood: recruitRobinHood,
                 },
             });
         };
@@ -4331,6 +4459,21 @@ var RecruitState = (function () {
             });
         }
         this.game.addCancelButton();
+    };
+    RecruitState.prototype.getOptionName = function (_a) {
+        var option = _a.option;
+        switch (option) {
+            case PLACE_MERRY_MAN:
+                return _('Place one Merry Man');
+            case PLACE_TWO_MERRY_MEN:
+                return _('Place two Merry Man');
+            case REPLACE_MERRY_MAN_WITH_CAMP:
+                return _('Replace one Merry Man with a Camp');
+            case FLIP_ALL_MERRY_MAN_TO_HIDDEN:
+                return _('Flip all Merry Men to hidden');
+            default:
+                return ';';
+        }
     };
     return RecruitState;
 }());

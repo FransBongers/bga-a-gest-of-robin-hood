@@ -150,6 +150,7 @@
   gap: calc(var(--gestMapScale) * 8px);
   justify-content: center;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .gest_force {
