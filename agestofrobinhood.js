@@ -2029,6 +2029,7 @@ var AGestOfRobinHood = (function () {
         var stepId = _a.stepId;
         this.takeAction({
             action: 'actUndoToStep',
+            atomicAction: false,
             args: {
                 stepId: stepId,
             },
@@ -3299,8 +3300,12 @@ var NotificationManager = (function () {
     NotificationManager.prototype.setupNotifications = function () {
         var _this = this;
         console.log('notifications subscriptions setup');
+        dojo.connect(this.game.framework().notifqueue, 'addToLog', function () {
+            _this.game.addLogClass();
+        });
         var notifs = [
             'log',
+            'clearTurn',
             'refreshUI',
             'chooseAction',
             'drawAndRevealCard',
@@ -3372,6 +3377,16 @@ var NotificationManager = (function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 debug('notif_log', notif.args);
+                return [2];
+            });
+        });
+    };
+    NotificationManager.prototype.notif_clearTurn = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var notifIds;
+            return __generator(this, function (_a) {
+                notifIds = notif.args.notifIds;
+                this.game.cancelLogs(notifIds);
                 return [2];
             });
         });

@@ -46,7 +46,6 @@ class Notifications
     self::notify($playerId, 'message', $txt, $args);
   }
 
-  // TODO: check how to handle this in game log
   public static function newUndoableStep($player, $stepId)
   {
     self::notify($player, 'newUndoableStep', clienttranslate('Undo to here'), [

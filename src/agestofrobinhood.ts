@@ -640,6 +640,7 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     // this.takeAction('actUndoToStep', args: { stepId });
     this.takeAction({
       action: 'actUndoToStep',
+      atomicAction: false,
       args: {
         stepId,
       },
