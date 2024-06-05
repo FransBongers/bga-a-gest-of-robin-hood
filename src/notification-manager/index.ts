@@ -43,6 +43,7 @@ class NotificationManager {
       'log',
       'clearTurn',
       'refreshUI',
+      'refreshForcesPrivate',
       // Game
       'chooseAction',
       'drawAndRevealCard',
@@ -109,7 +110,7 @@ class NotificationManager {
       this.game
         .framework()
         .notifqueue.setIgnoreNotificationCheck(
-          'moveCarriage',
+          'moveCarriagePublic',
           (notif: Notif<{ playerId: number }>) =>
             notif.args.playerId == this.game.getPlayerId()
         );
@@ -171,7 +172,6 @@ class NotificationManager {
     this.game.cancelLogs(notifIds);
   }
 
-
   // notif_smallRefreshHand(notif: Notif<NotifSmallRefreshHandArgs>) {
   //   const { hand, playerId } = notif.args;
   //   const player = this.getPlayer({ playerId });
@@ -203,6 +203,13 @@ class NotificationManager {
     this.game.playerManager.updatePlayers({ gamedatas });
   }
 
+  async notif_refreshForcesPrivate(notif: Notif<NotifRefreshForcesPrivate>) {
+    const { forces: data } = notif.args;
+    Object.entries(data).forEach(([spaceId, forces]) => {
+      forces.forEach((force) => this.game.gameMap.addPrivateForce({ force }));
+    });
+  }
+
   async notif_chooseAction(notif: Notif<NotifChooseActionArgs>) {
     const { marker } = notif.args;
 
@@ -226,61 +233,71 @@ class NotificationManager {
     this.getPlayer({ playerId }).counters.shillings.incValue(amount);
   }
 
-  async notif_moveCarriage(notif: Notif<NotifMoveCarriageArgs>) {
-    const { carriage, henchman, toSpaceId, fromSpaceId } = notif.args;
+  // async notif_moveCarriage(notif: Notif<NotifMoveCarriageArgs>) {
+  //   const { carriage, henchman, toSpaceId, fromSpaceId } = notif.args;
+
+  //   const promises = [
+  //     this.game.gameMap.moveForcePublic({
+  //       hidden: carriage.hidden,
+  //       type: carriage.type,
+  //       toSpaceId,
+  //       fromSpaceId,
+  //     }),
+  //   ];
+  //   if (henchman) {
+  //     promises.push(
+  //       this.game.gameMap.moveForcePrivate({ force: henchman })
+  //     );
+  //   }
+
+  //   await Promise.all(promises);
+  // }
+
+  async notif_moveCarriagePublic(notif: Notif<NotifMoveCarriagePublicArgs>) {
+    const { carriage, toSpaceId, fromSpaceId, henchman } = notif.args;
+    console.log('carriage', carriage);
 
     const promises = [
-      this.game.gameMap.moveCarriagePublic({
+      this.game.gameMap.moveForcePublic({
         hidden: carriage.hidden,
         type: carriage.type,
         toSpaceId,
         fromSpaceId,
       }),
     ];
+
     if (henchman) {
-      promises.push(
-        this.game.gameMap.moveHenchman({ henchmanId: henchman.id, toSpaceId })
-      );
+      promises.push(this.game.gameMap.moveForcePrivate({ force: henchman }));
     }
 
     await Promise.all(promises);
-  }
 
-  async notif_moveCarriagePublic(notif: Notif<NotifMoveCarriagePublicArgs>) {
-    const { carriage, toSpaceId, fromSpaceId } = notif.args;
-    console.log('carriage', carriage);
-    if (
-      this.game.getPlayerId() === this.game.playerManager.getSheriffPlayerId()
-    ) {
-      console.log('if');
-      await this.game.gameMap.moveCarriagePrivate({
-        carriageId: carriage.id,
-        toSpaceId,
-      });
-    } else {
-      console.log('else');
-      await this.game.gameMap.moveCarriagePublic({
-        hidden: carriage.hidden,
-        type: carriage.hidden ? null : carriage.type,
-        toSpaceId,
-        fromSpaceId,
-      });
-    }
+    // if (
+    //   this.game.getPlayerId() === this.game.playerManager.getSheriffPlayerId()
+    // ) {
+    //   await this.game.gameMap.moveForcePrivate({
+    //     force: carriage,
+    //   });
+    // } else {
+    //   await this.game.gameMap.moveCarriagePublic({
+    //     hidden: carriage.hidden,
+    //     type: carriage.hidden ? null : carriage.type,
+    //     toSpaceId,
+    //     fromSpaceId,
+    //   });
+    // }
   }
 
   async notif_moveCarriagePrivate(notif: Notif<NotifMoveCarriagePrivateArgs>) {
     const { carriage, henchman, toSpaceId } = notif.args;
 
     const promises = [
-      this.game.gameMap.moveCarriagePrivate({
-        carriageId: carriage.id,
-        toSpaceId,
+      this.game.gameMap.moveForcePrivate({
+        force: carriage,
       }),
     ];
     if (henchman) {
-      promises.push(
-        this.game.gameMap.moveHenchman({ henchmanId: henchman.id, toSpaceId })
-      );
+      promises.push(this.game.gameMap.moveForcePrivate({ force: henchman }));
     }
 
     await Promise.all(promises);
@@ -325,28 +342,30 @@ class NotificationManager {
     );
   }
 
-  async notif_revealCarriage(notif: Notif<NotifRevealCarriageArgs>) {
-    const { carriage, playerId } = notif.args;
+  // async notif_revealCarriage(notif: Notif<NotifRevealCarriageArgs>) {
+  //   const { carriage, playerId } = notif.args;
 
-    const element =
-      this.game.getPlayerId() === this.game.playerManager.getSheriffPlayerId()
-        ? document.getElementById(carriage.id)
-        : this.game.gameMap.getCarriageElement({
-            spaceId: carriage.location,
-            hidden: true,
-            type: null,
-          });
+  //   this.game.gameMap.re
 
-    if (!element) {
-      return;
-    }
-    element.setAttribute('data-hidden', 'false');
-    element.replaceChildren();
-    element.insertAdjacentHTML(
-      'afterbegin',
-      `<span>${carriage.type.substring(0, 3).toUpperCase()}</span>`
-    );
-  }
+  //   const element =
+  //     this.game.getPlayerId() === this.game.playerManager.getSheriffPlayerId()
+  //       ? document.getElementById(carriage.id)
+  //       : this.game.gameMap.getCarriageElement({
+  //           spaceId: carriage.location,
+  //           hidden: true,
+  //           type: null,
+  //         });
+
+  //   if (!element) {
+  //     return;
+  //   }
+  //   element.setAttribute('data-hidden', 'false');
+  //   element.replaceChildren();
+  //   element.insertAdjacentHTML(
+  //     'afterbegin',
+  //     `<span>${carriage.type.substring(0, 3).toUpperCase()}</span>`
+  //   );
+  // }
 
   async notif_revealForce(notif: Notif<NotifRevealForceArgs>) {
     const { force } = notif.args;

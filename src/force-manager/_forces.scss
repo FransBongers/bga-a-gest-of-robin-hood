@@ -18,35 +18,51 @@
   align-items: center;
 }
 
-.gest_force_side[data-type=Henchmen] {
+.gest_force_side[data-type='Henchmen'] {
   background-color: #c0c0c0;
 }
 
-.gest_force_side[data-type=Camp] {
+.gest_force_side[data-type='Camp'] {
   background-color: #008000;
   border-radius: 50%;
 }
 
-.gest_force_side[data-type=MerryMen] {
+.gest_force_side[data-type='MerryMen'] {
   background-color: #008000;
 }
 
-.gest_force_side[data-type=RobinHood] {
+.gest_force_side[data-type='RobinHood'] {
   background-color: #008000;
 }
 
-.gest_force_side[data-type=Carriage] {
+.gest_force_side[data-type='TallageCarriage'],
+.gest_force_side[data-type='TrapCarriage'],
+.gest_force_side[data-type='TributeCarriage'],
+.gest_force_side[data-type='Carriage'] {
   background-color: #c0c0c0;
   border-radius: 50%;
 }
 
-.gest_force_side.gest_selectable {
+// .gest_force_side.gest_selectable {
+//   cursor: pointer;
+//   box-shadow: 0px 0px 0px calc(var(--gestForceScale) * 6px)
+//     base.$selectable-color !important;
+// }
+
+// .gest_force.gest_selectable:hover,
+// .gest_force.gest_selected {
+//   cursor: pointer;
+//   box-shadow: 0px 0px 0px calc(var(--gestForceScale) * 6px) base.$selected-color !important;
+// }
+
+.gest_force.gest_selectable > .card-sides > .card-side {
   cursor: pointer;
-  box-shadow: 0px 0px 0px calc(var(--gestForceScale) * 6px) base.$selectable-color !important;
+  box-shadow: 0px 0px 0px calc(var(--gestForceScale) * 4px)
+    base.$selectable-color !important;
 }
 
-.gest_force.gest_selectable:hover,
-.gest_force.gest_selected {
+.gest_force.gest_selectable:hover > .card-sides > .card-side,
+.gest_force.gest_selected > .card-sides > .card-side {
   cursor: pointer;
-  box-shadow: 0px 0px 0px calc(var(--gestForceScale) * 6px) base.$selected-color !important;
+  box-shadow: 0px 0px 0px calc(var(--gestForceScale) * 4px) base.$selected-color !important;
 }

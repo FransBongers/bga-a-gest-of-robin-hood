@@ -65,50 +65,50 @@ class Forces extends \AGestOfRobinHood\Helpers\Pieces
     // return $data;
   }
 
+  private static function getDefaultPublic()
+  {
+    return [
+      CAMP => [
+        HIDDEN => 0,
+        REVEALED => 0,
+      ],
+      CARRIAGE => [
+        HIDDEN => 0,
+        TALLAGE_CARRIAGE => 0,
+        TRIBUTE_CARRIAGE => 0,
+        TRAP_CARRIAGE => 0,
+      ],
+      MERRY_MEN => [
+        HIDDEN => 0,
+        REVEALED => 0,
+      ],
+      HENCHMEN => [],
+      ROBIN_HOOD => 0,
+    ];
+  }
+
   public static function getUiData()
   {
 
     $spaces = Spaces::getAll();
 
     $publicData = [];
-    $publicData[USED_CARRIAGES] = [
-      CARRIAGE => [
-        HIDDEN => 0,
-        TALLAGE_CARRIAGE => 0,
-        TRIBUTE_CARRIAGE => 0,
-        TRAP_CARRIAGE => 0,
-      ]
-    ];
-    $robinHoodData = [];
-    $sheriffData = [];
+    $publicData[USED_CARRIAGES] = self::getDefaultPublic();
+    $robinHoodForces = [];
+    $sheriffForces = [];
 
     foreach ($spaces as $spaceId => $space) {
-      $publicData[$spaceId] = [
-        CAMP => [
-          HIDDEN => 0,
-          REVEALED => 0,
-        ],
-        CARRIAGE => [
-          HIDDEN => 0,
-          TALLAGE_CARRIAGE => 0,
-          TRIBUTE_CARRIAGE => 0,
-          TRAP_CARRIAGE => 0,
-        ],
-        MERRY_MEN => [
-          HIDDEN => 0,
-          REVEALED => 0,
-        ],
-        HENCHMEN => [],
-        ROBIN_HOOD => 0,
-      ];
-      $robinHoodData[$spaceId] = [
-        MERRY_MEN => [],
-        CAMP => [],
-        ROBIN_HOOD => [],
-      ];
-      $sheriffData[$spaceId] = [
-        CARRIAGE => []
-      ];
+      $publicData[$spaceId] = self::getDefaultPublic();
+      $robinHoodForces[$spaceId] = [];
+      $sheriffForces[$spaceId] = [];
+      // $robinHoodData[$spaceId] = [
+      //   MERRY_MEN => [],
+      //   CAMP => [],
+      //   ROBIN_HOOD => [],
+      // ];
+      // $sheriffData[$spaceId] = [
+      //   CARRIAGE => []
+      // ];
     }
 
     $forces = self::getAll();
@@ -127,19 +127,19 @@ class Forces extends \AGestOfRobinHood\Helpers\Pieces
         $publicData[$location][HENCHMEN][] = $force;
       } else if ($type === MERRY_MEN) {
         $publicData[$location][MERRY_MEN][$isHidden ? HIDDEN : REVEALED] += 1;
-        $robinHoodData[$location][MERRY_MEN][] = $force;
+        $robinHoodForces[$location][] = $force;
       } else if ($type === CAMP) {
         $publicData[$location][CAMP][$isHidden ? HIDDEN : REVEALED] += 1;
-        $robinHoodData[$location][CAMP][] = $force;
+        $robinHoodForces[$location][] = $force;
       } else if ($type === ROBIN_HOOD) {
-        $robinHoodData[$location][ROBIN_HOOD][] = $force;
+        $robinHoodForces[$location][] = $force;
         if ($isHidden) {
           $publicData[$location][MERRY_MEN][HIDDEN] += 1;
         } else {
           $publicData[$location][ROBIN_HOOD] = 1;
         }
       } else if (in_array($type, [TALLAGE_CARRIAGE, TRIBUTE_CARRIAGE, TRAP_CARRIAGE])) {
-        $sheriffData[$location][CARRIAGE][] = $force;
+        $sheriffForces[$location][] = $force;
         if ($isHidden) {
           $publicData[$location][CARRIAGE][HIDDEN] += 1;
         } else {
@@ -150,8 +150,8 @@ class Forces extends \AGestOfRobinHood\Helpers\Pieces
 
     return [
       'public' => $publicData,
-      ROBIN_HOOD => $robinHoodData,
-      SHERIFF => $sheriffData,
+      ROBIN_HOOD => $robinHoodForces,
+      SHERIFF => $sheriffForces,
     ];
   }
 
@@ -296,9 +296,9 @@ class Forces extends \AGestOfRobinHood\Helpers\Pieces
     // self::pickForLocation(1, MERRY_MEN_SUPPLY, REMSTON);
     // self::pickForLocation(1, MERRY_MEN_SUPPLY, SHIRE_WOOD);
     // self::pickForLocation(1, MERRY_MEN_SUPPLY, SOUTHWELL_FOREST);
-    // self::pickForLocation(1, CARRIAGE_SUPPLY, BINGHAM);
-    // self::pickForLocation(1, CARRIAGE_SUPPLY, RETFORD);
-    // self::pickForLocation(1, HENCHMEN_SUPPLY, RETFORD);
+    self::pickForLocation(1, CARRIAGE_SUPPLY, BINGHAM);
+    self::pickForLocation(1, CARRIAGE_SUPPLY, RETFORD);
+    self::pickForLocation(1, HENCHMEN_SUPPLY, RETFORD);
   }
 
   public static function setupNewGame($players = null, $options = null)

@@ -1725,6 +1725,8 @@ var AGestOfRobinHood = (function () {
             setupRobinHood: new SetupRobinHoodState(this),
             sneak: new SneakState(this),
         };
+        this.tooltipManager = new TooltipManager(this);
+        this.playerManager = new PlayerManager(this);
         this.infoPanel = new InfoPanel(this);
         this.settings = new Settings(this);
         this.animationManager = new AnimationManager(this, {
@@ -1735,8 +1737,6 @@ var AGestOfRobinHood = (function () {
         this.forceManager = new ForceManager(this);
         this.markerManager = new MarkerManager(this);
         this.gameMap = new GameMap(this);
-        this.tooltipManager = new TooltipManager(this);
-        this.playerManager = new PlayerManager(this);
         if (this.notificationManager != undefined) {
             this.notificationManager.destroy();
         }
@@ -2268,8 +2268,8 @@ var ForceManager = (function (_super) {
     ForceManager.prototype.setupFrontDiv = function (force, div) {
         div.classList.add('gest_force_side');
         div.setAttribute('data-type', force.type);
-        if (force.type === CARRIAGE && !force.hidden) {
-            div.insertAdjacentHTML('afterbegin', "<span>".concat(force.type.substring(0, 3), "</span>"));
+        if ([TALLAGE_CARRIAGE, TRIBUTE_CARRIAGE, TRAP_CARRIAGE].includes(force.type)) {
+            div.replaceChildren(force.type.substring(0, 3));
         }
         if (force.type === ROBIN_HOOD && !force.hidden) {
             console.log('add marker');
@@ -2288,7 +2288,7 @@ var ForceManager = (function (_super) {
         if (force.type === ROBIN_HOOD) {
             div.insertAdjacentHTML('beforeend', '<div>*</div>');
         }
-        if (force.type === CARRIAGE) {
+        if ([TALLAGE_CARRIAGE, TRIBUTE_CARRIAGE, TRAP_CARRIAGE].includes(force.type)) {
             div.insertAdjacentHTML('afterbegin', "<span>*".concat(force.type.substring(0, 3), "</span>"));
         }
     };
@@ -2769,7 +2769,7 @@ var INITIATIVE_TRACK = [
 ];
 var UNIQUE_SPACES = [
     {
-        id: 'carriage_usedCarriages',
+        id: 'Carriage_usedCarriages',
         top: 523,
         left: 249,
     },
@@ -2843,7 +2843,7 @@ var GameMap = (function () {
                 });
             });
         });
-        this.forces['carriage_usedCarriages'] = new LineStock(this.game.forceManager, document.getElementById('carriage_usedCarriages'), {
+        this.forces['Carriage_usedCarriages'] = new LineStock(this.game.forceManager, document.getElementById('Carriage_usedCarriages'), {
             center: true,
         });
         this.updateForces({ gamedatas: gamedatas });
@@ -2851,9 +2851,12 @@ var GameMap = (function () {
     GameMap.prototype.updateForces = function (_a) {
         var _this = this;
         var gamedatas = _a.gamedatas;
-        var isRobinHoodPlayer = !!gamedatas.robinHoodForces;
-        var isSheriffPlayer = !!gamedatas.sheriffForces;
-        __spreadArray([], SPACES, true).forEach(function (spaceId) {
+        var isRobinHoodPlayer = this.game.getPlayerId() ===
+            this.game.playerManager.getRobinHoodPlayerId();
+        var isSheriffPlayer = this.game.getPlayerId() === this.game.playerManager.getSheriffPlayerId();
+        __spreadArray(__spreadArray([], SPACES, true), [
+            USED_CARRIAGES
+        ], false).forEach(function (spaceId) {
             var _a, _b;
             var forces = gamedatas.forces[spaceId];
             var robinHoodForces = (_a = gamedatas.robinHoodForces) === null || _a === void 0 ? void 0 : _a[spaceId];
@@ -2865,6 +2868,18 @@ var GameMap = (function () {
                 forces.Henchmen.forEach(function (henchman) {
                     console.log('location', "".concat(henchman.type, "_").concat(henchman.location));
                     _this.forces["".concat(henchman.type, "_").concat(henchman.location)].addCard(henchman);
+                });
+            }
+            if (isRobinHoodPlayer && robinHoodForces) {
+                robinHoodForces.forEach(function (force) {
+                    console.log('isRH');
+                    _this.addPrivateForce({ force: force });
+                });
+            }
+            if (isSheriffPlayer && sheriffForces) {
+                console.log('isSheriff');
+                sheriffForces.forEach(function (carriage) {
+                    _this.forces["".concat(CARRIAGE, "_").concat(spaceId)].addCard(carriage);
                 });
             }
             if (!isRobinHoodPlayer) {
@@ -2899,17 +2914,6 @@ var GameMap = (function () {
                     count: forces.Camp.hidden,
                 });
             }
-            else if (isRobinHoodPlayer && robinHoodForces) {
-                robinHoodForces.RobinHood.forEach(function (robinHood) {
-                    _this.addPrivateForce({ force: robinHood });
-                });
-                robinHoodForces.MerryMen.forEach(function (merryMen) {
-                    _this.addPrivateForce({ force: merryMen });
-                });
-                robinHoodForces.Camp.forEach(function (camp) {
-                    _this.addPrivateForce({ force: camp });
-                });
-            }
             if (!isSheriffPlayer) {
                 _this.addPublicForces({
                     count: forces.Carriage.hidden,
@@ -2924,11 +2928,6 @@ var GameMap = (function () {
                         type: type,
                         spaceId: spaceId,
                     });
-                });
-            }
-            else if (isSheriffPlayer && sheriffForces) {
-                sheriffForces.Carriage.forEach(function (carriage) {
-                    _this.forces["".concat(CARRIAGE, "_").concat(spaceId)].addCard(carriage);
                 });
             }
         });
@@ -2991,9 +2990,8 @@ var GameMap = (function () {
             this.forceIdCounter++;
         }
     };
-    GameMap.prototype.addPrivateForce = function (_a) {
+    GameMap.prototype.getStockIdPrivate = function (_a) {
         var force = _a.force;
-        console.log('force', force);
         var id = "".concat(force.type, "_").concat(force.location);
         if (force.type === ROBIN_HOOD) {
             id = "".concat(MERRY_MEN, "_").concat(force.location);
@@ -3001,31 +2999,48 @@ var GameMap = (function () {
         else if ([TALLAGE_CARRIAGE, TRAP_CARRIAGE, TRIBUTE_CARRIAGE].includes(force.type)) {
             id = "".concat(CARRIAGE, "_").concat(force.location);
         }
-        this.forces[id].addCard(force);
+        return id;
     };
-    GameMap.prototype.revealForcePublic = function (_a) {
-        var force = _a.force;
-        var stockId = '';
-        switch (force.type) {
+    GameMap.prototype.getStockIdPublic = function (_a) {
+        var type = _a.type, spaceId = _a.spaceId;
+        switch (type) {
             case ROBIN_HOOD:
             case MERRY_MEN:
-                stockId = "".concat(MERRY_MEN, "_").concat(force.location);
-                break;
+                return "".concat(MERRY_MEN, "_").concat(spaceId);
             case CAMP:
-                stockId = "".concat(CAMP, "_").concat(force.location);
-                break;
+                return "".concat(CAMP, "_").concat(spaceId);
             case TALLAGE_CARRIAGE:
             case TRAP_CARRIAGE:
             case TRIBUTE_CARRIAGE:
-                stockId = "".concat(CARRIAGE, "_").concat(force.location);
-                break;
+            case CARRIAGE:
+                return "".concat(CARRIAGE, "_").concat(spaceId);
             default:
                 return;
         }
+    };
+    GameMap.prototype.addPrivateForce = function (_a) {
+        var force = _a.force;
+        var id = this.getStockIdPrivate({ force: force });
+        this.forces[id].addCard(force);
+    };
+    GameMap.prototype.getForcePublic = function (_a) {
+        var type = _a.type, spaceId = _a.spaceId, hidden = _a.hidden;
+        var stockId = this.getStockIdPublic({ type: type, spaceId: spaceId });
         var forces = this.forces[stockId]
             .getCards()
-            .filter(function (force) { return force.hidden; });
+            .filter(function (force) { return force.hidden === hidden; });
         var selected = forces[Math.floor(Math.random() * forces.length)];
+        return selected;
+    };
+    GameMap.prototype.revealForcePublic = function (_a) {
+        var force = _a.force;
+        console.log('revealForcePublic');
+        var selected = this.getForcePublic({
+            type: force.type,
+            spaceId: force.location,
+            hidden: true,
+        });
+        console.log('revealForcePublic');
         selected.type = force.type;
         selected.hidden = force.hidden;
         this.game.forceManager.updateCardInformations(selected);
@@ -3034,19 +3049,16 @@ var GameMap = (function () {
         var force = _a.force;
         this.game.forceManager.updateCardInformations(force);
     };
-    GameMap.prototype.moveCarriagePrivate = function (_a) {
+    GameMap.prototype.moveForcePrivate = function (_a) {
         return __awaiter(this, arguments, void 0, function (_b) {
-            var carriageNode, toNode;
-            var carriageId = _b.carriageId, toSpaceId = _b.toSpaceId;
+            var toStockId;
+            var force = _b.force;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
-                        carriageNode = document.getElementById(carriageId);
-                        toNode = document.getElementById("carriage_".concat(toSpaceId));
-                        if (!(carriageNode && toNode)) {
-                            return [2];
-                        }
-                        return [4, this.game.animationManager.attachWithAnimation(new BgaSlideAnimation({ element: carriageNode }), toNode)];
+                        toStockId = this.getStockIdPrivate({ force: force });
+                        console.log('toStockId', toStockId);
+                        return [4, this.forces[toStockId].addCard(force)];
                     case 1:
                         _c.sent();
                         return [2];
@@ -3054,72 +3066,17 @@ var GameMap = (function () {
             });
         });
     };
-    GameMap.prototype.getCarriageElement = function (_a) {
-        var spaceId = _a.spaceId, hidden = _a.hidden, type = _a.type;
-        var carriagesContainer = document.getElementById("carriage_".concat(spaceId));
-        if (!carriagesContainer) {
-            return null;
-        }
-        var carriages = [];
-        carriagesContainer.childNodes.forEach(function (element) {
-            if (!(element instanceof HTMLElement) ||
-                element.getAttribute('data-type') !== CARRIAGE) {
-                return;
-            }
-            var hiddenAttribute = element.getAttribute('data-hidden');
-            if ((hidden && hiddenAttribute) !== 'true' ||
-                (!hidden && hiddenAttribute !== 'false')) {
-                return;
-            }
-            if (type && element.getAttribute('data-subtype') !== type) {
-                return;
-            }
-            carriages.push(element);
-        });
-        if (carriages.length === 0) {
-            return null;
-        }
-        return carriages[carriages.length - 1];
-    };
-    GameMap.prototype.moveCarriagePublic = function (_a) {
+    GameMap.prototype.moveForcePublic = function (_a) {
         return __awaiter(this, arguments, void 0, function (_b) {
-            var carriagesContainer, toNode, carriageNode;
-            var fromSpaceId = _b.fromSpaceId, toSpaceId = _b.toSpaceId, hidden = _b.hidden, type = _b.type;
+            var force, toStockId;
+            var type = _b.type, hidden = _b.hidden, toSpaceId = _b.toSpaceId, fromSpaceId = _b.fromSpaceId;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
-                        console.log('moveCarriagePublic');
-                        carriagesContainer = document.getElementById("carriage_".concat(fromSpaceId));
-                        toNode = document.getElementById("carriage_".concat(toSpaceId));
-                        carriageNode = this.getCarriageElement({
-                            spaceId: fromSpaceId,
-                            hidden: hidden,
-                            type: type,
-                        });
-                        if (!(toNode && carriageNode)) {
-                            return [2];
-                        }
-                        return [4, this.game.animationManager.attachWithAnimation(new BgaSlideAnimation({ element: carriageNode }), toNode)];
-                    case 1:
-                        _c.sent();
-                        return [2];
-                }
-            });
-        });
-    };
-    GameMap.prototype.moveHenchman = function (_a) {
-        return __awaiter(this, arguments, void 0, function (_b) {
-            var node, toNode;
-            var henchmanId = _b.henchmanId, toSpaceId = _b.toSpaceId;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
-                    case 0:
-                        node = document.getElementById(henchmanId);
-                        toNode = document.getElementById("henchmen_".concat(toSpaceId));
-                        if (!(node && toNode)) {
-                            return [2];
-                        }
-                        return [4, this.game.animationManager.attachWithAnimation(new BgaSlideAnimation({ element: node }), toNode)];
+                        force = this.getForcePublic({ type: type, hidden: hidden, spaceId: fromSpaceId });
+                        toStockId = this.getStockIdPublic({ type: type, spaceId: toSpaceId });
+                        console.log('toStockId', toStockId);
+                        return [4, this.forces[toStockId].addCard(force)];
                     case 1:
                         _c.sent();
                         return [2];
@@ -3307,6 +3264,7 @@ var NotificationManager = (function () {
             'log',
             'clearTurn',
             'refreshUI',
+            'refreshForcesPrivate',
             'chooseAction',
             'drawAndRevealCard',
             'gainShillings',
@@ -3351,7 +3309,7 @@ var NotificationManager = (function () {
             });
             _this.game
                 .framework()
-                .notifqueue.setIgnoreNotificationCheck('moveCarriage', function (notif) {
+                .notifqueue.setIgnoreNotificationCheck('moveCarriagePublic', function (notif) {
                 return notif.args.playerId == _this.game.getPlayerId();
             });
         });
@@ -3405,6 +3363,20 @@ var NotificationManager = (function () {
             });
         });
     };
+    NotificationManager.prototype.notif_refreshForcesPrivate = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var data;
+            var _this = this;
+            return __generator(this, function (_a) {
+                data = notif.args.forces;
+                Object.entries(data).forEach(function (_a) {
+                    var spaceId = _a[0], forces = _a[1];
+                    forces.forEach(function (force) { return _this.game.gameMap.addPrivateForce({ force: force }); });
+                });
+                return [2];
+            });
+        });
+    };
     NotificationManager.prototype.notif_chooseAction = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
             var marker, markerNode, toNode;
@@ -3440,15 +3412,16 @@ var NotificationManager = (function () {
             });
         });
     };
-    NotificationManager.prototype.notif_moveCarriage = function (notif) {
+    NotificationManager.prototype.notif_moveCarriagePublic = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, carriage, henchman, toSpaceId, fromSpaceId, promises;
+            var _a, carriage, toSpaceId, fromSpaceId, henchman, promises;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        _a = notif.args, carriage = _a.carriage, henchman = _a.henchman, toSpaceId = _a.toSpaceId, fromSpaceId = _a.fromSpaceId;
+                        _a = notif.args, carriage = _a.carriage, toSpaceId = _a.toSpaceId, fromSpaceId = _a.fromSpaceId, henchman = _a.henchman;
+                        console.log('carriage', carriage);
                         promises = [
-                            this.game.gameMap.moveCarriagePublic({
+                            this.game.gameMap.moveForcePublic({
                                 hidden: carriage.hidden,
                                 type: carriage.type,
                                 toSpaceId: toSpaceId,
@@ -3456,45 +3429,12 @@ var NotificationManager = (function () {
                             }),
                         ];
                         if (henchman) {
-                            promises.push(this.game.gameMap.moveHenchman({ henchmanId: henchman.id, toSpaceId: toSpaceId }));
+                            promises.push(this.game.gameMap.moveForcePrivate({ force: henchman }));
                         }
                         return [4, Promise.all(promises)];
                     case 1:
                         _b.sent();
                         return [2];
-                }
-            });
-        });
-    };
-    NotificationManager.prototype.notif_moveCarriagePublic = function (notif) {
-        return __awaiter(this, void 0, void 0, function () {
-            var _a, carriage, toSpaceId, fromSpaceId;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        _a = notif.args, carriage = _a.carriage, toSpaceId = _a.toSpaceId, fromSpaceId = _a.fromSpaceId;
-                        console.log('carriage', carriage);
-                        if (!(this.game.getPlayerId() === this.game.playerManager.getSheriffPlayerId())) return [3, 2];
-                        console.log('if');
-                        return [4, this.game.gameMap.moveCarriagePrivate({
-                                carriageId: carriage.id,
-                                toSpaceId: toSpaceId,
-                            })];
-                    case 1:
-                        _b.sent();
-                        return [3, 4];
-                    case 2:
-                        console.log('else');
-                        return [4, this.game.gameMap.moveCarriagePublic({
-                                hidden: carriage.hidden,
-                                type: carriage.hidden ? null : carriage.type,
-                                toSpaceId: toSpaceId,
-                                fromSpaceId: fromSpaceId,
-                            })];
-                    case 3:
-                        _b.sent();
-                        _b.label = 4;
-                    case 4: return [2];
                 }
             });
         });
@@ -3507,13 +3447,12 @@ var NotificationManager = (function () {
                     case 0:
                         _a = notif.args, carriage = _a.carriage, henchman = _a.henchman, toSpaceId = _a.toSpaceId;
                         promises = [
-                            this.game.gameMap.moveCarriagePrivate({
-                                carriageId: carriage.id,
-                                toSpaceId: toSpaceId,
+                            this.game.gameMap.moveForcePrivate({
+                                force: carriage,
                             }),
                         ];
                         if (henchman) {
-                            promises.push(this.game.gameMap.moveHenchman({ henchmanId: henchman.id, toSpaceId: toSpaceId }));
+                            promises.push(this.game.gameMap.moveForcePrivate({ force: henchman }));
                         }
                         return [4, Promise.all(promises)];
                     case 1:
@@ -3582,28 +3521,6 @@ var NotificationManager = (function () {
                 merryMen.forEach(function (merryMan) {
                     return _this.game.gameMap.addPrivateForce({ force: merryMan });
                 });
-                return [2];
-            });
-        });
-    };
-    NotificationManager.prototype.notif_revealCarriage = function (notif) {
-        return __awaiter(this, void 0, void 0, function () {
-            var _a, carriage, playerId, element;
-            return __generator(this, function (_b) {
-                _a = notif.args, carriage = _a.carriage, playerId = _a.playerId;
-                element = this.game.getPlayerId() === this.game.playerManager.getSheriffPlayerId()
-                    ? document.getElementById(carriage.id)
-                    : this.game.gameMap.getCarriageElement({
-                        spaceId: carriage.location,
-                        hidden: true,
-                        type: null,
-                    });
-                if (!element) {
-                    return [2];
-                }
-                element.setAttribute('data-hidden', 'false');
-                element.replaceChildren();
-                element.insertAdjacentHTML('afterbegin', "<span>".concat(carriage.type.substring(0, 3).toUpperCase(), "</span>"));
                 return [2];
             });
         });

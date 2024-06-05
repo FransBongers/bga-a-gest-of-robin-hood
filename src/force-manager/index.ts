@@ -22,11 +22,8 @@ class ForceManager extends CardManager<GestForce> {
     // div.setAttribute('data-side', 'front');
     div.setAttribute('data-type', force.type);
 
-    if (force.type === CARRIAGE && !force.hidden) {
-      div.insertAdjacentHTML(
-        'afterbegin',
-        `<span>${force.type.substring(0, 3)}</span>`
-      );
+    if ([TALLAGE_CARRIAGE, TRIBUTE_CARRIAGE, TRAP_CARRIAGE].includes(force.type)) {
+      div.replaceChildren(force.type.substring(0, 3))
     }
     if (force.type === ROBIN_HOOD && !force.hidden) {
       console.log('add marker');
@@ -48,7 +45,7 @@ class ForceManager extends CardManager<GestForce> {
     if (force.type === ROBIN_HOOD) {
       div.insertAdjacentHTML('beforeend', '<div>*</div>');
     }
-    if (force.type === CARRIAGE) {
+    if ([TALLAGE_CARRIAGE, TRIBUTE_CARRIAGE, TRAP_CARRIAGE].includes(force.type)) {
       div.insertAdjacentHTML(
         'afterbegin',
         `<span>*${force.type.substring(0, 3)}</span>`

@@ -117,6 +117,8 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
       sneak: new SneakState(this),
     };
 
+    this.tooltipManager = new TooltipManager(this);
+    this.playerManager = new PlayerManager(this);
     this.infoPanel = new InfoPanel(this);
     this.settings = new Settings(this);
 
@@ -131,8 +133,7 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     this.markerManager = new MarkerManager(this);
 
     this.gameMap = new GameMap(this);
-    this.tooltipManager = new TooltipManager(this);
-    this.playerManager = new PlayerManager(this);
+
 
     if (this.notificationManager != undefined) {
       this.notificationManager.destroy();

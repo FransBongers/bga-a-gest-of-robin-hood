@@ -498,7 +498,7 @@ const INITIATIVE_TRACK: TrackConfig[] = [
 
 const UNIQUE_SPACES: TrackConfig[] = [
   {
-    id: 'carriage_usedCarriages',
+    id: 'Carriage_usedCarriages',
     top: 523,
     left: 249,
   },

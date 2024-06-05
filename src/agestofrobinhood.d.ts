@@ -128,15 +128,9 @@ interface AGestOfRobinHoodGamedatas extends Gamedatas {
   markers: Record<string, GestMarker>;
   robinHoodForces?: Record<
     string,
-    {
-      Camp: GestForce[];
-      MerryMen: GestForce[];
-      RobinHood: GestForce[];
-    }
+    GestForce[]
   >;
-  sheriffForces?: Record<string, {
-    Carriage: GestForce[]
-  }>;
+  sheriffForces?: Record<string, GestForce[]>;
   spaces: Record<string, GestSpace>;
 }
 

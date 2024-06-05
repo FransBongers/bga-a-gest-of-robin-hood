@@ -2,6 +2,7 @@
 
 namespace AGestOfRobinHood\Core;
 
+use AGestOfRobinHood\Managers\Forces;
 use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\Spaces;
 
@@ -81,10 +82,23 @@ class Notifications
     ];
 
     unset($datas['staticData']);
+    unset($datas['robinHoodForces']);
+    unset($datas['sheriffForces']);
+
+
 
     self::notifyAll('refreshUI', '', [
       // 'datas' => $fDatas,
       'datas' => $datas,
+    ]);
+
+    $forces = Forces::getUiData();
+
+    self::notify(Players::getRobinHoodPlayer(), 'refreshForcesPrivate', '', [
+      'forces' => $forces[ROBIN_HOOD]
+    ]);
+    self::notify(Players::getSheriffPlayer(), 'refreshForcesPrivate', '', [
+      'forces' => $forces[SHERIFF]
     ]);
   }
 
@@ -201,7 +215,7 @@ class Notifications
     ]);
   }
 
-  public static function moveCarriage($player, $carriage, $fromSpace, $toSpace, $henchman)
+  public static function moveCarriage($player, $carriage, $fromSpace, $toSpace, $henchman = null)
   {
     $privateText = $henchman !== null ?
       clienttranslate('Private: ${player_name} moves a Carriage and a Henchman from ${tkn_boldText_from} to ${tkn_boldText_to}') :
@@ -222,13 +236,13 @@ class Notifications
       clienttranslate('${player_name} moves a Carriage from ${tkn_boldText_from} to ${tkn_boldText_to}');
     $carriageIsHidden = $carriage->isHidden();
 
-    self::notifyAll('moveCarriage', $text, [
+    self::notifyAll('moveCarriagePublic', $text, [
       'player' => $player,
       'tkn_boldText_from' => $fromSpace->getName(),
       'tkn_boldText_to' => $toSpace->getName(),
       'carriage' => [
         'hidden' => $carriageIsHidden,
-        'type' => $carriageIsHidden ? null : $carriage->getType(),
+        'type' => $carriageIsHidden ? CARRIAGE : $carriage->getType(),
       ],
       'henchman' => $henchman,
       'toSpaceId' => $toSpace->getId(),
@@ -239,11 +253,11 @@ class Notifications
 
   public static function revealCarriage($player, $carriage)
   {
-    self::notifyAll("revealCarriage", clienttranslate('${player_name} reveals ${tkn_boldText_carriageName} in ${tkn_boldText_spaceName}'), [
+    self::notifyAll("revealForce", clienttranslate('${player_name} reveals ${tkn_boldText_carriageName} in ${tkn_boldText_spaceName}'), [
       'player' => $player,
       'tkn_boldText_carriageName' => $carriage->getName(),
       'tkn_boldText_spaceName' => Spaces::get($carriage->getLocation())->getName(),
-      'carriage' => $carriage->jsonSerialize(),
+      'force' => $carriage->jsonSerialize(),
       'i18n' => ['tkn_boldText_carriageName', 'tkn_boldText_spaceName']
     ]);
   }
@@ -259,15 +273,38 @@ class Notifications
     ]);
   }
 
-  public static function moveCarriageToUsedCarriages($player, $carriage, $fromSpaceId)
+  public static function moveCarriageToUsedCarriages($player, $carriage, $nottingham)
   {
-    self::notifyAll('moveCarriagePublic', clienttranslate('${player_name} moves a Carriage to ${tkn_boldText_used}'), [
+    // self::notifyAll('moveCarriagePublic', clienttranslate('${player_name} moves a Carriage to ${tkn_boldText_used}'), [
+    //   'player' => $player,
+    //   'tkn_boldText_used' => clienttranslate('Used Carriages'),
+    //   'carriage' => $carriage->jsonSerialize(),
+    //   'toSpaceId' => $carriage->getLocation(),
+    //   'fromSpaceId' => $fromSpaceId,
+    //   'i18n' => ['tkn_boldText_used'],
+    // ]);
+    $text = clienttranslate('${player_name} moves a Carriage to ${tkn_boldText_to}');
+
+    self::notify($player, 'moveCarriagePrivate', $text, [
       'player' => $player,
-      'tkn_boldText_used' => clienttranslate('Used Carriages'),
+      'tkn_boldText_from' => $nottingham->getName(),
+      'tkn_boldText_to' => clienttranslate('Used Carriages'),
       'carriage' => $carriage->jsonSerialize(),
       'toSpaceId' => $carriage->getLocation(),
-      'fromSpaceId' => $fromSpaceId,
-      'i18n' => ['tkn_boldText_used'],
+      'i18n' => ['tkn_boldText_from', 'tkn_boldText_to'],
+    ]);
+
+    self::notifyAll('moveCarriagePublic', $text, [
+      'player' => $player,
+      'tkn_boldText_from' => $nottingham->getName(),
+      'tkn_boldText_to' => clienttranslate('Used Carriages'),
+      'carriage' => [
+        'hidden' => false,
+        'type' => $carriage->getType(),
+      ],
+      'toSpaceId' => $carriage->getLocation(),
+      'fromSpaceId' => NOTTINGHAM,
+      'i18n' => ['tkn_boldText_from', 'tkn_boldText_to'],
     ]);
   }
 

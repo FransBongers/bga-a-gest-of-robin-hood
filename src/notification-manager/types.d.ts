@@ -17,6 +17,10 @@ interface NotifRefreshUIArgs {
   datas: AGestOfRobinHoodGamedatas;
 }
 
+interface NotifRefreshForcesPrivate {
+  forces: Record<string,GestForce[]>;
+}
+
 interface NotifClearTurnArgs extends NotifWithPlayerArgs {
   notifIds: string[];
 }
@@ -55,7 +59,14 @@ interface NotifMoveCarriagePrivateArgs extends NotifWithPlayerArgs {
 }
 
 interface NotifMoveCarriagePublicArgs extends NotifWithPlayerArgs {
-  carriage: GestForce;
+  // carriage: GestForce;
+  // fromSpaceId: string;
+  // toSpaceId: string;
+  carriage: {
+    hidden: boolean;
+    type: string | null;
+  };
+  henchman: GestForce | null;
   fromSpaceId: string;
   toSpaceId: string;
 }

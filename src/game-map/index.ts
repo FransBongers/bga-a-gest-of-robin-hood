@@ -111,9 +111,9 @@ class GameMap {
         );
       });
     });
-    this.forces['carriage_usedCarriages'] = new LineStock<GestForce>(
+    this.forces['Carriage_usedCarriages'] = new LineStock<GestForce>(
       this.game.forceManager,
-      document.getElementById('carriage_usedCarriages'),
+      document.getElementById('Carriage_usedCarriages'),
       {
         center: true,
       }
@@ -123,12 +123,15 @@ class GameMap {
   }
 
   updateForces({ gamedatas }: { gamedatas: AGestOfRobinHoodGamedatas }) {
-    const isRobinHoodPlayer = !!gamedatas.robinHoodForces;
-    const isSheriffPlayer = !!gamedatas.sheriffForces;
+    const isRobinHoodPlayer =
+      this.game.getPlayerId() ===
+      this.game.playerManager.getRobinHoodPlayerId();
+    const isSheriffPlayer =
+      this.game.getPlayerId() === this.game.playerManager.getSheriffPlayerId();
 
     [
       ...SPACES,
-      // USED_CARRIAGES
+      USED_CARRIAGES
     ].forEach((spaceId) => {
       const forces = gamedatas.forces[spaceId];
       const robinHoodForces = gamedatas.robinHoodForces?.[spaceId];
@@ -145,6 +148,20 @@ class GameMap {
           this.forces[`${henchman.type}_${henchman.location}`].addCard(
             henchman
           );
+        });
+      }
+
+      if (isRobinHoodPlayer && robinHoodForces) {
+        robinHoodForces.forEach((force) => {
+          console.log('isRH');
+          this.addPrivateForce({ force });
+        });
+      }
+
+      if (isSheriffPlayer && sheriffForces) {
+        console.log('isSheriff');
+        sheriffForces.forEach((carriage) => {
+          this.forces[`${CARRIAGE}_${spaceId}`].addCard(carriage);
         });
       }
 
@@ -182,18 +199,6 @@ class GameMap {
           hidden: true,
           count: forces.Camp.hidden,
         });
-      } else if (isRobinHoodPlayer && robinHoodForces) {
-        robinHoodForces.RobinHood.forEach((robinHood) => {
-          this.addPrivateForce({ force: robinHood });
-        });
-
-        robinHoodForces.MerryMen.forEach((merryMen) => {
-          this.addPrivateForce({ force: merryMen });
-        });
-
-        robinHoodForces.Camp.forEach((camp) => {
-          this.addPrivateForce({ force: camp });
-        });
       }
       if (!isSheriffPlayer) {
         this.addPublicForces({
@@ -209,10 +214,6 @@ class GameMap {
             type: type,
             spaceId,
           });
-        });
-      } else if (isSheriffPlayer && sheriffForces) {
-        sheriffForces.Carriage.forEach((carriage) => {
-          this.forces[`${CARRIAGE}_${spaceId}`].addCard(carriage);
         });
       }
     });
@@ -293,13 +294,11 @@ class GameMap {
 
   addPublicForces({
     type,
-    // subtype,
     hidden,
     spaceId,
     count,
   }: {
     type: string;
-    // subtype?: string;
     hidden: boolean;
     spaceId: string;
     count: number;
@@ -325,8 +324,7 @@ class GameMap {
     }
   }
 
-  addPrivateForce({ force }: { force: GestForce }) {
-    console.log('force', force);
+  getStockIdPrivate({ force }: { force: GestForce }) {
     let id = `${force.type}_${force.location}`;
     if (force.type === ROBIN_HOOD) {
       id = `${MERRY_MEN}_${force.location}`;
@@ -335,33 +333,84 @@ class GameMap {
     ) {
       id = `${CARRIAGE}_${force.location}`;
     }
-    this.forces[id].addCard(force);
+    return id;
   }
 
-  revealForcePublic({ force }: { force: GestForce }) {
-    let stockId = '';
-    switch (force.type) {
+  getStockIdPublic({ type, spaceId }: { type: string; spaceId: string }) {
+    switch (type) {
       case ROBIN_HOOD:
       case MERRY_MEN:
-        stockId = `${MERRY_MEN}_${force.location}`;
-        break;
+        return `${MERRY_MEN}_${spaceId}`;
       case CAMP:
-        stockId = `${CAMP}_${force.location}`;
-        break;
+        return `${CAMP}_${spaceId}`;
       case TALLAGE_CARRIAGE:
       case TRAP_CARRIAGE:
       case TRIBUTE_CARRIAGE:
-        stockId = `${CARRIAGE}_${force.location}`;
-        break;
+      case CARRIAGE:
+        return `${CARRIAGE}_${spaceId}`;
       default:
         return;
     }
+  }
+
+  addPrivateForce({ force }: { force: GestForce }) {
+    const id = this.getStockIdPrivate({ force });
+    this.forces[id].addCard(force);
+  }
+
+  getForcePublic({
+    type,
+    spaceId,
+    hidden,
+  }: {
+    type: string;
+    spaceId: string;
+    hidden: boolean;
+  }): GestForce {
+    const stockId = this.getStockIdPublic({ type, spaceId });
 
     const forces = this.forces[stockId]
       .getCards()
-      .filter((force) => force.hidden);
+      .filter((force) => force.hidden === hidden);
 
     const selected = forces[Math.floor(Math.random() * forces.length)];
+
+    return selected;
+  }
+
+  revealForcePublic({ force }: { force: GestForce }) {
+    // let stockId = '';
+    // switch (force.type) {
+    //   case ROBIN_HOOD:
+    //   case MERRY_MEN:
+    //     stockId = `${MERRY_MEN}_${force.location}`;
+    //     break;
+    //   case CAMP:
+    //     stockId = `${CAMP}_${force.location}`;
+    //     break;
+    //   case TALLAGE_CARRIAGE:
+    //   case TRAP_CARRIAGE:
+    //   case TRIBUTE_CARRIAGE:
+    //     stockId = `${CARRIAGE}_${force.location}`;
+    //     break;
+    //   default:
+    //     return;
+    // }
+
+    // const forces = this.forces[stockId]
+    //   .getCards()
+    //   .filter((force) => force.hidden);
+
+    // const selected = forces[Math.floor(Math.random() * forces.length)];
+    console.log('revealForcePublic');
+
+    const selected = this.getForcePublic({
+      type: force.type,
+      spaceId: force.location,
+      hidden: true,
+    });
+    console.log('revealForcePublic');
+
     selected.type = force.type;
     selected.hidden = force.hidden;
     this.game.forceManager.updateCardInformations(selected);
@@ -371,193 +420,128 @@ class GameMap {
     this.game.forceManager.updateCardInformations(force);
   }
 
-  // addRobinHoodPrivate({ robinHood }: { robinHood: GestForce }) {
-  //   const space = document.getElementById(`merryMen_${robinHood.location}`);
-  //   if (!space) {
-  //     return;
-  //   }
-  //   space.insertAdjacentHTML(
-  //     'beforeend',
-  //     tplForce({
-  //       id: robinHood.id,
-  //       type: robinHood.type,
-  //       hidden: robinHood.hidden,
-  //     })
-  //   );
-  // }
+  async moveForcePrivate({ force }: { force: GestForce }) {
+    const toStockId = this.getStockIdPrivate({ force });
+    console.log('toStockId',toStockId);
+    await this.forces[toStockId].addCard(force);
+  }
 
-  // addMerryManPrivate({ merryMan }: { merryMan: GestForce }) {
-  //   const space = document.getElementById(`merryMen_${merryMan.location}`);
-  //   if (!space) {
-  //     return;
-  //   }
-  //   space.insertAdjacentHTML(
-  //     'beforeend',
-  //     tplForce({
-  //       id: merryMan.id,
-  //       type: merryMan.type,
-  //       hidden: merryMan.hidden,
-  //     })
-  //   );
-  // }
+  async moveForcePublic({
+    type,
+    hidden,
+    toSpaceId,
+    fromSpaceId,
+  }: {
+    type: string;
+    hidden: boolean;
+    fromSpaceId: string;
+    toSpaceId: string;
+  }) {
+    const force = this.getForcePublic({ type, hidden, spaceId: fromSpaceId });
 
-  // addRobinHoodPublic({ spaceId }: { spaceId: string }) {
-  //   const space = document.getElementById(`merryMen_${spaceId}`);
-  //   if (!space) {
-  //     return;
-  //   }
+    const toStockId = this.getStockIdPublic({ type, spaceId: toSpaceId });
+    console.log('toStockId',toStockId);
+    await this.forces[toStockId].addCard(force);
+  }
 
-  //   space.insertAdjacentHTML(
-  //     'beforeend',
-  //     tplForce({ type: ROBIN_HOOD, hidden: false })
-  //   );
-  // }
-
-  // addMerryMenPublic({
+  // getCarriageElement({
   //   spaceId,
-  //   countHidden = 0,
-  //   countRevealed = 0,
+  //   hidden,
+  //   type,
   // }: {
   //   spaceId: string;
-  //   countHidden?: number;
-  //   countRevealed?: number;
-  // }) {
-  //   const space = document.getElementById(`merryMen_${spaceId}`);
-  //   if (!space) {
-  //     return;
+  //   hidden: boolean;
+  //   type: string | null;
+  // }): HTMLElement | null {
+  //   const carriagesContainer = document.getElementById(`carriage_${spaceId}`);
+
+  //   if (!carriagesContainer) {
+  //     return null;
   //   }
-  //   for (let i = 0; i < countRevealed; i++) {
-  //     space.insertAdjacentHTML(
-  //       'beforeend',
-  //       tplForce({ type: MERRY_MEN, hidden: false })
-  //     );
+
+  //   const carriages: HTMLElement[] = [];
+
+  //   carriagesContainer.childNodes.forEach((element) => {
+  //     if (
+  //       !(element instanceof HTMLElement) ||
+  //       element.getAttribute('data-type') !== CARRIAGE
+  //     ) {
+  //       return;
+  //     }
+
+  //     const hiddenAttribute = element.getAttribute('data-hidden');
+  //     if (
+  //       (hidden && hiddenAttribute) !== 'true' ||
+  //       (!hidden && hiddenAttribute !== 'false')
+  //     ) {
+  //       return;
+  //     }
+
+  //     if (type && element.getAttribute('data-subtype') !== type) {
+  //       return;
+  //     }
+
+  //     carriages.push(element);
+  //   });
+
+  //   if (carriages.length === 0) {
+  //     return null;
   //   }
-  //   for (let k = 0; k < countHidden; k++) {
-  //     space.insertAdjacentHTML(
-  //       'beforeend',
-  //       tplForce({ type: MERRY_MEN, hidden: true })
-  //     );
-  //   }
+
+  //   return carriages[carriages.length - 1];
   // }
 
-  async moveCarriagePrivate({
-    carriageId,
-    toSpaceId,
-  }: {
-    carriageId: string;
-    toSpaceId: string;
-  }) {
-    const carriageNode = document.getElementById(carriageId);
-    const toNode = document.getElementById(`carriage_${toSpaceId}`);
+  // async moveCarriagePublic({
+  //   fromSpaceId,
+  //   toSpaceId,
+  //   hidden,
+  //   type,
+  // }: {
+  //   toSpaceId: string;
+  //   fromSpaceId: string;
+  //   hidden: boolean;
+  //   type: string | null;
+  // }) {
+  //   console.log('moveCarriagePublic');
+  //   const carriagesContainer = document.getElementById(
+  //     `carriage_${fromSpaceId}`
+  //   );
+  //   const toNode = document.getElementById(`carriage_${toSpaceId}`);
+  //   const carriageNode = this.getCarriageElement({
+  //     spaceId: fromSpaceId,
+  //     hidden,
+  //     type,
+  //   });
 
-    if (!(carriageNode && toNode)) {
-      return;
-    }
+  //   if (!(toNode && carriageNode)) {
+  //     return;
+  //   }
 
-    await this.game.animationManager.attachWithAnimation(
-      new BgaSlideAnimation({ element: carriageNode }),
-      toNode
-    );
-  }
+  //   await this.game.animationManager.attachWithAnimation(
+  //     new BgaSlideAnimation({ element: carriageNode }),
+  //     toNode
+  //   );
+  // }
 
-  getCarriageElement({
-    spaceId,
-    hidden,
-    type,
-  }: {
-    spaceId: string;
-    hidden: boolean;
-    type: string | null;
-  }): HTMLElement | null {
-    const carriagesContainer = document.getElementById(`carriage_${spaceId}`);
+  // async moveHenchman({
+  //   henchmanId,
+  //   toSpaceId,
+  // }: {
+  //   henchman: G;
+  //   toSpaceId: string;
+  // }) {
+  //   const node = document.getElementById(henchmanId);
+  //   const toNode = document.getElementById(`henchmen_${toSpaceId}`);
 
-    if (!carriagesContainer) {
-      return null;
-    }
+  //   if (!(node && toNode)) {
+  //     return;
+  //   }
 
-    const carriages: HTMLElement[] = [];
-
-    carriagesContainer.childNodes.forEach((element) => {
-      if (
-        !(element instanceof HTMLElement) ||
-        element.getAttribute('data-type') !== CARRIAGE
-      ) {
-        return;
-      }
-
-      const hiddenAttribute = element.getAttribute('data-hidden');
-      if (
-        (hidden && hiddenAttribute) !== 'true' ||
-        (!hidden && hiddenAttribute !== 'false')
-      ) {
-        return;
-      }
-
-      if (type && element.getAttribute('data-subtype') !== type) {
-        return;
-      }
-
-      carriages.push(element);
-    });
-
-    if (carriages.length === 0) {
-      return null;
-    }
-
-    return carriages[carriages.length - 1];
-  }
-
-  async moveCarriagePublic({
-    fromSpaceId,
-    toSpaceId,
-    hidden,
-    type,
-  }: {
-    toSpaceId: string;
-    fromSpaceId: string;
-    hidden: boolean;
-    type: string | null;
-  }) {
-    console.log('moveCarriagePublic');
-    const carriagesContainer = document.getElementById(
-      `carriage_${fromSpaceId}`
-    );
-    const toNode = document.getElementById(`carriage_${toSpaceId}`);
-    const carriageNode = this.getCarriageElement({
-      spaceId: fromSpaceId,
-      hidden,
-      type,
-    });
-
-    if (!(toNode && carriageNode)) {
-      return;
-    }
-
-    await this.game.animationManager.attachWithAnimation(
-      new BgaSlideAnimation({ element: carriageNode }),
-      toNode
-    );
-  }
-
-  async moveHenchman({
-    henchmanId,
-    toSpaceId,
-  }: {
-    henchmanId: string;
-    toSpaceId: string;
-  }) {
-    const node = document.getElementById(henchmanId);
-    const toNode = document.getElementById(`henchmen_${toSpaceId}`);
-
-    if (!(node && toNode)) {
-      return;
-    }
-
-    await this.game.animationManager.attachWithAnimation(
-      new BgaSlideAnimation({ element: node }),
-      toNode
-    );
-  }
+  //   await this.game.animationManager.attachWithAnimation(
+  //     new BgaSlideAnimation({ element: node }),
+  //     toNode
+  //   );
+  // }
 
   async moveMarker({ id, location }: { id: string; location: string }) {
     const markerNode = document.getElementById(id);

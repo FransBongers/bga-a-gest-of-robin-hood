@@ -84,20 +84,23 @@
   background-color: #008000;
 }
 
+.gest_force_side[data-type=TallageCarriage],
+.gest_force_side[data-type=TrapCarriage],
+.gest_force_side[data-type=TributeCarriage],
 .gest_force_side[data-type=Carriage] {
   background-color: #c0c0c0;
   border-radius: 50%;
 }
 
-.gest_force_side.gest_selectable {
+.gest_force.gest_selectable > .card-sides > .card-side {
   cursor: pointer;
-  box-shadow: 0px 0px 0px calc(var(--gestForceScale) * 6px) #ffff00 !important;
+  box-shadow: 0px 0px 0px calc(var(--gestForceScale) * 4px) #ffff00 !important;
 }
 
-.gest_force.gest_selectable:hover,
-.gest_force.gest_selected {
+.gest_force.gest_selectable:hover > .card-sides > .card-side,
+.gest_force.gest_selected > .card-sides > .card-side {
   cursor: pointer;
-  box-shadow: 0px 0px 0px calc(var(--gestForceScale) * 6px) #0000ff !important;
+  box-shadow: 0px 0px 0px calc(var(--gestForceScale) * 4px) #0000ff !important;
 }
 
 /**
@@ -163,7 +166,7 @@
   display: flex;
 }
 
-#carriage_usedCarriages {
+#Carriage_usedCarriages {
   position: absolute;
   height: calc(var(--gestMapScale) * 153px);
   width: calc(var(--gestMapScale) * 153px);
