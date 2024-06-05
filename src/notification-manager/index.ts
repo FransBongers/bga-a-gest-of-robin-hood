@@ -154,6 +154,11 @@ class NotificationManager {
     debug('notif_log', notif.args);
   }
 
+  async notif_clearTurn(notif: Notif<NotifClearTurnArgs>) {
+    const { notifIds } = notif.args;
+    this.game.cancelLogs(notifIds);
+  }
+
   // notif_smallRefreshHand(notif: Notif<NotifSmallRefreshHandArgs>) {
   //   const { hand, playerId } = notif.args;
   //   const player = this.getPlayer({ playerId });
@@ -173,5 +178,4 @@ class NotificationManager {
     this.game.playerManager.updatePlayers({ gamedatas: updatedGamedatas });
     this.game.gameMap.updateInterface({ gamedatas: updatedGamedatas });
   }
-
 }
