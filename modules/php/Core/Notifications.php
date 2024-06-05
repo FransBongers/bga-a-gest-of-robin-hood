@@ -354,6 +354,30 @@ class Notifications
     ]);
   }
 
+  
+  public static function returnToSupply($player, $force, $space, $isHidden)
+  {
+    self::notify($player, 'returnToSupplyPrivate', clienttranslate('${player_name} returns ${tkn_boldText_forceName} from ${tkn_boldText_spaceName} to Available Forces'), [
+      'player' => $player,
+      'you' => '${you}',
+      'force' => $force,
+      'spaceId' => $space->getId(),
+      'tkn_boldText_forceName' => $force->getName(),
+      'tkn_boldText_spaceName' => $space->getName(),
+    ]);
+
+    self::notifyAll('returnToSupply', clienttranslate('${player_name} places ${tkn_boldText_forceName} to Available Forces'), [
+      'player' => $player,
+      'force' => [
+        'type' => $isHidden ? $force->getPublicType() : $force->getType(),
+        'hidden' => $isHidden,
+      ],
+      'spaceId' => $space->getId(),
+      'tkn_boldText_forceName' => $force->getPublicName(),
+      'tkn_boldText_spaceName' => $space->getName(),
+    ]);
+  }
+
   public static function revolt($player, $space)
   {
     self::notifyAll("revolt", clienttranslate('${player_name} sets ${tkn_boldText_parishName} to Revolting'), [
@@ -446,11 +470,37 @@ class Notifications
     self::placeMerryMen($player, $robinHood, $merryMen, $textPublic, $textPrivate);
   }
 
+  public static function placeForce($player, $force, $space)
+  {
+    self::notify($player, 'placeForcePrivate', clienttranslate('${player_name} places ${tkn_boldText_forceName} in ${tkn_boldText_spaceName}'), [
+      'player' => $player,
+      'you' => '${you}',
+      'forces' => [$force],
+      'spaceId' => $space->getId(),
+      'tkn_boldText_forceName' => $force->getName(),
+      'tkn_boldText_spaceName' => $space->getName(),
+      
+    ]);
+
+    $isHidden = $force->isHidden();
+    self::notifyAll('placeForce', clienttranslate('${player_name} places ${tkn_boldText_forceName} in ${tkn_boldText_spaceName}'), [
+      'player' => $player,
+      'force' => [
+        'type' => $isHidden ? $force->getPublicType() : $force->getType(),
+        'hidden' => $isHidden,
+      ],
+      'spaceId' => $space->getId(),
+      'tkn_boldText_forceName' => $force->getPublicName(),
+      'tkn_boldText_spaceName' => $space->getName(),
+      'count' => 1,
+    ]);
+  }
+
   public static function placeMerryMen($player, $robinHood, $merryMen, $textPublic, $textPrivate, $publicTextArgs = [],  $privateTextArgs = [])
   {
     self::notify($player, 'placeMerryMenPrivate', $textPrivate, array_merge($privateTextArgs, [
       'player' => $player,
-      'you' => '${you}',
+      // 'you' => '${you}',
       'robinHood' => $robinHood,
       'merryMen' => $merryMen,
     ]));

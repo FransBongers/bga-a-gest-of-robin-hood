@@ -83,6 +83,19 @@ interface NotifPayShillingsArgs extends NotifWithPlayerArgs {
   amount: number;
 }
 
+interface NotifPlaceForceArgs extends NotifWithPlayerArgs {
+  force: {
+    type: string;
+    hidden: boolean;
+  };
+  spaceId: string;
+  count: number;
+}
+
+interface NotifPlaceForcePrivateArgs extends NotifWithPlayerArgs {
+  forces: GestForce[];
+}
+
 interface NotifPlaceMerryMenArgs extends NotifWithPlayerArgs {
   merryMenCounts: Record<string, number>;
 }
@@ -97,5 +110,17 @@ interface NotifRevealCarriageArgs extends NotifWithPlayerArgs {
 }
 
 interface NotifRevealForceArgs extends NotifWithPlayerArgs {
+  force: GestForce;
+}
+
+interface NotifReturnToSupplyArgs extends NotifWithPlayerArgs {
+  force: {
+    type: string;
+    hidden: boolean;
+  };
+  spaceId: string;
+}
+
+interface NotifReturnToSupplyPrivateArgs extends NotifWithPlayerArgs {
   force: GestForce;
 }

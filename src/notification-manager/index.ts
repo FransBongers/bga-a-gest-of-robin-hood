@@ -56,8 +56,12 @@ class NotificationManager {
       'revealCarriage',
       'revealForce',
       'payShillings',
+      'placeForce',
+      'placeForcePrivate',
       'placeMerryMen',
       'placeMerryMenPrivate',
+      'returnToSupply',
+      'returnToSupplyPrivate',
     ];
 
     // example: https://github.com/thoun/knarr/blob/main/src/knarr.ts
@@ -100,20 +104,41 @@ class NotificationManager {
       );
       this.game.framework().notifqueue.setSynchronous(notifName, undefined);
 
-      this.game
-        .framework()
-        .notifqueue.setIgnoreNotificationCheck(
-          'placeMerryMen',
-          (notif: Notif<{ playerId: number }>) =>
-            notif.args.playerId == this.game.getPlayerId()
-        );
-      this.game
-        .framework()
-        .notifqueue.setIgnoreNotificationCheck(
-          'moveCarriagePublic',
-          (notif: Notif<{ playerId: number }>) =>
-            notif.args.playerId == this.game.getPlayerId()
-        );
+      [
+        'placeMerryMen',
+        'returnToSupply',
+        'moveCarriagePublic',
+        'placeForce',
+      ].forEach((notifId) => {
+        this.game
+          .framework()
+          .notifqueue.setIgnoreNotificationCheck(
+            notifId,
+            (notif: Notif<{ playerId: number }>) =>
+              notif.args.playerId == this.game.getPlayerId()
+          );
+      });
+      // this.game
+      //   .framework()
+      //   .notifqueue.setIgnoreNotificationCheck(
+      //     'placeMerryMen',
+      //     (notif: Notif<{ playerId: number }>) =>
+      //       notif.args.playerId == this.game.getPlayerId()
+      //   );
+      // this.game
+      //   .framework()
+      //   .notifqueue.setIgnoreNotificationCheck(
+      //     'moveCarriagePublic',
+      //     (notif: Notif<{ playerId: number }>) =>
+      //       notif.args.playerId == this.game.getPlayerId()
+      //   );
+      // this.game
+      //   .framework()
+      //   .notifqueue.setIgnoreNotificationCheck(
+      //     'placeForce',
+      //     (notif: Notif<{ playerId: number }>) =>
+      //       notif.args.playerId == this.game.getPlayerId()
+      //   );
     });
   }
 
@@ -318,6 +343,22 @@ class NotificationManager {
     this.getPlayer({ playerId }).counters.shillings.incValue(-amount);
   }
 
+  async notif_placeForce(notif: Notif<NotifPlaceForceArgs>) {
+    const { force, spaceId, count } = notif.args;
+    this.game.gameMap.addPublicForces({
+      spaceId,
+      count,
+      hidden: force.hidden,
+      type: force.type,
+    });
+  }
+
+  async notif_placeForcePrivate(notif: Notif<NotifPlaceForcePrivateArgs>) {
+    const { forces } = notif.args;
+
+    forces.forEach((force) => this.game.gameMap.addPrivateForce({ force }));
+  }
+
   async notif_placeMerryMen(notif: Notif<NotifPlaceMerryMenArgs>) {
     const { merryMenCounts } = notif.args;
     Object.entries(merryMenCounts).forEach(([spaceId, countHidden]) => {
@@ -342,31 +383,6 @@ class NotificationManager {
     );
   }
 
-  // async notif_revealCarriage(notif: Notif<NotifRevealCarriageArgs>) {
-  //   const { carriage, playerId } = notif.args;
-
-  //   this.game.gameMap.re
-
-  //   const element =
-  //     this.game.getPlayerId() === this.game.playerManager.getSheriffPlayerId()
-  //       ? document.getElementById(carriage.id)
-  //       : this.game.gameMap.getCarriageElement({
-  //           spaceId: carriage.location,
-  //           hidden: true,
-  //           type: null,
-  //         });
-
-  //   if (!element) {
-  //     return;
-  //   }
-  //   element.setAttribute('data-hidden', 'false');
-  //   element.replaceChildren();
-  //   element.insertAdjacentHTML(
-  //     'afterbegin',
-  //     `<span>${carriage.type.substring(0, 3).toUpperCase()}</span>`
-  //   );
-  // }
-
   async notif_revealForce(notif: Notif<NotifRevealForceArgs>) {
     const { force } = notif.args;
 
@@ -385,5 +401,21 @@ class NotificationManager {
         this.game.gameMap.revealForcePublic({ force });
       }
     }
+  }
+
+  async notif_returnToSupply(notif: Notif<NotifReturnToSupplyArgs>) {
+    const { force, spaceId } = notif.args;
+    await this.game.gameMap.returnToSupplyPublic({
+      type: force.type,
+      hidden: force.hidden,
+      fromSpaceId: spaceId,
+    });
+  }
+
+  async notif_returnToSupplyPrivate(
+    notif: Notif<NotifReturnToSupplyPrivateArgs>
+  ) {
+    const { force } = notif.args;
+    await this.game.forceManager.removeCard(force);
   }
 }

@@ -162,6 +162,7 @@ class Recruit extends \AGestOfRobinHood\Models\AtomicAction
         $this->placeMerryMen($player, $recruitOption, $option['space'], $recruitRobinHood);
         break;
       case REPLACE_MERRY_MAN_WITH_CAMP:
+        $this->replaceMerryManWithCamp($player, $option['space'], $merryManId);
         break;
       case FLIP_ALL_MERRY_MAN_TO_HIDDEN:
         break;
@@ -177,6 +178,14 @@ class Recruit extends \AGestOfRobinHood\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
+
+  private function replaceMerryManWithCamp($player, $space, $merryManId)
+  {
+    Forces::get($merryManId)->returnToSupply($player);
+    $camp = Forces::getTopOf(CAMPS_SUPPLY);
+    $camp->setLocation($space->getId());
+    Notifications::placeForce($player, $camp, $space);
+  }
 
   private function placeMerryMen($player, $recruitOption, $space, $recruitRobinHood)
   {

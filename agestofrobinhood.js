@@ -2854,9 +2854,7 @@ var GameMap = (function () {
         var isRobinHoodPlayer = this.game.getPlayerId() ===
             this.game.playerManager.getRobinHoodPlayerId();
         var isSheriffPlayer = this.game.getPlayerId() === this.game.playerManager.getSheriffPlayerId();
-        __spreadArray(__spreadArray([], SPACES, true), [
-            USED_CARRIAGES
-        ], false).forEach(function (spaceId) {
+        __spreadArray(__spreadArray([], SPACES, true), [USED_CARRIAGES], false).forEach(function (spaceId) {
             var _a, _b;
             var forces = gamedatas.forces[spaceId];
             var robinHoodForces = (_a = gamedatas.robinHoodForces) === null || _a === void 0 ? void 0 : _a[spaceId];
@@ -3059,6 +3057,26 @@ var GameMap = (function () {
                         toStockId = this.getStockIdPrivate({ force: force });
                         console.log('toStockId', toStockId);
                         return [4, this.forces[toStockId].addCard(force)];
+                    case 1:
+                        _c.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    GameMap.prototype.returnToSupplyPublic = function (_a) {
+        return __awaiter(this, arguments, void 0, function (_b) {
+            var selected;
+            var type = _b.type, hidden = _b.hidden, fromSpaceId = _b.fromSpaceId;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        selected = this.getForcePublic({
+                            type: type,
+                            spaceId: fromSpaceId,
+                            hidden: hidden,
+                        });
+                        return [4, this.game.forceManager.removeCard(selected)];
                     case 1:
                         _c.sent();
                         return [2];
@@ -3276,8 +3294,12 @@ var NotificationManager = (function () {
             'revealCarriage',
             'revealForce',
             'payShillings',
+            'placeForce',
+            'placeForcePrivate',
             'placeMerryMen',
             'placeMerryMenPrivate',
+            'returnToSupply',
+            'returnToSupplyPrivate',
         ];
         notifs.forEach(function (notifName) {
             _this.subscriptions.push(dojo.subscribe(notifName, _this, function (notifDetails) {
@@ -3302,15 +3324,17 @@ var NotificationManager = (function () {
                 }
             }));
             _this.game.framework().notifqueue.setSynchronous(notifName, undefined);
-            _this.game
-                .framework()
-                .notifqueue.setIgnoreNotificationCheck('placeMerryMen', function (notif) {
-                return notif.args.playerId == _this.game.getPlayerId();
-            });
-            _this.game
-                .framework()
-                .notifqueue.setIgnoreNotificationCheck('moveCarriagePublic', function (notif) {
-                return notif.args.playerId == _this.game.getPlayerId();
+            [
+                'placeMerryMen',
+                'returnToSupply',
+                'moveCarriagePublic',
+                'placeForce',
+            ].forEach(function (notifId) {
+                _this.game
+                    .framework()
+                    .notifqueue.setIgnoreNotificationCheck(notifId, function (notif) {
+                    return notif.args.playerId == _this.game.getPlayerId();
+                });
             });
         });
     };
@@ -3490,6 +3514,32 @@ var NotificationManager = (function () {
             });
         });
     };
+    NotificationManager.prototype.notif_placeForce = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, force, spaceId, count;
+            return __generator(this, function (_b) {
+                _a = notif.args, force = _a.force, spaceId = _a.spaceId, count = _a.count;
+                this.game.gameMap.addPublicForces({
+                    spaceId: spaceId,
+                    count: count,
+                    hidden: force.hidden,
+                    type: force.type,
+                });
+                return [2];
+            });
+        });
+    };
+    NotificationManager.prototype.notif_placeForcePrivate = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var forces;
+            var _this = this;
+            return __generator(this, function (_a) {
+                forces = notif.args.forces;
+                forces.forEach(function (force) { return _this.game.gameMap.addPrivateForce({ force: force }); });
+                return [2];
+            });
+        });
+    };
     NotificationManager.prototype.notif_placeMerryMen = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
             var merryMenCounts;
@@ -3547,6 +3597,40 @@ var NotificationManager = (function () {
                     }
                 }
                 return [2];
+            });
+        });
+    };
+    NotificationManager.prototype.notif_returnToSupply = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, force, spaceId;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = notif.args, force = _a.force, spaceId = _a.spaceId;
+                        return [4, this.game.gameMap.returnToSupplyPublic({
+                                type: force.type,
+                                hidden: force.hidden,
+                                fromSpaceId: spaceId,
+                            })];
+                    case 1:
+                        _b.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    NotificationManager.prototype.notif_returnToSupplyPrivate = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var force;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        force = notif.args.force;
+                        return [4, this.game.forceManager.removeCard(force)];
+                    case 1:
+                        _a.sent();
+                        return [2];
+                }
             });
         });
     };

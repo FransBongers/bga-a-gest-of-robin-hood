@@ -8,6 +8,9 @@ class TallageCarriage extends \AGestOfRobinHood\Forces\Carriage
   {
     parent::__construct($row);
     $this->name = clienttranslate('Tallage Carriage');
+    $this->publicName = clienttranslate('Carriage');
+    $this->publicType = CARRIAGE;
+    $this->supply = CARRIAGE_SUPPLY;
   }
 
   public function getCarriageGainsSheriff()

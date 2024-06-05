@@ -21,6 +21,7 @@ class Force extends \AGestOfRobinHood\Helpers\DB_Model
   protected $state;
   protected $hidden = 0;
   protected $type = null;
+  protected $publicType = null;
 
   protected $attributes = [
     'id' => ['force_id', 'str'],
@@ -32,9 +33,14 @@ class Force extends \AGestOfRobinHood\Helpers\DB_Model
   ];
 
   protected $name = '';
+  protected $publicName = '';
+  protected $supply = null;
 
   protected $staticAttributes = [
-    'name'
+    'name',
+    'publicName',
+    'publicType',
+    'supply',
   ];
 
   public function jsonSerialize()
@@ -76,5 +82,17 @@ class Force extends \AGestOfRobinHood\Helpers\DB_Model
     } else {
       return null;
     }
+  }
+
+  public function returnToSupply($player)
+  {
+    $space = Spaces::get($this->getLocation());
+    $this->setLocation($this->supply);
+    $isHidden = $this->isHidden();
+    if ($this->type !== HENCHMEN) {
+      $this->setHidden(1);
+    }
+    Notifications::returnToSupply($player, $this, $space, $isHidden);
+
   }
 }

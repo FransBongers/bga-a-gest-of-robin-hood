@@ -129,10 +129,7 @@ class GameMap {
     const isSheriffPlayer =
       this.game.getPlayerId() === this.game.playerManager.getSheriffPlayerId();
 
-    [
-      ...SPACES,
-      USED_CARRIAGES
-    ].forEach((spaceId) => {
+    [...SPACES, USED_CARRIAGES].forEach((spaceId) => {
       const forces = gamedatas.forces[spaceId];
       const robinHoodForces = gamedatas.robinHoodForces?.[spaceId];
       const sheriffForces = gamedatas.sheriffForces?.[spaceId];
@@ -379,29 +376,6 @@ class GameMap {
   }
 
   revealForcePublic({ force }: { force: GestForce }) {
-    // let stockId = '';
-    // switch (force.type) {
-    //   case ROBIN_HOOD:
-    //   case MERRY_MEN:
-    //     stockId = `${MERRY_MEN}_${force.location}`;
-    //     break;
-    //   case CAMP:
-    //     stockId = `${CAMP}_${force.location}`;
-    //     break;
-    //   case TALLAGE_CARRIAGE:
-    //   case TRAP_CARRIAGE:
-    //   case TRIBUTE_CARRIAGE:
-    //     stockId = `${CARRIAGE}_${force.location}`;
-    //     break;
-    //   default:
-    //     return;
-    // }
-
-    // const forces = this.forces[stockId]
-    //   .getCards()
-    //   .filter((force) => force.hidden);
-
-    // const selected = forces[Math.floor(Math.random() * forces.length)];
     console.log('revealForcePublic');
 
     const selected = this.getForcePublic({
@@ -422,8 +396,26 @@ class GameMap {
 
   async moveForcePrivate({ force }: { force: GestForce }) {
     const toStockId = this.getStockIdPrivate({ force });
-    console.log('toStockId',toStockId);
+    console.log('toStockId', toStockId);
     await this.forces[toStockId].addCard(force);
+  }
+
+  async returnToSupplyPublic({
+    type,
+    hidden,
+    fromSpaceId,
+  }: {
+    type: string;
+    hidden: boolean;
+    fromSpaceId: string;
+  }) {
+    const selected = this.getForcePublic({
+      type: type,
+      spaceId: fromSpaceId,
+      hidden,
+    });
+
+    await this.game.forceManager.removeCard(selected);
   }
 
   async moveForcePublic({
@@ -440,7 +432,7 @@ class GameMap {
     const force = this.getForcePublic({ type, hidden, spaceId: fromSpaceId });
 
     const toStockId = this.getStockIdPublic({ type, spaceId: toSpaceId });
-    console.log('toStockId',toStockId);
+    console.log('toStockId', toStockId);
     await this.forces[toStockId].addCard(force);
   }
 

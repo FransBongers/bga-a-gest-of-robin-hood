@@ -7,6 +7,9 @@ class TrapCarriage extends \AGestOfRobinHood\Forces\Carriage
   {
     parent::__construct($row);
     $this->name = clienttranslate('Trap Carriage');
+    $this->publicName = clienttranslate('Carriage');
+    $this->publicType = CARRIAGE;
+    $this->supply = CARRIAGE_SUPPLY;
   }
 
   public function getCarriageGainsSheriff()
