@@ -17,3 +17,7 @@ type NotifSmallRefreshInterfaceArgs = Omit<
   AGestOfRobinHoodGamedatas,
   'staticData'
 >;
+
+interface NotifClearTurnArgs extends NotifWithPlayerArgs {
+  notifIds: string[];
+}

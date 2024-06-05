@@ -34,31 +34,15 @@ class NotificationManager {
   setupNotifications() {
     console.log('notifications subscriptions setup');
 
-    // const notifs: [
-    //   id: string,
-    //   wait: number,
-    //   predicate?: (notif: Notif<{ playerId: number }>) => void
-    // ][] = [
-    //   // checked
-    //   ["log", undefined],
-    //   [
-    //     "discardCardFromHand",
-    //     undefined,
-    //     (notif) => notif.args.playerId == this.game.getPlayerId(),
-    //   ],
-    //   ["discardCardFromHandPrivate", undefined],
-    //   ["drawCardPrivate", undefined],
-    //   ["revealCardsInPlay", undefined],
-    //   ["selectReserveCard", undefined],
-    //   ["selectReserveCardPrivate", undefined],
-    //   // [
-    //   //   "selectReserveCard",
-    //   //   undefined,
-    //   //   (notif) => notif.args.playerId == this.game.getPlayerId(),
-    //   // ],
-    // ];
+    dojo.connect(this.game.framework().notifqueue, 'addToLog', () => {
+      this.game.addLogClass();
+    });
+
     const notifs: string[] = [
+      // Boilerplate
       'log',
+      'clearTurn',
+      // Game
       'battle',
       'battleCleanup',
       'battleStart',
