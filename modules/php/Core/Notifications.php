@@ -251,11 +251,11 @@ class Notifications
 
   public static function revealRobinHood($player, $robinHood)
   {
-    self::notifyAll("revealRobinHood", clienttranslate('${player_name} reveals ${tkn_boldText_robinHood} in ${tkn_boldText_spaceName}'), [
+    self::notifyAll("revealForce", clienttranslate('${player_name} reveals ${tkn_boldText_robinHood} in ${tkn_boldText_spaceName}'), [
       'player' => $player,
       'tkn_boldText_robinHood' => $robinHood->getName(),
       'tkn_boldText_spaceName' => Spaces::get($robinHood->getLocation())->getName(),
-      'carriage' => $robinHood->jsonSerialize(),
+      'force' => $robinHood->jsonSerialize(),
       'i18n' => ['tkn_boldText_robinHood', 'tkn_boldText_spaceName']
     ]);
   }

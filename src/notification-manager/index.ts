@@ -71,6 +71,7 @@ class NotificationManager {
       'moveRoyalFavourMarker',
       'passAction',
       'revealCarriage',
+      'revealForce',
       'payShillings',
       'placeMerryMen',
       'placeMerryMenPrivate',
@@ -156,6 +157,18 @@ class NotificationManager {
 
   getPlayer({ playerId }: { playerId: number }): GestPlayer {
     return this.game.playerManager.getPlayer({ playerId });
+  }
+
+  currentPlayerIsRobinHood() {
+    const currentPlayerId = this.game.getPlayerId();
+    const robinHoodPlayerId = this.game.playerManager.getRobinHoodPlayerId();
+    return currentPlayerId === robinHoodPlayerId;
+  }
+
+  currentPlayerIsSheriff() {
+    const currentPlayerId = this.game.getPlayerId();
+    const sheriffPlayerId = this.game.playerManager.getSheriffPlayerId();
+    return currentPlayerId === sheriffPlayerId;
   }
 
   // .##....##..#######..########.####.########..######.
@@ -285,14 +298,43 @@ class NotificationManager {
     await Promise.all(promises);
   }
 
-  async notif_moveRoyalFavourMarker(notif: Notif<NotifMoveRoyalFavourMarkerArgs>) {
+  async notif_moveRoyalFavourMarker(
+    notif: Notif<NotifMoveRoyalFavourMarkerArgs>
+  ) {
     const { marker } = notif.args;
-    await this.game.gameMap.moveMarker({id: marker.id, location: marker.location});
+    await this.game.gameMap.moveMarker({
+      id: marker.id,
+      location: marker.location,
+    });
   }
 
   async notif_payShillings(notif: Notif<NotifPayShillingsArgs>) {
     const { amount, playerId } = notif.args;
     this.getPlayer({ playerId }).counters.shillings.incValue(-amount);
+  }
+
+  async notif_placeMerryMen(notif: Notif<NotifPlaceMerryMenArgs>) {
+    const { merryMenCounts } = notif.args;
+    Object.entries(merryMenCounts).forEach(([spaceId, countHidden]) => {
+      this.game.gameMap.addPublicForces({
+        spaceId,
+        count: countHidden,
+        hidden: true,
+        type: MERRY_MEN,
+      });
+    });
+  }
+
+  async notif_placeMerryMenPrivate(
+    notif: Notif<NotifPlaceMerryMenPrivateArgs>
+  ) {
+    const { robinHood, merryMen } = notif.args;
+    if (robinHood) {
+      this.game.gameMap.addPrivateForce({ force: robinHood });
+    }
+    merryMen.forEach((merryMan) =>
+      this.game.gameMap.addPrivateForce({ force: merryMan })
+    );
   }
 
   async notif_revealCarriage(notif: Notif<NotifRevealCarriageArgs>) {
@@ -318,22 +360,23 @@ class NotificationManager {
     );
   }
 
-  async notif_placeMerryMen(notif: Notif<NotifPlaceMerryMenArgs>) {
-    const { merryMenCounts } = notif.args;
-    Object.entries(merryMenCounts).forEach(([spaceId, countHidden]) => {
-      this.game.gameMap.addMerryMenPublic({ spaceId, countHidden });
-    });
-  }
+  async notif_revealForce(notif: Notif<NotifRevealForceArgs>) {
+    const { force } = notif.args;
 
-  async notif_placeMerryMenPrivate(
-    notif: Notif<NotifPlaceMerryMenPrivateArgs>
-  ) {
-    const { robinHood, merryMen } = notif.args;
-    if (robinHood) {
-      this.game.gameMap.addRobinHoodPrivate({ robinHood });
+    if ([MERRY_MEN, CAMP, ROBIN_HOOD].includes(force.type)) {
+      if (this.currentPlayerIsRobinHood()) {
+        this.game.gameMap.revealForcePrivate({ force });
+      } else {
+        this.game.gameMap.revealForcePublic({ force });
+      }
+    } else if (
+      [TALLAGE_CARRIAGE, TRAP_CARRIAGE, TRIBUTE_CARRIAGE].includes(force.type)
+    ) {
+      if (this.currentPlayerIsSheriff()) {
+        this.game.gameMap.revealForcePrivate({ force });
+      } else {
+        this.game.gameMap.revealForcePublic({ force });
+      }
     }
-    merryMen.forEach((merryMan) =>
-      this.game.gameMap.addMerryManPrivate({ merryMan })
-    );
   }
 }

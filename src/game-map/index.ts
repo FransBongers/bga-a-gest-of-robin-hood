@@ -10,6 +10,8 @@ class GameMap {
   protected game: AGestOfRobinHoodGame;
 
   public parishStatusMarkers: Record<string, LineStock<GestMarker>> = {};
+  public forces: Record<string, LineStock<GestForce>> = {};
+  private forceIdCounter = 1;
 
   constructor(game: AGestOfRobinHoodGame) {
     this.game = game;
@@ -30,16 +32,20 @@ class GameMap {
     PARISHES.forEach((parishId) => {
       this.parishStatusMarkers[parishId].removeAll();
     });
-    SPACES.forEach((spaceId) => {
-      [CAMP, MERRY_MEN, HENCHMEN, CARRIAGE].forEach((type) => {
-        const id = `${lowerCaseFirstLetter(type)}_${spaceId}`;
-        const node = document.getElementById(id);
-        if (!node) {
-          return;
-        }
-        node.replaceChildren();
-      });
+    Object.values(this.forces).forEach((stock) => {
+      stock.removeAll();
     });
+
+    // SPACES.forEach((spaceId) => {
+    //   [CAMP, MERRY_MEN, HENCHMEN, CARRIAGE].forEach((type) => {
+    //     const id = `${lowerCaseFirstLetter(type)}_${spaceId}`;
+    //     const node = document.getElementById(id);
+    //     if (!node) {
+    //       return;
+    //     }
+    //     node.replaceChildren();
+    //   });
+    // });
     [
       ROYAL_FAVOUR_MARKER,
       ROYAL_INSPECTION_MARKER,
@@ -87,11 +93,43 @@ class GameMap {
     this.updateParishStatusMarkers({ gamedatas });
   }
 
+  setupForces({ gamedatas }: { gamedatas: AGestOfRobinHoodGamedatas }) {
+    Object.entries(SPACES_CONFIG).forEach(([spaceId, config]) => {
+      Object.keys(config).forEach((forceType) => {
+        const id = `${forceType}_${spaceId}`;
+        const element = document.getElementById(id);
+        if (!element) {
+          console.log(id);
+          return;
+        }
+        this.forces[id] = new LineStock<GestForce>(
+          this.game.forceManager,
+          element,
+          {
+            center: true,
+          }
+        );
+      });
+    });
+    this.forces['carriage_usedCarriages'] = new LineStock<GestForce>(
+      this.game.forceManager,
+      document.getElementById('carriage_usedCarriages'),
+      {
+        center: true,
+      }
+    );
+
+    this.updateForces({ gamedatas });
+  }
+
   updateForces({ gamedatas }: { gamedatas: AGestOfRobinHoodGamedatas }) {
     const isRobinHoodPlayer = !!gamedatas.robinHoodForces;
     const isSheriffPlayer = !!gamedatas.sheriffForces;
 
-    [...SPACES, USED_CARRIAGES].forEach((spaceId) => {
+    [
+      ...SPACES,
+      // USED_CARRIAGES
+    ].forEach((spaceId) => {
       const forces = gamedatas.forces[spaceId];
       const robinHoodForces = gamedatas.robinHoodForces?.[spaceId];
       const sheriffForces = gamedatas.sheriffForces?.[spaceId];
@@ -100,112 +138,81 @@ class GameMap {
         return;
       }
 
-      const henchmenBox = document.getElementById(`henchmen_${spaceId}`);
-      if (henchmenBox && forces.Henchmen.length > 0) {
+      // const henchmenBox = document.getElementById(`henchmen_${spaceId}`);
+      if (forces.Henchmen.length > 0) {
         forces.Henchmen.forEach((henchman) => {
-          henchmenBox.insertAdjacentHTML(
-            'beforeend',
-            tplForce({ id: henchman.id, type: henchman.type, hidden: false })
+          console.log('location', `${henchman.type}_${henchman.location}`);
+          this.forces[`${henchman.type}_${henchman.location}`].addCard(
+            henchman
           );
         });
       }
-      const merryMenBox = document.getElementById(`merryMen_${spaceId}`);
-      if (merryMenBox && !isRobinHoodPlayer) {
-        for (let i = 0; i < forces.RobinHood; i++) {
-          merryMenBox.insertAdjacentHTML(
-            'beforeend',
-            tplForce({ type: ROBIN_HOOD, hidden: false })
-          );
-        }
-        for (let k = 0; k < forces.MerryMen.revealed; k++) {
-          merryMenBox.insertAdjacentHTML(
-            'beforeend',
-            tplForce({ type: MERRY_MEN, hidden: false })
-          );
-        }
-        for (let l = 0; l < forces.MerryMen.hidden; l++) {
-          merryMenBox.insertAdjacentHTML(
-            'beforeend',
-            tplForce({ type: MERRY_MEN, hidden: true })
-          );
-        }
-      } else if (merryMenBox && isRobinHoodPlayer && robinHoodForces) {
+
+      if (!isRobinHoodPlayer) {
+        // Robin Hood
+        this.addPublicForces({
+          type: ROBIN_HOOD,
+          spaceId,
+          hidden: false,
+          count: forces.RobinHood,
+        });
+        // Merry men
+        this.addPublicForces({
+          type: MERRY_MEN,
+          spaceId,
+          hidden: false,
+          count: forces.MerryMen.revealed,
+        });
+        this.addPublicForces({
+          type: MERRY_MEN,
+          spaceId,
+          hidden: true,
+          count: forces.MerryMen.hidden,
+        });
+        // Camps
+        this.addPublicForces({
+          type: CAMP,
+          spaceId,
+          hidden: false,
+          count: forces.Camp.revealed,
+        });
+        this.addPublicForces({
+          type: CAMP,
+          spaceId,
+          hidden: true,
+          count: forces.Camp.hidden,
+        });
+      } else if (isRobinHoodPlayer && robinHoodForces) {
         robinHoodForces.RobinHood.forEach((robinHood) => {
-          merryMenBox.insertAdjacentHTML(
-            'beforeend',
-            tplForce({
-              id: robinHood.id,
-              type: robinHood.type,
-              hidden: robinHood.hidden,
-            })
-          );
+          this.addPrivateForce({ force: robinHood });
         });
 
         robinHoodForces.MerryMen.forEach((merryMen) => {
-          merryMenBox.insertAdjacentHTML(
-            'beforeend',
-            tplForce({
-              id: merryMen.id,
-              type: merryMen.type,
-              hidden: merryMen.hidden,
-            })
-          );
+          this.addPrivateForce({ force: merryMen });
         });
-      }
 
-      const campBox = document.getElementById(`camp_${spaceId}`);
-      if (campBox && !isRobinHoodPlayer) {
-        for (let i = 0; i < forces.Camp.revealed; i++) {
-          campBox.insertAdjacentHTML(
-            'beforeend',
-            tplForce({ type: CAMP, hidden: false })
-          );
-        }
-        for (let j = 0; j < forces.Camp.hidden; j++) {
-          campBox.insertAdjacentHTML(
-            'beforeend',
-            tplForce({ type: CAMP, hidden: true })
-          );
-        }
-      } else if (campBox && isRobinHoodPlayer && robinHoodForces) {
         robinHoodForces.Camp.forEach((camp) => {
-          campBox.insertAdjacentHTML(
-            'beforeend',
-            tplForce({ id: camp.id, type: camp.type, hidden: camp.hidden })
-          );
+          this.addPrivateForce({ force: camp });
         });
       }
-
-      const carriageBox = document.getElementById(`carriage_${spaceId}`);
-      if (carriageBox && !isSheriffPlayer) {
-        [TALLAGE_CARRIAGE, TRAP_CARRIAGE, TRIBUTE_CARRIAGE].forEach(
-          (subtype) => {
-            this.addPublicForces({
-              box: carriageBox,
-              count: forces.Carriage[subtype],
-              hidden: false,
-              type: CARRIAGE,
-              subtype,
-            });
-          }
-        );
+      if (!isSheriffPlayer) {
         this.addPublicForces({
-          box: carriageBox,
           count: forces.Carriage.hidden,
           hidden: true,
           type: CARRIAGE,
+          spaceId,
         });
-      } else if (carriageBox && isSheriffPlayer && sheriffForces) {
+        [TALLAGE_CARRIAGE, TRAP_CARRIAGE, TRIBUTE_CARRIAGE].forEach((type) => {
+          this.addPublicForces({
+            count: forces.Carriage[type],
+            hidden: false,
+            type: type,
+            spaceId,
+          });
+        });
+      } else if (isSheriffPlayer && sheriffForces) {
         sheriffForces.Carriage.forEach((carriage) => {
-          carriageBox.insertAdjacentHTML(
-            'beforeend',
-            tplForce({
-              id: carriage.id,
-              type: CARRIAGE,
-              hidden: carriage.hidden,
-              subtype: carriage.type,
-            })
-          );
+          this.forces[`${CARRIAGE}_${spaceId}`].addCard(carriage);
         });
       }
     });
@@ -255,8 +262,9 @@ class GameMap {
       .insertAdjacentHTML('afterbegin', tplGameMap({ gamedatas }));
 
     this.setupParishStatusMarkers({ gamedatas });
+    this.setupForces({ gamedatas });
     this.updateTrackMarkers({ gamedatas });
-    this.updateForces({ gamedatas });
+    // this.updateForces({ gamedatas });
   }
 
   // ..######...########.########.########.########.########...######.
@@ -284,91 +292,153 @@ class GameMap {
   //  ..#######.....##....####.########.####....##.......##...
 
   addPublicForces({
-    box,
     type,
-    subtype,
+    // subtype,
     hidden,
+    spaceId,
     count,
   }: {
     type: string;
-    subtype?: string;
+    // subtype?: string;
     hidden: boolean;
+    spaceId: string;
     count: number;
-    box: HTMLElement;
   }) {
     for (let i = 0; i < count; i++) {
-      box.insertAdjacentHTML('beforeend', tplForce({ type, hidden, subtype }));
+      let stockId = `${type}_${spaceId}`;
+      if (type === ROBIN_HOOD) {
+        stockId = `${MERRY_MEN}_${spaceId}`;
+      } else if (
+        [TALLAGE_CARRIAGE, TRAP_CARRIAGE, TRIBUTE_CARRIAGE].includes(type)
+      ) {
+        stockId = `${CARRIAGE}_${spaceId}`;
+      }
+
+      this.forces[stockId].addCard({
+        id: `force_${this.forceIdCounter}`,
+        type: type,
+        location: spaceId,
+        hidden,
+      });
+      this.forceIdCounter++;
+      // box.insertAdjacentHTML('beforeend', tplForce({ type, hidden, subtype }));
     }
   }
 
-  addRobinHoodPrivate({ robinHood }: { robinHood: GestForce }) {
-    const space = document.getElementById(`merryMen_${robinHood.location}`);
-    if (!space) {
-      return;
+  addPrivateForce({ force }: { force: GestForce }) {
+    console.log('force', force);
+    let id = `${force.type}_${force.location}`;
+    if (force.type === ROBIN_HOOD) {
+      id = `${MERRY_MEN}_${force.location}`;
+    } else if (
+      [TALLAGE_CARRIAGE, TRAP_CARRIAGE, TRIBUTE_CARRIAGE].includes(force.type)
+    ) {
+      id = `${CARRIAGE}_${force.location}`;
     }
-    space.insertAdjacentHTML(
-      'beforeend',
-      tplForce({
-        id: robinHood.id,
-        type: robinHood.type,
-        hidden: robinHood.hidden,
-      })
-    );
+    this.forces[id].addCard(force);
   }
 
-  addMerryManPrivate({ merryMan }: { merryMan: GestForce }) {
-    const space = document.getElementById(`merryMen_${merryMan.location}`);
-    if (!space) {
-      return;
-    }
-    space.insertAdjacentHTML(
-      'beforeend',
-      tplForce({
-        id: merryMan.id,
-        type: merryMan.type,
-        hidden: merryMan.hidden,
-      })
-    );
-  }
-
-  addRobinHoodPublic({ spaceId }: { spaceId: string }) {
-    const space = document.getElementById(`merryMen_${spaceId}`);
-    if (!space) {
-      return;
+  revealForcePublic({ force }: { force: GestForce }) {
+    let stockId = '';
+    switch (force.type) {
+      case ROBIN_HOOD:
+      case MERRY_MEN:
+        stockId = `${MERRY_MEN}_${force.location}`;
+        break;
+      case CAMP:
+        stockId = `${CAMP}_${force.location}`;
+        break;
+      case TALLAGE_CARRIAGE:
+      case TRAP_CARRIAGE:
+      case TRIBUTE_CARRIAGE:
+        stockId = `${CARRIAGE}_${force.location}`;
+        break;
+      default:
+        return;
     }
 
-    space.insertAdjacentHTML(
-      'beforeend',
-      tplForce({ type: ROBIN_HOOD, hidden: false })
-    );
+    const forces = this.forces[stockId]
+      .getCards()
+      .filter((force) => force.hidden);
+
+    const selected = forces[Math.floor(Math.random() * forces.length)];
+    selected.type = force.type;
+    selected.hidden = force.hidden;
+    this.game.forceManager.updateCardInformations(selected);
   }
 
-  addMerryMenPublic({
-    spaceId,
-    countHidden = 0,
-    countRevealed = 0,
-  }: {
-    spaceId: string;
-    countHidden?: number;
-    countRevealed?: number;
-  }) {
-    const space = document.getElementById(`merryMen_${spaceId}`);
-    if (!space) {
-      return;
-    }
-    for (let i = 0; i < countRevealed; i++) {
-      space.insertAdjacentHTML(
-        'beforeend',
-        tplForce({ type: MERRY_MEN, hidden: false })
-      );
-    }
-    for (let k = 0; k < countHidden; k++) {
-      space.insertAdjacentHTML(
-        'beforeend',
-        tplForce({ type: MERRY_MEN, hidden: true })
-      );
-    }
+  revealForcePrivate({ force }: { force: GestForce }) {
+    this.game.forceManager.updateCardInformations(force);
   }
+
+  // addRobinHoodPrivate({ robinHood }: { robinHood: GestForce }) {
+  //   const space = document.getElementById(`merryMen_${robinHood.location}`);
+  //   if (!space) {
+  //     return;
+  //   }
+  //   space.insertAdjacentHTML(
+  //     'beforeend',
+  //     tplForce({
+  //       id: robinHood.id,
+  //       type: robinHood.type,
+  //       hidden: robinHood.hidden,
+  //     })
+  //   );
+  // }
+
+  // addMerryManPrivate({ merryMan }: { merryMan: GestForce }) {
+  //   const space = document.getElementById(`merryMen_${merryMan.location}`);
+  //   if (!space) {
+  //     return;
+  //   }
+  //   space.insertAdjacentHTML(
+  //     'beforeend',
+  //     tplForce({
+  //       id: merryMan.id,
+  //       type: merryMan.type,
+  //       hidden: merryMan.hidden,
+  //     })
+  //   );
+  // }
+
+  // addRobinHoodPublic({ spaceId }: { spaceId: string }) {
+  //   const space = document.getElementById(`merryMen_${spaceId}`);
+  //   if (!space) {
+  //     return;
+  //   }
+
+  //   space.insertAdjacentHTML(
+  //     'beforeend',
+  //     tplForce({ type: ROBIN_HOOD, hidden: false })
+  //   );
+  // }
+
+  // addMerryMenPublic({
+  //   spaceId,
+  //   countHidden = 0,
+  //   countRevealed = 0,
+  // }: {
+  //   spaceId: string;
+  //   countHidden?: number;
+  //   countRevealed?: number;
+  // }) {
+  //   const space = document.getElementById(`merryMen_${spaceId}`);
+  //   if (!space) {
+  //     return;
+  //   }
+  //   for (let i = 0; i < countRevealed; i++) {
+  //     space.insertAdjacentHTML(
+  //       'beforeend',
+  //       tplForce({ type: MERRY_MEN, hidden: false })
+  //     );
+  //   }
+  //   for (let k = 0; k < countHidden; k++) {
+  //     space.insertAdjacentHTML(
+  //       'beforeend',
+  //       tplForce({ type: MERRY_MEN, hidden: true })
+  //     );
+  //   }
+  // }
 
   async moveCarriagePrivate({
     carriageId,

@@ -68,10 +68,6 @@ interface NotifPayShillingsArgs extends NotifWithPlayerArgs {
   amount: number;
 }
 
-interface NotifRevealCarriageArgs extends NotifWithPlayerArgs {
-  carriage: GestForce;
-}
-
 interface NotifPlaceMerryMenArgs extends NotifWithPlayerArgs {
   merryMenCounts: Record<string, number>;
 }
@@ -79,4 +75,12 @@ interface NotifPlaceMerryMenArgs extends NotifWithPlayerArgs {
 interface NotifPlaceMerryMenPrivateArgs extends NotifWithPlayerArgs {
   robinHood: GestForce | null;
   merryMen: GestForce[];
+}
+
+interface NotifRevealCarriageArgs extends NotifWithPlayerArgs {
+  carriage: GestForce;
+}
+
+interface NotifRevealForceArgs extends NotifWithPlayerArgs {
+  force: GestForce;
 }

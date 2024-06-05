@@ -1,0 +1,52 @@
+@use 'sass:math';
+@use 'sass:map';
+@use '../base';
+
+.gest_force {
+  box-sizing: border-box;
+  height: calc(var(--gestForceScale) * 40px);
+  width: calc(var(--gestForceScale) * 40px);
+}
+
+.gest_force_side {
+  box-sizing: border-box;
+  height: calc(var(--gestForceScale) * 40px);
+  width: calc(var(--gestForceScale) * 40px);
+  border: calc(var(--gestForceScale) * 1px) solid black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.gest_force_side[data-type=Henchmen] {
+  background-color: #c0c0c0;
+}
+
+.gest_force_side[data-type=Camp] {
+  background-color: #008000;
+  border-radius: 50%;
+}
+
+.gest_force_side[data-type=MerryMen] {
+  background-color: #008000;
+}
+
+.gest_force_side[data-type=RobinHood] {
+  background-color: #008000;
+}
+
+.gest_force_side[data-type=Carriage] {
+  background-color: #c0c0c0;
+  border-radius: 50%;
+}
+
+.gest_force_side.gest_selectable {
+  cursor: pointer;
+  box-shadow: 0px 0px 0px calc(var(--gestForceScale) * 6px) base.$selectable-color !important;
+}
+
+.gest_force.gest_selectable:hover,
+.gest_force.gest_selected {
+  cursor: pointer;
+  box-shadow: 0px 0px 0px calc(var(--gestForceScale) * 6px) base.$selected-color !important;
+}

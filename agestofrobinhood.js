@@ -1732,6 +1732,7 @@ var AGestOfRobinHood = (function () {
                 ? 0
                 : 2100 - this.settings.get({ id: PREF_ANIMATION_SPEED }),
         });
+        this.forceManager = new ForceManager(this);
         this.markerManager = new MarkerManager(this);
         this.gameMap = new GameMap(this);
         this.tooltipManager = new TooltipManager(this);
@@ -2245,270 +2246,323 @@ var capitalizeFirstLetter = function (string) {
 var lowerCaseFirstLetter = function (string) {
     return string.charAt(0).toLowerCase() + string.slice(1);
 };
-var _a;
+var ForceManager = (function (_super) {
+    __extends(ForceManager, _super);
+    function ForceManager(game) {
+        var _this = _super.call(this, game, {
+            getId: function (card) { return "".concat(card.id); },
+            setupDiv: function (card, div) { return _this.setupDiv(card, div); },
+            setupFrontDiv: function (card, div) { return _this.setupFrontDiv(card, div); },
+            setupBackDiv: function (card, div) { return _this.setupBackDiv(card, div); },
+            isCardVisible: function (card) { return _this.isCardVisible(card); },
+            animationManager: game.animationManager,
+        }) || this;
+        _this.game = game;
+        return _this;
+    }
+    ForceManager.prototype.clearInterface = function () { };
+    ForceManager.prototype.setupDiv = function (force, div) {
+        div.classList.add('gest_force');
+    };
+    ForceManager.prototype.setupFrontDiv = function (force, div) {
+        div.classList.add('gest_force_side');
+        div.setAttribute('data-type', force.type);
+        if (force.type === CARRIAGE && !force.hidden) {
+            div.insertAdjacentHTML('afterbegin', "<span>".concat(force.type.substring(0, 3), "</span>"));
+        }
+        if (force.type === ROBIN_HOOD && !force.hidden) {
+            console.log('add marker');
+            div.replaceChildren('RH');
+        }
+        if (force.type === CAMP) {
+            div.replaceChildren('C');
+        }
+    };
+    ForceManager.prototype.setupBackDiv = function (force, div) {
+        div.classList.add('gest_force_side');
+        div.setAttribute('data-type', force.type);
+        if (force.id.startsWith('fake')) {
+            return;
+        }
+        if (force.type === ROBIN_HOOD) {
+            div.insertAdjacentHTML('beforeend', '<div>*</div>');
+        }
+        if (force.type === CARRIAGE) {
+            div.insertAdjacentHTML('afterbegin', "<span>*".concat(force.type.substring(0, 3), "</span>"));
+        }
+    };
+    ForceManager.prototype.isCardVisible = function (force) {
+        if (force.type === ROBIN_HOOD) {
+            console.log('robin hood back', force);
+        }
+        return !force.hidden;
+    };
+    return ForceManager;
+}(CardManager));
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
 var SPACES_CONFIG = (_a = {},
-    _a[BINGHAM] = {
-        henchmen: {
+    _a[BINGHAM] = (_b = {},
+        _b[HENCHMEN] = {
             top: 1271,
             left: 737,
             width: 89,
             height: 143,
         },
-        camps: {
+        _b[CAMP] = {
             top: 1219,
             left: 869,
             width: 50,
             height: 50,
         },
-        merryMen: {
+        _b[MERRY_MEN] = {
             top: 1255,
             left: 931,
             width: 82,
             height: 170,
         },
-        carriages: {
+        _b[CARRIAGE] = {
             top: 1419,
             left: 805,
             width: 100,
             height: 50,
-        }
-    },
-    _a[BLYTH] = {
-        henchmen: {
+        },
+        _b),
+    _a[BLYTH] = (_c = {},
+        _c[HENCHMEN] = {
             top: 583,
             left: 641,
             width: 100,
             height: 160,
         },
-        camps: {
+        _c[CAMP] = {
             top: 488,
             left: 585,
             width: 50,
             height: 50,
         },
-        merryMen: {
+        _c[MERRY_MEN] = {
             top: 562,
             left: 525,
             width: 100,
             height: 160,
         },
-        carriages: {
+        _c[CARRIAGE] = {
             top: 500,
             left: 772,
             width: 50,
             height: 100,
-        }
-    },
-    _a[MANSFIELD] = {
-        henchmen: {
+        },
+        _c),
+    _a[MANSFIELD] = (_d = {},
+        _d[HENCHMEN] = {
             top: 1128,
             left: 313,
             width: 100,
             height: 150,
         },
-        camps: {
+        _d[CAMP] = {
             top: 855,
             left: 273,
             width: 50,
             height: 50,
         },
-        merryMen: {
+        _d[MERRY_MEN] = {
             top: 847,
             left: 329,
             width: 100,
             height: 145,
         },
-        carriages: {
+        _d[CARRIAGE] = {
             top: 1028,
             left: 253,
             width: 50,
             height: 100,
-        }
-    },
-    _a[NEWARK] = {
-        henchmen: {
+        },
+        _d),
+    _a[NEWARK] = (_e = {},
+        _e[HENCHMEN] = {
             top: 706,
             left: 1081,
             width: 100,
             height: 145,
         },
-        camps: {
+        _e[CAMP] = {
             top: 1108,
             left: 916,
             width: 50,
             height: 50,
         },
-        merryMen: {
+        _e[MERRY_MEN] = {
             top: 1035,
             left: 977,
             width: 100,
             height: 170,
         },
-        carriages: {
+        _e[CARRIAGE] = {
             top: 650,
             left: 1136,
             width: 100,
             height: 50,
-        }
-    },
-    _a[NOTTINGHAM] = {
-        henchmen: {
+        },
+        _e),
+    _a[NOTTINGHAM] = (_f = {},
+        _f[HENCHMEN] = {
             top: 1131,
             left: 474,
             width: 175,
             height: 100,
         },
-        merryMen: {
+        _f[MERRY_MEN] = {
             top: 1047,
             left: 474,
             width: 170,
             height: 79,
         },
-        carriages: {
+        _f[CARRIAGE] = {
             top: 1108,
             left: 634,
             width: 50,
             height: 100,
-        }
-    },
-    _a[OLLERTON_HILL] = {
-        camps: {
+        },
+        _f),
+    _a[OLLERTON_HILL] = (_g = {},
+        _g[CAMP] = {
             top: 880,
             left: 778,
             width: 50,
             height: 50,
         },
-    },
-    _a[REMSTON] = {
-        henchmen: {
+        _g),
+    _a[REMSTON] = (_h = {},
+        _h[HENCHMEN] = {
             top: 1401,
             left: 624,
             width: 100,
             height: 160,
         },
-        camps: {
+        _h[CAMP] = {
             top: 1318,
             left: 507,
             width: 50,
             height: 50,
         },
-        merryMen: {
+        _h[MERRY_MEN] = {
             top: 1373,
             left: 416,
             width: 100,
             height: 160,
         },
-        carriages: {
+        _h[CARRIAGE] = {
             top: 1537,
             left: 511,
             width: 100,
             height: 50,
-        }
-    },
-    _a[RETFORD] = {
-        henchmen: {
+        },
+        _h),
+    _a[RETFORD] = (_j = {},
+        _j[HENCHMEN] = {
             top: 335,
             left: 971,
             width: 100,
             height: 143,
         },
-        camps: {
+        _j[CAMP] = {
             top: 262,
             left: 766,
             width: 50,
             height: 50,
         },
-        merryMen: {
+        _j[MERRY_MEN] = {
             top: 335,
             left: 866,
             width: 100,
             height: 143,
         },
-        carriages: {
+        _j[CARRIAGE] = {
             top: 227,
             left: 989,
             width: 50,
             height: 100,
-        }
-    },
-    _a[SHIRE_WOOD] = {
-        henchmen: {
+        },
+        _j),
+    _a[SHIRE_WOOD] = (_k = {},
+        _k[HENCHMEN] = {
             top: 787,
             left: 467,
             width: 160,
             height: 68,
         },
-        camps: {
+        _k[CAMP] = {
             top: 924,
             left: 610,
             width: 50,
             height: 50,
         },
-        merryMen: {
+        _k[MERRY_MEN] = {
             top: 904,
             left: 467,
             width: 140,
             height: 100,
         },
-        carriages: {
+        _k[CARRIAGE] = {
             top: 855,
             left: 467,
             width: 50,
             height: 50,
-        }
-    },
-    _a[SOUTHWELL_FOREST] = {
-        henchmen: {
+        },
+        _k),
+    _a[SOUTHWELL_FOREST] = (_l = {},
+        _l[HENCHMEN] = {
             top: 955,
             left: 671,
             width: 84,
             height: 124,
         },
-        camps: {
+        _l[CAMP] = {
             top: 1153,
             left: 762,
             width: 50,
             height: 50,
         },
-        merryMen: {
+        _l[MERRY_MEN] = {
             top: 1005,
             left: 762,
             width: 100,
             height: 100,
         },
-        carriages: {
+        _l[CARRIAGE] = {
             top: 949,
             left: 771,
             width: 50,
             height: 50,
-        }
-    },
-    _a[TUXFORD] = {
-        henchmen: {
+        },
+        _l),
+    _a[TUXFORD] = (_m = {},
+        _m[HENCHMEN] = {
             top: 832,
             left: 864,
             width: 100,
             height: 161,
         },
-        camps: {
+        _m[CAMP] = {
             top: 645,
             left: 864,
             width: 50,
             height: 50,
         },
-        merryMen: {
+        _m[MERRY_MEN] = {
             top: 532,
             left: 932,
             width: 100,
             height: 161,
         },
-        carriages: {
+        _m[CARRIAGE] = {
             top: 724,
             left: 823,
             width: 50,
             height: 100,
-        }
-    },
+        },
+        _m),
     _a);
 var JUSTICE_TRACK_CONFIG = [
     {
@@ -2727,6 +2781,8 @@ var UNIQUE_SPACES = [
 var GameMap = (function () {
     function GameMap(game) {
         this.parishStatusMarkers = {};
+        this.forces = {};
+        this.forceIdCounter = 1;
         this.game = game;
         var gamedatas = game.gamedatas;
         this.setupGameMap({ gamedatas: gamedatas });
@@ -2736,15 +2792,8 @@ var GameMap = (function () {
         PARISHES.forEach(function (parishId) {
             _this.parishStatusMarkers[parishId].removeAll();
         });
-        SPACES.forEach(function (spaceId) {
-            [CAMP, MERRY_MEN, HENCHMEN, CARRIAGE].forEach(function (type) {
-                var id = "".concat(lowerCaseFirstLetter(type), "_").concat(spaceId);
-                var node = document.getElementById(id);
-                if (!node) {
-                    return;
-                }
-                node.replaceChildren();
-            });
+        Object.values(this.forces).forEach(function (stock) {
+            stock.removeAll();
         });
         [
             ROYAL_FAVOUR_MARKER,
@@ -2776,12 +2825,34 @@ var GameMap = (function () {
         });
         this.updateParishStatusMarkers({ gamedatas: gamedatas });
     };
+    GameMap.prototype.setupForces = function (_a) {
+        var _this = this;
+        var gamedatas = _a.gamedatas;
+        Object.entries(SPACES_CONFIG).forEach(function (_a) {
+            var spaceId = _a[0], config = _a[1];
+            Object.keys(config).forEach(function (forceType) {
+                var id = "".concat(forceType, "_").concat(spaceId);
+                var element = document.getElementById(id);
+                if (!element) {
+                    console.log(id);
+                    return;
+                }
+                _this.forces[id] = new LineStock(_this.game.forceManager, element, {
+                    center: true,
+                });
+            });
+        });
+        this.forces['carriage_usedCarriages'] = new LineStock(this.game.forceManager, document.getElementById('carriage_usedCarriages'), {
+            center: true,
+        });
+        this.updateForces({ gamedatas: gamedatas });
+    };
     GameMap.prototype.updateForces = function (_a) {
         var _this = this;
         var gamedatas = _a.gamedatas;
         var isRobinHoodPlayer = !!gamedatas.robinHoodForces;
         var isSheriffPlayer = !!gamedatas.sheriffForces;
-        __spreadArray(__spreadArray([], SPACES, true), [USED_CARRIAGES], false).forEach(function (spaceId) {
+        __spreadArray([], SPACES, true).forEach(function (spaceId) {
             var _a, _b;
             var forces = gamedatas.forces[spaceId];
             var robinHoodForces = (_a = gamedatas.robinHoodForces) === null || _a === void 0 ? void 0 : _a[spaceId];
@@ -2789,80 +2860,74 @@ var GameMap = (function () {
             if (!forces) {
                 return;
             }
-            var henchmenBox = document.getElementById("henchmen_".concat(spaceId));
-            if (henchmenBox && forces.Henchmen.length > 0) {
+            if (forces.Henchmen.length > 0) {
                 forces.Henchmen.forEach(function (henchman) {
-                    henchmenBox.insertAdjacentHTML('beforeend', tplForce({ id: henchman.id, type: henchman.type, hidden: false }));
+                    console.log('location', "".concat(henchman.type, "_").concat(henchman.location));
+                    _this.forces["".concat(henchman.type, "_").concat(henchman.location)].addCard(henchman);
                 });
             }
-            var merryMenBox = document.getElementById("merryMen_".concat(spaceId));
-            if (merryMenBox && !isRobinHoodPlayer) {
-                for (var i = 0; i < forces.RobinHood; i++) {
-                    merryMenBox.insertAdjacentHTML('beforeend', tplForce({ type: ROBIN_HOOD, hidden: false }));
-                }
-                for (var k = 0; k < forces.MerryMen.revealed; k++) {
-                    merryMenBox.insertAdjacentHTML('beforeend', tplForce({ type: MERRY_MEN, hidden: false }));
-                }
-                for (var l = 0; l < forces.MerryMen.hidden; l++) {
-                    merryMenBox.insertAdjacentHTML('beforeend', tplForce({ type: MERRY_MEN, hidden: true }));
-                }
-            }
-            else if (merryMenBox && isRobinHoodPlayer && robinHoodForces) {
-                robinHoodForces.RobinHood.forEach(function (robinHood) {
-                    merryMenBox.insertAdjacentHTML('beforeend', tplForce({
-                        id: robinHood.id,
-                        type: robinHood.type,
-                        hidden: robinHood.hidden,
-                    }));
-                });
-                robinHoodForces.MerryMen.forEach(function (merryMen) {
-                    merryMenBox.insertAdjacentHTML('beforeend', tplForce({
-                        id: merryMen.id,
-                        type: merryMen.type,
-                        hidden: merryMen.hidden,
-                    }));
-                });
-            }
-            var campBox = document.getElementById("camp_".concat(spaceId));
-            if (campBox && !isRobinHoodPlayer) {
-                for (var i = 0; i < forces.Camp.revealed; i++) {
-                    campBox.insertAdjacentHTML('beforeend', tplForce({ type: CAMP, hidden: false }));
-                }
-                for (var j = 0; j < forces.Camp.hidden; j++) {
-                    campBox.insertAdjacentHTML('beforeend', tplForce({ type: CAMP, hidden: true }));
-                }
-            }
-            else if (campBox && isRobinHoodPlayer && robinHoodForces) {
-                robinHoodForces.Camp.forEach(function (camp) {
-                    campBox.insertAdjacentHTML('beforeend', tplForce({ id: camp.id, type: camp.type, hidden: camp.hidden }));
-                });
-            }
-            var carriageBox = document.getElementById("carriage_".concat(spaceId));
-            if (carriageBox && !isSheriffPlayer) {
-                [TALLAGE_CARRIAGE, TRAP_CARRIAGE, TRIBUTE_CARRIAGE].forEach(function (subtype) {
-                    _this.addPublicForces({
-                        box: carriageBox,
-                        count: forces.Carriage[subtype],
-                        hidden: false,
-                        type: CARRIAGE,
-                        subtype: subtype,
-                    });
+            if (!isRobinHoodPlayer) {
+                _this.addPublicForces({
+                    type: ROBIN_HOOD,
+                    spaceId: spaceId,
+                    hidden: false,
+                    count: forces.RobinHood,
                 });
                 _this.addPublicForces({
-                    box: carriageBox,
+                    type: MERRY_MEN,
+                    spaceId: spaceId,
+                    hidden: false,
+                    count: forces.MerryMen.revealed,
+                });
+                _this.addPublicForces({
+                    type: MERRY_MEN,
+                    spaceId: spaceId,
+                    hidden: true,
+                    count: forces.MerryMen.hidden,
+                });
+                _this.addPublicForces({
+                    type: CAMP,
+                    spaceId: spaceId,
+                    hidden: false,
+                    count: forces.Camp.revealed,
+                });
+                _this.addPublicForces({
+                    type: CAMP,
+                    spaceId: spaceId,
+                    hidden: true,
+                    count: forces.Camp.hidden,
+                });
+            }
+            else if (isRobinHoodPlayer && robinHoodForces) {
+                robinHoodForces.RobinHood.forEach(function (robinHood) {
+                    _this.addPrivateForce({ force: robinHood });
+                });
+                robinHoodForces.MerryMen.forEach(function (merryMen) {
+                    _this.addPrivateForce({ force: merryMen });
+                });
+                robinHoodForces.Camp.forEach(function (camp) {
+                    _this.addPrivateForce({ force: camp });
+                });
+            }
+            if (!isSheriffPlayer) {
+                _this.addPublicForces({
                     count: forces.Carriage.hidden,
                     hidden: true,
                     type: CARRIAGE,
+                    spaceId: spaceId,
+                });
+                [TALLAGE_CARRIAGE, TRAP_CARRIAGE, TRIBUTE_CARRIAGE].forEach(function (type) {
+                    _this.addPublicForces({
+                        count: forces.Carriage[type],
+                        hidden: false,
+                        type: type,
+                        spaceId: spaceId,
+                    });
                 });
             }
-            else if (carriageBox && isSheriffPlayer && sheriffForces) {
+            else if (isSheriffPlayer && sheriffForces) {
                 sheriffForces.Carriage.forEach(function (carriage) {
-                    carriageBox.insertAdjacentHTML('beforeend', tplForce({
-                        id: carriage.id,
-                        type: CARRIAGE,
-                        hidden: carriage.hidden,
-                        subtype: carriage.type,
-                    }));
+                    _this.forces["".concat(CARRIAGE, "_").concat(spaceId)].addCard(carriage);
                 });
             }
         });
@@ -2903,59 +2968,70 @@ var GameMap = (function () {
             .getElementById('play_area_container')
             .insertAdjacentHTML('afterbegin', tplGameMap({ gamedatas: gamedatas }));
         this.setupParishStatusMarkers({ gamedatas: gamedatas });
+        this.setupForces({ gamedatas: gamedatas });
         this.updateTrackMarkers({ gamedatas: gamedatas });
-        this.updateForces({ gamedatas: gamedatas });
     };
     GameMap.prototype.addPublicForces = function (_a) {
-        var box = _a.box, type = _a.type, subtype = _a.subtype, hidden = _a.hidden, count = _a.count;
+        var type = _a.type, hidden = _a.hidden, spaceId = _a.spaceId, count = _a.count;
         for (var i = 0; i < count; i++) {
-            box.insertAdjacentHTML('beforeend', tplForce({ type: type, hidden: hidden, subtype: subtype }));
+            var stockId = "".concat(type, "_").concat(spaceId);
+            if (type === ROBIN_HOOD) {
+                stockId = "".concat(MERRY_MEN, "_").concat(spaceId);
+            }
+            else if ([TALLAGE_CARRIAGE, TRAP_CARRIAGE, TRIBUTE_CARRIAGE].includes(type)) {
+                stockId = "".concat(CARRIAGE, "_").concat(spaceId);
+            }
+            this.forces[stockId].addCard({
+                id: "force_".concat(this.forceIdCounter),
+                type: type,
+                location: spaceId,
+                hidden: hidden,
+            });
+            this.forceIdCounter++;
         }
     };
-    GameMap.prototype.addRobinHoodPrivate = function (_a) {
-        var robinHood = _a.robinHood;
-        var space = document.getElementById("merryMen_".concat(robinHood.location));
-        if (!space) {
-            return;
+    GameMap.prototype.addPrivateForce = function (_a) {
+        var force = _a.force;
+        console.log('force', force);
+        var id = "".concat(force.type, "_").concat(force.location);
+        if (force.type === ROBIN_HOOD) {
+            id = "".concat(MERRY_MEN, "_").concat(force.location);
         }
-        space.insertAdjacentHTML('beforeend', tplForce({
-            id: robinHood.id,
-            type: robinHood.type,
-            hidden: robinHood.hidden,
-        }));
+        else if ([TALLAGE_CARRIAGE, TRAP_CARRIAGE, TRIBUTE_CARRIAGE].includes(force.type)) {
+            id = "".concat(CARRIAGE, "_").concat(force.location);
+        }
+        this.forces[id].addCard(force);
     };
-    GameMap.prototype.addMerryManPrivate = function (_a) {
-        var merryMan = _a.merryMan;
-        var space = document.getElementById("merryMen_".concat(merryMan.location));
-        if (!space) {
-            return;
+    GameMap.prototype.revealForcePublic = function (_a) {
+        var force = _a.force;
+        var stockId = '';
+        switch (force.type) {
+            case ROBIN_HOOD:
+            case MERRY_MEN:
+                stockId = "".concat(MERRY_MEN, "_").concat(force.location);
+                break;
+            case CAMP:
+                stockId = "".concat(CAMP, "_").concat(force.location);
+                break;
+            case TALLAGE_CARRIAGE:
+            case TRAP_CARRIAGE:
+            case TRIBUTE_CARRIAGE:
+                stockId = "".concat(CARRIAGE, "_").concat(force.location);
+                break;
+            default:
+                return;
         }
-        space.insertAdjacentHTML('beforeend', tplForce({
-            id: merryMan.id,
-            type: merryMan.type,
-            hidden: merryMan.hidden,
-        }));
+        var forces = this.forces[stockId]
+            .getCards()
+            .filter(function (force) { return force.hidden; });
+        var selected = forces[Math.floor(Math.random() * forces.length)];
+        selected.type = force.type;
+        selected.hidden = force.hidden;
+        this.game.forceManager.updateCardInformations(selected);
     };
-    GameMap.prototype.addRobinHoodPublic = function (_a) {
-        var spaceId = _a.spaceId;
-        var space = document.getElementById("merryMen_".concat(spaceId));
-        if (!space) {
-            return;
-        }
-        space.insertAdjacentHTML('beforeend', tplForce({ type: ROBIN_HOOD, hidden: false }));
-    };
-    GameMap.prototype.addMerryMenPublic = function (_a) {
-        var spaceId = _a.spaceId, _b = _a.countHidden, countHidden = _b === void 0 ? 0 : _b, _c = _a.countRevealed, countRevealed = _c === void 0 ? 0 : _c;
-        var space = document.getElementById("merryMen_".concat(spaceId));
-        if (!space) {
-            return;
-        }
-        for (var i = 0; i < countRevealed; i++) {
-            space.insertAdjacentHTML('beforeend', tplForce({ type: MERRY_MEN, hidden: false }));
-        }
-        for (var k = 0; k < countHidden; k++) {
-            space.insertAdjacentHTML('beforeend', tplForce({ type: MERRY_MEN, hidden: true }));
-        }
+    GameMap.prototype.revealForcePrivate = function (_a) {
+        var force = _a.force;
+        this.game.forceManager.updateCardInformations(force);
     };
     GameMap.prototype.moveCarriagePrivate = function (_a) {
         return __awaiter(this, arguments, void 0, function (_b) {
@@ -3120,18 +3196,9 @@ var tplSpaces = function () {
         .map(function (_a) {
         var spaceId = _a[0], config = _a[1];
         var html = '';
-        if (config.camps) {
-            html += "<div id=\"camp_".concat(spaceId, "\" class=\"gest_forces\" style=\"top: calc(var(--gestMapScale) * ").concat(config.camps.top, "px); left: calc(var(--gestMapScale) * ").concat(config.camps.left, "px); width: calc(var(--gestMapScale) * ").concat(config.camps.width, "px); height: calc(var(--gestMapScale) * ").concat(config.camps.height, "px);\"></div>");
-        }
-        if (config.henchmen) {
-            html += "<div id=\"henchmen_".concat(spaceId, "\" class=\"gest_forces\" style=\"top: calc(var(--gestMapScale) * ").concat(config.henchmen.top, "px); left: calc(var(--gestMapScale) * ").concat(config.henchmen.left, "px); width: calc(var(--gestMapScale) * ").concat(config.henchmen.width, "px); height: calc(var(--gestMapScale) * ").concat(config.henchmen.height, "px);\"></div>");
-        }
-        if (config.merryMen) {
-            html += "<div id=\"merryMen_".concat(spaceId, "\" class=\"gest_forces\" style=\"top: calc(var(--gestMapScale) * ").concat(config.merryMen.top, "px); left: calc(var(--gestMapScale) * ").concat(config.merryMen.left, "px); width: calc(var(--gestMapScale) * ").concat(config.merryMen.width, "px); height: calc(var(--gestMapScale) * ").concat(config.merryMen.height, "px);\"></div>");
-        }
-        if (config.carriages) {
-            html += "<div id=\"carriage_".concat(spaceId, "\" class=\"gest_forces\" style=\"top: calc(var(--gestMapScale) * ").concat(config.carriages.top, "px); left: calc(var(--gestMapScale) * ").concat(config.carriages.left, "px); width: calc(var(--gestMapScale) * ").concat(config.carriages.width, "px); height: calc(var(--gestMapScale) * ").concat(config.carriages.height, "px);\"></div>");
-        }
+        Object.keys(config).forEach(function (forceType) {
+            html += "<div id=\"".concat(forceType, "_").concat(spaceId, "\" class=\"gest_forces\" style=\"top: calc(var(--gestMapScale) * ").concat(config[forceType].top, "px); left: calc(var(--gestMapScale) * ").concat(config[forceType].left, "px); width: calc(var(--gestMapScale) * ").concat(config[forceType].width, "px); height: calc(var(--gestMapScale) * ").concat(config[forceType].height, "px);\"></div>");
+        });
         return html;
     })
         .join('');
@@ -3244,6 +3311,7 @@ var NotificationManager = (function () {
             'moveRoyalFavourMarker',
             'passAction',
             'revealCarriage',
+            'revealForce',
             'payShillings',
             'placeMerryMen',
             'placeMerryMenPrivate',
@@ -3289,6 +3357,16 @@ var NotificationManager = (function () {
     NotificationManager.prototype.getPlayer = function (_a) {
         var playerId = _a.playerId;
         return this.game.playerManager.getPlayer({ playerId: playerId });
+    };
+    NotificationManager.prototype.currentPlayerIsRobinHood = function () {
+        var currentPlayerId = this.game.getPlayerId();
+        var robinHoodPlayerId = this.game.playerManager.getRobinHoodPlayerId();
+        return currentPlayerId === robinHoodPlayerId;
+    };
+    NotificationManager.prototype.currentPlayerIsSheriff = function () {
+        var currentPlayerId = this.game.getPlayerId();
+        var sheriffPlayerId = this.game.playerManager.getSheriffPlayerId();
+        return currentPlayerId === sheriffPlayerId;
     };
     NotificationManager.prototype.notif_log = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
@@ -3437,7 +3515,10 @@ var NotificationManager = (function () {
                 switch (_a.label) {
                     case 0:
                         marker = notif.args.marker;
-                        return [4, this.game.gameMap.moveMarker({ id: marker.id, location: marker.location })];
+                        return [4, this.game.gameMap.moveMarker({
+                                id: marker.id,
+                                location: marker.location,
+                            })];
                     case 1:
                         _a.sent();
                         return [2];
@@ -3451,6 +3532,41 @@ var NotificationManager = (function () {
             return __generator(this, function (_b) {
                 _a = notif.args, amount = _a.amount, playerId = _a.playerId;
                 this.getPlayer({ playerId: playerId }).counters.shillings.incValue(-amount);
+                return [2];
+            });
+        });
+    };
+    NotificationManager.prototype.notif_placeMerryMen = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var merryMenCounts;
+            var _this = this;
+            return __generator(this, function (_a) {
+                merryMenCounts = notif.args.merryMenCounts;
+                Object.entries(merryMenCounts).forEach(function (_a) {
+                    var spaceId = _a[0], countHidden = _a[1];
+                    _this.game.gameMap.addPublicForces({
+                        spaceId: spaceId,
+                        count: countHidden,
+                        hidden: true,
+                        type: MERRY_MEN,
+                    });
+                });
+                return [2];
+            });
+        });
+    };
+    NotificationManager.prototype.notif_placeMerryMenPrivate = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, robinHood, merryMen;
+            var _this = this;
+            return __generator(this, function (_b) {
+                _a = notif.args, robinHood = _a.robinHood, merryMen = _a.merryMen;
+                if (robinHood) {
+                    this.game.gameMap.addPrivateForce({ force: robinHood });
+                }
+                merryMen.forEach(function (merryMan) {
+                    return _this.game.gameMap.addPrivateForce({ force: merryMan });
+                });
                 return [2];
             });
         });
@@ -3477,32 +3593,27 @@ var NotificationManager = (function () {
             });
         });
     };
-    NotificationManager.prototype.notif_placeMerryMen = function (notif) {
+    NotificationManager.prototype.notif_revealForce = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var merryMenCounts;
-            var _this = this;
+            var force;
             return __generator(this, function (_a) {
-                merryMenCounts = notif.args.merryMenCounts;
-                Object.entries(merryMenCounts).forEach(function (_a) {
-                    var spaceId = _a[0], countHidden = _a[1];
-                    _this.game.gameMap.addMerryMenPublic({ spaceId: spaceId, countHidden: countHidden });
-                });
-                return [2];
-            });
-        });
-    };
-    NotificationManager.prototype.notif_placeMerryMenPrivate = function (notif) {
-        return __awaiter(this, void 0, void 0, function () {
-            var _a, robinHood, merryMen;
-            var _this = this;
-            return __generator(this, function (_b) {
-                _a = notif.args, robinHood = _a.robinHood, merryMen = _a.merryMen;
-                if (robinHood) {
-                    this.game.gameMap.addRobinHoodPrivate({ robinHood: robinHood });
+                force = notif.args.force;
+                if ([MERRY_MEN, CAMP, ROBIN_HOOD].includes(force.type)) {
+                    if (this.currentPlayerIsRobinHood()) {
+                        this.game.gameMap.revealForcePrivate({ force: force });
+                    }
+                    else {
+                        this.game.gameMap.revealForcePublic({ force: force });
+                    }
                 }
-                merryMen.forEach(function (merryMan) {
-                    return _this.game.gameMap.addMerryManPrivate({ merryMan: merryMan });
-                });
+                else if ([TALLAGE_CARRIAGE, TRAP_CARRIAGE, TRIBUTE_CARRIAGE].includes(force.type)) {
+                    if (this.currentPlayerIsSheriff()) {
+                        this.game.gameMap.revealForcePrivate({ force: force });
+                    }
+                    else {
+                        this.game.gameMap.revealForcePublic({ force: force });
+                    }
+                }
                 return [2];
             });
         });

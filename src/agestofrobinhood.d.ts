@@ -61,6 +61,7 @@ interface AGestOfRobinHoodGame extends Game {
   updateLayout: () => void;
   animationManager: AnimationManager;
   gameMap: GameMap;
+  forceManager: ForceManager;
   markerManager: MarkerManager;
   notificationManager: NotificationManager;
   playerManager: PlayerManager;

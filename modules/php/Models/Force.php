@@ -41,7 +41,9 @@ class Force extends \AGestOfRobinHood\Helpers\DB_Model
   {
     $data = parent::jsonSerialize();
 
-    return array_merge($data, []);
+    return array_merge($data, [
+      'hidden' => $this->isHidden()
+    ]);
   }
 
   public function getUiData()

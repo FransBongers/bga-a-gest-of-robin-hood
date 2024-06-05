@@ -1,32 +1,32 @@
 const SPACES_CONFIG: Record<
   string,
   {
-    camps?: LocationConfig;
-    henchmen?: LocationConfig;
-    merryMen?: LocationConfig;
-    carriages?: LocationConfig;
+    Camp?: LocationConfig;
+    Henchmen?: LocationConfig;
+    MerryMen?: LocationConfig;
+    Carriage?: LocationConfig;
   }
 > = {
   [BINGHAM]: {
-    henchmen: {
+    [HENCHMEN]: {
       top: 1271,
       left: 737,
       width: 89,
       height: 143,
     },
-    camps: {
+    [CAMP]: {
       top: 1219,
       left: 869,
       width: 50,
       height: 50,
     },
-    merryMen: {
+    [MERRY_MEN]: {
       top: 1255,
       left: 931,
       width: 82,
       height: 170,
     },
-    carriages: {
+    [CARRIAGE]: {
       top: 1419,
       left: 805,
       width: 100,
@@ -34,25 +34,25 @@ const SPACES_CONFIG: Record<
     }
   },
   [BLYTH]: {
-    henchmen: {
+    [HENCHMEN]: {
       top: 583,
       left: 641,
       width: 100,
       height: 160,
     },
-    camps: {
+    [CAMP]: {
       top: 488,
       left: 585,
       width: 50,
       height: 50,
     },
-    merryMen: {
+    [MERRY_MEN]: {
       top: 562,
       left: 525,
       width: 100,
       height: 160,
     },
-    carriages: {
+    [CARRIAGE]: {
       top: 500,
       left: 772,
       width: 50,
@@ -60,25 +60,25 @@ const SPACES_CONFIG: Record<
     }
   },
   [MANSFIELD]: {
-    henchmen: {
+    [HENCHMEN]: {
       top: 1128,
       left: 313,
       width: 100,
       height: 150,
     },
-    camps: {
+    [CAMP]: {
       top: 855,
       left: 273,
       width: 50,
       height: 50,
     },
-    merryMen: {
+    [MERRY_MEN]: {
       top: 847,
       left: 329,
       width: 100,
       height: 145,
     },
-    carriages: {
+    [CARRIAGE]: {
       top: 1028,
       left: 253,
       width: 50,
@@ -86,25 +86,25 @@ const SPACES_CONFIG: Record<
     }
   },
   [NEWARK]: {
-    henchmen: {
+    [HENCHMEN]: {
       top: 706,
       left: 1081,
       width: 100,
       height: 145,
     },
-    camps: {
+    [CAMP]: {
       top: 1108,
       left: 916,
       width: 50,
       height: 50,
     },
-    merryMen: {
+    [MERRY_MEN]: {
       top: 1035,
       left: 977,
       width: 100,
       height: 170,
     },
-    carriages: {
+    [CARRIAGE]: {
       top: 650,
       left: 1136,
       width: 100,
@@ -112,25 +112,25 @@ const SPACES_CONFIG: Record<
     }
   },
   [NOTTINGHAM]: {
-    henchmen: {
+    [HENCHMEN]: {
       top: 1131,
       left: 474,
       width: 175,
       height: 100,
     },
-    // camps: {
+    // [CAMP]: {
     //   top: 922,
     //   left: 112,
     //   width: 100,
     //   height: 100,
     // },
-    merryMen: {
+    [MERRY_MEN]: {
       top: 1047,
       left: 474,
       width: 170,
       height: 79,
     },
-    carriages: {
+    [CARRIAGE]: {
       top: 1108,
       left: 634,
       width: 50,
@@ -138,19 +138,19 @@ const SPACES_CONFIG: Record<
     }
   },
   [OLLERTON_HILL]: {
-    // henchmen: {
+    // [HENCHMEN]: {
     //   top: 922,
     //   left: 112,
     //   width: 100,
     //   height: 100,
     // },
-    camps: {
+    [CAMP]: {
       top: 880,
       left: 778,
       width: 50,
       height: 50,
     },
-    // merryMen: {
+    // [MERRY_MEN]: {
     //   top: 922,
     //   left: 112,
     //   width: 100,
@@ -158,25 +158,25 @@ const SPACES_CONFIG: Record<
     // },
   },
   [REMSTON]: {
-    henchmen: {
+    [HENCHMEN]: {
       top: 1401,
       left: 624,
       width: 100,
       height: 160,
     },
-    camps: {
+    [CAMP]: {
       top: 1318,
       left: 507,
       width: 50,
       height: 50,
     },
-    merryMen: {
+    [MERRY_MEN]: {
       top: 1373,
       left: 416,
       width: 100,
       height: 160,
     },
-    carriages: {
+    [CARRIAGE]: {
       top: 1537,
       left: 511,
       width: 100,
@@ -184,25 +184,25 @@ const SPACES_CONFIG: Record<
     }
   },
   [RETFORD]: {
-    henchmen: {
+    [HENCHMEN]: {
       top: 335,
       left: 971,
       width: 100,
       height: 143,
     },
-    camps: {
+    [CAMP]: {
       top: 262,
       left: 766,
       width: 50,
       height: 50,
     },
-    merryMen: {
+    [MERRY_MEN]: {
       top: 335,
       left: 866,
       width: 100,
       height: 143,
     },
-    carriages: {
+    [CARRIAGE]: {
       top: 227,
       left: 989,
       width: 50,
@@ -210,25 +210,25 @@ const SPACES_CONFIG: Record<
     }
   },
   [SHIRE_WOOD]: {
-    henchmen: {
+    [HENCHMEN]: {
       top: 787,
       left: 467,
       width: 160,
       height: 68,
     },
-    camps: {
+    [CAMP]: {
       top: 924,
       left: 610,
       width: 50,
       height: 50,
     },
-    merryMen: {
+    [MERRY_MEN]: {
       top: 904,
       left: 467,
       width: 140,
       height: 100,
     },
-    carriages: {
+    [CARRIAGE]: {
       top: 855,
       left: 467,
       width: 50,
@@ -236,25 +236,25 @@ const SPACES_CONFIG: Record<
     }
   },
   [SOUTHWELL_FOREST]: {
-    henchmen: {
+    [HENCHMEN]: {
       top: 955,
       left: 671,
       width: 84,
       height: 124,
     },
-    camps: {
+    [CAMP]: {
       top: 1153,
       left: 762,
       width: 50,
       height: 50,
     },
-    merryMen: {
+    [MERRY_MEN]: {
       top: 1005,
       left: 762,
       width: 100,
       height: 100,
     },
-    carriages: {
+    [CARRIAGE]: {
       top: 949,
       left: 771,
       width: 50,
@@ -262,25 +262,25 @@ const SPACES_CONFIG: Record<
     }
   },
   [TUXFORD]: {
-    henchmen: {
+    [HENCHMEN]: {
       top: 832,
       left: 864,
       width: 100,
       height: 161,
     },
-    camps: {
+    [CAMP]: {
       top: 645,
       left: 864,
       width: 50,
       height: 50,
     },
-    merryMen: {
+    [MERRY_MEN]: {
       top: 532,
       left: 932,
       width: 100,
       height: 161,
     },
-    carriages: {
+    [CARRIAGE]: {
       top: 724,
       left: 823,
       width: 50,
