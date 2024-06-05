@@ -4550,12 +4550,23 @@ var SelectDeedState = (function () {
     };
     SelectDeedState.prototype.setDescription = function (activePlayerId) { };
     SelectDeedState.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
         this.game.clearPossible();
         this.game.clientUpdatePageTitle({
             text: _('${you} must select a Deed'),
             args: {
                 you: '${you}',
             },
+        });
+        Object.entries(this.args._private.options).forEach(function (_a) {
+            var deedId = _a[0], name = _a[1];
+            _this.game.addPrimaryActionButton({
+                id: "".concat(deedId, "_btn"),
+                text: _(name),
+                callback: function () {
+                    _this.updateInterfaceConfirm({ deedId: deedId, name: name });
+                },
+            });
         });
         this.game.addPassButton({
             optionalAction: this.args.optionalAction,
@@ -4564,14 +4575,20 @@ var SelectDeedState = (function () {
     };
     SelectDeedState.prototype.updateInterfaceConfirm = function (_a) {
         var _this = this;
-        var action = _a.action;
+        var deedId = _a.deedId, name = _a.name;
         this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('Perform ${deedName}?'),
+            args: {
+                deedName: _(name),
+            },
+        });
         var callback = function () {
             _this.game.clearPossible();
             _this.game.takeAction({
                 action: 'actSelectDeed',
                 args: {
-                    action: action,
+                    deedId: deedId,
                 },
             });
         };

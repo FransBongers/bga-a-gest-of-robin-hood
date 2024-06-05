@@ -213,7 +213,7 @@ $machinestates = array(
         "transitions" => ["startOfRound" => ST_START_OF_ROUND]
     ],
 
-    
+
     ST_MOVE_CARRIAGE => [
         'name' => 'moveCarriage',
         'description' => clienttranslate('${actplayer} must move a Carriage'),
@@ -236,7 +236,7 @@ $machinestates = array(
         'possibleactions' => ['actPlayerAction', 'actPassOptionalAction', 'actRestart'],
     ],
 
-    
+
     ST_RECRUIT => [
         'name' => 'recruit',
         'description' => clienttranslate('${actplayer} may Recruit'),
@@ -247,7 +247,7 @@ $machinestates = array(
         // 'transitions' => [],
         'possibleactions' => ['actRecruit', 'actPassOptionalAction', 'actRestart'],
     ],
-    
+
     ST_ROB => [
         'name' => 'rob',
         'description' => clienttranslate('${actplayer} may Rob'),
@@ -301,5 +301,103 @@ $machinestates = array(
         'action' => 'stAtomicAction',
         // 'transitions' => [],
         'possibleactions' => ['actSneak', 'actPassOptionalAction', 'actRestart'],
+    ],
+
+    ST_TURNCOAT => [
+        'name' => 'turncoat',
+        'description' => clienttranslate('${actplayer} may Turncoat'),
+        'descriptionmyturn' => clienttranslate('${you}'),
+        'type' => 'activeplayer',
+        'args' => 'argsAtomicAction',
+        'action' => 'stAtomicAction',
+        // 'transitions' => [],
+        'possibleactions' => ['actTurncoat', 'actPassOptionalAction', 'actRestart'],
+    ],
+    ST_DONATE => [
+        'name' => 'donate',
+        'description' => clienttranslate('${actplayer} may donate'),
+        'descriptionmyturn' => clienttranslate('${you}'),
+        'type' => 'activeplayer',
+        'args' => 'argsAtomicAction',
+        'action' => 'stAtomicAction',
+        // 'transitions' => [],
+        'possibleactions' => ['actonate', 'actPassOptionalAction', 'actRestart'],
+    ],
+    ST_SWASHBUCKLE => [
+        'name' => 'swashbuckle',
+        'description' => clienttranslate('${actplayer} may Swashbuckle'),
+        'descriptionmyturn' => clienttranslate('${you}'),
+        'type' => 'activeplayer',
+        'args' => 'argsAtomicAction',
+        'action' => 'stAtomicAction',
+        // 'transitions' => [],
+        'possibleactions' => ['actSwashbuckle', 'actPassOptionalAction', 'actRestart'],
+    ],
+    ST_INSPIRE => [
+        'name' => 'inspire',
+        'description' => '',
+        'type' => 'game',
+        'action' => 'stAtomicAction',
+        'transitions' => [],
+    ],
+    ST_RIDE => [
+        'name' => 'ride',
+        'description' => clienttranslate('${actplayer} may Ride'),
+        'descriptionmyturn' => clienttranslate('${you}'),
+        'type' => 'activeplayer',
+        'args' => 'argsAtomicAction',
+        'action' => 'stAtomicAction',
+        // 'transitions' => [],
+        'possibleactions' => ['actRide', 'actPassOptionalAction', 'actRestart'],
+    ],
+    ST_CONFISCATE => [
+        'name' => 'confiscate',
+        'description' => clienttranslate('${actplayer} may Confiscate'),
+        'descriptionmyturn' => clienttranslate('${you}'),
+        'type' => 'activeplayer',
+        'args' => 'argsAtomicAction',
+        'action' => 'stAtomicAction',
+        // 'transitions' => [],
+        'possibleactions' => ['actConfiscate', 'actPassOptionalAction', 'actRestart'],
+    ],
+    ST_DISPERSE => [
+        'name' => 'disperse',
+        'description' => clienttranslate('${actplayer} may Disperse'),
+        'descriptionmyturn' => clienttranslate('${you}'),
+        'type' => 'activeplayer',
+        'args' => 'argsAtomicAction',
+        'action' => 'stAtomicAction',
+        // 'transitions' => [],
+        'possibleactions' => ['actDisperse', 'actPassOptionalAction', 'actRestart'],
+    ],
+    ST_HIRE => [
+        'name' => 'hire',
+        'description' => clienttranslate('${actplayer} may Hire'),
+        'descriptionmyturn' => clienttranslate('${you}'),
+        'type' => 'activeplayer',
+        'args' => 'argsAtomicAction',
+        'action' => 'stAtomicAction',
+        // 'transitions' => [],
+        'possibleactions' => ['actHire', 'actPassOptionalAction', 'actRestart'],
+    ],
+    ST_PATROL => [
+        'name' => 'patrol',
+        'description' => clienttranslate('${actplayer} may Patrol'),
+        'descriptionmyturn' => clienttranslate('${you}'),
+        'type' => 'activeplayer',
+        'args' => 'argsAtomicAction',
+        'action' => 'stAtomicAction',
+        // 'transitions' => [],
+        'possibleactions' => ['actPatrol', 'actPassOptionalAction', 'actRestart'],
+    ],
+    ST_CAPTURE => [
+        'name' => 'capture',
+        'description' => clienttranslate('${actplayer} may Capture'),
+        'descriptionmyturn' => clienttranslate('${you}'),
+        'type' => 'activeplayer',
+        'args' => 'argsAtomicAction',
+        'action' => 'stAtomicAction',
+        // 'transitions' => [],
+        'possibleactions' => ['actCapture', 'actPassOptionalAction', 'actRestart'],
     ],
 );

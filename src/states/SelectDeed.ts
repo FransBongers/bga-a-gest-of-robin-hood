@@ -44,7 +44,15 @@ class SelectDeedState implements State {
       },
     });
 
-    
+    Object.entries(this.args._private.options).forEach(([deedId, name]) => {
+      this.game.addPrimaryActionButton({
+        id: `${deedId}_btn`,
+        text: _(name),
+        callback: () => {
+          this.updateInterfaceConfirm({ deedId, name });
+        },
+      });
+    });
 
     this.game.addPassButton({
       optionalAction: this.args.optionalAction,
@@ -52,22 +60,28 @@ class SelectDeedState implements State {
     this.game.addUndoButtons(this.args);
   }
 
-  private updateInterfaceConfirm({ action }: { action: string }) {
+  private updateInterfaceConfirm({
+    deedId,
+    name,
+  }: {
+    deedId: string;
+    name: string;
+  }) {
     this.game.clearPossible();
 
-    // this.game.clientUpdatePageTitle({
-    //   text: _('Perform ${actionName}?'),
-    //   args: {
-    //     actionName: this.getActionName({ action }),
-    //   },
-    // });
+    this.game.clientUpdatePageTitle({
+      text: _('Perform ${deedName}?'),
+      args: {
+        deedName: _(name),
+      },
+    });
 
     const callback = () => {
       this.game.clearPossible();
       this.game.takeAction({
         action: 'actSelectDeed',
         args: {
-          action,
+          deedId,
         },
       });
     };
@@ -94,7 +108,6 @@ class SelectDeedState implements State {
   //  .##.....##....##.....##..##........##.....##.......##...
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
-
 
   //  ..######..##.......####..######..##....##
   //  .##....##.##........##..##....##.##...##.

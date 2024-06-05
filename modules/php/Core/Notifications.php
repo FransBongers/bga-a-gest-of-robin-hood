@@ -249,6 +249,17 @@ class Notifications
     ]);
   }
 
+  public static function revealRobinHood($player, $robinHood)
+  {
+    self::notifyAll("revealRobinHood", clienttranslate('${player_name} reveals ${tkn_boldText_robinHood} in ${tkn_boldText_spaceName}'), [
+      'player' => $player,
+      'tkn_boldText_robinHood' => $robinHood->getName(),
+      'tkn_boldText_spaceName' => Spaces::get($robinHood->getLocation())->getName(),
+      'carriage' => $robinHood->jsonSerialize(),
+      'i18n' => ['tkn_boldText_robinHood', 'tkn_boldText_spaceName']
+    ]);
+  }
+
   public static function moveCarriageToUsedCarriages($player, $carriage, $fromSpaceId)
   {
     self::notifyAll('moveCarriagePublic', clienttranslate('${player_name} moves a Carriage to ${tkn_boldText_used}'), [
@@ -295,6 +306,25 @@ class Notifications
     self::notifyAll("payShillings", $text, [
       'player' => $player,
       'amount' => $amount,
+    ]);
+  }
+
+  public static function performDeed($player, $deed)
+  {
+    self::message(clienttranslate('${player_name} performs ${tkn_boldText_deedName} Deed'), [
+      'player' => $player,
+      'tkn_boldText_deedName' => $deed,
+      'i18n' => ['tkn_boldText_deedName']
+    ]);
+  }
+
+  public static function revolt($player, $space)
+  {
+    self::notifyAll("revolt", clienttranslate('${player_name} sets ${tkn_boldText_parishName} to Revolting'), [
+      'player' => $player,
+      'tkn_boldText_parishName' => $space->getName(),
+      'spaceId' => $space->getId(),
+      'i18n' => ['tkn_boldText_parishName']
     ]);
   }
 

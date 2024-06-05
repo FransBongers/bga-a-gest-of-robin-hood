@@ -58,6 +58,16 @@ const ST_SELECT_DEED = 29;
 const ST_RECRUIT = 30;
 const ST_SNEAK = 31;
 const ST_ROB = 32;
+const ST_TURNCOAT = 33;
+const ST_DONATE = 34;
+const ST_SWASHBUCKLE = 35;
+const ST_INSPIRE = 36;
+const ST_RIDE = 37;
+const ST_CONFISCATE = 38;
+const ST_DISPERSE = 39;
+const ST_HIRE = 40;
+const ST_PATROL = 41;
+const ST_CAPTURE = 42;
 
 /**
  * Atomic actions
@@ -68,11 +78,24 @@ const MOVE_CARRIAGE = 'MOVE_CARRIAGE';
 const SELECT_DEED = 'SELECT_DEED';
 const SELECT_PLOT = 'SELECT_PLOT';
 const SETUP_ROBIN_HOOD = 'SETUP_ROBIN_HOOD';
-
-// Plots
+// Plots - Robin Hood
 const RECRUIT = 'RECRUIT';
-const SNEAK = 'SNEAK';
 const ROB = 'ROB';
+const SNEAK = 'SNEAK';
+// Plots - Sheriff;
+const CAPTURE = 'CAPTURE';
+const HIRE = 'HIRE';
+const PATROL = 'PATROL';
+// Deeds - Robin Hood
+const DONATE = 'DONATE';
+const INSPIRE = 'INSPIRE';
+const SWASHBUCKLE = 'SWASHBUCKLE';
+const TURNCOAT = 'TURNCOAT';
+// Deeds - Sheriff
+const CONFISCATE = 'CONFISCATE';
+const DISPERSE = 'DISPERSE';
+const RIDE = 'RIDE';
+
 
 
 const DIE_FACES = [];

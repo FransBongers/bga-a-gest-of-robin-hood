@@ -99,4 +99,9 @@ class Space extends \AGestOfRobinHood\Helpers\DB_Model
     return Spaces::get($this->road);
   }
 
+  public function revolt($player)
+  {
+    $this->setStatus(REVOLTING);
+    Notifications::revolt($player, $this);
+  }
 }

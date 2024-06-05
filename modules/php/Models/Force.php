@@ -10,7 +10,7 @@ use AGestOfRobinHood\Helpers\Locations;
 use AGestOfRobinHood\Helpers\Utils;
 use AGestOfRobinHood\Managers\Cards;
 use AGestOfRobinHood\Managers\Players;
-use AGestOfRobinHood\Managers\TableauOps;
+use AGestOfRobinHood\Managers\Spaces;
 
 class Force extends \AGestOfRobinHood\Helpers\DB_Model
 {
@@ -65,5 +65,14 @@ class Force extends \AGestOfRobinHood\Helpers\DB_Model
       'shillings' => 0,
       'royalFavour' => 0,
     ];
+  }
+
+  public function getSpace()
+  {
+    if (in_array($this->getLocation(), SPACES)) {
+      return Spaces::get($this->getLocation());
+    } else {
+      return null;
+    }
   }
 }

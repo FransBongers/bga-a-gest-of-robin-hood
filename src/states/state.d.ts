@@ -50,7 +50,11 @@ interface OnEnteringRecruitStateArgs extends CommonArgs {
 
 interface OnEnteringRobStateArgs extends CommonArgs {}
 
-interface OnEnteringSelectDeedStateArgs extends CommonArgs {}
+interface OnEnteringSelectDeedStateArgs extends CommonArgs {
+  _private: {
+    options: Record<string, string>;
+  }
+}
 
 interface OnEnteringSelectPlotStateArgs extends CommonArgs {
   options: Record<string, {

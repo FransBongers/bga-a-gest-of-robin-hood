@@ -13,14 +13,24 @@ class AtomicActions
   // Mapping of actionId and corresponding class
   static $classes = [
     PLAYER_ACTION => 'PlayerAction',
+    CAPTURE => 'Capture',
     CHOOSE_ACTION => 'ChooseAction',
+    CONFISCATE => 'Confiscate',
+    DISPERSE => 'Disperse',
+    DONATE => 'Donate',
+    HIRE => 'Hire',
+    INSPIRE => 'Inspire',
     MOVE_CARRIAGE => 'MoveCarriage',
+    PATROL => 'Patrol',
     RECRUIT => 'Recruit',
+    RIDE => 'Ride',
     ROB => 'Rob',
     SELECT_DEED => 'SelectDeed',
     SELECT_PLOT => 'SelectPlot',
     SETUP_ROBIN_HOOD => 'SetupRobinHood',
     SNEAK => 'Sneak',
+    SWASHBUCKLE => 'Swashbuckle',
+    TURNCOAT => 'Turncoat',
   ];
 
   public static function get($actionId, $ctx = null)
