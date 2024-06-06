@@ -9,8 +9,10 @@ class Nottingham extends \AGestOfRobinHood\Models\Space
     $this->id = NOTTINGHAM;
     $this->name = clienttranslate('Nottingham');
     $this->setupStatus = SUBMISSIVE;
-    $this->adjacentSpaces = [
-
+    $this->adjacentSpaceIds = [
+      MANSFIELD,
+      SHIRE_WOOD,
+      SOUTHWELL_FOREST,
     ];
   }
 }

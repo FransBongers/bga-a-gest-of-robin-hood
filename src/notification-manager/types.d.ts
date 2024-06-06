@@ -18,7 +18,7 @@ interface NotifRefreshUIArgs {
 }
 
 interface NotifRefreshForcesPrivate {
-  forces: Record<string,GestForce[]>;
+  forces: Record<string, GestForce[]>;
 }
 
 interface NotifClearTurnArgs extends NotifWithPlayerArgs {
@@ -54,7 +54,6 @@ interface NotifMoveCarriageArgs extends NotifWithPlayerArgs {
   fromSpaceId: string;
   toSpaceId: string;
 }
-
 
 interface NotifMoveCarriagePrivateArgs extends NotifWithPlayerArgs {
   carriage: GestForce;
@@ -127,4 +126,23 @@ interface NotifReturnToSupplyArgs extends NotifWithPlayerArgs {
 
 interface NotifReturnToSupplyPrivateArgs extends NotifWithPlayerArgs {
   force: GestForce;
+}
+
+interface NotifSneakMerryMenArgs extends NotifWithPlayerArgs {
+  moves: {
+    hide: number;
+    reveal: number;
+    noChange: {
+      hidden: number;
+      revealed: number;
+    };
+    robinHood: string;
+  };
+  fromSpaceId: string;
+  toSpaceId: string;
+}
+
+interface NotifSneakMerryMenPrivateArgs extends NotifWithPlayerArgs {
+  forces: GestForce[];
+  toSpaceId: string;
 }

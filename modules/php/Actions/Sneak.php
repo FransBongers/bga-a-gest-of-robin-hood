@@ -10,6 +10,7 @@ use AGestOfRobinHood\Core\Stats;
 use AGestOfRobinHood\Helpers\GameMap;
 use AGestOfRobinHood\Helpers\Locations;
 use AGestOfRobinHood\Helpers\Utils;
+use AGestOfRobinHood\Managers\Forces;
 use AGestOfRobinHood\Managers\Markers;
 use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\Spaces;
@@ -32,7 +33,13 @@ class Sneak extends \AGestOfRobinHood\Models\AtomicAction
 
   public function argsSneak()
   {
-    $data = [];
+    $data = [
+      '_private' => [
+        $this->ctx->getPlayerId() => [
+          'options' => $this->getArgs()
+        ],
+      ]
+    ];
 
     return $data;
   }
@@ -63,7 +70,77 @@ class Sneak extends \AGestOfRobinHood\Models\AtomicAction
   public function actSneak($args)
   {
     self::checkAction('actSneak');
+    Notifications::log('args', $args);
+    $merryMenIds = $args['merryMenIds'];
+    $toSpaceId = $args['toSpaceId'];
+    $fromSpaceId = $args['fromSpaceId'];
 
+    $options = $this->getArgs();
+
+    if (!isset($options[$fromSpaceId])) {
+      throw new \feException("ERROR 013");
+    }
+
+    $option = $options[$fromSpaceId];
+    $merryMen = Utils::filter($option['merryMen'], function ($merryMan) use ($merryMenIds) {
+      return in_array($merryMan->getId(), $merryMenIds);
+    });
+
+    if (count($merryMenIds) !== count($merryMen)) {
+      throw new \feException("ERROR 014");
+    }
+
+    $toSpace = Utils::array_find($option['adjacentSpaces'], function ($space) use ($toSpaceId) {
+      return $space->getId() === $toSpaceId;
+    });
+
+    if ($toSpace === null) {
+      throw new \feException("ERROR 015");
+    }
+
+    $forcesInSpace = Utils::filter($toSpace->getForces(), function ($force) {
+      return $force->isMerryMan() || $force->isHenchman();
+    });
+    $revealMerryMen = $toSpace->isSubmissive() && count($forcesInSpace) + count($merryMenIds) > 3;
+
+    $moves = [
+      'reveal' => 0,
+      'hide' => 0,
+      'noChange' => [
+        'hidden' => 0,
+        'revealed' => 0,
+      ],
+      'robinHood' => null,
+    ];
+
+    foreach ($merryMen as $merryMan) {
+      $merryMan->setLocation($toSpaceId);
+      $isHidden = $merryMan->isHidden();
+      $isRobinHood = $merryMan->isRobinHood();
+      if ($revealMerryMen && $isHidden) {
+        $merryMan->setHidden(0);
+        if ($isRobinHood) {
+          $moves['robinHood'] = 'reveal';
+        } else {
+          $moves['reveal']++;
+        }
+      } else if (($revealMerryMen && !$isHidden) || (!$revealMerryMen && $isHidden)) {
+        if ($isRobinHood && !$isHidden) {
+          $moves['robinHood'] = 'noChange';
+        } else {
+          $moves['noChange'][$isHidden ? 'hidden' : 'revealed']++;
+        }
+      } else if (!$revealMerryMen && !$isHidden) {
+        $merryMan->setHidden(1);
+        if ($isRobinHood) {
+          $moves['robinHood'] = 'hide';
+        } else {
+          $moves['hide']++;
+        }
+      }
+    }
+
+    Notifications::sneakMerryMen(self::getPlayer(), $merryMen, $moves, $option['space'], $toSpace);
     $this->resolveAction($args);
   }
 
@@ -74,6 +151,43 @@ class Sneak extends \AGestOfRobinHood\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
+
+  public function getArgs()
+  {
+    $info = $this->ctx->getInfo();
+    $spaceIds = $info['spaceIds'];
+
+    $alreadyMovedspaceIds = [];
+    $alreadyMovedMerryMenIds = [];
+    $nodes = Engine::getResolvedActions([SNEAK]);
+    foreach ($nodes as $node) {
+      $resArgs = $node->getActionResolutionArgs();
+      $alreadyMovedspaceIds[] = $resArgs['fromSpaceId'];
+      $alreadyMovedMerryMenIds = array_merge($alreadyMovedMerryMenIds, $resArgs['merryMenIds']);
+    }
+
+    $options = [];
+    // TODO: exclude already moved spaces and merry man
+
+    $spaces = Spaces::get($spaceIds)->toArray();
+
+    foreach ($spaces as $space) {
+      if (in_array($space->getId(), $alreadyMovedspaceIds)) {
+        continue;
+      }
+      $forces = $space->getForces();
+      $merryMen = Utils::filter($forces, function ($force) use ($alreadyMovedMerryMenIds) {
+        return $force->isMerryMan() && !in_array($force->getId(), $alreadyMovedMerryMenIds);
+      });
+      $options[$space->getId()] = [
+        'space' => $space,
+        'merryMen' => $merryMen,
+        'adjacentSpaces' => $space->getAdjacentSpaces(),
+      ];
+    }
+
+    return $options;
+  }
 
   public function getOptions()
   {

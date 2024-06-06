@@ -9,8 +9,8 @@ class Newark extends \AGestOfRobinHood\Models\Space
     $this->id = NEWARK;
     $this->name = clienttranslate('Newark');
     $this->setupStatus = SUBMISSIVE;
-    $this->adjacentSpaces = [
-
+    $this->adjacentSpaceIds = [
+      TUXFORD,
     ];
     $this->road = TUXFORD;
   }

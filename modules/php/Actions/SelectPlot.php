@@ -116,6 +116,7 @@ class SelectPlot extends \AGestOfRobinHood\Models\AtomicAction
       $parent->pushChild(new LeafNode([
         'action' => $plotId,
         'playerId' => $this->ctx->getPlayerId(),
+        'spaceIds' => $spaceIds,
         // 'optional' => true,
       ]));
     }

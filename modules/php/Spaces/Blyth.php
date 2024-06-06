@@ -9,8 +9,9 @@ class Blyth extends \AGestOfRobinHood\Models\Space
     $this->id = BLYTH;
     $this->name = clienttranslate('Blyth');
     $this->setupStatus = SUBMISSIVE;
-    $this->adjacentSpaces = [
-
+    $this->adjacentSpaceIds = [
+      SHIRE_WOOD,
+      TUXFORD,
     ];
     $this->road = TUXFORD;
   }

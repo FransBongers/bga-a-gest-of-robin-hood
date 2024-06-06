@@ -45,7 +45,7 @@ interface OnEnteringRecruitStateArgs extends CommonArgs {
   _private: {
     options: Record<string, RecruitOption>;
     robinHoodInSupply: boolean;
-  }
+  };
 }
 
 interface OnEnteringRobStateArgs extends CommonArgs {}
@@ -53,17 +53,31 @@ interface OnEnteringRobStateArgs extends CommonArgs {}
 interface OnEnteringSelectDeedStateArgs extends CommonArgs {
   _private: {
     options: Record<string, string>;
-  }
+  };
 }
 
 interface OnEnteringSelectPlotStateArgs extends CommonArgs {
-  options: Record<string, {
-    spaces: GestSpace[];
-    numberOfSpaces: number;
-    plotName: string;
-  }>
+  options: Record<
+    string,
+    {
+      spaces: GestSpace[];
+      numberOfSpaces: number;
+      plotName: string;
+    }
+  >;
 }
 
 interface OnEnteringSetupRobinHoodArgs extends CommonArgs {}
 
-interface OnEnteringSneakStateArgs extends CommonArgs {}
+interface OnEnteringSneakStateArgs extends CommonArgs {
+  _private: {
+    options: Record<
+      string,
+      {
+        adjacentSpaces: GestSpace[];
+        space: GestSpace;
+        merryMen: GestForce[];
+      }
+    >;
+  };
+}

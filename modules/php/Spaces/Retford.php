@@ -9,8 +9,8 @@ class Retford extends \AGestOfRobinHood\Models\Space
     $this->id = RETFORD;
     $this->name = clienttranslate('Retford');
     $this->setupStatus = SUBMISSIVE;
-    $this->adjacentSpaces = [
-
+    $this->adjacentSpaceIds = [
+      BLYTH,
     ];
     $this->road = TUXFORD;
   }

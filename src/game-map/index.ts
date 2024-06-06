@@ -359,16 +359,22 @@ class GameMap {
     type,
     spaceId,
     hidden,
+    exclude,
   }: {
     type: string;
     spaceId: string;
     hidden: boolean;
+    exclude?: GestForce[];
   }): GestForce {
     const stockId = this.getStockIdPublic({ type, spaceId });
 
     const forces = this.forces[stockId]
       .getCards()
-      .filter((force) => force.hidden === hidden);
+      .filter((force) => {
+        if (exclude && exclude.some((excludedForce) => excludedForce.id === force.id)) {
+          return false;
+        }
+        return force.hidden === hidden} );
 
     const selected = forces[Math.floor(Math.random() * forces.length)];
 

@@ -23,17 +23,13 @@ trait DebugTrait
 
   function test()
   {
-    
 
+    Forces::get(ROBIN_HOOD)->setHidden(0);
+
+    // $action = $node->getActionResolutionArgs()['action'];
 
     // Notifications::log('spaceIds', $spaceIds);
-    // Notifications::log('args', GameMap::getSpacesWithMerryMen());
-    // Forces::getUiData();
-    // Notifications::log('order', GameMap::getNumberOfCarriages());
-    $merryMen = Forces::get(['merryMen_2', 'merryMen_5']);
-    foreach($merryMen as $merryMan) {
-      $merryMan->reveal();
-    }
+
   }
 
   function ed()
@@ -45,5 +41,4 @@ trait DebugTrait
   {
     Notifications::log('engine', Globals::getEngine());
   }
-
 }

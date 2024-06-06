@@ -9,8 +9,9 @@ class Remston extends \AGestOfRobinHood\Models\Space
     $this->id = REMSTON;
     $this->name = clienttranslate('Remston');
     $this->setupStatus = REVOLTING;
-    $this->adjacentSpaces = [
-
+    $this->adjacentSpaceIds = [
+      BINGHAM,
+      MANSFIELD,
     ];
     $this->road = MANSFIELD;
   }

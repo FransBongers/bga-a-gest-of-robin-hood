@@ -9,8 +9,10 @@ class Mansfield extends \AGestOfRobinHood\Models\Space
     $this->id = MANSFIELD;
     $this->name = clienttranslate('Mansfield');
     $this->setupStatus = SUBMISSIVE;
-    $this->adjacentSpaces = [
-
+    $this->adjacentSpaceIds = [
+      NOTTINGHAM,
+      REMSTON,
+      SHIRE_WOOD,
     ];
     $this->road = SHIRE_WOOD;
   }

@@ -63,6 +63,21 @@ class Force extends \AGestOfRobinHood\Helpers\DB_Model
     return $this->getHidden() === 1;
   }
 
+  public function isMerryMan()
+  {
+    return $this->type === MERRY_MEN || $this->type === ROBIN_HOOD;
+  }
+
+  public function isHenchman()
+  {
+    return $this->type === HENCHMEN;
+  }
+
+  public function isRobinHood()
+  {
+    return $this->type === ROBIN_HOOD;
+  }
+
   public function reveal($player = null)
   {
     $player = $player === null ? Players::get() : $player;

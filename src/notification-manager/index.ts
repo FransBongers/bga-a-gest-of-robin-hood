@@ -63,6 +63,8 @@ class NotificationManager {
       'placeMerryMenPrivate',
       'returnToSupply',
       'returnToSupplyPrivate',
+      'sneakMerryMen',
+      'sneakMerryMenPrivate',
     ];
 
     // example: https://github.com/thoun/knarr/blob/main/src/knarr.ts
@@ -110,6 +112,7 @@ class NotificationManager {
         'returnToSupply',
         'moveCarriagePublic',
         'placeForce',
+        'sneakMerryMen',
       ].forEach((notifId) => {
         this.game
           .framework()
@@ -438,5 +441,99 @@ class NotificationManager {
   ) {
     const { force } = notif.args;
     await this.game.forceManager.removeCard(force);
+  }
+
+  async notif_sneakMerryMenPrivate(
+    notif: Notif<NotifSneakMerryMenPrivateArgs>
+  ) {
+    const { forces, toSpaceId } = notif.args;
+
+    await this.game.gameMap.forces[`${MERRY_MEN}_${toSpaceId}`].addCards(
+      forces
+    );
+  }
+
+  async notif_sneakMerryMen(notif: Notif<NotifSneakMerryMenArgs>) {
+    const { moves, fromSpaceId: spaceId, toSpaceId } = notif.args;
+
+    const forces: GestForce[] = [];
+    let robinHoodPublic: GestForce | null = null;
+
+    for (let i = 0; i < moves.hide; i++) {
+      const selectedRevealedForce = this.game.gameMap.getForcePublic({
+        type: MERRY_MEN,
+        spaceId,
+        hidden: false,
+        exclude: forces,
+      });
+      selectedRevealedForce.hidden = true;
+      forces.push(selectedRevealedForce);
+    }
+    for (let j = 0; j < moves.reveal; j++) {
+      const selectedHiddenForce = this.game.gameMap.getForcePublic({
+        type: MERRY_MEN,
+        spaceId,
+        hidden: true,
+        exclude: forces,
+      });
+      selectedHiddenForce.hidden = false;
+      forces.push(selectedHiddenForce);
+    }
+    for (let k = 0; k < moves.noChange.hidden; k++) {
+      const selectedHiddenForce = this.game.gameMap.getForcePublic({
+        type: MERRY_MEN,
+        spaceId,
+        hidden: true,
+        exclude: forces,
+      });
+      forces.push(selectedHiddenForce);
+    }
+    for (let l = 0; l < moves.noChange.revealed; l++) {
+      const selectedHiddenForce = this.game.gameMap.getForcePublic({
+        type: MERRY_MEN,
+        spaceId,
+        hidden: false,
+        exclude: forces,
+      });
+      forces.push(selectedHiddenForce);
+    }
+    if (moves.robinHood) {
+      const revealRobinHood = moves.robinHood === 'reveal';
+      const robinHood = this.game.gameMap.getForcePublic({
+        type: revealRobinHood ? MERRY_MEN : ROBIN_HOOD,
+        spaceId,
+        hidden: revealRobinHood ? true : false,
+        exclude: forces,
+      });
+      robinHoodPublic = robinHood;
+      if (revealRobinHood) {
+        robinHood.hidden = false;
+        robinHood.type = ROBIN_HOOD;
+      } else if (moves.robinHood === 'hide') {
+        robinHood.hidden = true;
+        robinHood.type = MERRY_MEN;
+      }
+      if (robinHoodPublic && moves.robinHood === 'hide') {
+        console.log('hide');
+        document
+          .getElementById(`${robinHoodPublic.id}-front`)
+          .setAttribute('data-type', MERRY_MEN);
+        const back = document.getElementById(`${robinHoodPublic.id}-back`);
+        back.setAttribute('data-type', MERRY_MEN);
+        back.replaceChildren();
+      } else if (robinHoodPublic && moves.robinHood === 'reveal') {
+        document
+          .getElementById(`${robinHoodPublic.id}-front`)
+          .setAttribute('data-type', ROBIN_HOOD);
+        document
+          .getElementById(`${robinHoodPublic.id}-back`)
+          .setAttribute('data-type', ROBIN_HOOD);
+      }
+      forces.push(robinHood);
+    }
+
+    await this.game.gameMap.forces[`${MERRY_MEN}_${toSpaceId}`].addCards(
+      forces
+    );
   }
 }

@@ -9,8 +9,11 @@ class Tuxford extends \AGestOfRobinHood\Models\Space
     $this->id = TUXFORD;
     $this->name = clienttranslate('Tuxford');
     $this->setupStatus = SUBMISSIVE;
-    $this->adjacentSpaces = [
-
+    $this->adjacentSpaceIds = [
+      BLYTH,
+      NEWARK,
+      RETFORD,
+      TUXFORD,
     ];
     $this->road = SOUTHWELL_FOREST;
   }

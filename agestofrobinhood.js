@@ -3025,11 +3025,16 @@ var GameMap = (function () {
         this.forces[id].addCard(force);
     };
     GameMap.prototype.getForcePublic = function (_a) {
-        var type = _a.type, spaceId = _a.spaceId, hidden = _a.hidden;
+        var type = _a.type, spaceId = _a.spaceId, hidden = _a.hidden, exclude = _a.exclude;
         var stockId = this.getStockIdPublic({ type: type, spaceId: spaceId });
         var forces = this.forces[stockId]
             .getCards()
-            .filter(function (force) { return force.hidden === hidden; });
+            .filter(function (force) {
+            if (exclude && exclude.some(function (excludedForce) { return excludedForce.id === force.id; })) {
+                return false;
+            }
+            return force.hidden === hidden;
+        });
         var selected = forces[Math.floor(Math.random() * forces.length)];
         return selected;
     };
@@ -3326,6 +3331,8 @@ var NotificationManager = (function () {
             'placeMerryMenPrivate',
             'returnToSupply',
             'returnToSupplyPrivate',
+            'sneakMerryMen',
+            'sneakMerryMenPrivate',
         ];
         notifs.forEach(function (notifName) {
             _this.subscriptions.push(dojo.subscribe(notifName, _this, function (notifDetails) {
@@ -3355,6 +3362,7 @@ var NotificationManager = (function () {
                 'returnToSupply',
                 'moveCarriagePublic',
                 'placeForce',
+                'sneakMerryMen',
             ].forEach(function (notifId) {
                 _this.game
                     .framework()
@@ -3680,6 +3688,112 @@ var NotificationManager = (function () {
                         return [4, this.game.forceManager.removeCard(force)];
                     case 1:
                         _a.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    NotificationManager.prototype.notif_sneakMerryMenPrivate = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, forces, toSpaceId;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = notif.args, forces = _a.forces, toSpaceId = _a.toSpaceId;
+                        return [4, this.game.gameMap.forces["".concat(MERRY_MEN, "_").concat(toSpaceId)].addCards(forces)];
+                    case 1:
+                        _b.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    NotificationManager.prototype.notif_sneakMerryMen = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, moves, spaceId, toSpaceId, forces, robinHoodPublic, i, selectedRevealedForce, j, selectedHiddenForce, k, selectedHiddenForce, l, selectedHiddenForce, revealRobinHood, robinHood, back;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = notif.args, moves = _a.moves, spaceId = _a.fromSpaceId, toSpaceId = _a.toSpaceId;
+                        forces = [];
+                        robinHoodPublic = null;
+                        for (i = 0; i < moves.hide; i++) {
+                            selectedRevealedForce = this.game.gameMap.getForcePublic({
+                                type: MERRY_MEN,
+                                spaceId: spaceId,
+                                hidden: false,
+                                exclude: forces,
+                            });
+                            selectedRevealedForce.hidden = true;
+                            forces.push(selectedRevealedForce);
+                        }
+                        for (j = 0; j < moves.reveal; j++) {
+                            selectedHiddenForce = this.game.gameMap.getForcePublic({
+                                type: MERRY_MEN,
+                                spaceId: spaceId,
+                                hidden: true,
+                                exclude: forces,
+                            });
+                            selectedHiddenForce.hidden = false;
+                            forces.push(selectedHiddenForce);
+                        }
+                        for (k = 0; k < moves.noChange.hidden; k++) {
+                            selectedHiddenForce = this.game.gameMap.getForcePublic({
+                                type: MERRY_MEN,
+                                spaceId: spaceId,
+                                hidden: true,
+                                exclude: forces,
+                            });
+                            forces.push(selectedHiddenForce);
+                        }
+                        for (l = 0; l < moves.noChange.revealed; l++) {
+                            selectedHiddenForce = this.game.gameMap.getForcePublic({
+                                type: MERRY_MEN,
+                                spaceId: spaceId,
+                                hidden: false,
+                                exclude: forces,
+                            });
+                            forces.push(selectedHiddenForce);
+                        }
+                        if (moves.robinHood) {
+                            revealRobinHood = moves.robinHood === 'reveal';
+                            robinHood = this.game.gameMap.getForcePublic({
+                                type: revealRobinHood ? MERRY_MEN : ROBIN_HOOD,
+                                spaceId: spaceId,
+                                hidden: revealRobinHood ? true : false,
+                                exclude: forces,
+                            });
+                            robinHoodPublic = robinHood;
+                            if (revealRobinHood) {
+                                robinHood.hidden = false;
+                                robinHood.type = ROBIN_HOOD;
+                            }
+                            else if (moves.robinHood === 'hide') {
+                                robinHood.hidden = true;
+                                robinHood.type = MERRY_MEN;
+                            }
+                            if (robinHoodPublic && moves.robinHood === 'hide') {
+                                console.log('hide');
+                                document
+                                    .getElementById("".concat(robinHoodPublic.id, "-front"))
+                                    .setAttribute('data-type', MERRY_MEN);
+                                back = document.getElementById("".concat(robinHoodPublic.id, "-back"));
+                                back.setAttribute('data-type', MERRY_MEN);
+                                back.replaceChildren();
+                            }
+                            else if (robinHoodPublic && moves.robinHood === 'reveal') {
+                                document
+                                    .getElementById("".concat(robinHoodPublic.id, "-front"))
+                                    .setAttribute('data-type', ROBIN_HOOD);
+                                document
+                                    .getElementById("".concat(robinHoodPublic.id, "-back"))
+                                    .setAttribute('data-type', ROBIN_HOOD);
+                            }
+                            forces.push(robinHood);
+                        }
+                        return [4, this.game.gameMap.forces["".concat(MERRY_MEN, "_").concat(toSpaceId)].addCards(forces)];
+                    case 1:
+                        _b.sent();
                         return [2];
                 }
             });
@@ -5027,11 +5141,15 @@ var SetupRobinHoodState = (function () {
 }());
 var SneakState = (function () {
     function SneakState(game) {
+        this.selectedSpace = null;
+        this.selectedMerryMen = [];
         this.game = game;
     }
     SneakState.prototype.onEnteringState = function (args) {
         debug('Entering SneakState');
         this.args = args;
+        this.selectedSpace = null;
+        this.selectedMerryMen = [];
         this.updateInterfaceInitialStep();
     };
     SneakState.prototype.onLeavingState = function () {
@@ -5039,26 +5157,66 @@ var SneakState = (function () {
     };
     SneakState.prototype.setDescription = function (activePlayerId) { };
     SneakState.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
         this.game.clearPossible();
         this.game.clientUpdatePageTitle({
-            text: _('${you} must Sneak'),
+            text: _('${you} must select Merry Men to move'),
             args: {
                 you: '${you}',
             },
         });
+        this.game.addPrimaryActionButton({
+            id: 'done_btn',
+            text: _('Done'),
+            callback: function () { return _this.updateInterfaceSelectAdjacentSpace(); },
+            extraClasses: this.selectedSpace === null || this.selectedMerryMen.length === 0
+                ? 'disabled'
+                : '',
+        });
+        this.setMerryMenSelectable();
         this.game.addPassButton({
             optionalAction: this.args.optionalAction,
         });
-        this.game.addUndoButtons(this.args);
+        if (this.selectedSpace !== null) {
+            this.game.addCancelButton();
+        }
+        else {
+            this.game.addUndoButtons(this.args);
+        }
+    };
+    SneakState.prototype.updateInterfaceSelectAdjacentSpace = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must select an adjacent space to move to'),
+            args: {
+                you: '${you}',
+            },
+        });
+        this.selectedMerryMen.forEach(function (merryManId) {
+            return _this.game.setElementSelected({ id: merryManId });
+        });
+        var option = this.args._private.options[this.selectedSpace];
+        option.adjacentSpaces.forEach(function (space) {
+            _this.game.addPrimaryActionButton({
+                id: "".concat(space.id, "_btn"),
+                text: _(space.name),
+                callback: function () { return _this.updateInterfaceConfirm({ toSpace: space }); },
+            });
+        });
+        this.game.addCancelButton();
     };
     SneakState.prototype.updateInterfaceConfirm = function (_a) {
         var _this = this;
-        var plotId = _a.plotId, data = _a.data;
+        var toSpace = _a.toSpace;
         this.game.clearPossible();
+        this.selectedMerryMen.forEach(function (merryManId) {
+            return _this.game.setElementSelected({ id: merryManId });
+        });
         this.game.clientUpdatePageTitle({
-            text: _('${plotName} in ${spacesLog}?'),
+            text: _('Move Merry Men to ${spacesName}?'),
             args: {
-                plotName: _(data.plotName),
+                spacesName: _(toSpace.name),
             },
         });
         var callback = function () {
@@ -5066,7 +5224,9 @@ var SneakState = (function () {
             _this.game.takeAction({
                 action: 'actSneak',
                 args: {
-                    plotId: plotId,
+                    fromSpaceId: _this.selectedSpace,
+                    toSpaceId: toSpace.id,
+                    merryMenIds: _this.selectedMerryMen,
                 },
             });
         };
@@ -5081,6 +5241,62 @@ var SneakState = (function () {
             });
         }
         this.game.addCancelButton();
+    };
+    SneakState.prototype.setMerryMenSelectable = function () {
+        var _this = this;
+        console.log('setMerryMenSelectable', this.selectedSpace);
+        Object.entries(this.args._private.options).forEach(function (_a) {
+            var spaceId = _a[0], option = _a[1];
+            if (_this.selectedSpace && _this.selectedSpace !== spaceId) {
+                return;
+            }
+            option.merryMen.forEach(function (merryMan) {
+                if (_this.selectedMerryMen.some(function (selectedId) { return selectedId === merryMan.id; })) {
+                    _this.game.setElementSelected({ id: merryMan.id });
+                    _this.game.setElementSelectable({
+                        id: merryMan.id,
+                        callback: function () {
+                            return _this.handleMerryMenClick({
+                                currentStatus: 'selected',
+                                merryManId: merryMan.id,
+                                spaceId: option.space.id,
+                            });
+                        },
+                    });
+                }
+                else {
+                    _this.game.setElementSelectable({
+                        id: merryMan.id,
+                        callback: function () {
+                            return _this.handleMerryMenClick({
+                                currentStatus: 'selectable',
+                                merryManId: merryMan.id,
+                                spaceId: option.space.id,
+                            });
+                        },
+                    });
+                }
+            });
+        });
+    };
+    SneakState.prototype.handleMerryMenClick = function (_a) {
+        var currentStatus = _a.currentStatus, merryManId = _a.merryManId, spaceId = _a.spaceId;
+        console.log('handleMerryMenClick', currentStatus, merryManId, spaceId);
+        if (currentStatus === 'selectable') {
+            this.selectedMerryMen.push(merryManId);
+        }
+        else if (currentStatus === 'selected') {
+            this.selectedMerryMen = this.selectedMerryMen.filter(function (id) { return id !== merryManId; });
+        }
+        console.log('merryMen', this.selectedMerryMen);
+        if (currentStatus === 'selectable' && this.selectedSpace === null) {
+            this.selectedSpace = spaceId;
+        }
+        else if (currentStatus === 'selected' &&
+            this.selectedMerryMen.length === 0) {
+            this.selectedSpace = null;
+        }
+        this.updateInterfaceInitialStep();
     };
     return SneakState;
 }());

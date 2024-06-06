@@ -8,9 +8,11 @@ class SouthwellForest extends \AGestOfRobinHood\Models\Space
     parent::__construct($row);
     $this->id = SOUTHWELL_FOREST;
     $this->name = clienttranslate('Southwell Forest');
-    $this->setupStatus = REVOLTING;
-    $this->adjacentSpaces = [
-
+    $this->setupStatus = PASSIVE;
+    $this->adjacentSpaceIds = [
+      NOTTINGHAM,
+      SHIRE_WOOD,
+      TUXFORD,
     ];
     $this->road = NOTTINGHAM;
   }

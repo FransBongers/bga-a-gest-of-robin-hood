@@ -376,6 +376,101 @@ class Notifications
     ]);
   }
 
+
+  public static function placeForce($player, $force, $space)
+  {
+    self::notify($player, 'placeForcePrivate', clienttranslate('${player_name} places ${tkn_boldText_forceName} in ${tkn_boldText_spaceName}'), [
+      'player' => $player,
+      'you' => '${you}',
+      'forces' => [$force],
+      'spaceId' => $space->getId(),
+      'tkn_boldText_forceName' => $force->getName(),
+      'tkn_boldText_spaceName' => $space->getName(),
+      
+    ]);
+
+    $isHidden = $force->isHidden();
+    self::notifyAll('placeForce', clienttranslate('${player_name} places ${tkn_boldText_forceName} in ${tkn_boldText_spaceName}'), [
+      'player' => $player,
+      'force' => [
+        'type' => $isHidden ? $force->getPublicType() : $force->getType(),
+        'hidden' => $isHidden,
+      ],
+      'spaceId' => $space->getId(),
+      'tkn_boldText_forceName' => $force->getPublicName(),
+      'tkn_boldText_spaceName' => $space->getName(),
+      'count' => 1,
+    ]);
+  }
+
+  public static function placeMerryMen($player, $robinHood, $merryMen, $textPublic, $textPrivate, $publicTextArgs = [],  $privateTextArgs = [])
+  {
+    self::notify($player, 'placeMerryMenPrivate', $textPrivate, array_merge($privateTextArgs, [
+      'player' => $player,
+      // 'you' => '${you}',
+      'robinHood' => $robinHood,
+      'merryMen' => $merryMen,
+    ]));
+
+    $merryMenCounts = [];
+
+    if ($robinHood !== null) {
+      if (isset($merryMenCounts[$robinHood->getLocation()])) {
+        $merryMenCounts[$robinHood->getLocation()] += 1;
+      } else {
+        $merryMenCounts[$robinHood->getLocation()] = 1;
+      }
+    }
+
+    foreach ($merryMen as $merryMan) {
+      if (isset($merryMenCounts[$merryMan->getLocation()])) {
+        $merryMenCounts[$merryMan->getLocation()] += 1;
+      } else {
+        $merryMenCounts[$merryMan->getLocation()] = 1;
+      }
+    }
+
+    self::notifyAll("placeMerryMen", $textPublic, array_merge($publicTextArgs, [
+      'player' => $player,
+      'merryMenCounts' => $merryMenCounts,
+    ]));
+  }
+
+  public static function recruitMerryMen($player, $originalNumber, $robinHood, $merryMenToPlace, $space)
+  {
+    $textPublic = $originalNumber === 1 ?
+      clienttranslate('${player_name} places ${number} Merry Man in ${tkn_boldText_spaceName}') :
+      clienttranslate('${player_name} places ${number} Merry Men in ${tkn_boldText_spaceName}');
+
+    $publicTextArgs = [
+      'tkn_boldText_spaceName' => $space->getName(),
+      'number' => $originalNumber,
+    ];
+
+
+    $privateMerryMenToPlace = count($merryMenToPlace);
+
+    $textPrivateSingle = clienttranslate('Private: ${player_name} places ${number} Merry Man in ${tkn_boldText_spaceName}');
+    $textPrivateMultiple = clienttranslate('Private: ${player_name} places ${number} Merry Men in ${tkn_boldText_spaceName}');
+    $textPrivateRobinHood = clienttranslate('Private: ${player_name} places Robin Hood in ${tkn_boldText_spaceName}');
+    $textPrivateRobinHoodAndMerryMan = clienttranslate('Private: ${player_name} places Robin Hood and ${number} Merry Man in ${tkn_boldText_spaceName}');
+
+    $textPrivate = $textPrivateSingle;
+    if ($privateMerryMenToPlace === 2) {
+      $textPrivate = $textPrivateMultiple;
+    } else if ($robinHood !== null && $privateMerryMenToPlace === 0) {
+      $textPrivate = $textPrivateRobinHood;
+    } else if ($robinHood !== null && $privateMerryMenToPlace === 1) {
+      $textPrivate = $textPrivateRobinHoodAndMerryMan;
+    }
+
+    $privateTextArgs = [
+      'tkn_boldText_spaceName' => $space->getName(),
+      'number' => $privateMerryMenToPlace,
+    ];
+
+    self::placeMerryMen($player, $robinHood, $merryMenToPlace, $textPublic, $textPrivate, $publicTextArgs, $privateTextArgs);
+  }
   
   public static function returnToSupply($player, $force, $space, $isHidden)
   {
@@ -449,42 +544,6 @@ class Notifications
     ]);
   }
 
-  public static function recruitMerryMen($player, $originalNumber, $robinHood, $merryMenToPlace, $space)
-  {
-    $textPublic = $originalNumber === 1 ?
-      clienttranslate('${player_name} places ${number} Merry Man in ${tkn_boldText_spaceName}') :
-      clienttranslate('${player_name} places ${number} Merry Men in ${tkn_boldText_spaceName}');
-
-    $publicTextArgs = [
-      'tkn_boldText_spaceName' => $space->getName(),
-      'number' => $originalNumber,
-    ];
-
-
-    $privateMerryMenToPlace = count($merryMenToPlace);
-
-    $textPrivateSingle = clienttranslate('Private: ${player_name} places ${number} Merry Man in ${tkn_boldText_spaceName}');
-    $textPrivateMultiple = clienttranslate('Private: ${player_name} places ${number} Merry Men in ${tkn_boldText_spaceName}');
-    $textPrivateRobinHood = clienttranslate('Private: ${player_name} places Robin Hood in ${tkn_boldText_spaceName}');
-    $textPrivateRobinHoodAndMerryMan = clienttranslate('Private: ${player_name} places Robin Hood and ${number} Merry Man in ${tkn_boldText_spaceName}');
-
-    $textPrivate = $textPrivateSingle;
-    if ($privateMerryMenToPlace === 2) {
-      $textPrivate = $textPrivateMultiple;
-    } else if ($robinHood !== null && $privateMerryMenToPlace === 0) {
-      $textPrivate = $textPrivateRobinHood;
-    } else if ($robinHood !== null && $privateMerryMenToPlace === 1) {
-      $textPrivate = $textPrivateRobinHoodAndMerryMan;
-    }
-
-    $privateTextArgs = [
-      'tkn_boldText_spaceName' => $space->getName(),
-      'number' => $privateMerryMenToPlace,
-    ];
-
-    self::placeMerryMen($player, $robinHood, $merryMenToPlace, $textPublic, $textPrivate, $publicTextArgs, $privateTextArgs);
-  }
-
   public static function setupRobinHood($player, $robinHood, $merryMen)
   {
     $textPublic = clienttranslate('${player_name} places Forces');
@@ -492,62 +551,30 @@ class Notifications
     self::placeMerryMen($player, $robinHood, $merryMen, $textPublic, $textPrivate);
   }
 
-  public static function placeForce($player, $force, $space)
+  public static function sneakMerryMen($player, $merryMen, $moves, $fromSpace, $toSpace)
   {
-    self::notify($player, 'placeForcePrivate', clienttranslate('${player_name} places ${tkn_boldText_forceName} in ${tkn_boldText_spaceName}'), [
+    self::notify($player, 'sneakMerryMenPrivate', clienttranslate('${player_name} moves ${count} Merry Men from ${tkn_boldText_fromSpace} to ${tkn_boldText_toSpace}'), [
       'player' => $player,
-      'you' => '${you}',
-      'forces' => [$force],
-      'spaceId' => $space->getId(),
-      'tkn_boldText_forceName' => $force->getName(),
-      'tkn_boldText_spaceName' => $space->getName(),
-      
+      'count' => count($merryMen),
+      'forces' => $merryMen,
+      'fromSpaceId' => $fromSpace->getId(),
+      'toSpaceId' => $toSpace->getId(),
+      'tkn_boldText_fromSpace' => $fromSpace->getName(),
+      'tkn_boldText_toSpace' => $toSpace->getName(),
+      'i18n' => ['tkn_boldText_fromSpace', 'tkn_boldText_toSpace']
     ]);
 
-    $isHidden = $force->isHidden();
-    self::notifyAll('placeForce', clienttranslate('${player_name} places ${tkn_boldText_forceName} in ${tkn_boldText_spaceName}'), [
+    
+    self::notifyAll('sneakMerryMen', clienttranslate('${player_name} moves ${count} Merry Men from ${tkn_boldText_fromSpace} to ${tkn_boldText_toSpace}'), [
       'player' => $player,
-      'force' => [
-        'type' => $isHidden ? $force->getPublicType() : $force->getType(),
-        'hidden' => $isHidden,
-      ],
-      'spaceId' => $space->getId(),
-      'tkn_boldText_forceName' => $force->getPublicName(),
-      'tkn_boldText_spaceName' => $space->getName(),
-      'count' => 1,
+      'moves' => $moves,
+      'fromSpaceId' => $fromSpace->getId(),
+      'toSpaceId' => $toSpace->getId(),
+      'tkn_boldText_fromSpace' => $fromSpace->getName(),
+      'tkn_boldText_toSpace' => $toSpace->getName(),
+      'count' => count($merryMen),
+      'i18n' => ['tkn_boldText_fromSpace', 'tkn_boldText_toSpace']
     ]);
   }
 
-  public static function placeMerryMen($player, $robinHood, $merryMen, $textPublic, $textPrivate, $publicTextArgs = [],  $privateTextArgs = [])
-  {
-    self::notify($player, 'placeMerryMenPrivate', $textPrivate, array_merge($privateTextArgs, [
-      'player' => $player,
-      // 'you' => '${you}',
-      'robinHood' => $robinHood,
-      'merryMen' => $merryMen,
-    ]));
-
-    $merryMenCounts = [];
-
-    if ($robinHood !== null) {
-      if (isset($merryMenCounts[$robinHood->getLocation()])) {
-        $merryMenCounts[$robinHood->getLocation()] += 1;
-      } else {
-        $merryMenCounts[$robinHood->getLocation()] = 1;
-      }
-    }
-
-    foreach ($merryMen as $merryMan) {
-      if (isset($merryMenCounts[$merryMan->getLocation()])) {
-        $merryMenCounts[$merryMan->getLocation()] += 1;
-      } else {
-        $merryMenCounts[$merryMan->getLocation()] = 1;
-      }
-    }
-
-    self::notifyAll("placeMerryMen", $textPublic, array_merge($publicTextArgs, [
-      'player' => $player,
-      'merryMenCounts' => $merryMenCounts,
-    ]));
-  }
 }

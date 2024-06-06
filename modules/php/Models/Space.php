@@ -29,13 +29,13 @@ class Space extends \AGestOfRobinHood\Helpers\DB_Model
 
 
   protected $staticAttributes = [
-    'adjacentSpaces',
+    'adjacentSpaceIds',
     'name',
     'road',
     'setupStatus',
   ];
 
-  protected $adjacentSpaces = [];
+  protected $adjacentSpaceIds = [];
   protected $name = '';
   protected $setupStatus = null;
   protected $road = null;
@@ -60,16 +60,10 @@ class Space extends \AGestOfRobinHood\Helpers\DB_Model
     ];
   }
 
+
   public function getAdjacentSpaces()
   {
-    $result = [];
-
-    return $result;
-  }
-
-  public function getAdjacentSpacesIds()
-  {
-    return array_keys($this->adjacentSpaces);
+    return Spaces::get($this->adjacentSpaceIds)->toArray();
   }
 
   public function getSingleForce($type) {
@@ -103,5 +97,15 @@ class Space extends \AGestOfRobinHood\Helpers\DB_Model
   {
     $this->setStatus(REVOLTING);
     Notifications::revolt($player, $this);
+  }
+
+  public function isRevolting()
+  {
+    return $this->status === REVOLTING;
+  }
+
+  public function isSubmissive()
+  {
+    return $this->status === SUBMISSIVE;
   }
 }

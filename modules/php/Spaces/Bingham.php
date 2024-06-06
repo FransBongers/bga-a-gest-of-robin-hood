@@ -9,8 +9,8 @@ class Bingham extends \AGestOfRobinHood\Models\Space
     $this->id = BINGHAM;
     $this->name = clienttranslate('Bingham');
     $this->setupStatus = SUBMISSIVE;
-    $this->adjacentSpaces = [
-
+    $this->adjacentSpaceIds = [
+      REMSTON
     ];
     $this->road = REMSTON;
   }
