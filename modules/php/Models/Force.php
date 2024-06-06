@@ -63,6 +63,11 @@ class Force extends \AGestOfRobinHood\Helpers\DB_Model
     return $this->getHidden() === 1;
   }
 
+  public function isCamp()
+  {
+    return $this->type === CAMP;
+  }
+
   public function isMerryMan()
   {
     return $this->type === MERRY_MEN || $this->type === ROBIN_HOOD;

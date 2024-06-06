@@ -38,6 +38,12 @@ class NotificationManager {
       this.game.addLogClass();
     });
 
+    /**
+     * In general:
+     * private is only for owning player
+     * all is for both players and spectators
+     * public / no suffix is for other player and spectators, not owning player
+     */
     const notifs: string[] = [
       // Boilerplate
       'log',
@@ -56,7 +62,9 @@ class NotificationManager {
       'passAction',
       'revealCarriage',
       'revealForce',
+      'parishStatus',
       'payShillings',
+      'placeForceAll',
       'placeForce',
       'placeForcePrivate',
       'placeMerryMen',
@@ -377,6 +385,12 @@ class NotificationManager {
     });
   }
 
+  async notif_placeForceAll(notif: Notif<NotifPlaceForceAllArgs>) {
+    const { forces } = notif.args;
+
+    forces.forEach((force) => this.game.gameMap.addPrivateForce({ force }));
+  }
+
   async notif_placeForcePrivate(notif: Notif<NotifPlaceForcePrivateArgs>) {
     const { forces } = notif.args;
 
@@ -434,6 +448,11 @@ class NotificationManager {
       hidden: force.hidden,
       fromSpaceId: spaceId,
     });
+  }
+
+  async notif_parishStatus(notif: Notif<NotifParishStatusArgs>) {
+    const { spaceId, status } = notif.args;
+    this.game.gameMap.setSpaceStatus({ spaceId, status });
   }
 
   async notif_returnToSupplyPrivate(

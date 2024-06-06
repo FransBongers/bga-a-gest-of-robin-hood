@@ -77,6 +77,10 @@ class Patrol extends \AGestOfRobinHood\Models\AtomicAction
 
   public function getOptions()
   {
-    return GameMap::getSpacesWithMerryMen();
+    $spaces = Utils::filter(Spaces::getAll()->toArray(), function ($space) {
+      return $space->getId() !== OLLERTON_HILL;
+    });
+    // TODO: check for adjacent henchmen?
+    return $spaces;
   }
 }

@@ -368,13 +368,15 @@ class GameMap {
   }): GestForce {
     const stockId = this.getStockIdPublic({ type, spaceId });
 
-    const forces = this.forces[stockId]
-      .getCards()
-      .filter((force) => {
-        if (exclude && exclude.some((excludedForce) => excludedForce.id === force.id)) {
-          return false;
-        }
-        return force.hidden === hidden} );
+    const forces = this.forces[stockId].getCards().filter((force) => {
+      if (
+        exclude &&
+        exclude.some((excludedForce) => excludedForce.id === force.id)
+      ) {
+        return false;
+      }
+      return force.hidden === hidden;
+    });
 
     const selected = forces[Math.floor(Math.random() * forces.length)];
 
@@ -465,6 +467,15 @@ class GameMap {
     const toStockId = this.getStockIdPublic({ type, spaceId: toSpaceId });
     console.log('toStockId', toStockId);
     await this.forces[toStockId].addCard(force);
+  }
+
+  setSpaceStatus({ spaceId, status }: { spaceId: string; status: string; }) {
+    const markers = this.parishStatusMarkers[spaceId].getCards();
+    if (markers.length > 0) {
+      const marker = markers[0];
+      markers[0].side = status === SUBMISSIVE ? 'front' : 'back';
+      this.game.markerManager.updateCardInformations(marker);
+    }
   }
 
   // getCarriageElement({

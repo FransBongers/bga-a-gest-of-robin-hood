@@ -105,3 +105,10 @@ const PLACE_MERRY_MAN = 'placeMerryMan';
 const REPLACE_MERRY_MAN_WITH_CAMP = 'replaceMerryManWithCamp';
 const PLACE_TWO_MERRY_MEN = 'placeTwoMerryMen';
 const FLIP_ALL_MERRY_MAN_TO_HIDDEN = 'flipAllMerryManToHidden';
+
+/**
+ * Space status
+ */
+const PASSIVE = 'passive';
+const REVOLTING = 'revolting';
+const SUBMISSIVE = 'submissive';

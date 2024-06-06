@@ -386,7 +386,7 @@ class Notifications
       'spaceId' => $space->getId(),
       'tkn_boldText_forceName' => $force->getName(),
       'tkn_boldText_spaceName' => $space->getName(),
-      
+      'i18n' => ['tkn_boldText_forceName', 'tkn_boldText_spaceName']
     ]);
 
     $isHidden = $force->isHidden();
@@ -400,6 +400,19 @@ class Notifications
       'tkn_boldText_forceName' => $force->getPublicName(),
       'tkn_boldText_spaceName' => $space->getName(),
       'count' => 1,
+      'i18n' => ['tkn_boldText_forceName', 'tkn_boldText_spaceName']
+    ]);
+  }
+
+  public static function placeHenchmen($player, $forces, $space)
+  {
+    self::notifyAll('placeForceAll', clienttranslate('${player_name} places Henchmen in ${tkn_boldText_spaceName}'), [
+      'player' => $player,
+      'you' => '${you}',
+      'forces' => $forces,
+      'spaceId' => $space->getId(),
+      'tkn_boldText_spaceName' => $space->getName(),
+      'i18n' => ['tkn_boldText_spaceName']
     ]);
   }
 
@@ -471,7 +484,7 @@ class Notifications
 
     self::placeMerryMen($player, $robinHood, $merryMenToPlace, $textPublic, $textPrivate, $publicTextArgs, $privateTextArgs);
   }
-  
+
   public static function returnToSupply($player, $force, $space, $isHidden)
   {
     self::notify($player, 'returnToSupplyPrivate', clienttranslate('${player_name} returns ${tkn_boldText_forceName} from ${tkn_boldText_spaceName} to Available Forces'), [
@@ -495,13 +508,21 @@ class Notifications
     ]);
   }
 
-  public static function revolt($player, $space)
+  public static function parishStatus($player, $space, $status)
   {
-    self::notifyAll("revolt", clienttranslate('${player_name} sets ${tkn_boldText_parishName} to Revolting'), [
+    $statusNameMap = [
+      PASSIVE => clienttranslate('Passive'),
+      REVOLTING => clienttranslate('Revolting'),
+      SUBMISSIVE => clienttranslate('Submissive'),
+    ];
+
+    self::notifyAll("parishStatus", clienttranslate('${player_name} sets ${tkn_boldText_parishName} to ${tkn_boldText_status}'), [
       'player' => $player,
       'tkn_boldText_parishName' => $space->getName(),
+      'tkn_boldText_status' => $statusNameMap[$status],
       'spaceId' => $space->getId(),
-      'i18n' => ['tkn_boldText_parishName']
+      'status' => $status,
+      'i18n' => ['tkn_boldText_parishName', 'tkn_boldText_status']
     ]);
   }
 
@@ -564,7 +585,7 @@ class Notifications
       'i18n' => ['tkn_boldText_fromSpace', 'tkn_boldText_toSpace']
     ]);
 
-    
+
     self::notifyAll('sneakMerryMen', clienttranslate('${player_name} moves ${count} Merry Men from ${tkn_boldText_fromSpace} to ${tkn_boldText_toSpace}'), [
       'player' => $player,
       'moves' => $moves,
@@ -576,5 +597,4 @@ class Notifications
       'i18n' => ['tkn_boldText_fromSpace', 'tkn_boldText_toSpace']
     ]);
   }
-
 }

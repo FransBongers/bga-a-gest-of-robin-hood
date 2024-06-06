@@ -1678,6 +1678,9 @@ var PLACE_MERRY_MAN = 'placeMerryMan';
 var REPLACE_MERRY_MAN_WITH_CAMP = 'replaceMerryManWithCamp';
 var PLACE_TWO_MERRY_MEN = 'placeTwoMerryMen';
 var FLIP_ALL_MERRY_MAN_TO_HIDDEN = 'flipAllMerryManToHidden';
+var PASSIVE = 'passive';
+var REVOLTING = 'revolting';
+var SUBMISSIVE = 'submissive';
 define([
     'dojo',
     'dojo/_base/declare',
@@ -3027,10 +3030,9 @@ var GameMap = (function () {
     GameMap.prototype.getForcePublic = function (_a) {
         var type = _a.type, spaceId = _a.spaceId, hidden = _a.hidden, exclude = _a.exclude;
         var stockId = this.getStockIdPublic({ type: type, spaceId: spaceId });
-        var forces = this.forces[stockId]
-            .getCards()
-            .filter(function (force) {
-            if (exclude && exclude.some(function (excludedForce) { return excludedForce.id === force.id; })) {
+        var forces = this.forces[stockId].getCards().filter(function (force) {
+            if (exclude &&
+                exclude.some(function (excludedForce) { return excludedForce.id === force.id; })) {
                 return false;
             }
             return force.hidden === hidden;
@@ -3131,6 +3133,15 @@ var GameMap = (function () {
                 }
             });
         });
+    };
+    GameMap.prototype.setSpaceStatus = function (_a) {
+        var spaceId = _a.spaceId, status = _a.status;
+        var markers = this.parishStatusMarkers[spaceId].getCards();
+        if (markers.length > 0) {
+            var marker = markers[0];
+            markers[0].side = status === SUBMISSIVE ? 'front' : 'back';
+            this.game.markerManager.updateCardInformations(marker);
+        }
     };
     GameMap.prototype.moveMarker = function (_a) {
         return __awaiter(this, arguments, void 0, function (_b) {
@@ -3324,7 +3335,9 @@ var NotificationManager = (function () {
             'passAction',
             'revealCarriage',
             'revealForce',
+            'parishStatus',
             'payShillings',
+            'placeForceAll',
             'placeForce',
             'placeForcePrivate',
             'placeMerryMen',
@@ -3588,6 +3601,17 @@ var NotificationManager = (function () {
             });
         });
     };
+    NotificationManager.prototype.notif_placeForceAll = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var forces;
+            var _this = this;
+            return __generator(this, function (_a) {
+                forces = notif.args.forces;
+                forces.forEach(function (force) { return _this.game.gameMap.addPrivateForce({ force: force }); });
+                return [2];
+            });
+        });
+    };
     NotificationManager.prototype.notif_placeForcePrivate = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
             var forces;
@@ -3675,6 +3699,16 @@ var NotificationManager = (function () {
                         _b.sent();
                         return [2];
                 }
+            });
+        });
+    };
+    NotificationManager.prototype.notif_parishStatus = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, spaceId, status;
+            return __generator(this, function (_b) {
+                _a = notif.args, spaceId = _a.spaceId, status = _a.status;
+                this.game.gameMap.setSpaceStatus({ spaceId: spaceId, status: status });
+                return [2];
             });
         });
     };

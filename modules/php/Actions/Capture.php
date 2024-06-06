@@ -77,6 +77,19 @@ class Capture extends \AGestOfRobinHood\Models\AtomicAction
 
   public function getOptions()
   {
-    return GameMap::getSpacesWithMerryMen();
+    $spaces = Utils::filter(Spaces::getAll()->toArray(), function ($space) {
+      if ($space->getId() !== OLLERTON_HILL) {
+        return false;
+      }
+      $forces = $space->getForces();
+      $hasRevealedMerryMenOrCamps = Utils::array_some($forces, function ($force) {
+        return !$force->isHidden() && ($force->isMerryMan() || $force->isCamp());
+      });
+      $hasHenchmen = Utils::array_some($forces, function ($force) {
+        return $force->isHenchman();
+      });
+      return $hasHenchmen && $hasRevealedMerryMenOrCamps;
+    });
+    return $spaces;
   }
 }

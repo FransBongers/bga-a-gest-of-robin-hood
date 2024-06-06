@@ -36,8 +36,12 @@ class SelectPlot extends \AGestOfRobinHood\Models\AtomicAction
 
     $numberOfSpaces = $action === PLOTS_AND_DEEDS ? 3 : 1;
 
+    $player = self::getPlayer();
+
     $data = [
-      'options' => $this->getRobinHoodOptions(self::getPlayer(), $numberOfSpaces),
+      'options' => $player->isRobinHood() ?
+        $this->getRobinHoodOptions($player, $numberOfSpaces) :
+        $this->getSheriffOptions($player, $numberOfSpaces),
     ];
 
     return $data;
@@ -112,13 +116,23 @@ class SelectPlot extends \AGestOfRobinHood\Models\AtomicAction
     Notifications::selectedPlot(self::getPlayer(), $option['plotName'], $targetSpaces);
 
     $parent = $this->ctx->getParent();
-    for ($i = 0; $i < count($targetSpaces); $i++) {
+    // Plots that can be resolved automatically
+    if (in_array($plotId, [HIRE])) {
       $parent->pushChild(new LeafNode([
         'action' => $plotId,
         'playerId' => $this->ctx->getPlayerId(),
         'spaceIds' => $spaceIds,
-        // 'optional' => true,
       ]));
+    } else {
+
+      for ($i = 0; $i < count($targetSpaces); $i++) {
+        $parent->pushChild(new LeafNode([
+          'action' => $plotId,
+          'playerId' => $this->ctx->getPlayerId(),
+          'spaceIds' => $spaceIds,
+          // 'optional' => true,
+        ]));
+      }
     }
 
     if ($this->getAction() === PLOTS_AND_DEEDS) {
@@ -170,6 +184,33 @@ class SelectPlot extends \AGestOfRobinHood\Models\AtomicAction
         'spaces' => $sneakOptions,
         'numberOfSpaces' => min($availableShillings, $numberOfSpaces, count($sneakOptions)),
         'plotName' => clienttranslate('Sneak'),
+      ],
+    ];
+  }
+
+  public function getSheriffOptions($player, $numberOfSpaces)
+  {
+    $availableShillings = $player->getShillings();
+
+    $hireOptions = AtomicActions::get(HIRE)->getOptions();
+    $patrolOptions = AtomicActions::get(PATROL)->getOptions();
+    $captureOptions = AtomicActions::get(CAPTURE)->getOptions();
+
+    return [
+      HIRE => [
+        'spaces' => $hireOptions,
+        'numberOfSpaces' => min(floor($availableShillings / 2), $numberOfSpaces, count($hireOptions)),
+        'plotName' => clienttranslate('Hire'),
+      ],
+      PATROL => [
+        'spaces' => $patrolOptions,
+        'numberOfSpaces' => min(floor($availableShillings / 2), $numberOfSpaces, count($patrolOptions)),
+        'plotName' => clienttranslate('Patrol'),
+      ],
+      CAPTURE => [
+        'spaces' => $captureOptions,
+        'numberOfSpaces' => min($numberOfSpaces, count($captureOptions)),
+        'plotName' => clienttranslate('Capture'),
       ],
     ];
   }

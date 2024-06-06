@@ -8,7 +8,7 @@ class OllertonHill extends \AGestOfRobinHood\Models\Space
     parent::__construct($row);
     $this->id = OLLERTON_HILL;
     $this->name = clienttranslate('Ollerton Hill');
-    $this->setupStatus = REVOLTING;
+    $this->setupStatus = PASSIVE;
     $this->adjacentSpaceIds = [
 
     ];

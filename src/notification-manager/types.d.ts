@@ -82,6 +82,11 @@ interface NotifPassActionArgs extends NotifWithPlayerArgs {
   amount: number;
 }
 
+interface NotifParishStatusArgs extends NotifWithPlayerArgs {
+  status: string;
+  spaceId: string;
+}
+
 interface NotifPayShillingsArgs extends NotifWithPlayerArgs {
   amount: number;
 }
@@ -94,6 +99,8 @@ interface NotifPlaceForceArgs extends NotifWithPlayerArgs {
   spaceId: string;
   count: number;
 }
+
+type NotifPlaceForceAllArgs = NotifPlaceForcePrivateArgs;
 
 interface NotifPlaceForcePrivateArgs extends NotifWithPlayerArgs {
   forces: GestForce[];
@@ -126,6 +133,10 @@ interface NotifReturnToSupplyArgs extends NotifWithPlayerArgs {
 
 interface NotifReturnToSupplyPrivateArgs extends NotifWithPlayerArgs {
   force: GestForce;
+}
+
+interface NotifRevoltArgs extends NotifWithPlayerArgs {
+  spaceId: string;
 }
 
 interface NotifSneakMerryMenArgs extends NotifWithPlayerArgs {

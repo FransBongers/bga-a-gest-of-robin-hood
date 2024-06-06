@@ -24,12 +24,27 @@ trait DebugTrait
   function test()
   {
 
-    Forces::get(ROBIN_HOOD)->setHidden(0);
+    // Forces::get(ROBIN_HOOD)->setHidden(0);
+    $this->debugPlaceHenchmen(REMSTON, 1);
 
     // $action = $node->getActionResolutionArgs()['action'];
 
     // Notifications::log('spaceIds', $spaceIds);
 
+  }
+
+  public function debugPlaceHenchmen($spaceId, $number)
+  {
+    $result = [];
+    for ($i = 0; $i < $number; $i++) {
+      $henchman = Forces::getTopOf(HENCHMEN_SUPPLY);
+      if ($henchman === null) {
+        continue;
+      }
+      $henchman->setLocation($spaceId);
+      $result[] = $henchman;
+    }
+    return $result;
   }
 
   function ed()

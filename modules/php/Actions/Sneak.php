@@ -140,7 +140,10 @@ class Sneak extends \AGestOfRobinHood\Models\AtomicAction
       }
     }
 
-    Notifications::sneakMerryMen(self::getPlayer(), $merryMen, $moves, $option['space'], $toSpace);
+    $player = self::getPlayer();
+    $player->payShillings(1);
+
+    Notifications::sneakMerryMen($player, $merryMen, $moves, $option['space'], $toSpace);
     $this->resolveAction($args);
   }
 
