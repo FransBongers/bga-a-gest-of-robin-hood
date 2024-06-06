@@ -33,6 +33,10 @@ class ForceManager extends CardManager<GestForce> {
     if (force.type === CAMP) {
       div.replaceChildren('C')
     }
+
+    if (force.type === MERRY_MEN) {
+      div.replaceChildren('M')
+    }
   }
 
   setupBackDiv(force: GestForce, div: HTMLElement) {

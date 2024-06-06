@@ -155,16 +155,18 @@ class Recruit extends \AGestOfRobinHood\Models\AtomicAction
     }
 
     $player->payShillings(1);
+    $space = $option['space'];
 
     switch ($recruitOption) {
       case PLACE_MERRY_MAN:
       case PLACE_TWO_MERRY_MEN:
-        $this->placeMerryMen($player, $recruitOption, $option['space'], $recruitRobinHood);
+        $this->placeMerryMen($player, $recruitOption, $space, $recruitRobinHood);
         break;
       case REPLACE_MERRY_MAN_WITH_CAMP:
-        $this->replaceMerryManWithCamp($player, $option['space'], $merryManId);
+        $this->replaceMerryManWithCamp($player, $space, $merryManId);
         break;
       case FLIP_ALL_MERRY_MAN_TO_HIDDEN:
+        $this->flipAllMerryMenToHidden($player, $space);
         break;
     }
 
@@ -178,6 +180,17 @@ class Recruit extends \AGestOfRobinHood\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
+
+  private function flipAllMerryMenToHidden($player, $space)
+  {
+    $forces = Forces::getInLocation($space->getId())->toArray();
+    $revealedMerryMen = Utils::filter($forces, function ($merryMan) {
+      return !$merryMan->isHidden() && $merryMan->getType() === MERRY_MEN || $merryMan->getType() === ROBIN_HOOD;
+    });
+    foreach($revealedMerryMen as $force) {
+      $force->hide($player);
+    }
+  }
 
   private function replaceMerryManWithCamp($player, $space, $merryManId)
   {

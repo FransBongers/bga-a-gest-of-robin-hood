@@ -19,7 +19,7 @@ class RobinHood extends \AGestOfRobinHood\Models\Force
 
   public function reveal($player = null)
   {
-    $player === null ? Players::getRobinHoodPlayer() : $player;
+    $player = $player === null ? Players::getRobinHoodPlayer() : $player;
 
     $this->setHidden(0);
     Notifications::revealRobinHood($player, $this);

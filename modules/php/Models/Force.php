@@ -63,8 +63,19 @@ class Force extends \AGestOfRobinHood\Helpers\DB_Model
     return $this->getHidden() === 1;
   }
 
-  public function reveal()
+  public function reveal($player = null)
   {
+    $player = $player === null ? Players::get() : $player;
+
+    $this->setHidden(0);
+    Notifications::revealForce($player, $this);
+  }
+
+  public function hide($player = null, $notify = true)
+  {
+    $player = $player === null ? Players::get() : $player;
+    $this->setHidden(1);
+    Notifications::hideForce($player, $this);
   }
 
   public function getCarriageGainsSheriff()

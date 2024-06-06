@@ -294,7 +294,7 @@ class Forces extends \AGestOfRobinHood\Helpers\Pieces
     // Test setup
     // self::move(self::get(ROBIN_HOOD)->getId(), REMSTON);
     // self::pickForLocation(1, MERRY_MEN_SUPPLY, REMSTON);
-    // self::pickForLocation(1, MERRY_MEN_SUPPLY, SHIRE_WOOD);
+    self::pickForLocation(2, MERRY_MEN_SUPPLY, SHIRE_WOOD);
     // self::pickForLocation(1, MERRY_MEN_SUPPLY, SOUTHWELL_FOREST);
     self::pickForLocation(1, CARRIAGE_SUPPLY, BINGHAM);
     self::pickForLocation(1, CARRIAGE_SUPPLY, RETFORD);

@@ -2278,6 +2278,9 @@ var ForceManager = (function (_super) {
         if (force.type === CAMP) {
             div.replaceChildren('C');
         }
+        if (force.type === MERRY_MEN) {
+            div.replaceChildren('M');
+        }
     };
     ForceManager.prototype.setupBackDiv = function (force, div) {
         div.classList.add('gest_force_side');
@@ -3030,6 +3033,28 @@ var GameMap = (function () {
         var selected = forces[Math.floor(Math.random() * forces.length)];
         return selected;
     };
+    GameMap.prototype.hideForcePublic = function (_a) {
+        var force = _a.force;
+        console.log('hideForcePublic');
+        var selected = this.getForcePublic({
+            type: force.type,
+            spaceId: force.location,
+            hidden: false,
+        });
+        selected.type = force.type;
+        if (force.type === ROBIN_HOOD) {
+            selected.type = MERRY_MEN;
+        }
+        else if ([TALLAGE_CARRIAGE, TRAP_CARRIAGE, TRIBUTE_CARRIAGE].includes(force.type)) {
+            selected.type = CARRIAGE;
+        }
+        selected.hidden = force.hidden;
+        this.game.forceManager.updateCardInformations(selected);
+    };
+    GameMap.prototype.hideForcePrivate = function (_a) {
+        var force = _a.force;
+        this.game.forceManager.updateCardInformations(force);
+    };
     GameMap.prototype.revealForcePublic = function (_a) {
         var force = _a.force;
         console.log('revealForcePublic');
@@ -3286,6 +3311,7 @@ var NotificationManager = (function () {
             'chooseAction',
             'drawAndRevealCard',
             'gainShillings',
+            'hideForce',
             'moveCarriage',
             'moveCarriagePrivate',
             'moveCarriagePublic',
@@ -3432,6 +3458,31 @@ var NotificationManager = (function () {
             return __generator(this, function (_b) {
                 _a = notif.args, amount = _a.amount, playerId = _a.playerId;
                 this.getPlayer({ playerId: playerId }).counters.shillings.incValue(amount);
+                return [2];
+            });
+        });
+    };
+    NotificationManager.prototype.notif_hideForce = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var force;
+            return __generator(this, function (_a) {
+                force = notif.args.force;
+                if ([MERRY_MEN, CAMP, ROBIN_HOOD].includes(force.type)) {
+                    if (this.currentPlayerIsRobinHood()) {
+                        this.game.gameMap.hideForcePrivate({ force: force });
+                    }
+                    else {
+                        this.game.gameMap.hideForcePublic({ force: force });
+                    }
+                }
+                else if ([TALLAGE_CARRIAGE, TRAP_CARRIAGE, TRIBUTE_CARRIAGE].includes(force.type)) {
+                    if (this.currentPlayerIsSheriff()) {
+                        this.game.gameMap.hideForcePrivate({ force: force });
+                    }
+                    else {
+                        this.game.gameMap.hideForcePublic({ force: force });
+                    }
+                }
                 return [2];
             });
         });

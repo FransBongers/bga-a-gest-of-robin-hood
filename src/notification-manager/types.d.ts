@@ -41,6 +41,10 @@ interface NotifGainShillingsArgs extends NotifWithPlayerArgs {
   amount: number;
 }
 
+interface NotifHideForceArgs extends NotifWithPlayerArgs {
+  force: GestForce;
+}
+
 interface NotifMoveCarriageArgs extends NotifWithPlayerArgs {
   carriage: {
     hidden: boolean;

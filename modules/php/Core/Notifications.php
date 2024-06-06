@@ -262,6 +262,28 @@ class Notifications
     ]);
   }
 
+  public static function hideForce($player, $force)
+  {
+    self::notifyAll("hideForce", clienttranslate('${player_name} flips ${tkn_boldText_forceName} in ${tkn_boldText_spaceName} to hidden'), [
+      'player' => $player,
+      'tkn_boldText_forceName' => $force->getName(),
+      'tkn_boldText_spaceName' => Spaces::get($force->getLocation())->getName(),
+      'force' => $force->jsonSerialize(),
+      'i18n' => ['tkn_boldText_forceName', 'tkn_boldText_spaceName']
+    ]);
+  }
+
+  public static function revealForce($player, $force)
+  {
+    self::notifyAll("revealForce", clienttranslate('${player_name} reveals ${tkn_boldText_forceName} in ${tkn_boldText_spaceName}'), [
+      'player' => $player,
+      'tkn_boldText_forceName' => $force->getName(),
+      'tkn_boldText_spaceName' => Spaces::get($force->getLocation())->getName(),
+      'force' => $force->jsonSerialize(),
+      'i18n' => ['tkn_boldText_forceName', 'tkn_boldText_spaceName']
+    ]);
+  }
+
   public static function revealRobinHood($player, $robinHood)
   {
     self::notifyAll("revealForce", clienttranslate('${player_name} reveals ${tkn_boldText_robinHood} in ${tkn_boldText_spaceName}'), [
@@ -366,7 +388,7 @@ class Notifications
       'tkn_boldText_spaceName' => $space->getName(),
     ]);
 
-    self::notifyAll('returnToSupply', clienttranslate('${player_name} places ${tkn_boldText_forceName} to Available Forces'), [
+    self::notifyAll('returnToSupply', clienttranslate('${player_name} returns ${tkn_boldText_forceName} from ${tkn_boldText_spaceName} to Available Forces'), [
       'player' => $player,
       'force' => [
         'type' => $isHidden ? $force->getPublicType() : $force->getType(),

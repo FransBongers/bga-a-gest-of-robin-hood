@@ -48,6 +48,7 @@ class NotificationManager {
       'chooseAction',
       'drawAndRevealCard',
       'gainShillings',
+      'hideForce',
       'moveCarriage',
       'moveCarriagePrivate',
       'moveCarriagePublic',
@@ -256,6 +257,26 @@ class NotificationManager {
   async notif_gainShillings(notif: Notif<NotifGainShillingsArgs>) {
     const { amount, playerId } = notif.args;
     this.getPlayer({ playerId }).counters.shillings.incValue(amount);
+  }
+
+  async notif_hideForce(notif: Notif<NotifRevealForceArgs>) {
+    const { force } = notif.args;
+
+    if ([MERRY_MEN, CAMP, ROBIN_HOOD].includes(force.type)) {
+      if (this.currentPlayerIsRobinHood()) {
+        this.game.gameMap.hideForcePrivate({ force });
+      } else {
+        this.game.gameMap.hideForcePublic({ force });
+      }
+    } else if (
+      [TALLAGE_CARRIAGE, TRAP_CARRIAGE, TRIBUTE_CARRIAGE].includes(force.type)
+    ) {
+      if (this.currentPlayerIsSheriff()) {
+        this.game.gameMap.hideForcePrivate({ force });
+      } else {
+        this.game.gameMap.hideForcePublic({ force });
+      }
+    }
   }
 
   // async notif_moveCarriage(notif: Notif<NotifMoveCarriageArgs>) {

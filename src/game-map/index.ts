@@ -375,6 +375,31 @@ class GameMap {
     return selected;
   }
 
+  hideForcePublic({ force }: { force: GestForce }) {
+    console.log('hideForcePublic');
+    const selected = this.getForcePublic({
+      type: force.type,
+      spaceId: force.location,
+      hidden: false,
+    });
+
+    selected.type = force.type;
+    if (force.type === ROBIN_HOOD) {
+      selected.type = MERRY_MEN;
+    } else if (
+      [TALLAGE_CARRIAGE, TRAP_CARRIAGE, TRIBUTE_CARRIAGE].includes(force.type)
+    ) {
+      selected.type = CARRIAGE;
+    }
+
+    selected.hidden = force.hidden;
+    this.game.forceManager.updateCardInformations(selected);
+  }
+
+  hideForcePrivate({ force }: { force: GestForce }) {
+    this.game.forceManager.updateCardInformations(force);
+  }
+
   revealForcePublic({ force }: { force: GestForce }) {
     console.log('revealForcePublic');
 
