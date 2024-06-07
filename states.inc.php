@@ -372,10 +372,13 @@ $machinestates = array(
     ],
     ST_HIRE => [
         'name' => 'hire',
-        'description' => '',
-        'type' => 'game',
+        'description' => clienttranslate('${actplayer} may Hire'),
+        'descriptionmyturn' => clienttranslate('${you}'),
+        'type' => 'activeplayer',
+        'args' => 'argsAtomicAction',
         'action' => 'stAtomicAction',
-        'transitions' => [],
+        // 'transitions' => [],
+        'possibleactions' => ['actHire', 'actPassOptionalAction', 'actRestart'],
     ],
     ST_PATROL => [
         'name' => 'patrol',

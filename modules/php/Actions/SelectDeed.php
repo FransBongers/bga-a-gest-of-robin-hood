@@ -117,34 +117,6 @@ class SelectDeed extends \AGestOfRobinHood\Models\AtomicAction
       $options[$deed] = $action->getName();
     }
 
-    // $turnCoatSpaces = AtomicActions::get(TURNCOAT)->getPossibleSpaces();
-    // $donateSpaces = AtomicActions::get(DONATE)->getPossibleSpaces();
-    // $swashbuckleSpaces = AtomicActions::get(SWASHBUCKLE)->getPossibleSpaces();
-    // $inspireSpaces = AtomicActions::get(INSPIRE)->getPossibleSpaces();
-
-    // return [
-    //   DONATE => [
-    //     'spaces' => $donateSpaces,
-    //     'numberOfSpaces' => min(floor($availableShillings / 2), 2, count($donateSpaces)),
-    //     'deedName' => clienttranslate('Recruit'),
-    //   ],
-    //   INSPIRE => [
-    //     'spaces' => $inspireSpaces,
-    //     'numberOfSpaces' => min(1, count($inspireSpaces)),
-    //     'deedName' => clienttranslate('Rob'),
-    //   ],
-    //   SWASHBUCKLE => [
-    //     'spaces' => $swashbuckleSpaces,
-    //     'numberOfSpaces' => min(1, count($swashbuckleSpaces)),
-    //     'deedName' => clienttranslate('Sneak'),
-    //   ],
-    //   TURNCOAT => [
-    //     'spaces' => $turnCoatSpaces,
-    //     'numberOfSpaces' => min($availableShillings, 1, count($turnCoatSpaces)),
-    //     'deedName' => clienttranslate('Sneak'),
-    //   ],
-    // ];
-
     return $options;
   }
 }

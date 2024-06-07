@@ -67,6 +67,7 @@ class ChooseAction extends \AGestOfRobinHood\Models\AtomicAction
   {
     self::checkAction('actChooseAction');
     $action = $args['action'];
+    $pass = $args['pass'];
 
     $stateArgs = $this->argsChooseAction();
 
@@ -77,30 +78,15 @@ class ChooseAction extends \AGestOfRobinHood\Models\AtomicAction
     $marker = $player->getEligibilityMarker();
     $marker->setLocation(Locations::initiativeTrack($action));
 
-    Notifications::chooseAction($player, $marker, $action);
+    Notifications::chooseAction($player, $marker, $action, $pass);
 
-    $parent = $this->ctx->getParent();
-
-    switch ($action) {
-      case SINGLE_PLOT:
-        $parent->pushChild(new LeafNode([
-          'action' => SELECT_PLOT,
-          'playerId' => $this->ctx->getPlayerId(),
-          'numberOfSpaces' => 1,
-          'optional' => true,
-        ]));
-        break;
-      case EVENT:
-        break;
-      case PLOTS_AND_DEEDS:
-        $parent->pushChild(new LeafNode([
-          'action' => SELECT_PLOT,
-          'playerId' => $this->ctx->getPlayerId(),
-          'numberOfSpaces' => 3,
-          'optional' => true,
-        ]));
-        break;
+    if ($pass) {
+      $this->handlePass($player, $action);
+    } else {
+      $this->handleAction($player, $action);
     }
+
+
 
     $this->resolveAction($args);
   }
@@ -113,5 +99,35 @@ class ChooseAction extends \AGestOfRobinHood\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
+  private function handlePass($player, $action)
+  {
+    $shillings = 1;
 
+    if ($player->isSheriff()) {
+      if ($action === EVENT) {
+        $shillings = 2;
+      } else if ($action === PLOTS_AND_DEEDS) {
+        $shillings = 3;
+      }
+    }
+
+    $player->incShillings($shillings);
+  }
+
+  private function handleAction($player, $action)
+  {
+    $parent = $this->ctx->getParent();
+
+    switch ($action) {
+      case SINGLE_PLOT:
+      case PLOTS_AND_DEEDS:
+        $parent->pushChild(new LeafNode([
+          'action' => SELECT_PLOT,
+          'playerId' => $this->ctx->getPlayerId(),
+        ]));
+        break;
+      case EVENT:
+        break;
+    }
+  }
 }

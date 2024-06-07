@@ -4351,25 +4351,44 @@ var ChooseActionState = (function () {
     };
     ChooseActionState.prototype.setDescription = function (activePlayerId) { };
     ChooseActionState.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
         this.game.clearPossible();
         this.game.clientUpdatePageTitle({
-            text: _('${you} must choose an action'),
+            text: _('${you} must choose an action or pass'),
             args: {
                 you: '${you}',
             },
         });
-        this.addActionButtons();
+        this.addActionButtons({ pass: false });
+        this.game.addSecondaryActionButton({
+            id: 'pass_btn',
+            text: _('Pass'),
+            callback: function () { return _this.updateInterfaceSelectBoxToPass(); },
+        });
         this.game.addPassButton({
             optionalAction: this.args.optionalAction,
         });
         this.game.addUndoButtons(this.args);
     };
-    ChooseActionState.prototype.updateInterfaceConfirm = function (_a) {
-        var _this = this;
-        var action = _a.action;
+    ChooseActionState.prototype.updateInterfaceSelectBoxToPass = function () {
         this.game.clearPossible();
         this.game.clientUpdatePageTitle({
-            text: _('Perform ${actionName}?'),
+            text: _('${you} must select a box to place your eligibility cylinder'),
+            args: {
+                you: '${you}',
+            },
+        });
+        this.addActionButtons({ pass: true });
+        this.game.addCancelButton();
+    };
+    ChooseActionState.prototype.updateInterfaceConfirm = function (_a) {
+        var _this = this;
+        var action = _a.action, pass = _a.pass;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: pass
+                ? _('Pass and move eligibility cylinder to ${actionName}?')
+                : _('Perform ${actionName}?'),
             args: {
                 actionName: this.getActionName({ action: action }),
             },
@@ -4380,6 +4399,7 @@ var ChooseActionState = (function () {
                 action: 'actChooseAction',
                 args: {
                     action: action,
+                    pass: pass,
                 },
             });
         };
@@ -4408,14 +4428,15 @@ var ChooseActionState = (function () {
                 return '';
         }
     };
-    ChooseActionState.prototype.addActionButtons = function () {
+    ChooseActionState.prototype.addActionButtons = function (_a) {
         var _this = this;
+        var pass = _a.pass;
         [SINGLE_PLOT, EVENT, PLOTS_AND_DEEDS].forEach(function (action) {
             if (_this.args[action]) {
                 _this.game.addPrimaryActionButton({
                     id: "".concat(action, "_select"),
                     text: _this.getActionName({ action: action }),
-                    callback: function () { return _this.updateInterfaceConfirm({ action: action }); },
+                    callback: function () { return _this.updateInterfaceConfirm({ action: action, pass: pass }); },
                 });
             }
         });
@@ -4957,11 +4978,11 @@ var SelectPlotState = (function () {
             },
         });
         Object.entries(this.args.options).forEach(function (_a) {
-            var plotId = _a[0], data = _a[1];
+            var plotId = _a[0], plotName = _a[1];
             _this.game.addPrimaryActionButton({
                 id: "".concat(plotId, "_btn"),
-                text: _(data.plotName),
-                callback: function () { return _this.updateInterfaceSelectSpaces({ plotId: plotId, data: data }); },
+                text: _(plotName),
+                callback: function () { return _this.updateInterfaceConfirm({ plotId: plotId, plotName: plotName }); },
             });
         });
         this.game.addPassButton({
@@ -4969,56 +4990,14 @@ var SelectPlotState = (function () {
         });
         this.game.addUndoButtons(this.args);
     };
-    SelectPlotState.prototype.updateInterfaceSelectSpaces = function (_a) {
-        var _this = this;
-        var plotId = _a.plotId, data = _a.data;
-        this.game.clearPossible();
-        this.game.clientUpdatePageTitle({
-            text: data.numberOfSpaces === 1
-                ? _('${you} must select a Space to target')
-                : _('${you} must select a Space to target (${number} remaining)'),
-            args: {
-                you: '${you}',
-                number: data.numberOfSpaces - this.selectedSpaces.length,
-            },
-        });
-        this.args.options[plotId].spaces
-            .filter(function (space) {
-            return !_this.selectedSpaces.some(function (selectedSpace) {
-                return selectedSpace.id === space.id;
-            });
-        })
-            .forEach(function (space) {
-            _this.game.addPrimaryActionButton({
-                id: "".concat(space.id, "_btn"),
-                text: _(space.name),
-                callback: function () {
-                    _this.selectedSpaces.push(space);
-                    if (_this.selectedSpaces.length >= data.numberOfSpaces) {
-                        _this.updateInterfaceConfirm({ plotId: plotId, data: data });
-                    }
-                    else {
-                        _this.updateInterfaceSelectSpaces({ plotId: plotId, data: data });
-                    }
-                },
-            });
-        });
-        this.game.addSecondaryActionButton({
-            id: 'done_btn',
-            text: _('Done'),
-            callback: function () { return _this.updateInterfaceConfirm({ plotId: plotId, data: data }); },
-        });
-        this.game.addCancelButton();
-    };
     SelectPlotState.prototype.updateInterfaceConfirm = function (_a) {
         var _this = this;
-        var plotId = _a.plotId, data = _a.data;
+        var plotId = _a.plotId, plotName = _a.plotName;
         this.game.clearPossible();
         this.game.clientUpdatePageTitle({
-            text: _('${plotName} in ${spacesLog}?'),
+            text: _('Perform ${plotName} Plot?'),
             args: {
-                plotName: _(data.plotName),
-                spacesLog: this.createSpacesLog(),
+                plotName: _(plotName),
             },
         });
         var callback = function () {
@@ -5027,7 +5006,6 @@ var SelectPlotState = (function () {
                 action: 'actSelectPlot',
                 args: {
                     plotId: plotId,
-                    spaceIds: _this.selectedSpaces.map(function (space) { return space.id; }),
                 },
             });
         };
@@ -5042,36 +5020,6 @@ var SelectPlotState = (function () {
             });
         }
         this.game.addCancelButton();
-    };
-    SelectPlotState.prototype.createSpacesLog = function () {
-        switch (this.selectedSpaces.length) {
-            case 1:
-                return {
-                    log: '${spaceName}',
-                    args: {
-                        spaceName: _(this.selectedSpaces[0].name),
-                    },
-                };
-            case 2:
-                return {
-                    log: _('${spaceName} and ${spaceName2}'),
-                    args: {
-                        spaceName: _(this.selectedSpaces[0].name),
-                        spaceName2: _(this.selectedSpaces[1].name),
-                    },
-                };
-            case 3:
-                return {
-                    log: _('${spaceName}, ${spaceName2} and ${spaceName3}'),
-                    args: {
-                        spaceName: _(this.selectedSpaces[0].name),
-                        spaceName2: _(this.selectedSpaces[1].name),
-                        spaceName3: _(this.selectedSpaces[2].name),
-                    },
-                };
-            default:
-                return '';
-        }
     };
     return SelectPlotState;
 }());

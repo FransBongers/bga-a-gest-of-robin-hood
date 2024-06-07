@@ -15,7 +15,7 @@ use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\Spaces;
 
 
-class Patrol extends \AGestOfRobinHood\Models\AtomicAction
+class Patrol extends \AGestOfRobinHood\Actions\Plot
 {
   public function getState()
   {
@@ -74,6 +74,20 @@ class Patrol extends \AGestOfRobinHood\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
+
+  public function canBePerformed($player, $availableShillings)
+  {
+    if ($availableShillings < 2) {
+      return false;
+    }
+
+    return count($this->getOptions()) > 0;
+  }
+
+  public function getName()
+  {
+    return clienttranslate('Patrol');
+  }
 
   public function getOptions()
   {

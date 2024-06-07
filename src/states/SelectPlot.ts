@@ -46,11 +46,11 @@ class SelectPlotState implements State {
       },
     });
 
-    Object.entries(this.args.options).forEach(([plotId, data]) => {
+    Object.entries(this.args.options).forEach(([plotId, plotName]) => {
       this.game.addPrimaryActionButton({
         id: `${plotId}_btn`,
-        text: _(data.plotName),
-        callback: () => this.updateInterfaceSelectSpaces({ plotId, data }),
+        text: _(plotName),
+        callback: () => this.updateInterfaceConfirm({ plotId, plotName }),
       });
     });
 
@@ -60,76 +60,71 @@ class SelectPlotState implements State {
     this.game.addUndoButtons(this.args);
   }
 
-  private updateInterfaceSelectSpaces({
-    plotId,
-    data,
-  }: {
-    plotId: string;
-    data: {
-      spaces: GestSpace[];
-      numberOfSpaces: number;
-      plotName: string;
-    };
-  }) {
-    this.game.clearPossible();
+  // private updateInterfaceSelectSpaces({
+  //   plotId,
+  //   data,
+  // }: {
+  //   plotId: string;
+  //   data: {
+  //     spaces: GestSpace[];
+  //     numberOfSpaces: number;
+  //     plotName: string;
+  //   };
+  // }) {
+  //   this.game.clearPossible();
 
-    this.game.clientUpdatePageTitle({
-      text:
-        data.numberOfSpaces === 1
-          ? _('${you} must select a Space to target')
-          : _('${you} must select a Space to target (${number} remaining)'),
-      args: {
-        you: '${you}',
-        number: data.numberOfSpaces - this.selectedSpaces.length,
-      },
-    });
+  //   this.game.clientUpdatePageTitle({
+  //     text:
+  //       data.numberOfSpaces === 1
+  //         ? _('${you} must select a Space to target')
+  //         : _('${you} must select a Space to target (${number} remaining)'),
+  //     args: {
+  //       you: '${you}',
+  //       number: data.numberOfSpaces - this.selectedSpaces.length,
+  //     },
+  //   });
 
-    this.args.options[plotId].spaces
-      .filter((space) => {
-        return !this.selectedSpaces.some((selectedSpace) => {
-          return selectedSpace.id === space.id;
-        });
-      })
-      .forEach((space) => {
-        this.game.addPrimaryActionButton({
-          id: `${space.id}_btn`,
-          text: _(space.name),
-          callback: () => {
-            this.selectedSpaces.push(space);
-            if (this.selectedSpaces.length >= data.numberOfSpaces) {
-              this.updateInterfaceConfirm({ plotId, data });
-            } else {
-              this.updateInterfaceSelectSpaces({ plotId, data });
-            }
-          },
-        });
-      });
-    this.game.addSecondaryActionButton({
-      id: 'done_btn',
-      text: _('Done'),
-      callback: () => this.updateInterfaceConfirm({ plotId, data }),
-    });
-    this.game.addCancelButton();
-  }
+  //   this.args.options[plotId].spaces
+  //     .filter((space) => {
+  //       return !this.selectedSpaces.some((selectedSpace) => {
+  //         return selectedSpace.id === space.id;
+  //       });
+  //     })
+  //     .forEach((space) => {
+  //       this.game.addPrimaryActionButton({
+  //         id: `${space.id}_btn`,
+  //         text: _(space.name),
+  //         callback: () => {
+  //           this.selectedSpaces.push(space);
+  //           if (this.selectedSpaces.length >= data.numberOfSpaces) {
+  //             this.updateInterfaceConfirm({ plotId, data });
+  //           } else {
+  //             this.updateInterfaceSelectSpaces({ plotId, data });
+  //           }
+  //         },
+  //       });
+  //     });
+  //   this.game.addSecondaryActionButton({
+  //     id: 'done_btn',
+  //     text: _('Done'),
+  //     callback: () => this.updateInterfaceConfirm({ plotId, data }),
+  //   });
+  //   this.game.addCancelButton();
+  // }
 
   private updateInterfaceConfirm({
     plotId,
-    data,
+    plotName,
   }: {
     plotId: string;
-    data: {
-      spaces: GestSpace[];
-      numberOfSpaces: number;
-      plotName: string;
-    };
+    plotName: string;
   }) {
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({
-      text: _('${plotName} in ${spacesLog}?'),
+      text: _('Perform ${plotName} Plot?'),
       args: {
-        plotName: _(data.plotName),
-        spacesLog: this.createSpacesLog(),
+        plotName: _(plotName),
       },
     });
 
@@ -139,7 +134,6 @@ class SelectPlotState implements State {
         action: 'actSelectPlot',
         args: {
           plotId,
-          spaceIds: this.selectedSpaces.map((space) => space.id),
         },
       });
     };
@@ -167,36 +161,36 @@ class SelectPlotState implements State {
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
-  createSpacesLog() {
-    switch (this.selectedSpaces.length) {
-      case 1:
-        return {
-          log: '${spaceName}',
-          args: {
-            spaceName: _(this.selectedSpaces[0].name),
-          },
-        };
-      case 2:
-        return {
-          log: _('${spaceName} and ${spaceName2}'),
-          args: {
-            spaceName: _(this.selectedSpaces[0].name),
-            spaceName2: _(this.selectedSpaces[1].name),
-          },
-        };
-      case 3:
-        return {
-          log: _('${spaceName}, ${spaceName2} and ${spaceName3}'),
-          args: {
-            spaceName: _(this.selectedSpaces[0].name),
-            spaceName2: _(this.selectedSpaces[1].name),
-            spaceName3: _(this.selectedSpaces[2].name),
-          },
-        };
-      default:
-        return '';
-    }
-  }
+  // createSpacesLog() {
+  //   switch (this.selectedSpaces.length) {
+  //     case 1:
+  //       return {
+  //         log: '${spaceName}',
+  //         args: {
+  //           spaceName: _(this.selectedSpaces[0].name),
+  //         },
+  //       };
+  //     case 2:
+  //       return {
+  //         log: _('${spaceName} and ${spaceName2}'),
+  //         args: {
+  //           spaceName: _(this.selectedSpaces[0].name),
+  //           spaceName2: _(this.selectedSpaces[1].name),
+  //         },
+  //       };
+  //     case 3:
+  //       return {
+  //         log: _('${spaceName}, ${spaceName2} and ${spaceName3}'),
+  //         args: {
+  //           spaceName: _(this.selectedSpaces[0].name),
+  //           spaceName2: _(this.selectedSpaces[1].name),
+  //           spaceName3: _(this.selectedSpaces[2].name),
+  //         },
+  //       };
+  //     default:
+  //       return '';
+  //   }
+  // }
 
   //  ..######..##.......####..######..##....##
   //  .##....##.##........##..##....##.##...##.

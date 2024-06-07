@@ -57,14 +57,7 @@ interface OnEnteringSelectDeedStateArgs extends CommonArgs {
 }
 
 interface OnEnteringSelectPlotStateArgs extends CommonArgs {
-  options: Record<
-    string,
-    {
-      spaces: GestSpace[];
-      numberOfSpaces: number;
-      plotName: string;
-    }
-  >;
+  options: Record<string, string>;
 }
 
 interface OnEnteringSetupRobinHoodArgs extends CommonArgs {}

@@ -16,7 +16,7 @@ use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\Spaces;
 
 
-class Sneak extends \AGestOfRobinHood\Models\AtomicAction
+class Sneak extends \AGestOfRobinHood\Actions\Plot
 {
   public function getState()
   {
@@ -154,6 +154,20 @@ class Sneak extends \AGestOfRobinHood\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
+
+  public function canBePerformed($player, $availableShillings)
+  {
+    if ($availableShillings === 0) {
+      return false;
+    }
+
+    return count(GameMap::getSpacesWithMerryMen()) > 0;
+  }
+
+  public function getName()
+  {
+    return clienttranslate('Sneak');
+  }
 
   public function getArgs()
   {

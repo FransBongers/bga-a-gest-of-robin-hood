@@ -15,7 +15,7 @@ use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\Spaces;
 
 
-class Rob extends \AGestOfRobinHood\Models\AtomicAction
+class Rob extends \AGestOfRobinHood\Actions\Plot
 {
   public function getState()
   {
@@ -74,6 +74,17 @@ class Rob extends \AGestOfRobinHood\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
+
+  public function canBePerformed($player, $availableShillings)
+  {
+    // TODO: check for hidden merry men or Robin Hood
+    return count(GameMap::getSpacesWithMerryMen()) > 0;
+  }
+
+  public function getName()
+  {
+    return clienttranslate('Rob');
+  }
 
   public function getOptions()
   {

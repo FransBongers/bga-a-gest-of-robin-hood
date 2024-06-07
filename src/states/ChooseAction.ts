@@ -38,13 +38,18 @@ class ChooseActionState implements State {
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({
-      text: _('${you} must choose an action'),
+      text: _('${you} must choose an action or pass'),
       args: {
         you: '${you}',
       },
     });
 
-    this.addActionButtons();
+    this.addActionButtons({ pass: false });
+    this.game.addSecondaryActionButton({
+      id: 'pass_btn',
+      text: _('Pass'),
+      callback: () => this.updateInterfaceSelectBoxToPass(),
+    });
 
     this.game.addPassButton({
       optionalAction: this.args.optionalAction,
@@ -52,11 +57,34 @@ class ChooseActionState implements State {
     this.game.addUndoButtons(this.args);
   }
 
-  private updateInterfaceConfirm({ action }: { action: string }) {
+  private updateInterfaceSelectBoxToPass() {
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({
-      text: _('Perform ${actionName}?'),
+      text: _('${you} must select a box to place your eligibility cylinder'),
+      args: {
+        you: '${you}',
+      },
+    });
+
+    this.addActionButtons({ pass: true });
+
+    this.game.addCancelButton();
+  }
+
+  private updateInterfaceConfirm({
+    action,
+    pass,
+  }: {
+    action: string;
+    pass: boolean;
+  }) {
+    this.game.clearPossible();
+
+    this.game.clientUpdatePageTitle({
+      text: pass
+        ? _('Pass and move eligibility cylinder to ${actionName}?')
+        : _('Perform ${actionName}?'),
       args: {
         actionName: this.getActionName({ action }),
       },
@@ -68,6 +96,7 @@ class ChooseActionState implements State {
         action: 'actChooseAction',
         args: {
           action,
+          pass,
         },
       });
     };
@@ -108,13 +137,13 @@ class ChooseActionState implements State {
     }
   }
 
-  addActionButtons() {
+  addActionButtons({ pass }: { pass: boolean }) {
     [SINGLE_PLOT, EVENT, PLOTS_AND_DEEDS].forEach((action) => {
       if (this.args[action]) {
         this.game.addPrimaryActionButton({
           id: `${action}_select`,
           text: this.getActionName({ action }),
-          callback: () => this.updateInterfaceConfirm({ action }),
+          callback: () => this.updateInterfaceConfirm({ action, pass }),
         });
       }
     });

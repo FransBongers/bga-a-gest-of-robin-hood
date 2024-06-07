@@ -177,9 +177,13 @@ class Notifications
   // .##.....##.##..........##....##.....##.##.....##.##.....##.##....##
   // .##.....##.########....##....##.....##..#######..########...######.
 
-  public static function chooseAction($player, $marker, $action)
+  public static function chooseAction($player, $marker, $action, $pass)
   {
-    self::notifyAll("chooseAction", clienttranslate('${player_name} chooses ${tkn_boldText_actionName}'), [
+    $text = $pass ?
+      clienttranslate('${player_name} passes and places eligibility cylinder on ${tkn_boldText_actionName} box') :
+      clienttranslate('${player_name} chooses ${tkn_boldText_actionName}');
+
+    self::notifyAll("chooseAction", $text, [
       'player' => $player,
       'tkn_boldText_actionName' => self::getActionName($action),
       'marker' => $marker,
@@ -538,29 +542,29 @@ class Notifications
     ]);
   }
 
-  public static function selectedPlot($player, $plotName, $targetSpaces)
+  public static function selectedPlot($player, $plotName)
   {
-    $count = count($targetSpaces);
-    $spacesLog = clienttranslate('${tkn_boldText_space0}');
-    if ($count === 2) {
-      $spacesLog = clienttranslate('${tkn_boldText_space0} and ${tkn_boldText_space1}');
-    } else if ($count === 3) {
-      $spacesLog = clienttranslate('${tkn_boldText_space0}, ${tkn_boldText_space1} and ${tkn_boldText_space2}');
-    }
-    $spacesArgs = [
-      'i18n' => [],
-    ];
-    foreach ($targetSpaces as $index => $space) {
-      $spacesArgs['tkn_boldText_space' . $index] = $space->getName();
-    }
+    // $count = count($targetSpaces);
+    // $spacesLog = clienttranslate('${tkn_boldText_space0}');
+    // if ($count === 2) {
+    //   $spacesLog = clienttranslate('${tkn_boldText_space0} and ${tkn_boldText_space1}');
+    // } else if ($count === 3) {
+    //   $spacesLog = clienttranslate('${tkn_boldText_space0}, ${tkn_boldText_space1} and ${tkn_boldText_space2}');
+    // }
+    // $spacesArgs = [
+    //   'i18n' => [],
+    // ];
+    // foreach ($targetSpaces as $index => $space) {
+    //   $spacesArgs['tkn_boldText_space' . $index] = $space->getName();
+    // }
 
-    self::message(clienttranslate('${player_name} chooses to ${tkn_boldText_plotName} in ${spacesLog}'), [
+    self::message(clienttranslate('${player_name} chooses to perform ${tkn_boldText_plotName} Plot'), [
       'player' => $player,
       'tkn_boldText_plotName' => $plotName,
-      'spacesLog' => [
-        'log' => $spacesLog,
-        'args' => $spacesArgs,
-      ],
+      // 'spacesLog' => [
+      //   'log' => $spacesLog,
+      //   'args' => $spacesArgs,
+      // ],
       'i18n' => ['tkn_boldText_plotName']
     ]);
   }

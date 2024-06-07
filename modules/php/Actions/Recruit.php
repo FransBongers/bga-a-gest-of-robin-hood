@@ -15,11 +15,37 @@ use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\Spaces;
 
 
-class Recruit extends \AGestOfRobinHood\Models\AtomicAction
+class Recruit extends \AGestOfRobinHood\Actions\Plot
 {
   public function getState()
   {
     return ST_RECRUIT;
+  }
+
+  // ..######..########....###....########.########
+  // .##....##....##......##.##......##....##......
+  // .##..........##.....##...##.....##....##......
+  // ..######.....##....##.....##....##....######..
+  // .......##....##....#########....##....##......
+  // .##....##....##....##.....##....##....##......
+  // ..######.....##....##.....##....##....########
+
+  // ....###.....######..########.####..#######..##....##
+  // ...##.##...##....##....##.....##..##.....##.###...##
+  // ..##...##..##..........##.....##..##.....##.####..##
+  // .##.....##.##..........##.....##..##.....##.##.##.##
+  // .#########.##..........##.....##..##.....##.##..####
+  // .##.....##.##....##....##.....##..##.....##.##...###
+  // .##.....##..######.....##....####..#######..##....##
+
+  public function stRecruit()
+  {
+
+    $player = self::getPlayer();
+
+    if (!$this->canBePerformed($player, $player->getShillings())) {
+      $this->resolveAction(['automatic' => true]);
+    }
   }
 
   // ....###....########...######....######.
@@ -170,6 +196,8 @@ class Recruit extends \AGestOfRobinHood\Models\AtomicAction
         break;
     }
 
+    $this->insertPlotAction($player);
+
     $this->resolveAction($args);
   }
 
@@ -181,13 +209,29 @@ class Recruit extends \AGestOfRobinHood\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
+  public function canBePerformed($player, $availableShillings)
+  {
+    if ($availableShillings === 0) {
+      return false;
+    }
+
+    return count(Utils::filter(Spaces::getAll()->toArray(), function ($space) {
+      return $space->getStatus() !== SUBMISSIVE && $space->getId() !== OLLERTON_HILL;
+    })) > 0;
+  }
+
+  public function getName()
+  {
+    return clienttranslate('Recruit');
+  }
+
   private function flipAllMerryMenToHidden($player, $space)
   {
     $forces = Forces::getInLocation($space->getId())->toArray();
     $revealedMerryMen = Utils::filter($forces, function ($merryMan) {
       return !$merryMan->isHidden() && $merryMan->getType() === MERRY_MEN || $merryMan->getType() === ROBIN_HOOD;
     });
-    foreach($revealedMerryMen as $force) {
+    foreach ($revealedMerryMen as $force) {
       $force->hide($player);
     }
   }
@@ -211,10 +255,10 @@ class Recruit extends \AGestOfRobinHood\Models\AtomicAction
     if ($recruitRobinHood) {
       $robinHood = Forces::get(ROBIN_HOOD);
       $robinHood->setLocation($spaceId);
-      $numberToPlace --;
+      $numberToPlace--;
     }
 
-    for ($i = 0; $i < $numberToPlace; $i ++) {
+    for ($i = 0; $i < $numberToPlace; $i++) {
       $merryMan = Forces::getTopOf(MERRY_MEN_SUPPLY);
       $merryMan->setLocation($spaceId);
       $merryMenToPlace[] = $merryMan;
@@ -230,10 +274,11 @@ class Recruit extends \AGestOfRobinHood\Models\AtomicAction
     });
   }
 
-  public function getAlreadyRecruitedSpaceIds() {
+  public function getAlreadyRecruitedSpaceIds()
+  {
     $nodes = Engine::getResolvedActions([RECRUIT]);
     $spaceIds = [];
-    foreach($nodes as $node) {
+    foreach ($nodes as $node) {
       $spaceIds[] = $node->getActionResolutionArgs()['spaceId'];
     }
     return $spaceIds;

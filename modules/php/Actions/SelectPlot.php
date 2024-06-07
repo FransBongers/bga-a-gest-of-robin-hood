@@ -32,16 +32,17 @@ class SelectPlot extends \AGestOfRobinHood\Models\AtomicAction
 
   public function argsSelectPlot()
   {
-    $action = $action = $this->getAction();
+    // $action = $this->getSelectedAction();
 
-    $numberOfSpaces = $action === PLOTS_AND_DEEDS ? 3 : 1;
+    // $numberOfSpaces = $action === PLOTS_AND_DEEDS ? 3 : 1;
 
     $player = self::getPlayer();
 
     $data = [
-      'options' => $player->isRobinHood() ?
-        $this->getRobinHoodOptions($player, $numberOfSpaces) :
-        $this->getSheriffOptions($player, $numberOfSpaces),
+      'options' => $this->getOptions($player),
+      // $player->isRobinHood() ?
+      //   $this->getRobinHoodOptions($player, $numberOfSpaces) :
+      //   $this->getSheriffOptions($player, $numberOfSpaces),
     ];
 
     return $data;
@@ -67,20 +68,7 @@ class SelectPlot extends \AGestOfRobinHood\Models\AtomicAction
   {
     $player = self::getPlayer();
 
-    $shillings = 1;
-
-    if ($player->isSheriff()) {
-      $action = $this->getAction();
-      if ($action === EVENT) {
-        $shillings = 2;
-      } else if ($action === PLOTS_AND_DEEDS) {
-        $shillings = 3;
-      }
-    }
-
-    $player->incShillings($shillings, false);
-
-    Notifications::passAction($player, $shillings);
+    // Notifications::passAction($player, $shillings);
     // Stats::incPassActionCount($player->getId(), 1);
     Engine::resolve(PASS);
   }
@@ -90,7 +78,7 @@ class SelectPlot extends \AGestOfRobinHood\Models\AtomicAction
     self::checkAction('actSelectPlot');
     Notifications::log('args', $args);
     $plotId = $args['plotId'];
-    $spaceIds = $args['spaceIds'];
+    // $spaceIds = $args['spaceIds'];
 
     $stateArgs = $this->argsSelectPlot();
 
@@ -100,42 +88,49 @@ class SelectPlot extends \AGestOfRobinHood\Models\AtomicAction
       throw new \feException("ERROR 006");
     }
 
-    $option = $options[$plotId];
-    $targetSpaces = [];
+    // $option = $options[$plotId];
+    // $targetSpaces = [];
 
-    foreach ($spaceIds as $spaceId) {
-      $space = Utils::array_find($option['spaces'], function ($space) use ($spaceId) {
-        return $space->getId() === $spaceId;
-      });
-      if ($space === null) {
-        throw new \feException("ERROR 007");
-      }
-      $targetSpaces[] = $space;
-    }
+    // foreach ($spaceIds as $spaceId) {
+    //   $space = Utils::array_find($option['spaces'], function ($space) use ($spaceId) {
+    //     return $space->getId() === $spaceId;
+    //   });
+    //   if ($space === null) {
+    //     throw new \feException("ERROR 007");
+    //   }
+    //   $targetSpaces[] = $space;
+    // }
 
-    Notifications::selectedPlot(self::getPlayer(), $option['plotName'], $targetSpaces);
+    Notifications::selectedPlot(self::getPlayer(), $options[$plotId]);
 
     $parent = $this->ctx->getParent();
     // Plots that can be resolved automatically
-    if (in_array($plotId, [HIRE])) {
-      $parent->pushChild(new LeafNode([
-        'action' => $plotId,
-        'playerId' => $this->ctx->getPlayerId(),
-        'spaceIds' => $spaceIds,
-      ]));
-    } else {
 
-      for ($i = 0; $i < count($targetSpaces); $i++) {
-        $parent->pushChild(new LeafNode([
-          'action' => $plotId,
-          'playerId' => $this->ctx->getPlayerId(),
-          'spaceIds' => $spaceIds,
-          // 'optional' => true,
-        ]));
-      }
-    }
+    $parent->pushChild(new LeafNode([
+      'action' => $plotId,
+      'playerId' => $this->ctx->getPlayerId(),
+      // 'optional' => true,
+    ]));
 
-    if ($this->getAction() === PLOTS_AND_DEEDS) {
+    // if (in_array($plotId, [HIRE])) {
+    //   $parent->pushChild(new LeafNode([
+    //     'action' => $plotId,
+    //     'playerId' => $this->ctx->getPlayerId(),
+    //     'spaceIds' => $spaceIds,
+    //   ]));
+    // } else {
+
+    //   for ($i = 0; $i < count($targetSpaces); $i++) {
+    //     $parent->pushChild(new LeafNode([
+    //       'action' => $plotId,
+    //       'playerId' => $this->ctx->getPlayerId(),
+    //       'spaceIds' => $spaceIds,
+    //       // 'optional' => true,
+    //     ]));
+    //   }
+    // }
+
+    if ($this->getSelectedAction() === PLOTS_AND_DEEDS) {
       $parent->pushChild(new LeafNode([
         'action' => SELECT_DEED,
         'playerId' => $this->ctx->getPlayerId(),
@@ -154,11 +149,33 @@ class SelectPlot extends \AGestOfRobinHood\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
-  public function getAction()
+  public function getSelectedAction()
   {
     $node = Engine::getResolvedActions([CHOOSE_ACTION])[0];
     $action = $node->getActionResolutionArgs()['action'];
     return $action;
+  }
+
+  public function getOptions($player)
+  {
+    $side = $player->getSide();
+    Notifications::log('side', $side);
+    $plots = $side === ROBIN_HOOD ? [RECRUIT, ROB, SNEAK] : [HIRE, PATROL, CAPTURE];
+
+    $options = [];
+    $availableShillings = $player->getShillings();
+
+    foreach ($plots as $plot) {
+      $action = AtomicActions::get($plot);
+      $canBePerformed = $action->canBePerformed($player, $availableShillings);
+      Notifications::log('canBePerformed', $canBePerformed);
+      if (!$canBePerformed) {
+        continue;
+      }
+      $options[$plot] = $action->getName();
+    }
+
+    return $options;
   }
 
   public function getRobinHoodOptions($player, $numberOfSpaces)

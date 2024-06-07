@@ -16,7 +16,7 @@ use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\Spaces;
 
 
-class Hire extends \AGestOfRobinHood\Models\AtomicAction
+class Hire extends \AGestOfRobinHood\Actions\Plot
 {
   public function getState()
   {
@@ -120,6 +120,20 @@ class Hire extends \AGestOfRobinHood\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
+  public function canBePerformed($player, $availableShillings)
+  {
+    if ($availableShillings < 2) {
+      return false;
+    }
+
+    return count($this->getOptions()) > 0;
+  }
+
+  public function getName()
+  {
+    return clienttranslate('Hire');
+  }
+
   private function moveHenchmen($spaceId, $number)
   {
     $result = [];
@@ -132,11 +146,6 @@ class Hire extends \AGestOfRobinHood\Models\AtomicAction
       $result[] = $henchman;
     }
     return $result;
-  }
-
-  public function getName()
-  {
-    return clienttranslate('Hire');
   }
 
   public function getOptions()

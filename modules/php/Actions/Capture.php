@@ -15,7 +15,7 @@ use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\Spaces;
 
 
-class Capture extends \AGestOfRobinHood\Models\AtomicAction
+class Capture extends \AGestOfRobinHood\Actions\Plot
 {
   public function getState()
   {
@@ -74,6 +74,16 @@ class Capture extends \AGestOfRobinHood\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
+
+  public function canBePerformed($player, $availableShillings)
+  {
+    return count($this->getOptions()) > 0;
+  }
+
+  public function getName()
+  {
+    return clienttranslate('Capture');
+  }
 
   public function getOptions()
   {
