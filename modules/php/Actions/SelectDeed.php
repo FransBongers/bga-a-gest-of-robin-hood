@@ -102,7 +102,6 @@ class SelectDeed extends \AGestOfRobinHood\Models\AtomicAction
   public function getOptions($player)
   {
     $side = $player->getSide();
-    Notifications::log('side', $side);
     $deeds = $side === ROBIN_HOOD ? [DONATE, INSPIRE, SWASHBUCKLE, TURNCOAT] : [RIDE, CONFISCATE, DISPERSE];
 
     $options = [];
@@ -110,7 +109,6 @@ class SelectDeed extends \AGestOfRobinHood\Models\AtomicAction
     foreach ($deeds as $deed) {
       $action = AtomicActions::get($deed);
       $canBePerformed = $action->canBePerformed($player);
-      Notifications::log('canBePerformed', $canBePerformed);
       if (!$canBePerformed) {
         continue;
       }

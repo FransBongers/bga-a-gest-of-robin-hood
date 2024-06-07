@@ -39,7 +39,7 @@ class Space extends \AGestOfRobinHood\Helpers\DB_Model
   protected $name = '';
   protected $setupStatus = null;
   protected $road = null;
-  
+
 
 
   // public function __construct($row)
@@ -66,7 +66,8 @@ class Space extends \AGestOfRobinHood\Helpers\DB_Model
     return Spaces::get($this->adjacentSpaceIds)->toArray();
   }
 
-  public function getSingleForce($type) {
+  public function getSingleForce($type)
+  {
     $forces = $this->getForces($type);
     $count = count($forces);
     if ($count === 0) {
@@ -75,7 +76,8 @@ class Space extends \AGestOfRobinHood\Helpers\DB_Model
     return $forces[$count - 1];
   }
 
-  public function getForces($type = null) {
+  public function getForces($type = null)
+  {
     $forces = Forces::getInLocationOrdered($this->id)->toArray();
     if ($type === null) {
       return $forces;
@@ -84,7 +86,7 @@ class Space extends \AGestOfRobinHood\Helpers\DB_Model
       return $force->getType() === $type;
     });
   }
-  
+
   public function getNextSpaceAlongRoad()
   {
     if ($this->road === null) {
@@ -114,5 +116,10 @@ class Space extends \AGestOfRobinHood\Helpers\DB_Model
   public function isSubmissive()
   {
     return $this->status === SUBMISSIVE;
+  }
+
+  public function isForest()
+  {
+    return in_array($this->id, [SHIRE_WOOD, SOUTHWELL_FOREST]);
   }
 }

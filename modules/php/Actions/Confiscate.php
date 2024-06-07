@@ -75,6 +75,16 @@ class Confiscate extends \AGestOfRobinHood\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
+  public function getName()
+  {
+    return clienttranslate('Confiscate');
+  }
+
+  public function canBePerformed($player)
+  {
+    return true;
+  }
+
   public function getOptions()
   {
     return GameMap::getSpacesWithMerryMen();

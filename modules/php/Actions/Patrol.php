@@ -10,10 +10,11 @@ use AGestOfRobinHood\Core\Stats;
 use AGestOfRobinHood\Helpers\GameMap;
 use AGestOfRobinHood\Helpers\Locations;
 use AGestOfRobinHood\Helpers\Utils;
+use AGestOfRobinHood\Managers\Forces;
 use AGestOfRobinHood\Managers\Markers;
 use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\Spaces;
-
+use AGestOfRobinHood\Models\Force;
 
 class Patrol extends \AGestOfRobinHood\Actions\Plot
 {
@@ -32,7 +33,9 @@ class Patrol extends \AGestOfRobinHood\Actions\Plot
 
   public function argsPatrol()
   {
-    $data = [];
+    $data = [
+      'options' => $this->getOptions(),
+    ];
 
     return $data;
   }
@@ -64,6 +67,76 @@ class Patrol extends \AGestOfRobinHood\Actions\Plot
   {
     self::checkAction('actPatrol');
 
+    $spaceId = $args['spaceId'];
+    $henchmenIds = $args['henchmenIds'];
+
+    $options = $this->getOptions();
+
+    if (!isset($options[$spaceId])) {
+      throw new \feException("ERROR 018");
+    }
+
+    $option = $options[$spaceId];
+
+    $henchmen = Utils::filter($option['adjacentHenchmen'], function ($henchman) use ($henchmenIds) {
+      return in_array($henchman->getId(), $henchmenIds);
+    });
+
+    if (count($henchmen) !== count($henchmenIds)) {
+      throw new \feException("ERROR 019");
+    }
+
+    $moves = [];
+
+    foreach ($henchmen as $henchman) {
+      $currentSpaceId = $henchman->getLocation();
+      $henchman->setLocation($spaceId);
+      if (isset($moves[$currentSpaceId])) {
+        $moves[$currentSpaceId]['henchmen'][] = $henchman;
+      } else {
+        $moves[$currentSpaceId] = [
+          'henchmen' => [$henchman],
+          'space' => Spaces::get($currentSpaceId),
+        ];
+      }
+    }
+
+    $player = self::getPlayer();
+    Notifications::log('moves', $moves);
+    $player->payShillings(2);
+
+    $patrolSpace = $option['space'];
+
+    foreach ($moves as $spaceId => $move) {
+      Notifications::moveForces($player, $move['space'], $patrolSpace, $move['henchmen']);
+    }
+
+    $forcesInSpace = $patrolSpace->getForces();
+    $numberOfHenchmen = count(Utils::filter($forcesInSpace, function ($force) {
+      return $force->isHenchman();
+    }));
+    $hiddenMerryMen = Utils::filter($forcesInSpace, function ($force) {
+      return $force->isMerryMan() && $force->isHidden();
+    });
+    if ($patrolSpace->isForest()) {
+      $numberOfHenchmen = floor($numberOfHenchmen / 2);
+    }
+
+    // Notifications::
+
+    $numberOfMerryMenToReveal = min(count($hiddenMerryMen), $numberOfHenchmen);
+
+    for ($i = 0; $i < $numberOfMerryMenToReveal; $i++) {
+      $index = bga_rand(0, count($hiddenMerryMen) - 1);
+      $revealedMerryMan = $hiddenMerryMen[$index];
+      $revealedMerryMan->reveal($player);
+      $hiddenMerryMen = Utils::filter($hiddenMerryMen, function ($hiddenMerryMan) use ($revealedMerryMan) {
+        return $hiddenMerryMan->getId() !== $revealedMerryMan->getId();
+      });
+    }
+
+    $this->insertPlotAction($player);
+
     $this->resolveAction($args);
   }
 
@@ -91,10 +164,47 @@ class Patrol extends \AGestOfRobinHood\Actions\Plot
 
   public function getOptions()
   {
-    $spaces = Utils::filter(Spaces::getAll()->toArray(), function ($space) {
-      return $space->getId() !== OLLERTON_HILL;
-    });
-    // TODO: check for adjacent henchmen?
-    return $spaces;
+    $options = [];
+
+    $alreadyPatrolledspaceIds = [];
+    $alreadyMovedHenchmenIds = [];
+    $nodes = Engine::getResolvedActions([PATROL]);
+    foreach ($nodes as $node) {
+      $resArgs = $node->getActionResolutionArgs();
+      $alreadyPatrolledspaceIds[] = $resArgs['spaceId'];
+      $alreadyMovedHenchmenIds = array_merge($alreadyMovedHenchmenIds, $resArgs['henchmenIds']);
+    }
+
+    $forces = Forces::getAll()->toArray();
+
+    foreach (Spaces::getAll() as $spaceId => $space) {
+      if ($spaceId === OLLERTON_HILL || in_array($spaceId, $alreadyPatrolledspaceIds)) {
+        continue;
+      }
+      $adjacentSpaceIds = $space->getAdjacentSpaceIds();
+
+      $adjacentHenchmen = Utils::filter($forces, function ($force) use ($adjacentSpaceIds, $alreadyMovedHenchmenIds) {
+        return $force->isHenchman() && in_array($force->getLocation(), $adjacentSpaceIds) && !in_array($force->getId(), $alreadyMovedHenchmenIds);
+      });
+      $countHenchmenInSpace = Utils::filter($forces, function ($force) use ($spaceId) {
+        return $force->isHenchman() && $force->getLocation() === $spaceId;
+      });
+      $spaceHasHiddenMerryMen = Utils::array_some($forces, function ($force) use ($spaceId) {
+        return $force->isMerryMan() && $force->isHidden() && $force->getLocation() === $spaceId;
+      });
+      $isForest = in_array($spaceId, [SHIRE_WOOD, SOUTHWELL_FOREST]);
+      if (
+        count($adjacentHenchmen) > 0 ||
+        ($isForest && $countHenchmenInSpace >= 2 && $spaceHasHiddenMerryMen) ||
+        (!$isForest && $countHenchmenInSpace > 0 && $spaceHasHiddenMerryMen)
+      ) {
+        $options[$spaceId] = [
+          'space' => $space,
+          'adjacentHenchmen' => $adjacentHenchmen,
+        ];
+      }
+    }
+
+    return $options;
   }
 }

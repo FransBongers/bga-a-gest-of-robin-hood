@@ -66,6 +66,7 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     chooseAction: ChooseActionState;
     hire: HireState;
     moveCarriage: MoveCarriageState;
+    patrol: PatrolState;
     recruit: RecruitState;
     rob: RobState;
     selectDeed: SelectDeedState;
@@ -111,6 +112,7 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
       chooseAction: new ChooseActionState(this),
       hire: new HireState(this),
       moveCarriage: new MoveCarriageState(this),
+      patrol: new PatrolState(this),
       recruit: new RecruitState(this),
       rob: new RobState(this),
       selectDeed: new SelectDeedState(this),
@@ -135,7 +137,6 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     this.markerManager = new MarkerManager(this);
 
     this.gameMap = new GameMap(this);
-
 
     if (this.notificationManager != undefined) {
       this.notificationManager.destroy();
@@ -589,6 +590,14 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
       return;
     }
     node.classList.add(GEST_SELECTED);
+  }
+
+  removeSelectedFromElement({ id }: { id: string }) {
+    const node = $(id);
+    if (node === null) {
+      return;
+    }
+    node.classList.remove(GEST_SELECTED);
   }
 
   // .########...#######..####.##.......########.########.

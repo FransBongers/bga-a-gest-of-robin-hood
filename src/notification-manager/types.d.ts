@@ -55,6 +55,13 @@ interface NotifMoveCarriageArgs extends NotifWithPlayerArgs {
   toSpaceId: string;
 }
 
+interface NotifMoveForcesArgs extends NotifWithPlayerArgs {
+  forces: GestForce[];
+  type: string;
+  toSpaceId: string;
+}
+
+
 interface NotifMoveCarriagePrivateArgs extends NotifWithPlayerArgs {
   carriage: GestForce;
   henchman: GestForce | null;

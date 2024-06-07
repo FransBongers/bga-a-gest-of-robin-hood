@@ -70,7 +70,6 @@ class Sneak extends \AGestOfRobinHood\Actions\Plot
   public function actSneak($args)
   {
     self::checkAction('actSneak');
-    Notifications::log('args', $args);
     $merryMenIds = $args['merryMenIds'];
     $toSpaceId = $args['toSpaceId'];
     $fromSpaceId = $args['fromSpaceId'];

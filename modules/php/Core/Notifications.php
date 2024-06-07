@@ -255,6 +255,20 @@ class Notifications
     ]);
   }
 
+  public static function moveForces($player, $fromSpace, $toSpace, $forces)
+  {
+    // TODO: replace forces with icons
+    self::notifyAll("moveForces", clienttranslate('${player_name} moves Forces from ${tkn_boldText_fromSpace} to ${tkn_boldText_toSpace}'), [
+      'player' => $player,
+      'tkn_boldText_fromSpace' => $fromSpace->getName(),
+      'tkn_boldText_toSpace' => $toSpace->getName(),
+      'forces' => $forces,
+      'type' => $forces[0]->getType(),
+      'toSpaceId' => $toSpace->getId(),
+      'i18n' => ['tkn_boldText_fromSpace', 'tkn_boldText_toSpace']
+    ]);
+  }
+
   public static function revealCarriage($player, $carriage)
   {
     self::notifyAll("revealForce", clienttranslate('${player_name} reveals ${tkn_boldText_carriageName} in ${tkn_boldText_spaceName}'), [

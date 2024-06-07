@@ -61,6 +61,7 @@
     "src/states/ConfirmTurn.ts",
     "src/states/Hire.ts",
     "src/states/MoveCarriage.ts",
+    "src/states/Patrol.ts",
     "src/states/Recruit.ts",
     "src/states/Rob.ts",
     "src/states/SelectDeed.ts",

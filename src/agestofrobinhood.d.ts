@@ -54,6 +54,7 @@ interface AGestOfRobinHoodGame extends Game {
     callback: (event: PointerEvent) => void;
   }) => void;
   setElementSelected: (props: { id: string }) => void;
+  removeSelectedFromElement: (props: { id: string }) => void;
   takeAction: (props: {
     action: string;
     atomicAction?: boolean;

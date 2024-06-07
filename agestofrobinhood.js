@@ -1722,6 +1722,7 @@ var AGestOfRobinHood = (function () {
             chooseAction: new ChooseActionState(this),
             hire: new HireState(this),
             moveCarriage: new MoveCarriageState(this),
+            patrol: new PatrolState(this),
             recruit: new RecruitState(this),
             rob: new RobState(this),
             selectDeed: new SelectDeedState(this),
@@ -2002,6 +2003,14 @@ var AGestOfRobinHood = (function () {
             return;
         }
         node.classList.add(GEST_SELECTED);
+    };
+    AGestOfRobinHood.prototype.removeSelectedFromElement = function (_a) {
+        var id = _a.id;
+        var node = $(id);
+        if (node === null) {
+            return;
+        }
+        node.classList.remove(GEST_SELECTED);
     };
     AGestOfRobinHood.prototype.connect = function (node, action, callback) {
         this._connections.push(dojo.connect($(node), action, callback));
@@ -3332,6 +3341,7 @@ var NotificationManager = (function () {
             'moveCarriage',
             'moveCarriagePrivate',
             'moveCarriagePublic',
+            'moveForces',
             'moveRoyalFavourMarker',
             'passAction',
             'revealCarriage',
@@ -3552,6 +3562,21 @@ var NotificationManager = (function () {
                             promises.push(this.game.gameMap.moveForcePrivate({ force: henchman }));
                         }
                         return [4, Promise.all(promises)];
+                    case 1:
+                        _b.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    NotificationManager.prototype.notif_moveForces = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, forces, toSpaceId, type;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = notif.args, forces = _a.forces, toSpaceId = _a.toSpaceId, type = _a.type;
+                        return [4, this.game.gameMap.forces["".concat(type, "_").concat(toSpaceId)].addCards(forces)];
                     case 1:
                         _b.sent();
                         return [2];
@@ -4747,6 +4772,122 @@ var MoveCarriageState = (function () {
         });
     };
     return MoveCarriageState;
+}());
+var PatrolState = (function () {
+    function PatrolState(game) {
+        this.selectedHenchmenIds = [];
+        this.game = game;
+    }
+    PatrolState.prototype.onEnteringState = function (args) {
+        debug('Entering PatrolState');
+        this.selectedHenchmenIds = [];
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    PatrolState.prototype.onLeavingState = function () {
+        debug('Leaving PatrolState');
+    };
+    PatrolState.prototype.setDescription = function (activePlayerId) { };
+    PatrolState.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must select a Space to move Henchmen to'),
+            args: {
+                you: '${you}',
+            },
+        });
+        Object.entries(this.args.options).forEach(function (_a) {
+            var spaceId = _a[0], _b = _a[1], space = _b.space, adjacentHenchmen = _b.adjacentHenchmen;
+            _this.game.addPrimaryActionButton({
+                id: "".concat(spaceId, "_btn"),
+                text: _(space.name),
+                callback: function () {
+                    if (adjacentHenchmen.length > 0) {
+                        _this.updateInterfaceSelectHenchmen({ space: space, adjacentHenchmen: adjacentHenchmen });
+                    }
+                    else {
+                        _this.updateInterfaceConfirm({ space: space });
+                    }
+                },
+            });
+        });
+        this.game.addPassButton({
+            optionalAction: this.args.optionalAction,
+        });
+        this.game.addUndoButtons(this.args);
+    };
+    PatrolState.prototype.updateInterfaceSelectHenchmen = function (_a) {
+        var _this = this;
+        var adjacentHenchmen = _a.adjacentHenchmen, space = _a.space;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must select Henchmen to move to ${spaceName}'),
+            args: {
+                you: '${you}',
+                spaceName: _(space.name),
+            },
+        });
+        adjacentHenchmen.forEach(function (henchman) {
+            _this.game.setElementSelectable({
+                id: henchman.id,
+                callback: function () { return _this.handleHenchmenClick({ henchman: henchman }); },
+            });
+        });
+        this.game.addPrimaryActionButton({
+            id: 'done_btn',
+            text: _('Done'),
+            callback: function () { return _this.updateInterfaceConfirm({ space: space }); },
+        });
+        this.game.addCancelButton();
+    };
+    PatrolState.prototype.updateInterfaceConfirm = function (_a) {
+        var _this = this;
+        var space = _a.space;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: this.selectedHenchmenIds.length > 0
+                ? _('Move ${count} Henchmen to ${spaceName} and Patrol?')
+                : _('Patrol in ${spaceName}?'),
+            args: {
+                spaceName: _(space.name),
+                count: this.selectedHenchmenIds.length,
+            },
+        });
+        var callback = function () {
+            _this.game.clearPossible();
+            _this.game.takeAction({
+                action: 'actPatrol',
+                args: {
+                    spaceId: space.id,
+                    henchmenIds: _this.selectedHenchmenIds,
+                },
+            });
+        };
+        if (this.game.settings.get({
+            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+        }) === PREF_ENABLED) {
+            callback();
+        }
+        else {
+            this.game.addConfirmButton({
+                callback: callback,
+            });
+        }
+        this.game.addCancelButton();
+    };
+    PatrolState.prototype.handleHenchmenClick = function (_a) {
+        var henchman = _a.henchman;
+        if (this.selectedHenchmenIds.includes(henchman.id)) {
+            this.game.removeSelectedFromElement({ id: henchman.id });
+            this.selectedHenchmenIds = this.selectedHenchmenIds.filter(function (id) { return id !== henchman.id; });
+        }
+        else {
+            this.game.setElementSelected({ id: henchman.id });
+            this.selectedHenchmenIds.push(henchman.id);
+        }
+    };
+    return PatrolState;
 }());
 var RecruitState = (function () {
     function RecruitState(game) {

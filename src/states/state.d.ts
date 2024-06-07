@@ -22,11 +22,14 @@ interface OnEnteringChooseActionStateArgs extends CommonArgs {
 }
 
 interface OnEnteringHireStateArgs extends CommonArgs {
-  options: Record<string, {
-    space: GestSpace;
-    action: 'place' | 'submit';
-    max: number;
-  }>;
+  options: Record<
+    string,
+    {
+      space: GestSpace;
+      action: 'place' | 'submit';
+      max: number;
+    }
+  >;
 }
 
 interface OnEnteringMoveCarriageStateArgs extends CommonArgs {
@@ -41,6 +44,16 @@ interface OnEnteringMoveCarriageStateArgs extends CommonArgs {
       }
     >;
   };
+}
+
+interface OnEnteringPatrolStateArgs extends CommonArgs {
+  options: Record<
+    string,
+    {
+      space: GestSpace;
+      adjacentHenchmen: GestForce[];
+    }
+  >;
 }
 
 interface RecruitOption {

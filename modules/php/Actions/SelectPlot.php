@@ -76,7 +76,6 @@ class SelectPlot extends \AGestOfRobinHood\Models\AtomicAction
   public function actSelectPlot($args)
   {
     self::checkAction('actSelectPlot');
-    Notifications::log('args', $args);
     $plotId = $args['plotId'];
     // $spaceIds = $args['spaceIds'];
 
@@ -159,7 +158,6 @@ class SelectPlot extends \AGestOfRobinHood\Models\AtomicAction
   public function getOptions($player)
   {
     $side = $player->getSide();
-    Notifications::log('side', $side);
     $plots = $side === ROBIN_HOOD ? [RECRUIT, ROB, SNEAK] : [HIRE, PATROL, CAPTURE];
 
     $options = [];
@@ -168,7 +166,6 @@ class SelectPlot extends \AGestOfRobinHood\Models\AtomicAction
     foreach ($plots as $plot) {
       $action = AtomicActions::get($plot);
       $canBePerformed = $action->canBePerformed($player, $availableShillings);
-      Notifications::log('canBePerformed', $canBePerformed);
       if (!$canBePerformed) {
         continue;
       }

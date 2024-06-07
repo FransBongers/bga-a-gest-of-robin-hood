@@ -58,6 +58,7 @@ class NotificationManager {
       'moveCarriage',
       'moveCarriagePrivate',
       'moveCarriagePublic',
+      'moveForces',
       'moveRoyalFavourMarker',
       'passAction',
       'revealCarriage',
@@ -358,6 +359,11 @@ class NotificationManager {
     }
 
     await Promise.all(promises);
+  }
+
+  async notif_moveForces(notif: Notif<NotifMoveForcesArgs>) {
+    const { forces, toSpaceId, type } = notif.args;
+    await this.game.gameMap.forces[`${type}_${toSpaceId}`].addCards(forces);
   }
 
   async notif_moveRoyalFavourMarker(
