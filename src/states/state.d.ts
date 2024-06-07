@@ -21,6 +21,14 @@ interface OnEnteringChooseActionStateArgs extends CommonArgs {
   plotsAndDeeds: boolean;
 }
 
+interface OnEnteringHireStateArgs extends CommonArgs {
+  options: Record<string, {
+    space: GestSpace;
+    action: 'place' | 'submit';
+    max: number;
+  }>;
+}
+
 interface OnEnteringMoveCarriageStateArgs extends CommonArgs {
   _private?: {
     options: Record<

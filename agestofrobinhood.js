@@ -1720,6 +1720,7 @@ var AGestOfRobinHood = (function () {
             confirmPartialTurn: new ConfirmPartialTurnState(this),
             confirmTurn: new ConfirmTurnState(this),
             chooseAction: new ChooseActionState(this),
+            hire: new HireState(this),
             moveCarriage: new MoveCarriageState(this),
             recruit: new RecruitState(this),
             rob: new RobState(this),
@@ -4507,6 +4508,114 @@ var ConfirmTurnState = (function () {
         this.game.addUndoButtons(this.args);
     };
     return ConfirmTurnState;
+}());
+var HireState = (function () {
+    function HireState(game) {
+        this.game = game;
+    }
+    HireState.prototype.onEnteringState = function (args) {
+        debug('Entering HireState');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    HireState.prototype.onLeavingState = function () {
+        debug('Leaving HireState');
+    };
+    HireState.prototype.setDescription = function (activePlayerId) { };
+    HireState.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must select a space to Hire in'),
+            args: {
+                you: '${you}',
+            },
+        });
+        Object.entries(this.args.options).forEach(function (_a) {
+            var spaceId = _a[0], _b = _a[1], action = _b.action, space = _b.space, max = _b.max;
+            _this.game.addPrimaryActionButton({
+                id: "".concat(spaceId, "_btn"),
+                text: _(space.name),
+                callback: function () {
+                    if (action === 'place') {
+                        _this.updateIntefaceSelectNumber({ action: action, space: space, max: max });
+                    }
+                    else {
+                        _this.updateInterfaceConfirm({ action: action, space: space });
+                    }
+                },
+            });
+        });
+        this.game.addPassButton({
+            optionalAction: this.args.optionalAction,
+        });
+        this.game.addUndoButtons(this.args);
+    };
+    HireState.prototype.updateIntefaceSelectNumber = function (_a) {
+        var _this = this;
+        var max = _a.max, space = _a.space, action = _a.action;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must select the number of Henchmen to place'),
+            args: {
+                you: '${you}',
+            },
+        });
+        var _loop_3 = function (i) {
+            this_1.game.addPrimaryActionButton({
+                id: "place_".concat(i, "_btn"),
+                text: "".concat(i),
+                callback: function () { return _this.updateInterfaceConfirm({
+                    count: i,
+                    action: action,
+                    space: space
+                }); }
+            });
+        };
+        var this_1 = this;
+        for (var i = 1; i <= max; i++) {
+            _loop_3(i);
+        }
+        this.game.addCancelButton();
+    };
+    HireState.prototype.updateInterfaceConfirm = function (_a) {
+        var _this = this;
+        var _b = _a.count, count = _b === void 0 ? 0 : _b, space = _a.space, action = _a.action;
+        this.game.clearPossible();
+        var textMap = {
+            place: _('Place ${count} Henchmen in ${spaceName}'),
+            submit: _('Set ${spaceName} to Submissive?'),
+        };
+        this.game.clientUpdatePageTitle({
+            text: textMap[action],
+            args: {
+                spaceName: _(space.name),
+                count: count,
+            },
+        });
+        var callback = function () {
+            _this.game.clearPossible();
+            _this.game.takeAction({
+                action: 'actHire',
+                args: {
+                    spaceId: space.id,
+                    count: count,
+                },
+            });
+        };
+        if (this.game.settings.get({
+            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+        }) === PREF_ENABLED) {
+            callback();
+        }
+        else {
+            this.game.addConfirmButton({
+                callback: callback,
+            });
+        }
+        this.game.addCancelButton();
+    };
+    return HireState;
 }());
 var MoveCarriageState = (function () {
     function MoveCarriageState(game) {

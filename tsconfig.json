@@ -59,6 +59,7 @@
     "src/states/ChooseAction.ts",
     "src/states/ConfirmPartialTurn.ts",
     "src/states/ConfirmTurn.ts",
+    "src/states/Hire.ts",
     "src/states/MoveCarriage.ts",
     "src/states/Recruit.ts",
     "src/states/Rob.ts",

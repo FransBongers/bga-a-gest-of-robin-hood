@@ -41,28 +41,11 @@ class Hire extends \AGestOfRobinHood\Actions\Plot
 
   public function stHire()
   {
-    $info = $this->ctx->getInfo();
-    $spaceIds = $info['spaceIds'];
-
-
-
-    $spaces = Spaces::getMany($spaceIds)->toArray();
     $player = self::getPlayer();
 
-    foreach ($spaces as $space) {
-      $player->payShillings(2);
-      if ($space->getId() === NOTTINGHAM) {
-        $henchmen = $this->moveHenchmen(NOTTINGHAM, 4);
-        Notifications::placeHenchmen($player, $henchmen, $space);
-      } else if ($space->isSubmissive()) {
-        $henchmen = $this->moveHenchmen($space->getId(), 2);
-        Notifications::placeHenchmen($player, $henchmen, $space);
-      } else if ($space->isRevolting()) {
-        $space->setToSubmissive($player);
-      }
+    if (!$this->canBePerformed($player, $player->getShillings())) {
+      $this->resolveAction(['automatic' => true]);
     }
-
-    $this->resolveAction(['automatic' => true]);
   }
 
   // ....###....########...######....######.
@@ -75,7 +58,9 @@ class Hire extends \AGestOfRobinHood\Actions\Plot
 
   public function argsHire()
   {
-    $data = [];
+    $data = [
+      'options' => $this->getOptions(),
+    ];
 
     return $data;
   }
@@ -107,7 +92,38 @@ class Hire extends \AGestOfRobinHood\Actions\Plot
   {
     self::checkAction('actHire');
 
+    $spaceId = $args['spaceId'];
+    $count = $args['count'];
 
+
+
+    $options = $this->getOptions();
+
+    if (!isset($options[$spaceId])) {
+      throw new \feException("ERROR 016");
+    }
+
+    $option = $options[$spaceId];
+
+    if ($count > $option['max']) {
+      throw new \feException("ERROR 017");
+    }
+
+    $space = $option['space'];
+
+    $player = self::getPlayer();
+    $player->payShillings(2);
+    if ($space->getId() === NOTTINGHAM) {
+      $henchmen = $this->moveHenchmen(NOTTINGHAM, $count);
+      Notifications::placeHenchmen($player, $henchmen, $space);
+    } else if ($space->isSubmissive()) {
+      $henchmen = $this->moveHenchmen($space->getId(), $count);
+      Notifications::placeHenchmen($player, $henchmen, $space);
+    } else if ($space->isRevolting()) {
+      $space->setToSubmissive($player);
+    }
+
+    $this->insertPlotAction($player);
 
     $this->resolveAction($args);
   }
@@ -150,9 +166,16 @@ class Hire extends \AGestOfRobinHood\Actions\Plot
 
   public function getOptions()
   {
-    $spaces = Utils::filter(Spaces::getAll()->toArray(), function ($space) {
-      if ($space->isSubmissive()) {
-        return true;
+    $availableHenchmen = count(Forces::getInLocation(HENCHMEN_SUPPLY));
+    $options = [];
+
+    foreach (Spaces::getAll() as $spaceId => $space) {
+      if ($space->isSubmissive() && $availableHenchmen > 0) {
+        $options[$spaceId] = [
+          'action' => 'place',
+          'space' => $space,
+          'max' => min($availableHenchmen, $spaceId === NOTTINGHAM ? 4 : 2),
+        ];
       } else if ($space->isRevolting()) {
         $forces = $space->getForces();
         $merryMenCount = count(Utils::filter($forces, function ($force) {
@@ -161,10 +184,16 @@ class Hire extends \AGestOfRobinHood\Actions\Plot
         $henchMenCount = count(Utils::filter($forces, function ($force) {
           return $force->isHenchMan();
         }));
-        return $henchMenCount > $merryMenCount;
+        if ($henchMenCount > $merryMenCount) {
+          $options[$spaceId] = [
+            'action' => 'submit',
+            'space' => $space,
+            'max' => 0,
+          ];
+        }
       }
-      return false;
-    });
-    return $spaces;
+    }
+
+    return $options;
   }
 }

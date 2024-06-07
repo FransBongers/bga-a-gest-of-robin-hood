@@ -25,7 +25,7 @@ trait DebugTrait
   {
 
     // Forces::get(ROBIN_HOOD)->setHidden(0);
-    $this->debugPlaceHenchmen(REMSTON, 1);
+    $this->debugPlaceHenchmen(REMSTON, 2);
 
     // $action = $node->getActionResolutionArgs()['action'];
 

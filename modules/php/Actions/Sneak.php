@@ -144,6 +144,9 @@ class Sneak extends \AGestOfRobinHood\Actions\Plot
     $player->payShillings(1);
 
     Notifications::sneakMerryMen($player, $merryMen, $moves, $option['space'], $toSpace);
+
+    $this->insertPlotAction($player);
+
     $this->resolveAction($args);
   }
 
