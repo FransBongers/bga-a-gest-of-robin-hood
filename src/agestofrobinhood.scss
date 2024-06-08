@@ -21,6 +21,7 @@
 @use 'logs/logs';
 @use 'settings/settingsModal';
 @use 'nouislider';
+@use "tooltip-manager/tooltip";
 @import '../node_modules/bga-cards/bga-cards';
 
 html {

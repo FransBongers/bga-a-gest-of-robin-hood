@@ -50,12 +50,29 @@ interface AGestOfRobinHoodGame extends Game {
     checkAction?: string; // Action used in checkAction
   }) => void;
   updateLayout: () => void;
+  updateLogTooltips: () => void;
   animationManager: AnimationManager;
   gameMap: GameMap;
   notificationManager: NotificationManager;
   playerManager: PlayerManager;
   settings: Settings;
   tooltipManager: TooltipManager;
+  _last_tooltip_id: number; // generic
+  tooltipsToMap: [tooltipId: number, card_id: string][]; // generic
+}
+
+interface GestCardStaticData {
+  carriageMoves: number;
+  eventType: 'regularEvent' | 'fortuneEvent' | 'royalInspection' | null;
+  id: string;
+  setupLocation: string;
+  strength: number;
+  textDark: string;
+  textLight: string;
+  title: string;
+  titleDark: string;
+  titleLight: string;
+  type: 'eventCard' | 'travellerCard';
 }
 
 interface AGestOfRobinHoodGamedatas extends Gamedatas {

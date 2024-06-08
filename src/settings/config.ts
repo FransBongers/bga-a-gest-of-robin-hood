@@ -115,23 +115,23 @@ const getSettingsConfig = (): Record<string, PlayerPreferenceTab> => ({
         },
         type: "slider",
       },
-      // [CARD_INFO_IN_TOOLTIP]: {
-      //   id: CARD_INFO_IN_TOOLTIP,
-      //   onChangeInSetup: false,
-      //   defaultValue: ENABLED,
-      //   label: _("Show card info in tooltip"),
-      //   type: "select",
-      //   options: [
-      //     {
-      //       label: _("Enabled"),
-      //       value: ENABLED,
-      //     },
-      //     {
-      //       label: _("Disabled (card image only)"),
-      //       value: DISABLED,
-      //     },
-      //   ],
-      // },
+      [PREF_CARD_INFO_IN_TOOLTIP]: {
+        id: PREF_CARD_INFO_IN_TOOLTIP,
+        onChangeInSetup: false,
+        defaultValue: ENABLED,
+        label: _("Show card info in tooltip"),
+        type: "select",
+        options: [
+          {
+            label: _("Enabled"),
+            value: ENABLED,
+          },
+          {
+            label: _("Disabled (card image only)"),
+            value: DISABLED,
+          },
+        ],
+      },
     },
   },
   gameplay: {

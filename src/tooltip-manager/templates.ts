@@ -6,3 +6,29 @@ const tplCardTooltipContainer = ({ card, content }: { card: string; content: str
   ${card}
 </div>`;
 };
+
+const tplCardTooltip = ({
+  card,
+  game,
+  imageOnly = false,
+}: {
+  card: GestCardStaticData;
+  game: AGestOfRobinHoodGame;
+  imageOnly?: boolean;
+}) => {
+  const cardHtml = `<div class="gest_card" data-card-id="${
+    card.id.split('_')[0]
+  }"></div>`;
+  if (imageOnly) {
+    return `<div style="--gestCardScale: 1.7;">${cardHtml}</div>`;
+  }
+  // const dataCardId = card.id.split('_')[0];
+  // console.log('dataCardId',dataCardId);
+  return tplCardTooltipContainer({
+    card: cardHtml,
+    content: `
+    <span class="gest_title">${_(card.title)}</span>
+    
+    `,
+  });
+};
