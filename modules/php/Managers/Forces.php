@@ -228,7 +228,7 @@ class Forces extends \AGestOfRobinHood\Helpers\Pieces
 
     $forces[] = [
       "id" => ROBIN_HOOD,
-      "location" => MERRY_MEN_SUPPLY,
+      "location" => ROBIN_HOOD_SUPPLY,
       "type" => ROBIN_HOOD,
       "hidden" => 1
     ];

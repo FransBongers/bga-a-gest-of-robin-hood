@@ -271,7 +271,6 @@ class RobState implements State {
         (id) => id !== merryMan.id
       );
       if (this.selectedMerryMenIds.length === 0) {
-        console.log('add disabled');
         document.getElementById('done_btn').classList.add(DISABLED);
       }
     } else {

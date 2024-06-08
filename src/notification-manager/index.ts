@@ -53,6 +53,7 @@ class NotificationManager {
       // Game
       'chooseAction',
       'drawAndRevealCard',
+      'drawAndRevealTravellerCard',
       'gainShillings',
       'hideForce',
       'moveCarriage',
@@ -70,6 +71,8 @@ class NotificationManager {
       'placeForcePrivate',
       'placeMerryMen',
       'placeMerryMenPrivate',
+      'putCardInVictimsPile',
+      'removeCardFromGame',
       'returnToSupply',
       'returnToSupplyPrivate',
       'sneakMerryMen',
@@ -266,6 +269,10 @@ class NotificationManager {
 
   async notif_drawAndRevealCard(notif: Notif<NotifDrawAndRevealCardArgs>) {}
 
+  async notif_drawAndRevealTravellerCard(
+    notif: Notif<NotifDrawAndRevealTravellerCardArgs>
+  ) {}
+
   async notif_gainShillings(notif: Notif<NotifGainShillingsArgs>) {
     const { amount, playerId } = notif.args;
     this.getPlayer({ playerId }).counters.shillings.incValue(amount);
@@ -313,7 +320,6 @@ class NotificationManager {
 
   async notif_moveCarriagePublic(notif: Notif<NotifMoveCarriagePublicArgs>) {
     const { carriage, toSpaceId, fromSpaceId, henchman } = notif.args;
-    console.log('carriage', carriage);
 
     const promises = [
       this.game.gameMap.moveForcePublic({
@@ -425,6 +431,15 @@ class NotificationManager {
     merryMen.forEach((merryMan) =>
       this.game.gameMap.addPrivateForce({ force: merryMan })
     );
+  }
+
+  async notif_putCardInVictimsPile(
+    notif: Notif<NotifPutCardInVictimsPileArgs>
+  ) {}
+
+
+  async notif_removeCardFromGame(notif: Notif<NotifRemoveCardFromGameArgs>) {
+
   }
 
   async notif_revealForce(notif: Notif<NotifRevealForceArgs>) {
@@ -539,7 +554,6 @@ class NotificationManager {
         robinHood.type = MERRY_MEN;
       }
       if (robinHoodPublic && moves.robinHood === 'hide') {
-        console.log('hide');
         document
           .getElementById(`${robinHoodPublic.id}-front`)
           .setAttribute('data-type', MERRY_MEN);

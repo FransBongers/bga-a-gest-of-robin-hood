@@ -99,7 +99,6 @@ class GameMap {
         const id = `${forceType}_${spaceId}`;
         const element = document.getElementById(id);
         if (!element) {
-          console.log(id);
           return;
         }
         this.forces[id] = new LineStock<GestForce>(
@@ -141,7 +140,6 @@ class GameMap {
       // const henchmenBox = document.getElementById(`henchmen_${spaceId}`);
       if (forces.Henchmen.length > 0) {
         forces.Henchmen.forEach((henchman) => {
-          console.log('location', `${henchman.type}_${henchman.location}`);
           this.forces[`${henchman.type}_${henchman.location}`].addCard(
             henchman
           );
@@ -150,13 +148,11 @@ class GameMap {
 
       if (isRobinHoodPlayer && robinHoodForces) {
         robinHoodForces.forEach((force) => {
-          console.log('isRH');
           this.addPrivateForce({ force });
         });
       }
 
       if (isSheriffPlayer && sheriffForces) {
-        console.log('isSheriff');
         sheriffForces.forEach((carriage) => {
           this.forces[`${CARRIAGE}_${spaceId}`].addCard(carriage);
         });
@@ -384,7 +380,6 @@ class GameMap {
   }
 
   hideForcePublic({ force }: { force: GestForce }) {
-    console.log('hideForcePublic');
     const selected = this.getForcePublic({
       type: force.type,
       spaceId: force.location,
@@ -409,14 +404,11 @@ class GameMap {
   }
 
   revealForcePublic({ force }: { force: GestForce }) {
-    console.log('revealForcePublic');
-
     const selected = this.getForcePublic({
       type: force.type,
       spaceId: force.location,
       hidden: true,
     });
-    console.log('revealForcePublic');
 
     selected.type = force.type;
     selected.hidden = force.hidden;
@@ -429,7 +421,6 @@ class GameMap {
 
   async moveForcePrivate({ force }: { force: GestForce }) {
     const toStockId = this.getStockIdPrivate({ force });
-    console.log('toStockId', toStockId);
     await this.forces[toStockId].addCard(force);
   }
 
@@ -465,7 +456,6 @@ class GameMap {
     const force = this.getForcePublic({ type, hidden, spaceId: fromSpaceId });
 
     const toStockId = this.getStockIdPublic({ type, spaceId: toSpaceId });
-    console.log('toStockId', toStockId);
     await this.forces[toStockId].addCard(force);
   }
 

@@ -34,7 +34,19 @@ const tplTableauCardTooltip = ({
     card: cardHtml,
     content: `
     <span class="gest_title">${_(card.title)}</span>
-    
+    <span>${
+      card.type === 'travellerCard'
+        ? game.format_string_recursive(_('Strength: ${strength}'), {
+            strength: card.strength,
+          })
+        : game.format_string_recursive(_('Carriages: ${carriages}'), {
+            carriages: card.carriageMoves,
+          })
+    }</span>
+    <span class="gest_section_title">${_(card.titleLight)}</span>
+    <span class="gest_tooltip_text">${_(card.textLight)}</span>
+    <span class="gest_section_title">${_(card.titleDark)}</span>
+    <span class="gest_tooltip_text">${_(card.textDark)}</span>
     `,
   });
 };

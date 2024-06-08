@@ -140,7 +140,6 @@ class SetupRobinHoodState implements State {
   // .##.....##.##.....##.##....##.########..########.########..######.
 
   handleButtonClick(spaceId: string) {
-    console.log('spaceId', spaceId);
     if (this.robinHoodLocation === null) {
       this.robinHoodLocation = spaceId;
     } else {

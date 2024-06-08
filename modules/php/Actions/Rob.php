@@ -141,7 +141,7 @@ class Rob extends \AGestOfRobinHood\Actions\Plot
 
     switch ($target) {
       case 'traveller':
-        $this->resolveTravellerTarget($player, $space);
+        $this->resolveTravellerTarget($player, $space, $merryMenIds);
         break;
       case 'treasury':
         break;
@@ -152,7 +152,7 @@ class Rob extends \AGestOfRobinHood\Actions\Plot
         break;
     };
 
-    $this->resolveAction($args);
+    $this->resolveAction($args, true);
   }
 
   //  .##.....##.########.####.##.......####.########.##....##
@@ -163,7 +163,7 @@ class Rob extends \AGestOfRobinHood\Actions\Plot
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
-  private function resolveTravellerTarget($player, $space)
+  private function resolveTravellerTarget($player, $space, $merryMenIds)
   {
     $card = Cards::drawAndRevealTravellerCard($player);
 
@@ -176,6 +176,7 @@ class Rob extends \AGestOfRobinHood\Actions\Plot
       'action' => SELECT_TRAVELLER_CARD_OPTION,
       'playerId' => $player->getId(),
       'spaceId' => $space->getId(),
+      'merryMenIds' => $merryMenIds,
     ]));
   }
 
@@ -195,7 +196,18 @@ class Rob extends \AGestOfRobinHood\Actions\Plot
     $spaces = Spaces::getAll();
     $forces = Forces::getAll()->toArray();
 
+    $alreadyRobbedSpaceIds = [];
+    $nodes = Engine::getResolvedActions([ROB]);
+    foreach ($nodes as $node) {
+      $resArgs = $node->getActionResolutionArgs();
+      $alreadyRobbedSpaceIds[] = $resArgs['spaceId'];
+    }
+
     foreach ($spaces as $spaceId => $space) {
+      if (in_array($spaceId, $alreadyRobbedSpaceIds)) {
+        continue;
+      }
+
       $merryMenInSpaceThatCanRob = Utils::filter($forces, function ($force) use ($spaceId) {
         return $force->getLocation() === $spaceId && ($force->isRobinHood() || ($force->isMerryMan() && $force->isHidden()));
       });

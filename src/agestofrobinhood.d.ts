@@ -38,6 +38,7 @@ interface AGestOfRobinHoodGame extends Game {
     args: Record<string, unknown>
   ) => string;
   getPlayerId: () => number;
+  getStaticCardData: ({ cardId }: { cardId: string }) => GestCardStaticData;
   onCancel: () => void;
   setCardSelectable: (props: {
     id: string;

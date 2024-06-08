@@ -1,6 +1,7 @@
 class SelectTravellerCardOptionState implements State {
   private game: AGestOfRobinHoodGame;
   private args: OnEnteringSelectTravellerCardOptionStateArgs;
+  private staticData: GestCardStaticData;
 
   constructor(game: AGestOfRobinHoodGame) {
     this.game = game;
@@ -9,6 +10,9 @@ class SelectTravellerCardOptionState implements State {
   onEnteringState(args: OnEnteringSelectTravellerCardOptionStateArgs) {
     debug('Entering SelectTravellerCardOptionState');
     this.args = args;
+    this.staticData = this.game.getStaticCardData({
+      cardId: this.args.card.id,
+    });
     this.updateInterfaceInitialStep();
   }
 
@@ -38,11 +42,13 @@ class SelectTravellerCardOptionState implements State {
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({
-      text: _('${you} must select an option from the Traveller card'),
+      text: _('${you} must select one of the options on the Traveller card'),
       args: {
         you: '${you}',
       },
     });
+
+    this.addOptionButtons();
 
     this.game.addPassButton({
       optionalAction: this.args.optionalAction,
@@ -50,13 +56,16 @@ class SelectTravellerCardOptionState implements State {
     this.game.addUndoButtons(this.args);
   }
 
-  private updateInterfaceConfirm({ space }: { space: GestSpace }) {
+  private updateInterfaceConfirm({ option }: { option: 'dark' | 'light' }) {
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({
-      text: _('SelectTravellerCardOption in ${spaceName}?'),
+      text: _('Select ${option}?'),
       args: {
-        spaceName: _(space.name),
+        option:
+          option === 'light'
+            ? _(this.staticData.titleLight)
+            : _(this.staticData.titleDark),
       },
     });
 
@@ -65,7 +74,7 @@ class SelectTravellerCardOptionState implements State {
       this.game.takeAction({
         action: 'actSelectTravellerCardOption',
         args: {
-          spaceId: space.id,
+          option,
         },
       });
     };
@@ -93,6 +102,23 @@ class SelectTravellerCardOptionState implements State {
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
+  private addOptionButtons() {
+    if (this.staticData.titleLight) {
+      this.game.addPrimaryActionButton({
+        id: `light_option_btn`,
+        text: _(this.staticData.titleLight),
+        callback: () => this.updateInterfaceConfirm({ option: 'light' }),
+      });
+    }
+    if (this.staticData.titleDark) {
+      this.game.addPrimaryActionButton({
+        id: `darkt_option_btn`,
+        text: _(this.staticData.titleDark),
+        callback: () => this.updateInterfaceConfirm({ option: 'dark' }),
+      });
+    }
+  }
+
   //  ..######..##.......####..######..##....##
   //  .##....##.##........##..##....##.##...##.
   //  .##.......##........##..##.......##..##..
@@ -108,5 +134,4 @@ class SelectTravellerCardOptionState implements State {
   // .##.....##.#########.##..####.##.....##.##.......##.............##
   // .##.....##.##.....##.##...###.##.....##.##.......##.......##....##
   // .##.....##.##.....##.##....##.########..########.########..######.
-
 }

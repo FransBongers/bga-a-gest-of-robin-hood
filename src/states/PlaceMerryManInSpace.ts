@@ -1,19 +1,19 @@
-class MoveCarriageState implements State {
+class PlaceMerryManInSpaceState implements State {
   private game: AGestOfRobinHoodGame;
-  private args: OnEnteringMoveCarriageStateArgs;
+  private args: OnEnteringPlaceMerryManInSpaceStateArgs;
 
   constructor(game: AGestOfRobinHoodGame) {
     this.game = game;
   }
 
-  onEnteringState(args: OnEnteringMoveCarriageStateArgs) {
-    debug('Entering MoveCarriageState');
+  onEnteringState(args: OnEnteringPlaceMerryManInSpaceStateArgs) {
+    debug('Entering PlaceMerryManInSpaceState');
     this.args = args;
     this.updateInterfaceInitialStep();
   }
 
   onLeavingState() {
-    debug('Leaving MoveCarriageState');
+    debug('Leaving PlaceMerryManInSpaceState');
   }
 
   setDescription(activePlayerId: number) {}
@@ -38,14 +38,30 @@ class MoveCarriageState implements State {
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({
-      text: _('${you} must select a Carriage to move'),
+      text: _('${you} must select a Space place a Merry Man in'),
       args: {
         you: '${you}',
       },
     });
 
-    this.setCarriagesSelectable();
-    // this.addActionButtons();
+    Object.values(this.args._private.spaces).forEach((space) => {
+      this.game.addPrimaryActionButton({
+        id: `${space.id}_btn`,
+        text: _(space.name),
+        callback: () => {
+          if (
+            this.args._private.robinHoodInSupply &&
+            !this.args._private.merryMenInSupply
+          ) {
+            this.updateInterfaceConfirm({ space, placeRobinHood: true });
+          } else if (this.args._private.robinHoodInSupply) {
+            this.updateInterfacePlaceRobinHood({ space });
+          } else {
+            this.updateInterfaceConfirm({ space });
+          }
+        },
+      });
+    });
 
     this.game.addPassButton({
       optionalAction: this.args.optionalAction,
@@ -53,20 +69,11 @@ class MoveCarriageState implements State {
     this.game.addUndoButtons(this.args);
   }
 
-  private updateInterfaceBringHenchman({
-    carriage,
-    from,
-    to,
-  }: {
-    carriage: GestForce;
-    from: GestSpace;
-    to: GestSpace;
-  }) {
+  private updateInterfacePlaceRobinHood({ space }: { space: GestSpace }) {
     this.game.clearPossible();
-    this.game.setElementSelected({ id: carriage.id });
 
     this.game.clientUpdatePageTitle({
-      text: _('Bring one Henchman along with Carriage?'),
+      text: _('Place Robin Hood?'),
       args: {},
     });
 
@@ -74,58 +81,42 @@ class MoveCarriageState implements State {
       id: 'yes_btn',
       text: _('Yes'),
       callback: () =>
-        this.updateInterfaceConfirm({
-          carriage,
-          from,
-          to,
-          bringHenchman: true,
-        }),
+        this.updateInterfaceConfirm({ space, placeRobinHood: true }),
     });
     this.game.addPrimaryActionButton({
       id: 'no_btn',
       text: _('No'),
       callback: () =>
-        this.updateInterfaceConfirm({
-          carriage,
-          from,
-          to,
-          bringHenchman: false,
-        }),
+        this.updateInterfaceConfirm({ space, placeRobinHood: false }),
     });
     this.game.addCancelButton();
   }
 
   private updateInterfaceConfirm({
-    carriage,
-    from,
-    to,
-    bringHenchman,
+    space,
+    placeRobinHood = false,
   }: {
-    carriage: GestForce;
-    from: GestSpace;
-    to: GestSpace;
-    bringHenchman: boolean;
+    space: GestSpace;
+    placeRobinHood?: boolean;
   }) {
     this.game.clearPossible();
-    this.game.setElementSelected({ id: carriage.id });
 
     this.game.clientUpdatePageTitle({
-      text: bringHenchman
-        ? _('Move Carriage and Henchman from ${fromName} to ${toName}?')
-        : _('Move Carriage from ${fromName} to ${toName}?'),
+      text: placeRobinHood
+        ? _('Place Robin Hood in ${spaceName}?')
+        : _('Place a Merry Man in ${spaceName}?'),
       args: {
-        fromName: _(from.name),
-        toName: _(to.name),
+        spaceName: _(space.name),
       },
     });
 
     const callback = () => {
       this.game.clearPossible();
       this.game.takeAction({
-        action: 'actMoveCarriage',
+        action: 'actPlaceMerryManInSpace',
         args: {
-          carriageId: carriage.id,
-          bringHenchman,
+          spaceId: space.id,
+          placeRobinHood,
         },
       });
     };
@@ -152,47 +143,6 @@ class MoveCarriageState implements State {
   //  .##.....##....##.....##..##........##.....##.......##...
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
-
-  setCarriagesSelectable() {
-    if (!this.args._private?.options) {
-      return;
-    }
-    Object.entries(this.args._private.options).forEach(
-      ([carriageId, option]) => {
-        this.game.setElementSelectable({
-          id: carriageId,
-          callback: () => {
-            if (option.canBringHenchman) {
-              this.updateInterfaceBringHenchman({
-                carriage: option.carriage,
-                from: option.from,
-                to: option.to,
-              });
-            } else {
-              this.updateInterfaceConfirm({
-                carriage: option.carriage,
-                from: option.from,
-                to: option.to,
-                bringHenchman: false,
-              });
-            }
-          },
-        });
-      }
-    );
-  }
-
-  // addActionButtons() {
-  //   [SINGLE_PLOT, EVENT, PLOTS_AND_DEEDS].forEach((action) => {
-  //     if (this.args[action]) {
-  //       this.game.addPrimaryActionButton({
-  //         id: `${action}_select`,
-  //         text: this.getActionName({ action }),
-  //         callback: () => this.updateInterfaceConfirm({ action }),
-  //       });
-  //     }
-  //   });
-  // }
 
   //  ..######..##.......####..######..##....##
   //  .##....##.##........##..##....##.##...##.

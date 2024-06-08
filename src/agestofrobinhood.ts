@@ -69,6 +69,7 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     hire: HireState;
     moveCarriage: MoveCarriageState;
     patrol: PatrolState;
+    placeMerryManInSpace: PlaceMerryManInSpaceState;
     recruit: RecruitState;
     ride: RideState;
     rob: RobState;
@@ -119,6 +120,7 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
       hire: new HireState(this),
       moveCarriage: new MoveCarriageState(this),
       patrol: new PatrolState(this),
+      placeMerryManInSpace: new PlaceMerryManInSpaceState(this),
       recruit: new RecruitState(this),
       ride: new RideState(this),
       rob: new RobState(this),
@@ -464,7 +466,6 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
   }
 
   public clearInterface() {
-    console.log('clear interface');
     this.playerManager.clearInterface();
     this.gameMap.clearInterface();
   }
@@ -606,6 +607,11 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
       return;
     }
     node.classList.remove(GEST_SELECTED);
+  }
+  Ì
+  getStaticCardData({ cardId }: { cardId: string }): GestCardStaticData {
+    
+    return this.gamedatas.staticData.cards[cardId.split('_')[0]];
   }
 
   // .########...#######..####.##.......########.########.
@@ -798,7 +804,6 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
    * Handle cancelling log messages for restart turn
    */
   onPlaceLogOnChannel(msg: Notif<unknown>) {
-    // console.log('msg', msg);
     const currentLogId = this.framework().notifqueue.next_log_id;
     const currentMobileLogId = this.framework().next_log_id;
     const res = this.framework().inherited(arguments);
@@ -877,9 +882,7 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
 
   // cardId will be PRENXXXX for tableau cards and full id for empire card / victory card
   addLogTooltip({ tooltipId, cardId }: { tooltipId: number; cardId: string }) {
-    console.log('addLogTooltip', tooltipId, cardId);
     const card = this.gamedatas.staticData.cards[cardId];
-    console.log('staticData', card);
     this.tooltipManager.addCardTooltip({
       nodeId: `gest_tooltip_${tooltipId}`,
       card,
@@ -991,7 +994,6 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     checkAction?: string; // Action used in checkAction
   }) {
     const actionName = atomicAction ? action : undefined;
-    console.log('action error', checkAction || action);
     if (!this.framework().checkAction(checkAction || action)) {
       this.actionError(action);
       return;

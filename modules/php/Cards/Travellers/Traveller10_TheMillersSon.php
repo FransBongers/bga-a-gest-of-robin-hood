@@ -2,6 +2,11 @@
 
 namespace AGestOfRobinHood\Cards\Travellers;
 
+use AGestOfRobinHood\Core\Engine\LeafNode;
+use AGestOfRobinHood\Core\Notifications;
+use AGestOfRobinHood\Managers\Forces;
+use AGestOfRobinHood\Managers\Players;
+
 class Traveller10_TheMillersSon extends \AGestOfRobinHood\Models\TravellerCard
 {
   public function __construct($row)
@@ -15,5 +20,35 @@ class Traveller10_TheMillersSon extends \AGestOfRobinHood\Models\TravellerCard
     $this->textDark = clienttranslate('If successful, gain 1 Shilling, place a Hidden Merry Man in the Rob space or an adjacent space, and put the card in the Victims Pile. If failed, put a Henchman in the Rob space, then put the card in the discard pile.');
     $this->strength = 0;
     $this->setupLocation = TRAVELLERS_DECK;
+  }
+
+  public function resolveDarkEffect($player, $successful, $ctx = null, $space = null)
+  {
+    if ($successful) {
+      $player->incShillings(1);
+      $ctx->insertAsBrother(new LeafNode([
+        'action' => PUT_CARD_IN_VICTIMS_PILE,
+        'playerId' => $player->getId(),
+        'cardId' => $this->getId(),
+      ]));
+      $ctx->insertAsBrother(new LeafNode([
+        'action' => PLACE_MERRY_MAN_IN_SPACE,
+        'playerId' => $player->getId(),
+        'spaceIds' => array_merge($space->getAdjacentSpaceIds(), [$space->getId()]),
+      ]));
+    } else {
+      $henchman = Forces::getTopOf(HENCHMEN_SUPPLY);
+      if ($henchman !== null && $space !== null) {
+        $henchman->setLocation($space->getId());
+        Notifications::placeHenchmen(Players::getSheriffPlayer(), [$henchman], $space);
+      }
+    }
+  }
+
+  public function resolveLightEffect($player, $successful, $ctx = null, $space = null)
+  {
+    if ($successful) {
+      $player->incShillings(2);
+    }
   }
 }

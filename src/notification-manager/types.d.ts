@@ -37,6 +37,10 @@ interface NotifDrawAndRevealCardArgs {
   card: GestCard;
 }
 
+interface NotifDrawAndRevealTravellerCardArgs {
+  card: GestCard;
+}
+
 interface NotifGainShillingsArgs extends NotifWithPlayerArgs {
   amount: number;
 }
@@ -121,6 +125,15 @@ interface NotifPlaceMerryMenPrivateArgs extends NotifWithPlayerArgs {
   robinHood: GestForce | null;
   merryMen: GestForce[];
 }
+
+interface NotifPutCardInVictimsPileArgs {
+  card: GestCard;
+}
+
+interface NotifRemoveCardFromGameArgs {
+  card: GestCard;
+}
+
 
 interface NotifRevealCarriageArgs extends NotifWithPlayerArgs {
   carriage: GestForce;

@@ -2,6 +2,11 @@
 
 namespace AGestOfRobinHood\Cards\Travellers;
 
+use AGestOfRobinHood\Core\Notifications;
+use AGestOfRobinHood\Managers\Forces;
+use AGestOfRobinHood\Managers\Players;
+use AGestOfRobinHood\Managers\Spaces;
+
 class Traveller05_RichardAtTheLea extends \AGestOfRobinHood\Models\TravellerCard
 {
   public function __construct($row)
@@ -15,5 +20,41 @@ class Traveller05_RichardAtTheLea extends \AGestOfRobinHood\Models\TravellerCard
     $this->textDark = clienttranslate('Spend 3 Shillings without rolling to set Retford to Revolting and place a Camp there (shift one step towards Justice), then remove the card from the game.');
     $this->strength = 1;
     $this->setupLocation = TRAVELLERS_DECK;
+  }
+
+  public function resolveDarkEffect($player, $successful, $ctx = null, $space = null)
+  {
+    $player->payShillings(3);
+    $retford = Spaces::get(RETFORD);
+    if (!$retford->isRevolting()) {
+      $retford->revolt($player);
+    }
+    $camp = Forces::getTopOf(CAMPS_SUPPLY);
+    if ($camp !== null) {
+      $camp->setLocation($space->getId());
+      Notifications::placeForce($player, $camp, $space);
+      Players::moveRoyalFavour($player, 1, JUSTICE);
+    }
+    $this->setLocation(REMOVED_FROM_GAME);
+    Notifications::removeCardFromGame($player, $this);
+  }
+
+  public function resolveLightEffect($player, $successful, $ctx = null, $space = null)
+  {
+    if ($successful) {
+      $player->incShillings(2);
+    }
+  }
+
+  public function canPerformDarkEffect($player)
+  {
+    return $player->getShillings() >= 3;
+  }
+
+  public function requiresRoll($darkOrLight)
+  {
+    if ($darkOrLight === 'dark') {
+      return false;
+    }
   }
 }

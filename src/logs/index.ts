@@ -3,7 +3,8 @@ const LOG_TOKEN_NEW_LINE = 'newLine';
 // const LOG_TOKEN_PLAYER_NAME = "playerName";
 // Game specific
 const LOG_TOKEN_CARD = 'card';
-const LOG_TOKEN_CARD_NAME = "cardName";
+const LOG_TOKEN_CARD_NAME = 'cardName';
+const LOG_TOKEN_DIE_RESULT = 'dieResult';
 
 let tooltipIdCounter = 0;
 
@@ -35,6 +36,8 @@ const getTokenDiv = ({
         text: withTooltip ? value.split(':')[1] : value,
         tooltipId: cardNameTooltipId,
       });
+    case LOG_TOKEN_DIE_RESULT:
+      return tplLogTokenDieResult(value);
     case LOG_TOKEN_NEW_LINE:
       return '<br>';
     default:

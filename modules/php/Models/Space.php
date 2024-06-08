@@ -107,6 +107,10 @@ class Space extends \AGestOfRobinHood\Helpers\DB_Model
     Notifications::parishStatus($player, $this, SUBMISSIVE);
   }
 
+  public function isParish()
+  {
+    return in_array($this->id, PARISHES);
+  }
 
   public function isRevolting()
   {

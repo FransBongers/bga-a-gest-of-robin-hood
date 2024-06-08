@@ -69,6 +69,8 @@ const ST_HIRE = 40;
 const ST_PATROL = 41;
 const ST_CAPTURE = 42;
 const ST_SELECT_TRAVELLER_CARD_OPTION = 43;
+const ST_PLACE_MERRY_MAN_IN_SPACE = 44;
+const ST_PUT_CARD_IN_VICTIMS_PILE = 45;
 
 /**
  * Atomic actions
@@ -76,6 +78,8 @@ const ST_SELECT_TRAVELLER_CARD_OPTION = 43;
 const PLAYER_ACTION = 'PLAYER_ACTION';
 const CHOOSE_ACTION = 'CHOOSE_ACTION';
 const MOVE_CARRIAGE = 'MOVE_CARRIAGE';
+const PLACE_MERRY_MAN_IN_SPACE = 'PLACE_MERRY_MAN_IN_SPACE';
+const PUT_CARD_IN_VICTIMS_PILE = 'PUT_CARD_IN_VICTIMS_PILE';
 const SELECT_DEED = 'SELECT_DEED';
 const SELECT_PLOT = 'SELECT_PLOT';
 const SELECT_TRAVELLER_CARD_OPTION = 'SELECT_TRAVELLER_CARD_OPTION';
@@ -100,7 +104,8 @@ const RIDE = 'RIDE';
 
 
 
-const DIE_FACES = [];
+const GREEN_DIE_FACES = [-1, -1, 0, 1, 2, 3 ];
+const WHITE_DIE_FACES = [-2, -1, -1, 0, 1, 2];
 
 /**
  * Force types
@@ -154,6 +159,7 @@ const SUBMISSIVE = 'submissive';
 
 const CAMPS_SUPPLY = 'camps_supply';
 const MERRY_MEN_SUPPLY = 'merryMen_supply';
+const ROBIN_HOOD_SUPPLY = 'robinHood_supply';
 const HENCHMEN_SUPPLY = 'henchmen_supply';
 const CARRIAGE_SUPPLY = 'carriage_supply';
 
@@ -181,6 +187,7 @@ const EVENTS_DISCARD = 'eventsDiscard';
 const TRAVELLERS_DISCARD = 'travellersDiscard';
 const TRAVELLERS_VICTIMS_PILE = 'travellersVictimsPile';
 
+const REMOVED_FROM_GAME = 'removedFromGame';
 
 /**
  * Spaces

@@ -302,6 +302,43 @@
 .log > .roundedboxinner .gest_card {
   margin-top: calc(var(--logCardScale) * 6px);
 }
+.log > .roundedbox .gest_log_die,
+.log > .roundedboxinner .gest_log_die {
+  --gestTokenScale: 0.7;
+  position: relative;
+  top: -3px;
+  margin-top: 3px;
+  vertical-align: middle;
+}
+
+.gest_log_die {
+  min-height: calc(var(--gestTokenScale) * 40px);
+  min-width: calc(var(--gestTokenScale) * 40px);
+  max-height: calc(var(--gestTokenScale) * 40px);
+  max-width: calc(var(--gestTokenScale) * 40px);
+  display: inline-block;
+  border: 1px solid;
+  border-radius: 5%;
+}
+.gest_log_die .gest_log_die_value {
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  font-weight: 700;
+  font-size: large;
+  margin-top: 3px;
+}
+
+.gest_log_die[data-die-color=green] {
+  background-color: green;
+  color: silver;
+}
+
+.gest_log_die[data-die-color=white] {
+  background-color: white;
+  color: red;
+}
 
 #show_settings {
   height: 40px;

@@ -26,7 +26,6 @@ class ForceManager extends CardManager<GestForce> {
       div.replaceChildren(force.type.substring(0, 3))
     }
     if (force.type === ROBIN_HOOD && !force.hidden) {
-      console.log('add marker');
       div.replaceChildren('RH')
     }
 

@@ -41,7 +41,7 @@ class Card extends \AGestOfRobinHood\Helpers\DB_Model
   protected $staticAttributes = [
     'id',
     'carriageMoves',
-    'eventType', 
+    'eventType',
     'setupLocation',
     'strength',
     'title',
@@ -79,4 +79,23 @@ class Card extends \AGestOfRobinHood\Helpers\DB_Model
     $this->location = $location;
   }
 
+  public function resolveDarkEffect($player, $successful, $ctx = null, $space = null)
+  {
+  }
+
+  public function resolveLightEffect($player, $successful, $ctx = null, $space = null)
+  {
+  }
+
+  public function canPerformDarkEffect($player) {
+    return true;
+  }
+
+  public function canPerformLightEffect($player) {
+    return true;
+  }
+
+  public function requiresRoll($darkOrLight) {
+    return true;
+  }
 }

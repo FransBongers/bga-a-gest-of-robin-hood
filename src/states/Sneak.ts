@@ -144,8 +144,6 @@ class SneakState implements State {
   //  ..#######.....##....####.########.####....##.......##...
 
   setMerryMenSelectable() {
-    console.log('setMerryMenSelectable', this.selectedSpace);
-
     Object.entries(this.args._private.options).forEach(([spaceId, option]) => {
       if (this.selectedSpace && this.selectedSpace !== spaceId) {
         return;
@@ -204,7 +202,6 @@ class SneakState implements State {
     merryManId: string;
     spaceId: string;
   }) {
-    console.log('handleMerryMenClick', currentStatus, merryManId, spaceId);
     if (currentStatus === 'selectable') {
       this.selectedMerryMen.push(merryManId);
     } else if (currentStatus === 'selected') {
@@ -212,7 +209,6 @@ class SneakState implements State {
         (id) => id !== merryManId
       );
     }
-    console.log('merryMen', this.selectedMerryMen);
     if (currentStatus === 'selectable' && this.selectedSpace === null) {
       this.selectedSpace = spaceId;
     } else if (

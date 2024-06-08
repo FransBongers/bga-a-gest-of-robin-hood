@@ -25,6 +25,8 @@ class AtomicActions
     RECRUIT => 'Recruit',
     RIDE => 'Ride',
     ROB => 'Rob',
+    PLACE_MERRY_MAN_IN_SPACE => 'PlaceMerryManInSpace',
+    PUT_CARD_IN_VICTIMS_PILE => 'PutCardInVictimsPile',
     SELECT_DEED => 'SelectDeed',
     SELECT_PLOT => 'SelectPlot',
     SELECT_TRAVELLER_CARD_OPTION => 'SelectTravellerCardOption',

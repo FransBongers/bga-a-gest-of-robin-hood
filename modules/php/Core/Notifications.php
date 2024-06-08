@@ -149,6 +149,11 @@ class Notifications
     return explode('_', $card->getId())[0] . ':' . $card->getTitle();
   }
 
+  protected static function tknDieResultArg($color, $result)
+  {
+    return $color . ':' . $result;
+  }
+
   //  .##.....##.########.####.##.......####.########.##....##
   //  .##.....##....##.....##..##........##.....##.....##..##.
   //  .##.....##....##.....##..##........##.....##......####..
@@ -482,6 +487,15 @@ class Notifications
     ]));
   }
 
+  public static function putCardInVictimsPile($player, $card)
+  {
+    self::notifyAll("putCardInVictimsPile", clienttranslate('${player_name} puts ${tkn_cardName} in the Victims Pile'), [
+      'player' => $player,
+      'card' => $card,
+      'tkn_cardName' => self::tknCardNameArg($card),
+    ]);
+  }
+
   public static function recruitMerryMen($player, $originalNumber, $robinHood, $merryMenToPlace, $space)
   {
     $textPublic = $originalNumber === 1 ?
@@ -516,6 +530,15 @@ class Notifications
     ];
 
     self::placeMerryMen($player, $robinHood, $merryMenToPlace, $textPublic, $textPrivate, $publicTextArgs, $privateTextArgs);
+  }
+
+  public static function removeCardFromGame($player, $card)
+  {
+    self::notifyAll("removeCardFromGame", clienttranslate('${player_name} removes ${tkn_cardName} from the game'), [
+      'player' => $player,
+      'card' => $card,
+      'tkn_cardName' => self::tknCardNameArg($card),
+    ]);
   }
 
   public static function returnToSupply($player, $force, $space, $isHidden)
@@ -559,6 +582,28 @@ class Notifications
     ]);
   }
 
+  public static function resolveRobEffect($player, $effectTitle)
+  {
+    self::message(clienttranslate('${player_name} resolved ${tkn_boldText_effect}'), [
+      'player' => $player,
+      'tkn_boldText_effect' => $effectTitle,
+      'i18n' => ['tkn_boldText_effect']
+    ]);
+  }
+
+
+  public static function robResult($player, $dieColor, $dieResult, $success)
+  {
+    $text = $success ?
+      clienttranslate('${player_name} rolls ${tkn_dieResult} : the Rob attempt is a success') :
+      clienttranslate('${player_name} rolls ${tkn_dieResult} : the Rob attempt fails');
+
+    self::message($text, [
+      'player' => $player,
+      'tkn_dieResult' => self::tknDieResultArg($dieColor, $dieResult),
+    ]);
+  }
+
   public static function secondEligible($marker)
   {
     $player = $marker->getId() === ROBIN_HOOD_ELIGIBILITY_MARKER ? Players::get(Players::getRobinHoodPlayerId()) : Players::get(Players::getSheriffPlayerId());
@@ -595,6 +640,15 @@ class Notifications
       //   'args' => $spacesArgs,
       // ],
       'i18n' => ['tkn_boldText_plotName']
+    ]);
+  }
+
+  public static function selectedTravellerOption($player, $card, $option)
+  {
+    self::message(clienttranslate('${player_name} selects ${tkn_boldText_optionTitle}'), [
+      'player' => $player,
+      'tkn_boldText_optionTitle' => $option === 'light' ? $card->getTitleLight() : $card->getTitleDark(),
+      'i18n' => ['tkn_boldText_optionTitle']
     ]);
   }
 

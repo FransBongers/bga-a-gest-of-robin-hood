@@ -410,4 +410,21 @@ $machinestates = array(
         // 'transitions' => [],
         'possibleactions' => ['actSelectTravellerCardOption', 'actPassOptionalAction', 'actRestart'],
     ],
+    ST_PLACE_MERRY_MAN_IN_SPACE => [
+        'name' => 'placeMerryManInSpace',
+        'description' => clienttranslate('${actplayer} must select a space to place a Merry Man'),
+        'descriptionmyturn' => clienttranslate('${you}'),
+        'type' => 'activeplayer',
+        'args' => 'argsAtomicAction',
+        'action' => 'stAtomicAction',
+        // 'transitions' => [],
+        'possibleactions' => ['actPlaceMerryManInSpace', 'actPassOptionalAction', 'actRestart'],
+    ],
+    ST_PUT_CARD_IN_VICTIMS_PILE => [
+        'name' => 'putCardInVictimsPile',
+        'description' => '',
+        'type' => 'game',
+        'action' => 'stAtomicAction',
+        'transitions' => [],
+    ],
 );

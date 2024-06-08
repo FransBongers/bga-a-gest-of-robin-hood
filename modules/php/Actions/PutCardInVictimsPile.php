@@ -7,22 +7,48 @@ use AGestOfRobinHood\Core\Engine;
 use AGestOfRobinHood\Core\Engine\LeafNode;
 use AGestOfRobinHood\Core\Globals;
 use AGestOfRobinHood\Core\Stats;
-use AGestOfRobinHood\Helpers\GameMap;
-use AGestOfRobinHood\Helpers\GestDice;
 use AGestOfRobinHood\Helpers\Locations;
 use AGestOfRobinHood\Helpers\Utils;
 use AGestOfRobinHood\Managers\Cards;
-use AGestOfRobinHood\Managers\AtomicActions;
+use AGestOfRobinHood\Managers\Forces;
 use AGestOfRobinHood\Managers\Markers;
 use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\Spaces;
 
 
-class SelectTravellerCardOption extends \AGestOfRobinHood\Models\AtomicAction
+class PutCardInVictimsPile extends \AGestOfRobinHood\Actions\Plot
 {
   public function getState()
   {
-    return ST_SELECT_TRAVELLER_CARD_OPTION;
+    return ST_PUT_CARD_IN_VICTIMS_PILE;
+  }
+
+  // ..######..########....###....########.########
+  // .##....##....##......##.##......##....##......
+  // .##..........##.....##...##.....##....##......
+  // ..######.....##....##.....##....##....######..
+  // .......##....##....#########....##....##......
+  // .##....##....##....##.....##....##....##......
+  // ..######.....##....##.....##....##....########
+
+  // ....###.....######..########.####..#######..##....##
+  // ...##.##...##....##....##.....##..##.....##.###...##
+  // ..##...##..##..........##.....##..##.....##.####..##
+  // .##.....##.##..........##.....##..##.....##.##.##.##
+  // .#########.##..........##.....##..##.....##.##..####
+  // .##.....##.##....##....##.....##..##.....##.##...###
+  // .##.....##..######.....##....####..#######..##....##
+
+  public function stPutCardInVictimsPile()
+  {
+
+    $cardId = $this->ctx->getInfo()['cardId'];
+
+    $card = Cards::get($cardId);
+    $card->getLocation(TRAVELLERS_VICTIMS_PILE);
+
+    Notifications::putCardInVictimsPile(self::getPlayer(), $card);
+    $this->resolveAction(['automatic' => true]);
   }
 
   // ....###....########...######....######.
@@ -33,15 +59,11 @@ class SelectTravellerCardOption extends \AGestOfRobinHood\Models\AtomicAction
   // .##.....##.##....##..##....##..##....##
   // .##.....##.##.....##..######....######.
 
-  public function argsSelectTravellerCardOption()
+  public function argsPutCardInVictimsPile()
   {
-    $card = Cards::getTopOf(TRAVELLERS_DISCARD);
-    $player = self::getPlayer();
 
     $data = [
-      'card' => $card,
-      'darkOptionAvailable' => $card->canPerformDarkEffect($player),
-      'lightOptionAvailable' => $card->canPerformLightEffect($player),
+
     ];
 
     return $data;
@@ -63,62 +85,19 @@ class SelectTravellerCardOption extends \AGestOfRobinHood\Models\AtomicAction
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function actPassSelectTravellerCardOption()
+  public function actPassPutCardInVictimsPile()
   {
     $player = self::getPlayer();
-
-    // Notifications::passAction($player, $shillings);
     // Stats::incPassActionCount($player->getId(), 1);
     Engine::resolve(PASS);
   }
 
-  public function actSelectTravellerCardOption($args)
+  public function actPutCardInVictimsPile($args)
   {
-    self::checkAction('actSelectTravellerCardOption');
-
-    $option = $args['option'];
-
-    if (!in_array($option, ['dark', 'light'])) {
-      throw new \feException("ERROR 031");
-    }
-
-    $card = Cards::getTopOf(TRAVELLERS_DISCARD);
-
-    $player = self::getPlayer();
-
-    Notifications::selectedTravellerOption($player, $card, $option);
-
-    $info = $this->ctx->getInfo();
-    $spaceId = $info['spaceId'];
-    $merryMenIds = $info['merryMenIds'];
-
-    $space = Spaces::get($spaceId);
-    $strength = $card->getStrength();
-
-    $dieColor = $space->isRevolting() || $space->isForest() ? 'green' : 'white';
-    $dieResult = $dieColor === 'green' ? GestDice::rollGreenDie() : GestDice::rollWhiteDie();
-
-    $henchmenInSpace = count(Utils::filter($space->getForces(), function ($force) {
-      return $force->isHenchman();
-    }));
-
-    $success = count($merryMenIds) + $dieResult > $henchmenInSpace + $strength;
-
-    if ($card->requiresRoll($option)) {
-      Notifications::robResult($player, $dieColor, $dieResult, $success);
-    } else {
-      Notifications::resolveRobEffect($player, $option === 'dark' ? $card->getTitleDark() : $card->getTitleLight());
-    }
+    self::checkAction('actPutCardInVictimsPile');
 
 
-
-    if ($option === 'light') {
-      $card->resolveLightEffect($player, $success, $this->ctx, $space);
-    } else if ($option === 'dark') {
-      $card->resolveDarkEffect($player, $success, $this->ctx, $space);
-    }
-
-    $this->resolveAction($args, true);
+    $this->resolveAction($args);
   }
 
   //  .##.....##.########.####.##.......####.########.##....##

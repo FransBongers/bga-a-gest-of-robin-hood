@@ -67,6 +67,14 @@ interface OnEnteringPatrolStateArgs extends CommonArgs {
   >;
 }
 
+interface OnEnteringPlaceMerryManInSpaceStateArgs extends CommonArgs {
+  _private: {
+    spaces: Record<string, GestSpace>;
+    robinHoodInSupply: boolean;
+    merryMenInSupply: boolean;
+  };
+}
+
 interface RecruitOption {
   space: GestSpace;
   merryMen: GestForce[];
@@ -98,7 +106,13 @@ interface RobOption {
   treasury: boolean;
 }
 
-type RobTargetId = 'traveller' | 'treasury' | 'HiddenCarriage' | 'TallageCarriage' | 'TrapCarriage' | 'TributeCarriage';
+type RobTargetId =
+  | 'traveller'
+  | 'treasury'
+  | 'HiddenCarriage'
+  | 'TallageCarriage'
+  | 'TrapCarriage'
+  | 'TributeCarriage';
 
 interface OnEnteringRobStateArgs extends CommonArgs {
   _private: {
@@ -117,7 +131,7 @@ interface OnEnteringSelectPlotStateArgs extends CommonArgs {
 }
 
 interface OnEnteringSelectTravellerCardOptionStateArgs extends CommonArgs {
-  
+  card: GestCard;
 }
 
 interface OnEnteringSetupRobinHoodArgs extends CommonArgs {}

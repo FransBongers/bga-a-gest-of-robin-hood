@@ -23,15 +23,17 @@ trait DebugTrait
 
   function test()
   {
+    $rh = Forces::get(ROBIN_HOOD);
+    $rh->setLocation(ROBIN_HOOD_SUPPLY);
+    $rh->setHidden(1);
 
-    Players::getRobinHoodPlayer()->incShillings(10);
+    // Players::getRobinHoodPlayer()->incShillings(10);
     // Forces::get(ROBIN_HOOD)->setHidden(0);
     // $this->debugPlaceHenchmen(REMSTON, 2);
 
     // $action = $node->getActionResolutionArgs()['action'];
 
-    // Notifications::log('spaceIds', $spaceIds);
-
+    // Notifications::log('card', Cards::get('Traveller04_NobleKnight')->getStaticData());
   }
 
   public function debugPlaceHenchmen($spaceId, $number)

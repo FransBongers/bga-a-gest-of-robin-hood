@@ -64,6 +64,7 @@
     "src/states/Hire.ts",
     "src/states/MoveCarriage.ts",
     "src/states/Patrol.ts",
+    "src/states/PlaceMerryManInSpace.ts",
     "src/states/Recruit.ts",
     "src/states/Ride.ts",
     "src/states/Rob.ts",
