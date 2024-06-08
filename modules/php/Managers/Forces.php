@@ -94,6 +94,7 @@ class Forces extends \AGestOfRobinHood\Helpers\Pieces
 
     $publicData = [];
     $publicData[USED_CARRIAGES] = self::getDefaultPublic();
+    $publicData[PRISON] = self::getDefaultPublic();
     $robinHoodForces = [];
     $sheriffForces = [];
 

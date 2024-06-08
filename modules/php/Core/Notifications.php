@@ -224,6 +224,16 @@ class Notifications
   // .##.....##.##..........##....##.....##.##.....##.##.....##.##....##
   // .##.....##.########....##....##.....##..#######..########...######.
 
+  public static function captureMerryMen($player, $space, $capturedPieces)
+  {
+    self::notifyAll("captureMerryMen", clienttranslate('${player_name} Captures Merry Men in ${tkn_boldText_spaceName}'), [
+      'player' => $player,
+      'tkn_boldText_spaceName' => $space->getName(),
+      'capturedPieces' => $capturedPieces,
+      'i18n' => ['tkn_boldText_spaceName']
+    ]);
+  }
+
   public static function chooseAction($player, $marker, $action, $pass)
   {
     $text = $pass ?

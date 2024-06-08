@@ -158,7 +158,7 @@ class RobState implements State {
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({
-      text: _('Rob ${target} in ${spaceName} ${count} Merry Men?'),
+      text: _('Rob ${target} in ${spaceName} with ${count} Merry Men?'),
       args: {
         spaceName: _(space.name),
         target: this.getTargetName({ target }),

@@ -117,6 +117,13 @@ class GameMap {
         center: true,
       }
     );
+    this.forces[`${MERRY_MEN}_prison`] = new LineStock<GestForce>(
+      this.game.forceManager,
+      document.getElementById(`${MERRY_MEN}_prison`),
+      {
+        center: true,
+      }
+    );
 
     this.updateForces({ gamedatas });
   }
@@ -128,7 +135,7 @@ class GameMap {
     const isSheriffPlayer =
       this.game.getPlayerId() === this.game.playerManager.getSheriffPlayerId();
 
-    [...SPACES, USED_CARRIAGES].forEach((spaceId) => {
+    [...SPACES, USED_CARRIAGES, PRISON].forEach((spaceId) => {
       const forces = gamedatas.forces[spaceId];
       const robinHoodForces = gamedatas.robinHoodForces?.[spaceId];
       const sheriffForces = gamedatas.sheriffForces?.[spaceId];
@@ -136,9 +143,9 @@ class GameMap {
       if (!forces) {
         return;
       }
-
+      console.log('forces', spaceId, forces)
       // const henchmenBox = document.getElementById(`henchmen_${spaceId}`);
-      if (forces.Henchmen.length > 0) {
+      if (forces.Henchmen?.length > 0) {
         forces.Henchmen.forEach((henchman) => {
           this.forces[`${henchman.type}_${henchman.location}`].addCard(
             henchman
@@ -171,38 +178,38 @@ class GameMap {
           type: MERRY_MEN,
           spaceId,
           hidden: false,
-          count: forces.MerryMen.revealed,
+          count: forces.MerryMen?.revealed || 0,
         });
         this.addPublicForces({
           type: MERRY_MEN,
           spaceId,
           hidden: true,
-          count: forces.MerryMen.hidden,
+          count: forces.MerryMen?.hidden || 0,
         });
         // Camps
         this.addPublicForces({
           type: CAMP,
           spaceId,
           hidden: false,
-          count: forces.Camp.revealed,
+          count: forces.Camp?.revealed || 0,
         });
         this.addPublicForces({
           type: CAMP,
           spaceId,
           hidden: true,
-          count: forces.Camp.hidden,
+          count: forces.Camp?.hidden || 0,
         });
       }
       if (!isSheriffPlayer) {
         this.addPublicForces({
-          count: forces.Carriage.hidden,
+          count: forces.Carriage?.hidden || 0,
           hidden: true,
           type: CARRIAGE,
           spaceId,
         });
         [TALLAGE_CARRIAGE, TRAP_CARRIAGE, TRIBUTE_CARRIAGE].forEach((type) => {
           this.addPublicForces({
-            count: forces.Carriage[type],
+            count: forces.Carriage?.[type] || 0,
             hidden: false,
             type: type,
             spaceId,
@@ -296,6 +303,7 @@ class GameMap {
     spaceId: string;
     count: number;
   }) {
+    console.log('addPublicForces',  type, hidden, count, spaceId);
     for (let i = 0; i < count; i++) {
       let stockId = `${type}_${spaceId}`;
       if (type === ROBIN_HOOD) {
@@ -348,6 +356,7 @@ class GameMap {
 
   addPrivateForce({ force }: { force: GestForce }) {
     const id = this.getStockIdPrivate({ force });
+    console.log('addPrivateForce id',id);
     this.forces[id].addCard(force);
   }
 

@@ -56,6 +56,7 @@
     "src/settings/index.ts",
     "src/settings/templates.ts",
     "src/settings/types.d.ts",
+    "src/states/Capture.ts",
     "src/states/ChooseAction.ts",
     "src/states/ConfirmPartialTurn.ts",
     "src/states/ConfirmTurn.ts",

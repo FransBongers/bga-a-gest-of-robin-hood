@@ -15,6 +15,10 @@ interface OnEnteringConfirmTurnArgs extends CommonArgs {}
  * Game state interfaces
  */
 
+interface OnEnteringCaptureStateArgs extends CommonArgs {
+  spaces: GestSpace[];
+}
+
 interface OnEnteringChooseActionStateArgs extends CommonArgs {
   event: boolean;
   singlePlot: boolean;

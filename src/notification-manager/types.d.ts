@@ -29,6 +29,15 @@ interface NotifClearTurnArgs extends NotifWithPlayerArgs {
 //   AGestOfRobinHoodGamedatas,
 //   'staticData'
 // >;
+interface NotifCaptureMerryMenArgs {
+  capturedPieces: {
+    force: GestForce;
+    type: string;
+    hidden: boolean;
+    spaceId: string;
+  }[];
+}
+
 interface NotifChooseActionArgs {
   marker: GestMarker;
 }
@@ -64,7 +73,6 @@ interface NotifMoveForcesArgs extends NotifWithPlayerArgs {
   type: string;
   toSpaceId: string;
 }
-
 
 interface NotifMoveCarriagePrivateArgs extends NotifWithPlayerArgs {
   carriage: GestForce;
@@ -134,7 +142,6 @@ interface NotifRemoveCardFromGameArgs {
   card: GestCard;
 }
 
-
 interface NotifRevealCarriageArgs extends NotifWithPlayerArgs {
   carriage: GestForce;
 }
@@ -182,8 +189,6 @@ interface NotifMoveMerryMenPrivateArgs extends NotifWithPlayerArgs {
   forces: GestForce[];
 }
 
-
-
 interface MerryManMovePublic {
   from: {
     hidden: boolean;
@@ -194,7 +199,7 @@ interface MerryManMovePublic {
     hidden: boolean;
     spaceId: string;
     type: 'MerryMen' | 'RobinHood';
-  }
+  };
 }
 
 interface NotifMoveMerryMenPublicArgs extends NotifWithPlayerArgs {

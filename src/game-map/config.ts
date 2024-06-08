@@ -503,7 +503,7 @@ const UNIQUE_SPACES: TrackConfig[] = [
     left: 249,
   },
   {
-    id: 'prison',
+    id: `${MERRY_MEN}_prison`,
     top: 165,
     left: 1182,
   },

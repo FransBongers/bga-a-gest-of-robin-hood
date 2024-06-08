@@ -134,6 +134,8 @@ class Force extends \AGestOfRobinHood\Helpers\DB_Model
       $this->setHidden(1);
     }
     Notifications::returnToSupply($player, $this, $space, $isHidden);
-
+    if ($this->type === CAMP) {
+      Players::moveRoyalFavour($player, 1, ORDER);
+    }
   }
 }

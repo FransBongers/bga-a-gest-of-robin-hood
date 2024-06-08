@@ -1721,6 +1721,7 @@ var AGestOfRobinHood = (function () {
         this.activeStates = {
             confirmPartialTurn: new ConfirmPartialTurnState(this),
             confirmTurn: new ConfirmTurnState(this),
+            capture: new CaptureState(this),
             chooseAction: new ChooseActionState(this),
             confiscate: new ConfiscateState(this),
             donate: new DonateState(this),
@@ -2819,7 +2820,7 @@ var UNIQUE_SPACES = [
         left: 249,
     },
     {
-        id: 'prison',
+        id: "".concat(MERRY_MEN, "_prison"),
         top: 165,
         left: 1182,
     },
@@ -2890,6 +2891,9 @@ var GameMap = (function () {
         this.forces['Carriage_usedCarriages'] = new LineStock(this.game.forceManager, document.getElementById('Carriage_usedCarriages'), {
             center: true,
         });
+        this.forces["".concat(MERRY_MEN, "_prison")] = new LineStock(this.game.forceManager, document.getElementById("".concat(MERRY_MEN, "_prison")), {
+            center: true,
+        });
         this.updateForces({ gamedatas: gamedatas });
     };
     GameMap.prototype.updateForces = function (_a) {
@@ -2898,15 +2902,16 @@ var GameMap = (function () {
         var isRobinHoodPlayer = this.game.getPlayerId() ===
             this.game.playerManager.getRobinHoodPlayerId();
         var isSheriffPlayer = this.game.getPlayerId() === this.game.playerManager.getSheriffPlayerId();
-        __spreadArray(__spreadArray([], SPACES, true), [USED_CARRIAGES], false).forEach(function (spaceId) {
-            var _a, _b;
+        __spreadArray(__spreadArray([], SPACES, true), [USED_CARRIAGES, PRISON], false).forEach(function (spaceId) {
+            var _a, _b, _c, _d, _e, _f, _g, _h;
             var forces = gamedatas.forces[spaceId];
             var robinHoodForces = (_a = gamedatas.robinHoodForces) === null || _a === void 0 ? void 0 : _a[spaceId];
             var sheriffForces = (_b = gamedatas.sheriffForces) === null || _b === void 0 ? void 0 : _b[spaceId];
             if (!forces) {
                 return;
             }
-            if (forces.Henchmen.length > 0) {
+            console.log('forces', spaceId, forces);
+            if (((_c = forces.Henchmen) === null || _c === void 0 ? void 0 : _c.length) > 0) {
                 forces.Henchmen.forEach(function (henchman) {
                     _this.forces["".concat(henchman.type, "_").concat(henchman.location)].addCard(henchman);
                 });
@@ -2932,37 +2937,38 @@ var GameMap = (function () {
                     type: MERRY_MEN,
                     spaceId: spaceId,
                     hidden: false,
-                    count: forces.MerryMen.revealed,
+                    count: ((_d = forces.MerryMen) === null || _d === void 0 ? void 0 : _d.revealed) || 0,
                 });
                 _this.addPublicForces({
                     type: MERRY_MEN,
                     spaceId: spaceId,
                     hidden: true,
-                    count: forces.MerryMen.hidden,
+                    count: ((_e = forces.MerryMen) === null || _e === void 0 ? void 0 : _e.hidden) || 0,
                 });
                 _this.addPublicForces({
                     type: CAMP,
                     spaceId: spaceId,
                     hidden: false,
-                    count: forces.Camp.revealed,
+                    count: ((_f = forces.Camp) === null || _f === void 0 ? void 0 : _f.revealed) || 0,
                 });
                 _this.addPublicForces({
                     type: CAMP,
                     spaceId: spaceId,
                     hidden: true,
-                    count: forces.Camp.hidden,
+                    count: ((_g = forces.Camp) === null || _g === void 0 ? void 0 : _g.hidden) || 0,
                 });
             }
             if (!isSheriffPlayer) {
                 _this.addPublicForces({
-                    count: forces.Carriage.hidden,
+                    count: ((_h = forces.Carriage) === null || _h === void 0 ? void 0 : _h.hidden) || 0,
                     hidden: true,
                     type: CARRIAGE,
                     spaceId: spaceId,
                 });
                 [TALLAGE_CARRIAGE, TRAP_CARRIAGE, TRIBUTE_CARRIAGE].forEach(function (type) {
+                    var _a;
                     _this.addPublicForces({
-                        count: forces.Carriage[type],
+                        count: ((_a = forces.Carriage) === null || _a === void 0 ? void 0 : _a[type]) || 0,
                         hidden: false,
                         type: type,
                         spaceId: spaceId,
@@ -3012,6 +3018,7 @@ var GameMap = (function () {
     };
     GameMap.prototype.addPublicForces = function (_a) {
         var type = _a.type, hidden = _a.hidden, spaceId = _a.spaceId, count = _a.count;
+        console.log('addPublicForces', type, hidden, count, spaceId);
         for (var i = 0; i < count; i++) {
             var stockId = "".concat(type, "_").concat(spaceId);
             if (type === ROBIN_HOOD) {
@@ -3060,6 +3067,7 @@ var GameMap = (function () {
     GameMap.prototype.addPrivateForce = function (_a) {
         var force = _a.force;
         var id = this.getStockIdPrivate({ force: force });
+        console.log('addPrivateForce id', id);
         this.forces[id].addCard(force);
     };
     GameMap.prototype.getForcePublic = function (_a) {
@@ -3386,6 +3394,7 @@ var NotificationManager = (function () {
             'clearTurn',
             'refreshUI',
             'refreshForcesPrivate',
+            'captureMerryMen',
             'chooseAction',
             'drawAndRevealCard',
             'drawAndRevealTravellerCard',
@@ -3514,6 +3523,39 @@ var NotificationManager = (function () {
                     forces.forEach(function (force) { return _this.game.gameMap.addPrivateForce({ force: force }); });
                 });
                 return [2];
+            });
+        });
+    };
+    NotificationManager.prototype.notif_captureMerryMen = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var capturedPieces, selectedForces_1;
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        capturedPieces = notif.args.capturedPieces;
+                        if (!this.currentPlayerIsRobinHood()) return [3, 2];
+                        return [4, this.game.gameMap.forces["".concat(MERRY_MEN, "_").concat(PRISON)].addCards(capturedPieces.map(function (piece) { return piece.force; }))];
+                    case 1:
+                        _a.sent();
+                        return [3, 4];
+                    case 2:
+                        selectedForces_1 = [];
+                        capturedPieces.forEach(function (piece) {
+                            var selected = _this.game.gameMap.getForcePublic({
+                                type: piece.type,
+                                hidden: piece.hidden,
+                                spaceId: piece.spaceId,
+                                exclude: selectedForces_1,
+                            });
+                            selectedForces_1.push(selected);
+                        });
+                        return [4, this.game.gameMap.forces["".concat(MERRY_MEN, "_").concat(PRISON)].addCards(selectedForces_1)];
+                    case 3:
+                        _a.sent();
+                        _a.label = 4;
+                    case 4: return [2];
+                }
             });
         });
     };
@@ -4503,6 +4545,75 @@ var tplPlayerPrefenceSliderRow = function (_a) {
     var label = _a.label, id = _a.id, _b = _a.visible, visible = _b === void 0 ? true : _b;
     return "\n  <div id=\"setting_row_".concat(id, "\" class=\"player_preference_row\"").concat(!visible ? " style=\"display: none;\"" : '', ">\n    <div class=\"player_preference_row_label\">").concat(_(label), "</div>\n    <div class=\"player_preference_row_value slider\">\n      <div id=\"setting_").concat(id, "\"></div>\n    </div>\n  </div>\n  ");
 };
+var CaptureState = (function () {
+    function CaptureState(game) {
+        this.game = game;
+    }
+    CaptureState.prototype.onEnteringState = function (args) {
+        debug('Entering CaptureState');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    CaptureState.prototype.onLeavingState = function () {
+        debug('Leaving CaptureState');
+    };
+    CaptureState.prototype.setDescription = function (activePlayerId) { };
+    CaptureState.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must select a Space to Capture Merry Men in'),
+            args: {
+                you: '${you}',
+            },
+        });
+        this.args.spaces.forEach(function (space) {
+            _this.game.addPrimaryActionButton({
+                id: "".concat(space.id, "_btn"),
+                text: _(space.name),
+                callback: function () {
+                    _this.updateInterfaceConfirm({ space: space });
+                },
+            });
+        });
+        this.game.addPassButton({
+            optionalAction: this.args.optionalAction,
+        });
+        this.game.addUndoButtons(this.args);
+    };
+    CaptureState.prototype.updateInterfaceConfirm = function (_a) {
+        var _this = this;
+        var space = _a.space;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('Capture in ${spaceName}?'),
+            args: {
+                spaceName: _(space.name),
+            },
+        });
+        var callback = function () {
+            _this.game.clearPossible();
+            _this.game.takeAction({
+                action: 'actCapture',
+                args: {
+                    spaceId: space.id,
+                },
+            });
+        };
+        if (this.game.settings.get({
+            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+        }) === PREF_ENABLED) {
+            callback();
+        }
+        else {
+            this.game.addConfirmButton({
+                callback: callback,
+            });
+        }
+        this.game.addCancelButton();
+    };
+    return CaptureState;
+}());
 var ChooseActionState = (function () {
     function ChooseActionState(game) {
         this.game = game;
@@ -5706,7 +5817,7 @@ var RobState = (function () {
         var space = _a.space, target = _a.target;
         this.game.clearPossible();
         this.game.clientUpdatePageTitle({
-            text: _('Rob ${target} in ${spaceName} ${count} Merry Men?'),
+            text: _('Rob ${target} in ${spaceName} with ${count} Merry Men?'),
             args: {
                 spaceName: _(space.name),
                 target: this.getTargetName({ target: target }),

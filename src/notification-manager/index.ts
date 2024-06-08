@@ -51,6 +51,7 @@ class NotificationManager {
       'refreshUI',
       'refreshForcesPrivate',
       // Game
+      'captureMerryMen',
       'chooseAction',
       'drawAndRevealCard',
       'drawAndRevealTravellerCard',
@@ -252,6 +253,28 @@ class NotificationManager {
     Object.entries(data).forEach(([spaceId, forces]) => {
       forces.forEach((force) => this.game.gameMap.addPrivateForce({ force }));
     });
+  }
+
+  async notif_captureMerryMen(notif: Notif<NotifCaptureMerryMenArgs>) {
+    const { capturedPieces } = notif.args;
+    if (this.currentPlayerIsRobinHood()) {
+      await this.game.gameMap.forces[`${MERRY_MEN}_${PRISON}`].addCards(
+        capturedPieces.map((piece) => piece.force)
+      );
+    } else {
+      const selectedForces: GestForce[] = [];
+
+      capturedPieces.forEach((piece) => {
+        const selected = this.game.gameMap.getForcePublic({
+          type: piece.type,
+          hidden: piece.hidden,
+          spaceId: piece.spaceId,
+          exclude: selectedForces,
+        });
+        selectedForces.push(selected);
+      });
+      await this.game.gameMap.forces[`${MERRY_MEN}_${PRISON}`].addCards(selectedForces);
+    }
   }
 
   async notif_chooseAction(notif: Notif<NotifChooseActionArgs>) {
