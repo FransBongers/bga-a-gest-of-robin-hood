@@ -256,13 +256,10 @@ class Settings {
     this.checkAnmimationSpeedVisisble();
   }
 
-  // public onChangeCardInfoInTooltipSetting(value: string) {
-  //   this.game.market.updateMarketCardTooltips();
-  //   this.game.playerManager.updateCardTooltips();
-  //   this.game.tableauCardManager.updateCardTooltips();
-  //   this.game.victoryCardManager.updateCardTooltips();
-  //   this.game.updateLogTooltips();
-  // }
+  public onChangeCardInfoInTooltipSetting(value: string) {
+
+    this.game.updateLogTooltips();
+  }
 
   //  .##.....##.########.####.##.......####.########.##....##
   //  .##.....##....##.....##..##........##.....##.....##..##.

@@ -16,7 +16,7 @@ interface PlayerPreferenceConfigBase {
 interface PlayerPreferenceSelectConfig extends PlayerPreferenceConfigBase {
   defaultValue: string;
   options: PlayerPreferenceOption[];
-  type: "select";
+  type: 'select';
 }
 
 interface PlayerPreferenceSliderConfig extends PlayerPreferenceConfigBase {
@@ -29,7 +29,7 @@ interface PlayerPreferenceSliderConfig extends PlayerPreferenceConfigBase {
       max: number;
     };
   };
-  type: "slider";
+  type: 'slider';
 }
 
 type PlayerPreferenceConfig =
@@ -43,32 +43,32 @@ interface PlayerPreferenceTab {
 
 const getSettingsConfig = (): Record<string, PlayerPreferenceTab> => ({
   layout: {
-    id: "layout",
+    id: 'layout',
     config: {
       twoColumnsLayout: {
-        id: "twoColumnsLayout",
+        id: 'twoColumnsLayout',
         onChangeInSetup: true,
-        defaultValue: "disabled",
-        label: _("Two column layout"),
-        type: "select",
+        defaultValue: 'disabled',
+        label: _('Two column layout'),
+        type: 'select',
         options: [
           {
-            label: _("Enabled"),
-            value: "enabled",
+            label: _('Enabled'),
+            value: 'enabled',
           },
           {
-            label: _("Disabled (single column)"),
-            value: "disabled",
+            label: _('Disabled (single column)'),
+            value: 'disabled',
           },
         ],
       },
       columnSizes: {
-        id: "columnSizes",
+        id: 'columnSizes',
         onChangeInSetup: true,
-        label: _("Column sizes"),
+        label: _('Column sizes'),
         defaultValue: 50,
         visibleCondition: {
-          id: "twoColumnsLayout",
+          id: 'twoColumnsLayout',
           values: [PREF_ENABLED],
         },
         sliderConfig: {
@@ -79,15 +79,15 @@ const getSettingsConfig = (): Record<string, PlayerPreferenceTab> => ({
             max: 70,
           },
         },
-        type: "slider",
+        type: 'slider',
       },
       [PREF_SINGLE_COLUMN_MAP_SIZE]: {
         id: PREF_SINGLE_COLUMN_MAP_SIZE,
         onChangeInSetup: true,
-        label: _("Map size"),
+        label: _('Map size'),
         defaultValue: 100,
         visibleCondition: {
-          id: "twoColumnsLayout",
+          id: 'twoColumnsLayout',
           values: [DISABLED],
         },
         sliderConfig: {
@@ -98,12 +98,12 @@ const getSettingsConfig = (): Record<string, PlayerPreferenceTab> => ({
             max: 100,
           },
         },
-        type: "slider",
+        type: 'slider',
       },
       [PREF_CARD_SIZE_IN_LOG]: {
         id: PREF_CARD_SIZE_IN_LOG,
         onChangeInSetup: true,
-        label: _("Size of cards in log"),
+        label: _('Size of cards in log'),
         defaultValue: 0,
         sliderConfig: {
           step: 5,
@@ -113,43 +113,43 @@ const getSettingsConfig = (): Record<string, PlayerPreferenceTab> => ({
             max: 90,
           },
         },
-        type: "slider",
+        type: 'slider',
       },
-      // [CARD_INFO_IN_TOOLTIP]: {
-      //   id: CARD_INFO_IN_TOOLTIP,
-      //   onChangeInSetup: false,
-      //   defaultValue: ENABLED,
-      //   label: _("Show card info in tooltip"),
-      //   type: "select",
-      //   options: [
-      //     {
-      //       label: _("Enabled"),
-      //       value: ENABLED,
-      //     },
-      //     {
-      //       label: _("Disabled (card image only)"),
-      //       value: DISABLED,
-      //     },
-      //   ],
-      // },
+      [PREF_CARD_INFO_IN_TOOLTIP]: {
+        id: PREF_CARD_INFO_IN_TOOLTIP,
+        onChangeInSetup: false,
+        defaultValue: ENABLED,
+        label: _('Show card info in tooltip'),
+        type: 'select',
+        options: [
+          {
+            label: _('Enabled'),
+            value: ENABLED,
+          },
+          {
+            label: _('Disabled (card image only)'),
+            value: DISABLED,
+          },
+        ],
+      },
     },
   },
   gameplay: {
-    id: "gameplay",
+    id: 'gameplay',
     config: {
       [PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY]: {
         id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
         onChangeInSetup: false,
         defaultValue: DISABLED,
-        label: _("Confirm end of turn and player switch only"),
-        type: "select",
+        label: _('Confirm end of turn and player switch only'),
+        type: 'select',
         options: [
           {
-            label: _("Enabled"),
+            label: _('Enabled'),
             value: PREF_ENABLED,
           },
           {
-            label: _("Disabled (confirm every move)"),
+            label: _('Disabled (confirm every move)'),
             value: PREF_DISABLED,
           },
         ],
@@ -158,15 +158,15 @@ const getSettingsConfig = (): Record<string, PlayerPreferenceTab> => ({
         id: PREF_SHOW_ANIMATIONS,
         onChangeInSetup: false,
         defaultValue: PREF_ENABLED,
-        label: _("Show animations"),
-        type: "select",
+        label: _('Show animations'),
+        type: 'select',
         options: [
           {
-            label: _("Enabled"),
+            label: _('Enabled'),
             value: PREF_ENABLED,
           },
           {
-            label: _("Disabled"),
+            label: _('Disabled'),
             value: PREF_DISABLED,
           },
         ],
@@ -174,7 +174,7 @@ const getSettingsConfig = (): Record<string, PlayerPreferenceTab> => ({
       [PREF_ANIMATION_SPEED]: {
         id: PREF_ANIMATION_SPEED,
         onChangeInSetup: false,
-        label: _("Animation speed"),
+        label: _('Animation speed'),
         defaultValue: 1600,
         visibleCondition: {
           id: PREF_SHOW_ANIMATIONS,
@@ -188,7 +188,7 @@ const getSettingsConfig = (): Record<string, PlayerPreferenceTab> => ({
             max: 2000,
           },
         },
-        type: "slider",
+        type: 'slider',
       },
     },
   },

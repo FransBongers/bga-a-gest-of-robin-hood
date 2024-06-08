@@ -137,6 +137,9 @@ class agestofrobinhood extends Table
             'markers' => Markers::getAll(),
             'spaces' => Spaces::getAll(),
             'forces' => $forces['public'],
+            'staticData' => [
+                'cards' => Cards::getStaticData()
+            ],
         ];
 
         if ($isRobinHood) {

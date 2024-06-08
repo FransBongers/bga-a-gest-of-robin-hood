@@ -785,6 +785,72 @@
   padding: 4px;
 }
 
+.dijitTooltipContainer {
+  padding: 8px !important;
+}
+
+.gest_card_tooltip {
+  display: flex;
+  flex-direction: row;
+  box-sizing: border-box;
+  padding-bottom: 8px;
+  width: 440px;
+  min-height: 372px;
+}
+.gest_card_tooltip .gest_card_tooltip_inner_container {
+  flex-grow: 1;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 274px;
+}
+.gest_card_tooltip .gest_card_tooltip_inner_container .gest_title {
+  font-size: large;
+  font-weight: bold;
+  text-align: left;
+  margin-bottom: 4px;
+}
+.gest_card_tooltip .gest_card_tooltip_inner_container .gest_section_title {
+  font-size: medium;
+  font-weight: bold;
+  text-align: left;
+  margin-bottom: 4px;
+  margin-top: 4px;
+}
+.gest_card_tooltip .gest_card_tooltip_inner_container .gest_card_tooltip_section_container {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 8px;
+}
+.gest_card_tooltip .gest_card_tooltip_inner_container .gest_card_tooltip_section_container .gest_card_tooltip_section_inner_container {
+  min-width: 40px;
+  margin-right: 8px;
+  display: flex;
+  justify-content: center;
+}
+.gest_card_tooltip .gest_card_tooltip_inner_container .gest_tooltip_text {
+  text-align: left;
+  font-size: small;
+}
+.gest_card_tooltip .gest_card_tooltip_inner_container .gest_flavor_text {
+  text-align: left;
+  font-size: small;
+  font-style: italic;
+  margin-bottom: 8px;
+}
+
+.gest_card_in_tooltip {
+  margin-right: -100px;
+  margin-left: 8px;
+  align-self: center;
+  width: 240px;
+  height: 334px;
+  background-size: 240px 334px;
+  box-shadow: 5px 5px 5px 0px rgba(0, 0, 0, 0.4);
+  border-radius: 10px;
+}
+
 body > .card {
   position: absolute;
   left: -9999px;

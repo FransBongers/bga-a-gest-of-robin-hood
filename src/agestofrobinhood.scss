@@ -24,6 +24,7 @@
 @use 'marker-manager/markers';
 @use 'nouislider';
 @use 'player-manager/playerPanels';
+@use "tooltip-manager/tooltip";
 @import '../node_modules/bga-cards/bga-cards';
 
 html {

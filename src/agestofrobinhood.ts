@@ -862,21 +862,34 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
       dojo.addClass('dockedlog_' + notif.mobileLogId, 'notif_' + type);
     }
 
-    // while (this.tooltipsToMap.length) {
-    //   const tooltipToMap = this.tooltipsToMap.pop();
-    //   if (!tooltipToMap || !tooltipToMap[1]) {
-    //     console.error("error tooltipToMap", tooltipToMap);
-    //   } else {
-    //     this.addLogTooltip({
-    //       tooltipId: tooltipToMap[0],
-    //       cardId: tooltipToMap[1],
-    //     });
-    //   }
-    // }
+    while (this.tooltipsToMap.length) {
+      const tooltipToMap = this.tooltipsToMap.pop();
+      if (!tooltipToMap || !tooltipToMap[1]) {
+        console.error('error tooltipToMap', tooltipToMap);
+      } else {
+        this.addLogTooltip({
+          tooltipId: tooltipToMap[0],
+          cardId: tooltipToMap[1],
+        });
+      }
+    }
   }
 
   // cardId will be PRENXXXX for tableau cards and full id for empire card / victory card
-  addLogTooltip({ tooltipId, cardId }: { tooltipId: number; cardId: string }) {}
+  addLogTooltip({ tooltipId, cardId }: { tooltipId: number; cardId: string }) {
+    console.log('addLogTooltip', tooltipId, cardId);
+    const card = this.gamedatas.staticData.cards[cardId];
+    console.log('staticData', card);
+    this.tooltipManager.addCardTooltip({
+      nodeId: `gest_tooltip_${tooltipId}`,
+      card,
+    });
+  }
+
+  updateLogTooltips() {
+    // console.log("tooltipsToMap", this.tooltipsToMap);
+    // TODO: check how to update this. For now needs refresh
+  }
 
   /*
    * [Undocumented] Override BGA framework functions to call onLoadingComplete when loading is done

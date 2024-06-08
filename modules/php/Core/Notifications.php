@@ -2,6 +2,7 @@
 
 namespace AGestOfRobinHood\Core;
 
+use AGestOfRobinHood\Helpers\Utils;
 use AGestOfRobinHood\Managers\Forces;
 use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\Spaces;
@@ -143,6 +144,11 @@ class Notifications
     }
   }
 
+  protected static function tknCardNameArg($card)
+  {
+    return explode('_', $card->getId())[0] . ':' . $card->getTitle();
+  }
+
   //  .##.....##.########.####.##.......####.########.##....##
   //  .##.....##....##.....##..##........##.....##.....##..##.
   //  .##.....##....##.....##..##........##.....##......####..
@@ -201,10 +207,10 @@ class Notifications
 
   public static function drawAndRevealTravellerCard($player, $card)
   {
-    self::notifyAll("drawAndRevealTravellerCard", clienttranslate('${player_name} draws the top card of the Travellers deck: ${tkn_boldText_cardTitle}'), [
+    self::notifyAll("drawAndRevealTravellerCard", clienttranslate('${player_name} draws the top card of the Travellers deck: ${tkn_cardName}'), [
       'player' => $player,
       'card' => $card,
-      'tkn_boldText_cardTitle' => $card->getTitle(),
+      'tkn_cardName' => self::tknCardNameArg($card),
     ]);
   }
 

@@ -34,4 +34,13 @@ class TooltipManager {
   public setupTooltips() {
   }
 
+  public addCardTooltip({nodeId, card}: {nodeId: string; card: GestCardStaticData}) {
+    const html = tplTableauCardTooltip({
+      card,
+      game: this.game,
+      imageOnly:
+        this.game.settings.get({ id: PREF_CARD_INFO_IN_TOOLTIP }) === DISABLED,
+    });
+    this.game.framework().addTooltipHtml(nodeId, html, 500);
+  }
 }
