@@ -102,7 +102,6 @@ class Patrol extends \AGestOfRobinHood\Actions\Plot
     }
 
     $player = self::getPlayer();
-    Notifications::log('moves', $moves);
     $player->payShillings(2);
 
     $patrolSpace = $option['space'];

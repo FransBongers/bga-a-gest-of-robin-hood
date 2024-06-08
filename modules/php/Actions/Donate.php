@@ -32,7 +32,14 @@ class Donate extends \AGestOfRobinHood\Models\AtomicAction
 
   public function argsDonate()
   {
-    $data = [];
+    $player = self::getPlayer();
+
+    $possible = $this->getPossibleSpaces();
+    $data = [
+      'spaces' => $possible,
+      'max' => min(count($possible), 2, floor($player->getShillings() / 2)),
+
+    ];
 
     return $data;
   }
@@ -64,6 +71,34 @@ class Donate extends \AGestOfRobinHood\Models\AtomicAction
   {
     self::checkAction('actDonate');
 
+    $selectedSpaceIds = $args['selectedSpaceIds'];
+
+    $stateArgs = $this->argsDonate();
+
+    if (count($selectedSpaceIds) > $stateArgs['max']) {
+      throw new \feException("ERROR 023");
+    }
+
+    $spaces = Utils::filter($stateArgs['spaces'], function ($space) use ($selectedSpaceIds) {
+      return in_array($space->getId(), $selectedSpaceIds);
+    });
+
+    if (count($spaces) !== count($selectedSpaceIds)) {
+      throw new \feException("ERROR 024");
+    }
+
+    $player = self::getPlayer();
+    $shillings = $player->getShillings();
+
+    if (count($selectedSpaceIds) * 2 > $shillings) {
+      throw new \feException("ERROR 025");
+    }
+
+    foreach ($spaces as $space) {
+      $player->payShillings(2);
+      $space->revolt($player);
+    }
+
     $this->resolveAction($args);
   }
 
@@ -87,6 +122,18 @@ class Donate extends \AGestOfRobinHood\Models\AtomicAction
 
   public function getPossibleSpaces()
   {
-    return GameMap::getSpacesWithMerryMen();
+    return Utils::filter(Spaces::get(PARISHES)->toArray(), function ($space) {
+      if (!$space->isSubmissive()) {
+        return false;
+      }
+      $forces = $space->getForces();
+      $numberOfMerryMen = count(Utils::filter($forces, function ($force) {
+        return $force->isMerryMan();
+      }));
+      $numberOfHenchmen = count(Utils::filter($forces, function ($force) {
+        return $force->isHenchman();
+      }));
+      return $numberOfMerryMen > 0 && $numberOfMerryMen >= $numberOfHenchmen;
+    });
   }
 }

@@ -1720,10 +1720,12 @@ var AGestOfRobinHood = (function () {
             confirmPartialTurn: new ConfirmPartialTurnState(this),
             confirmTurn: new ConfirmTurnState(this),
             chooseAction: new ChooseActionState(this),
+            donate: new DonateState(this),
             hire: new HireState(this),
             moveCarriage: new MoveCarriageState(this),
             patrol: new PatrolState(this),
             recruit: new RecruitState(this),
+            ride: new RideState(this),
             rob: new RobState(this),
             selectDeed: new SelectDeedState(this),
             selectPlot: new SelectPlotState(this),
@@ -4534,6 +4536,103 @@ var ConfirmTurnState = (function () {
     };
     return ConfirmTurnState;
 }());
+var DonateState = (function () {
+    function DonateState(game) {
+        this.selectedParishes = [];
+        this.game = game;
+    }
+    DonateState.prototype.onEnteringState = function (args) {
+        debug('Entering DonateState');
+        this.selectedParishes = [];
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    DonateState.prototype.onLeavingState = function () {
+        debug('Leaving DonateState');
+    };
+    DonateState.prototype.setDescription = function (activePlayerId) { };
+    DonateState.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must select Parishes to Donate to'),
+            args: {
+                you: '${you}',
+            },
+        });
+        this.args.spaces
+            .filter(function (space) {
+            return !_this.selectedParishes.some(function (selectedSpace) { return selectedSpace.id === space.id; });
+        })
+            .forEach(function (space) {
+            _this.game.addPrimaryActionButton({
+                id: "".concat(space.id, "_btn"),
+                text: _(space.name),
+                callback: function () {
+                    _this.selectedParishes.push(space);
+                    if (_this.selectedParishes.length === _this.args.max) {
+                        _this.updateInterfaceConfirm();
+                    }
+                    else {
+                        _this.updateInterfaceInitialStep();
+                    }
+                },
+            });
+        });
+        if (this.selectedParishes.length > 0 &&
+            this.selectedParishes.length < this.args.max) {
+            this.game.addPrimaryActionButton({
+                id: 'done_btn',
+                text: _('Done'),
+                callback: function () { return _this.updateInterfaceConfirm(); },
+            });
+        }
+        if (this.selectedParishes.length === 0) {
+            this.game.addPassButton({
+                optionalAction: this.args.optionalAction,
+            });
+            this.game.addUndoButtons(this.args);
+        }
+        else {
+            this.game.addCancelButton();
+        }
+    };
+    DonateState.prototype.updateInterfaceConfirm = function () {
+        var _this = this;
+        var _a;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: this.selectedParishes.length === 1
+                ? _('Donate in ${spaceName}?')
+                : _('Donate in ${spaceName} and ${spaceName2}?'),
+            args: {
+                spaceName: _(this.selectedParishes[0].name),
+                spaceName2: _((_a = this.selectedParishes[1]) === null || _a === void 0 ? void 0 : _a.name),
+            },
+        });
+        var callback = function () {
+            _this.game.clearPossible();
+            _this.game.takeAction({
+                action: 'actDonate',
+                args: {
+                    selectedSpaceIds: _this.selectedParishes.map(function (space) { return space.id; }),
+                },
+            });
+        };
+        if (this.game.settings.get({
+            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+        }) === PREF_ENABLED) {
+            callback();
+        }
+        else {
+            this.game.addConfirmButton({
+                callback: callback,
+            });
+        }
+        this.game.addCancelButton();
+    };
+    return DonateState;
+}());
 var HireState = (function () {
     function HireState(game) {
         this.game = game;
@@ -5073,6 +5172,123 @@ var RecruitState = (function () {
         }
     };
     return RecruitState;
+}());
+var RideState = (function () {
+    function RideState(game) {
+        this.selectedSpace = null;
+        this.selectedHenchmenIds = [];
+        this.game = game;
+    }
+    RideState.prototype.onEnteringState = function (args) {
+        debug('Entering RideState');
+        this.selectedHenchmenIds = [];
+        this.selectedSpace = null;
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    RideState.prototype.onLeavingState = function () {
+        debug('Leaving RideState');
+    };
+    RideState.prototype.setDescription = function (activePlayerId) { };
+    RideState.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must select a Parish to move Henchmen to'),
+            args: {
+                you: '${you}',
+            },
+        });
+        this.args.spaces.forEach(function (space) {
+            _this.game.addPrimaryActionButton({
+                id: "".concat(space.id, "_btn"),
+                text: _(space.name),
+                callback: function () {
+                    _this.selectedSpace = space;
+                    _this.updateInterfaceSelectHenchmen();
+                },
+            });
+        });
+        this.game.addPassButton({
+            optionalAction: this.args.optionalAction,
+        });
+        this.game.addUndoButtons(this.args);
+    };
+    RideState.prototype.updateInterfaceSelectHenchmen = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must select Henchmen to move to ${spaceName}'),
+            args: {
+                you: '${you}',
+                spaceName: _(this.selectedSpace.name),
+            },
+        });
+        this.args.henchmen.forEach(function (henchman) {
+            _this.game.setElementSelectable({
+                id: henchman.id,
+                callback: function () { return _this.handleHenchmenClick({ henchman: henchman }); },
+            });
+        });
+        this.game.addPrimaryActionButton({
+            id: 'done_btn',
+            text: _('Done'),
+            callback: function () { return _this.updateInterfaceConfirm(); },
+        });
+        this.game.addCancelButton();
+    };
+    RideState.prototype.updateInterfaceConfirm = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: this.selectedHenchmenIds.length > 0
+                ? _('Move ${count} Henchmen to ${spaceName} and Ride?')
+                : _('Ride in ${spaceName}?'),
+            args: {
+                spaceName: _(this.selectedSpace.name),
+                count: this.selectedHenchmenIds.length,
+            },
+        });
+        this.selectedHenchmenIds.forEach(function (id) {
+            return _this.game.setElementSelected({ id: id });
+        });
+        var callback = function () {
+            _this.game.clearPossible();
+            _this.game.takeAction({
+                action: 'actRide',
+                args: {
+                    spaceId: _this.selectedSpace.id,
+                    henchmenIds: _this.selectedHenchmenIds,
+                },
+            });
+        };
+        if (this.game.settings.get({
+            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+        }) === PREF_ENABLED) {
+            callback();
+        }
+        else {
+            this.game.addConfirmButton({
+                callback: callback,
+            });
+        }
+        this.game.addCancelButton();
+    };
+    RideState.prototype.handleHenchmenClick = function (_a) {
+        var henchman = _a.henchman;
+        if (this.selectedHenchmenIds.includes(henchman.id)) {
+            this.game.removeSelectedFromElement({ id: henchman.id });
+            this.selectedHenchmenIds = this.selectedHenchmenIds.filter(function (id) { return id !== henchman.id; });
+        }
+        else {
+            this.game.setElementSelected({ id: henchman.id });
+            this.selectedHenchmenIds.push(henchman.id);
+        }
+        if (this.selectedHenchmenIds.length === 4) {
+            this.updateInterfaceConfirm();
+        }
+    };
+    return RideState;
 }());
 var RobState = (function () {
     function RobState(game) {

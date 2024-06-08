@@ -32,7 +32,10 @@ class Ride extends \AGestOfRobinHood\Models\AtomicAction
 
   public function argsRide()
   {
-    $data = [];
+    $data = [
+      'spaces' => Spaces::get(PARISHES)->toArray(),
+      'henchmen' => $this->getHenchmenInNottingham(),
+    ];
 
     return $data;
   }
@@ -64,6 +67,37 @@ class Ride extends \AGestOfRobinHood\Models\AtomicAction
   {
     self::checkAction('actRide');
 
+    $spaceId = $args['spaceId'];
+    $henchmenIds = $args['henchmenIds'];
+
+    if (!in_array($spaceId, PARISHES)) {
+      throw new \feException("ERROR 020");
+    }
+
+    $toSpace = Spaces::get($spaceId);
+
+    $henchmen = Utils::filter($this->getHenchmenInNottingham(), function ($henchman) use ($henchmenIds) {
+      return in_array($henchman->getId(), $henchmenIds);
+    });
+
+
+    if (count($henchmen) !== count($henchmenIds)) {
+      throw new \feException("ERROR 021");
+    }
+
+    if (count($henchmen) > 4) {
+      throw new \feException("ERROR 022");
+    }
+
+
+    foreach($henchmen as $henchman) {
+      $henchman->setLocation($spaceId);
+    }
+
+    $player = self::getPlayer();
+
+    Notifications::moveForces($player, Spaces::get(NOTTINGHAM), $toSpace, $henchmen);
+
     $this->resolveAction($args);
   }
 
@@ -82,6 +116,13 @@ class Ride extends \AGestOfRobinHood\Models\AtomicAction
 
   public function canBePerformed($player)
   {
-    return true;
+    return count($this->getHenchmenInNottingham()) > 0;
+  }
+
+  private function getHenchmenInNottingham()
+  {
+    return Utils::filter(Spaces::get(NOTTINGHAM)->getForces(), function ($force) {
+      return $force->isHenchman();
+    });
   }
 }

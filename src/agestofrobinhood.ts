@@ -64,10 +64,12 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     confirmTurn: ConfirmTurnState;
     // Game
     chooseAction: ChooseActionState;
+    donate: DonateState;
     hire: HireState;
     moveCarriage: MoveCarriageState;
     patrol: PatrolState;
     recruit: RecruitState;
+    ride: RideState;
     rob: RobState;
     selectDeed: SelectDeedState;
     selectPlot: SelectPlotState;
@@ -110,10 +112,12 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
       confirmTurn: new ConfirmTurnState(this),
       // Game
       chooseAction: new ChooseActionState(this),
+      donate: new DonateState(this),
       hire: new HireState(this),
       moveCarriage: new MoveCarriageState(this),
       patrol: new PatrolState(this),
       recruit: new RecruitState(this),
+      ride: new RideState(this),
       rob: new RobState(this),
       selectDeed: new SelectDeedState(this),
       selectPlot: new SelectPlotState(this),

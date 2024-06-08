@@ -321,7 +321,7 @@ $machinestates = array(
         'args' => 'argsAtomicAction',
         'action' => 'stAtomicAction',
         // 'transitions' => [],
-        'possibleactions' => ['actonate', 'actPassOptionalAction', 'actRestart'],
+        'possibleactions' => ['actDonate', 'actPassOptionalAction', 'actRestart'],
     ],
     ST_SWASHBUCKLE => [
         'name' => 'swashbuckle',

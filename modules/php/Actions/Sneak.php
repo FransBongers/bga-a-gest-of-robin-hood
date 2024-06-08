@@ -173,9 +173,6 @@ class Sneak extends \AGestOfRobinHood\Actions\Plot
 
   public function getArgs()
   {
-    $info = $this->ctx->getInfo();
-    $spaceIds = $info['spaceIds'];
-
     $alreadyMovedspaceIds = [];
     $alreadyMovedMerryMenIds = [];
     $nodes = Engine::getResolvedActions([SNEAK]);
@@ -188,7 +185,7 @@ class Sneak extends \AGestOfRobinHood\Actions\Plot
     $options = [];
     // TODO: exclude already moved spaces and merry man
 
-    $spaces = Spaces::get($spaceIds)->toArray();
+    $spaces = GameMap::getSpacesWithMerryMen();
 
     foreach ($spaces as $space) {
       if (in_array($space->getId(), $alreadyMovedspaceIds)) {

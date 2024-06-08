@@ -188,6 +188,8 @@ const SHIRE_WOOD = 'ShireWood';
 const SOUTHWELL_FOREST = 'SouthwellForest';
 const TUXFORD = 'Tuxford';
 
+const PARISHES = [BINGHAM, BLYTH, MANSFIELD, NEWARK, REMSTON, RETFORD, TUXFORD];
+
 const SPACES = [
   BINGHAM,
   BLYTH,

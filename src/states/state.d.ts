@@ -21,6 +21,11 @@ interface OnEnteringChooseActionStateArgs extends CommonArgs {
   plotsAndDeeds: boolean;
 }
 
+interface OnEnteringDonateStateArgs extends CommonArgs {
+  spaces: GestSpace[];
+  max: number;
+}
+
 interface OnEnteringHireStateArgs extends CommonArgs {
   options: Record<
     string,
@@ -67,6 +72,11 @@ interface OnEnteringRecruitStateArgs extends CommonArgs {
     options: Record<string, RecruitOption>;
     robinHoodInSupply: boolean;
   };
+}
+
+interface OnEnteringRideStateArgs extends CommonArgs {
+  spaces: GestSpace[];
+  henchmen: GestForce[];
 }
 
 interface OnEnteringRobStateArgs extends CommonArgs {}
