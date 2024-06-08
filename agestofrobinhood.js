@@ -1736,6 +1736,7 @@ var AGestOfRobinHood = (function () {
             selectTravellerCardOption: new SelectTravellerCardOptionState(this),
             setupRobinHood: new SetupRobinHoodState(this),
             sneak: new SneakState(this),
+            turncoat: new TurncoatState(this),
         };
         this.tooltipManager = new TooltipManager(this);
         this.playerManager = new PlayerManager(this);
@@ -6200,6 +6201,105 @@ var SneakState = (function () {
         this.updateInterfaceInitialStep();
     };
     return SneakState;
+}());
+var TurncoatState = (function () {
+    function TurncoatState(game) {
+        this.game = game;
+    }
+    TurncoatState.prototype.onEnteringState = function (args) {
+        debug('Entering TurncoatState');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    TurncoatState.prototype.onLeavingState = function () {
+        debug('Leaving TurncoatState');
+    };
+    TurncoatState.prototype.setDescription = function (activePlayerId) { };
+    TurncoatState.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must select a Revolting Parish'),
+            args: {
+                you: '${you}',
+            },
+        });
+        this.args._private.spaces.forEach(function (space) {
+            _this.game.addPrimaryActionButton({
+                id: "".concat(space.id, "_btn"),
+                text: _(space.name),
+                callback: function () {
+                    if (_this.args._private.robinHoodInSupply) {
+                        _this.updateInterfacePlaceRobinHood({ space: space });
+                    }
+                    else {
+                        _this.updateInterfaceConfirm({ space: space });
+                    }
+                },
+            });
+        });
+        this.game.addPassButton({
+            optionalAction: this.args.optionalAction,
+        });
+        this.game.addUndoButtons(this.args);
+    };
+    TurncoatState.prototype.updateInterfacePlaceRobinHood = function (_a) {
+        var _this = this;
+        var space = _a.space;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('Place Robin Hood?'),
+            args: {},
+        });
+        this.game.addPrimaryActionButton({
+            id: 'yes_btn',
+            text: _('Yes'),
+            callback: function () {
+                return _this.updateInterfaceConfirm({ space: space, placeRobinHood: true });
+            },
+        });
+        this.game.addPrimaryActionButton({
+            id: 'no_btn',
+            text: _('No'),
+            callback: function () {
+                return _this.updateInterfaceConfirm({ space: space, placeRobinHood: false });
+            },
+        });
+        this.game.addCancelButton();
+    };
+    TurncoatState.prototype.updateInterfaceConfirm = function (_a) {
+        var _this = this;
+        var space = _a.space, _b = _a.placeRobinHood, placeRobinHood = _b === void 0 ? false : _b;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('Replace Henchman with Merry Man in ${spaceName}?'),
+            args: {
+                spaceName: _(space.name),
+            },
+        });
+        var callback = function () {
+            _this.game.clearPossible();
+            _this.game.takeAction({
+                action: 'actTurncoat',
+                args: {
+                    spaceId: space.id,
+                    placeRobinHood: placeRobinHood,
+                },
+            });
+        };
+        if (this.game.settings.get({
+            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+        }) === PREF_ENABLED) {
+            callback();
+        }
+        else {
+            this.game.addConfirmButton({
+                callback: callback,
+            });
+        }
+        this.game.addCancelButton();
+    };
+    return TurncoatState;
 }());
 var tplCardTooltipContainer = function (_a) {
     var card = _a.card, content = _a.content;

@@ -78,6 +78,7 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     selectTravellerCardOption: SelectTravellerCardOptionState;
     setupRobinHood: SetupRobinHoodState;
     sneak: SneakState;
+    turncoat: TurncoatState;
   };
 
   constructor() {
@@ -129,6 +130,7 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
       selectTravellerCardOption: new SelectTravellerCardOptionState(this),
       setupRobinHood: new SetupRobinHoodState(this),
       sneak: new SneakState(this),
+      turncoat: new TurncoatState(this),
     };
 
     this.tooltipManager = new TooltipManager(this);

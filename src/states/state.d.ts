@@ -148,3 +148,11 @@ interface OnEnteringSneakStateArgs extends CommonArgs {
     >;
   };
 }
+
+interface OnEnteringTurncoatStateArgs extends CommonArgs {
+  _private: {
+    spaces: GestSpace[];
+    robinHoodInSupply: boolean;
+  }
+  
+}
