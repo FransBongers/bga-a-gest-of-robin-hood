@@ -71,10 +71,6 @@ class Donate extends \AGestOfRobinHood\Models\AtomicAction
 
     $stateArgs = $this->argsDonate();
 
-    // if (count($selectedSpaceIds) > $stateArgs['max']) {
-    //   throw new \feException("ERROR 023");
-    // }
-
     $space = Utils::array_find($stateArgs['spaces'], function ($space) use ($spaceId) {
       return $spaceId === $space->getId();
     });

@@ -68,6 +68,7 @@ const ST_DISPERSE = 39;
 const ST_HIRE = 40;
 const ST_PATROL = 41;
 const ST_CAPTURE = 42;
+const ST_SELECT_TRAVELLER_CARD_OPTION = 43;
 
 /**
  * Atomic actions
@@ -77,6 +78,7 @@ const CHOOSE_ACTION = 'CHOOSE_ACTION';
 const MOVE_CARRIAGE = 'MOVE_CARRIAGE';
 const SELECT_DEED = 'SELECT_DEED';
 const SELECT_PLOT = 'SELECT_PLOT';
+const SELECT_TRAVELLER_CARD_OPTION = 'SELECT_TRAVELLER_CARD_OPTION';
 const SETUP_ROBIN_HOOD = 'SETUP_ROBIN_HOOD';
 // Plots - Robin Hood
 const RECRUIT = 'RECRUIT';
@@ -112,6 +114,13 @@ const CARRIAGE = 'Carriage';
 const TALLAGE_CARRIAGE = 'TallageCarriage';
 const TRIBUTE_CARRIAGE = 'TributeCarriage';
 const TRAP_CARRIAGE = 'TrapCarriage';
+const HIDDEN_CARRIAGE = 'HiddenCarriage';
+
+const CARRIAGE_TYPES = [
+  TALLAGE_CARRIAGE,
+  TRAP_CARRIAGE,
+  TRIBUTE_CARRIAGE,
+];
 
 /**
  * Sides

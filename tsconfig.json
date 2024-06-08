@@ -69,6 +69,7 @@
     "src/states/Rob.ts",
     "src/states/SelectDeed.ts",
     "src/states/SelectPlot.ts",
+    "src/states/SelectTravellerCardOption.ts",
     "src/states/SetupRobinHood.ts",
     "src/states/Sneak.ts",
     "src/states/state.d.ts",

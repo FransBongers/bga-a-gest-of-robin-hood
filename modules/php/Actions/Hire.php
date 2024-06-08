@@ -41,11 +41,11 @@ class Hire extends \AGestOfRobinHood\Actions\Plot
 
   public function stHire()
   {
-    // $player = self::getPlayer();
+    $player = self::getPlayer();
 
-    // if (!$this->canBePerformed($player, $player->getShillings())) {
-    //   $this->resolveAction(['automatic' => true]);
-    // }
+    if (!$this->canBePerformed($player, $player->getShillings())) {
+      $this->resolveAction(['automatic' => true]);
+    }
   }
 
   // ....###....########...######....######.

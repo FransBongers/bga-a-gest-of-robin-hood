@@ -199,6 +199,15 @@ class Notifications
     ]);
   }
 
+  public static function drawAndRevealTravellerCard($player, $card)
+  {
+    self::notifyAll("drawAndRevealTravellerCard", clienttranslate('${player_name} draws the top card of the Travellers deck: ${tkn_boldText_cardTitle}'), [
+      'player' => $player,
+      'card' => $card,
+      'tkn_boldText_cardTitle' => $card->getTitle(),
+    ]);
+  }
+
   public static function firstEligible($marker)
   {
     $player = $marker->getId() === ROBIN_HOOD_ELIGIBILITY_MARKER ? Players::get(Players::getRobinHoodPlayerId()) : Players::get(Players::getSheriffPlayerId());

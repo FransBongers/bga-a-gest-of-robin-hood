@@ -27,6 +27,7 @@ class AtomicActions
     ROB => 'Rob',
     SELECT_DEED => 'SelectDeed',
     SELECT_PLOT => 'SelectPlot',
+    SELECT_TRAVELLER_CARD_OPTION => 'SelectTravellerCardOption',
     SETUP_ROBIN_HOOD => 'SetupRobinHood',
     SNEAK => 'Sneak',
     SWASHBUCKLE => 'Swashbuckle',

@@ -400,4 +400,14 @@ $machinestates = array(
         // 'transitions' => [],
         'possibleactions' => ['actCapture', 'actPassOptionalAction', 'actRestart'],
     ],
+    ST_SELECT_TRAVELLER_CARD_OPTION => [
+        'name' => 'selectTravellerCardOption',
+        'description' => clienttranslate('${actplayer} must select an option from the Traveller Card'),
+        'descriptionmyturn' => clienttranslate('${you}'),
+        'type' => 'activeplayer',
+        'args' => 'argsAtomicAction',
+        'action' => 'stAtomicAction',
+        // 'transitions' => [],
+        'possibleactions' => ['actSelectTravellerCardOption', 'actPassOptionalAction', 'actRestart'],
+    ],
 );

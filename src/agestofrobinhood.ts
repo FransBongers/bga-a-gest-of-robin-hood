@@ -74,6 +74,7 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     rob: RobState;
     selectDeed: SelectDeedState;
     selectPlot: SelectPlotState;
+    selectTravellerCardOption: SelectTravellerCardOptionState;
     setupRobinHood: SetupRobinHoodState;
     sneak: SneakState;
   };
@@ -123,6 +124,7 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
       rob: new RobState(this),
       selectDeed: new SelectDeedState(this),
       selectPlot: new SelectPlotState(this),
+      selectTravellerCardOption: new SelectTravellerCardOptionState(this),
       setupRobinHood: new SetupRobinHoodState(this),
       sneak: new SneakState(this),
     };

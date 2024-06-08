@@ -16,7 +16,7 @@ class Plot extends \AGestOfRobinHood\Models\AtomicAction
     }
     $action = $this->ctx->getAction();
 
-    if ($selectedAction === PLOTS_AND_DEEDS && count(Engine::getResolvedActions([$action])) < 2 && $this->canBePerformed($player, $player->getShillings())) {
+    if ($selectedAction === PLOTS_AND_DEEDS && count(Engine::getResolvedActions([$action])) < 2) {
       $this->ctx->insertAsBrother(new LeafNode([
         'action' => $action,
         'playerId' => $player->getId(),
@@ -32,8 +32,8 @@ class Plot extends \AGestOfRobinHood\Models\AtomicAction
     return $action;
   }
 
-  public function canBePerformed($player, $availableShillings)
-  {
-    return false;
-  }
+  // public function canBePerformed($player, $availableShillings)
+  // {
+  //   return false;
+  // }
 }

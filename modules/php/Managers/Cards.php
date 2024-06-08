@@ -179,7 +179,20 @@ class Cards extends \AGestOfRobinHood\Helpers\Pieces
   public static function drawAndRevealCard() {
     $card = self::getTopOf(EVENTS_DECK);
     Notifications::drawAndRevealCard($card);
+    
     $card->setLocation(EVENTS_DISCARD);
     return $card;
+  }
+
+  public static function drawAndRevealTravellerCard($player) {
+    $card = self::getTopOf(TRAVELLERS_DECK);
+        // TODO: check what needs to be done? Probably shuffle?
+    if ($card === null) {
+      return null;
+    }
+    Notifications::drawAndRevealTravellerCard($player, $card);
+    Cards::insertOnTop($card->getId(), TRAVELLERS_DISCARD);
+    
+    return Cards::get($card->getId());
   }
 }

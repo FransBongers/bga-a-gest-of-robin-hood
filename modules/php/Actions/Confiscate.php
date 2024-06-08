@@ -80,13 +80,13 @@ class Confiscate extends \AGestOfRobinHood\Models\AtomicAction
     });
 
     if ($space === null) {
-      throw new \feException("ERROR 026");
+      throw new \feException("ERROR 024");
     }
 
     $carriages = Forces::getOfTypeInLocation($carriageType, CARRIAGE_SUPPLY);
 
     if (count($carriages) === 0) {
-      throw new \feException("ERROR 027");
+      throw new \feException("ERROR 025");
     }
 
     $carriage = $carriages[0];

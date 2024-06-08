@@ -85,7 +85,26 @@ interface OnEnteringRideStateArgs extends CommonArgs {
   henchmen: GestForce[];
 }
 
-interface OnEnteringRobStateArgs extends CommonArgs {}
+interface RobOption {
+  space: GestSpace;
+  merryMen: GestForce[];
+  carriages: {
+    HiddenCarriage: number;
+    TallageCarriage: number;
+    TrapCarriage: number;
+    TributeCarriage: number;
+  };
+  traveller: boolean;
+  treasury: boolean;
+}
+
+type RobTargetId = 'traveller' | 'treasury' | 'HiddenCarriage' | 'TallageCarriage' | 'TrapCarriage' | 'TributeCarriage';
+
+interface OnEnteringRobStateArgs extends CommonArgs {
+  _private: {
+    options: Record<string, RobOption>;
+  };
+}
 
 interface OnEnteringSelectDeedStateArgs extends CommonArgs {
   _private: {
@@ -95,6 +114,10 @@ interface OnEnteringSelectDeedStateArgs extends CommonArgs {
 
 interface OnEnteringSelectPlotStateArgs extends CommonArgs {
   options: Record<string, string>;
+}
+
+interface OnEnteringSelectTravellerCardOptionStateArgs extends CommonArgs {
+  
 }
 
 interface OnEnteringSetupRobinHoodArgs extends CommonArgs {}

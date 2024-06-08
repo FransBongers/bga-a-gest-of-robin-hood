@@ -68,6 +68,11 @@ class Force extends \AGestOfRobinHood\Helpers\DB_Model
     return $this->type === CAMP;
   }
 
+  public function isCarriage()
+  {
+    return in_array($this->type, CARRIAGE_TYPES);
+  }
+
   public function isMerryMan()
   {
     return $this->type === MERRY_MEN || $this->type === ROBIN_HOOD;

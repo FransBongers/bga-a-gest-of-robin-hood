@@ -1730,6 +1730,7 @@ var AGestOfRobinHood = (function () {
             rob: new RobState(this),
             selectDeed: new SelectDeedState(this),
             selectPlot: new SelectPlotState(this),
+            selectTravellerCardOption: new SelectTravellerCardOptionState(this),
             setupRobinHood: new SetupRobinHoodState(this),
             sneak: new SneakState(this),
         };
@@ -5351,11 +5352,13 @@ var RideState = (function () {
 }());
 var RobState = (function () {
     function RobState(game) {
+        this.selectedMerryMenIds = [];
         this.game = game;
     }
     RobState.prototype.onEnteringState = function (args) {
         debug('Entering RobState');
         this.args = args;
+        this.selectedMerryMenIds = [];
         this.updateInterfaceInitialStep();
     };
     RobState.prototype.onLeavingState = function () {
@@ -5363,34 +5366,124 @@ var RobState = (function () {
     };
     RobState.prototype.setDescription = function (activePlayerId) { };
     RobState.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
         this.game.clearPossible();
         this.game.clientUpdatePageTitle({
-            text: _('${you} must Rob'),
+            text: _('${you} must select a Space to Rob'),
             args: {
                 you: '${you}',
             },
+        });
+        Object.entries(this.args._private.options).forEach(function (_a) {
+            var spaceId = _a[0], option = _a[1];
+            return _this.game.addPrimaryActionButton({
+                id: "".concat(spaceId, "_btn"),
+                text: _(option.space.name),
+                callback: function () { return _this.updateInterfaceSelectTarget({ option: option }); },
+            });
         });
         this.game.addPassButton({
             optionalAction: this.args.optionalAction,
         });
         this.game.addUndoButtons(this.args);
     };
+    RobState.prototype.updateInterfaceSelectTarget = function (_a) {
+        var _this = this;
+        var option = _a.option;
+        this.game.clearPossible();
+        var targets = this.getTargets({ option: option });
+        if (targets.length === 1) {
+            this.updateInterfaceSelectMerryMen({
+                space: option.space,
+                target: targets[0],
+                merryMen: option.merryMen,
+            });
+            return;
+        }
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must select a target'),
+            args: {
+                you: '${you}',
+            },
+        });
+        targets.forEach(function (target) {
+            _this.game.addPrimaryActionButton({
+                id: "".concat(target, "_btn"),
+                text: _(_this.getTargetName({ target: target })),
+                callback: function () {
+                    return _this.updateInterfaceSelectMerryMen({
+                        space: option.space,
+                        target: target,
+                        merryMen: option.merryMen
+                    });
+                },
+            });
+        });
+        this.game.addCancelButton();
+    };
+    RobState.prototype.updateInterfaceSelectMerryMen = function (_a) {
+        var _this = this;
+        var space = _a.space, target = _a.target, merryMen = _a.merryMen;
+        this.game.clearPossible();
+        if (merryMen.length === 1) {
+            this.selectedMerryMenIds.push(merryMen[0].id);
+            this.updateInterfaceConfirm({
+                space: space,
+                target: target,
+            });
+            return;
+        }
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must select Merry Men to Rob with'),
+            args: {
+                you: '${you}',
+            },
+        });
+        merryMen.forEach(function (merryMan) {
+            return _this.game.setElementSelectable({
+                id: merryMan.id,
+                callback: function () { return _this.handleMerryManClick({ merryMan: merryMan }); },
+            });
+        });
+        this.game.addPrimaryActionButton({
+            id: 'done_btn',
+            text: _('Done'),
+            callback: function () { return _this.updateInterfaceConfirm({ space: space, target: target }); },
+            extraClasses: DISABLED,
+        });
+        this.game.addSecondaryActionButton({
+            id: 'select_all_btn',
+            text: _('Select all'),
+            callback: function () {
+                _this.selectedMerryMenIds = merryMen.map(function (merryMan) { return merryMan.id; });
+                _this.updateInterfaceConfirm({ space: space, target: target });
+            },
+        });
+        this.game.addCancelButton();
+    };
     RobState.prototype.updateInterfaceConfirm = function (_a) {
         var _this = this;
-        var plotId = _a.plotId, data = _a.data;
+        var space = _a.space, target = _a.target;
         this.game.clearPossible();
         this.game.clientUpdatePageTitle({
-            text: _('${plotName} in ${spacesLog}?'),
+            text: _('Rob ${target} in ${spaceName} ${count} Merry Men?'),
             args: {
-                plotName: _(data.plotName),
+                spaceName: _(space.name),
+                target: this.getTargetName({ target: target }),
+                count: this.selectedMerryMenIds.length,
             },
+        });
+        this.selectedMerryMenIds.forEach(function (id) {
+            return _this.game.setElementSelected({ id: id });
         });
         var callback = function () {
             _this.game.clearPossible();
             _this.game.takeAction({
                 action: 'actRob',
                 args: {
-                    plotId: plotId,
+                    target: target,
+                    spaceId: space.id,
+                    merryMenIds: _this.selectedMerryMenIds,
                 },
             });
         };
@@ -5405,6 +5498,54 @@ var RobState = (function () {
             });
         }
         this.game.addCancelButton();
+    };
+    RobState.prototype.getTargets = function (_a) {
+        var option = _a.option;
+        var targets = [];
+        if (option.treasury) {
+            targets.push('treasury');
+        }
+        if (option.traveller) {
+            targets.push('traveller');
+        }
+        Object.entries(option.carriages).forEach(function (_a) {
+            var type = _a[0], count = _a[1];
+            if (count > 0) {
+                targets.push(type);
+            }
+        });
+        return targets;
+    };
+    RobState.prototype.getTargetName = function (_a) {
+        var target = _a.target;
+        switch (target) {
+            case 'treasury':
+                return _("the Sheriff's Treasury");
+            case 'traveller':
+                return _('a random Traveller');
+                return;
+            case 'HiddenCarriage':
+            case 'TallageCarriage':
+            case 'TrapCarriage':
+            case 'TributeCarriage':
+                return _(target);
+        }
+    };
+    RobState.prototype.handleMerryManClick = function (_a) {
+        var merryMan = _a.merryMan;
+        if (this.selectedMerryMenIds.includes(merryMan.id)) {
+            this.game.removeSelectedFromElement({ id: merryMan.id });
+            this.selectedMerryMenIds = this.selectedMerryMenIds.filter(function (id) { return id !== merryMan.id; });
+            if (this.selectedMerryMenIds.length === 0) {
+                console.log('add disabled');
+                document.getElementById('done_btn').classList.add(DISABLED);
+            }
+        }
+        else {
+            this.game.setElementSelected({ id: merryMan.id });
+            this.selectedMerryMenIds.push(merryMan.id);
+            document.getElementById('done_btn').classList.remove(DISABLED);
+        }
     };
     return RobState;
 }());
@@ -5547,6 +5688,65 @@ var SelectPlotState = (function () {
         this.game.addCancelButton();
     };
     return SelectPlotState;
+}());
+var SelectTravellerCardOptionState = (function () {
+    function SelectTravellerCardOptionState(game) {
+        this.game = game;
+    }
+    SelectTravellerCardOptionState.prototype.onEnteringState = function (args) {
+        debug('Entering SelectTravellerCardOptionState');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    SelectTravellerCardOptionState.prototype.onLeavingState = function () {
+        debug('Leaving SelectTravellerCardOptionState');
+    };
+    SelectTravellerCardOptionState.prototype.setDescription = function (activePlayerId) { };
+    SelectTravellerCardOptionState.prototype.updateInterfaceInitialStep = function () {
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must select an option from the Traveller card'),
+            args: {
+                you: '${you}',
+            },
+        });
+        this.game.addPassButton({
+            optionalAction: this.args.optionalAction,
+        });
+        this.game.addUndoButtons(this.args);
+    };
+    SelectTravellerCardOptionState.prototype.updateInterfaceConfirm = function (_a) {
+        var _this = this;
+        var space = _a.space;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('SelectTravellerCardOption in ${spaceName}?'),
+            args: {
+                spaceName: _(space.name),
+            },
+        });
+        var callback = function () {
+            _this.game.clearPossible();
+            _this.game.takeAction({
+                action: 'actSelectTravellerCardOption',
+                args: {
+                    spaceId: space.id,
+                },
+            });
+        };
+        if (this.game.settings.get({
+            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+        }) === PREF_ENABLED) {
+            callback();
+        }
+        else {
+            this.game.addConfirmButton({
+                callback: callback,
+            });
+        }
+        this.game.addCancelButton();
+    };
+    return SelectTravellerCardOptionState;
 }());
 var SetupRobinHoodState = (function () {
     function SetupRobinHoodState(game) {
