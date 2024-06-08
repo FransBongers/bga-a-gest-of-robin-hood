@@ -177,3 +177,26 @@ interface NotifSneakMerryMenPrivateArgs extends NotifWithPlayerArgs {
   forces: GestForce[];
   toSpaceId: string;
 }
+
+interface NotifMoveMerryMenPrivateArgs extends NotifWithPlayerArgs {
+  forces: GestForce[];
+}
+
+
+
+interface MerryManMovePublic {
+  from: {
+    hidden: boolean;
+    spaceId: string;
+    type: 'MerryMen' | 'RobinHood';
+  };
+  to: {
+    hidden: boolean;
+    spaceId: string;
+    type: 'MerryMen' | 'RobinHood';
+  }
+}
+
+interface NotifMoveMerryMenPublicArgs extends NotifWithPlayerArgs {
+  moves: MerryManMovePublic[];
+}

@@ -149,10 +149,17 @@ interface OnEnteringSneakStateArgs extends CommonArgs {
   };
 }
 
+interface OnEnteringSwashbuckleStateArgs extends CommonArgs {
+  _private: {
+    merryMen: GestForce[];
+    robinHoodInPrison: boolean;
+    spaces: GestSpace[];
+  };
+}
+
 interface OnEnteringTurncoatStateArgs extends CommonArgs {
   _private: {
     spaces: GestSpace[];
     robinHoodInSupply: boolean;
-  }
-  
+  };
 }

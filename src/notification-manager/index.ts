@@ -59,6 +59,8 @@ class NotificationManager {
       'moveCarriage',
       'moveCarriagePrivate',
       'moveCarriagePublic',
+      'moveMerryMenPublic', // all other players
+      'moveMerryMenPrivate', // Robin Hood player
       'moveForces',
       'moveRoyalFavourMarker',
       'passAction',
@@ -125,6 +127,7 @@ class NotificationManager {
         'moveCarriagePublic',
         'placeForce',
         'sneakMerryMen',
+        'moveMerryMenPublic',
       ].forEach((notifId) => {
         this.game
           .framework()
@@ -437,10 +440,7 @@ class NotificationManager {
     notif: Notif<NotifPutCardInVictimsPileArgs>
   ) {}
 
-
-  async notif_removeCardFromGame(notif: Notif<NotifRemoveCardFromGameArgs>) {
-
-  }
+  async notif_removeCardFromGame(notif: Notif<NotifRemoveCardFromGameArgs>) {}
 
   async notif_revealForce(notif: Notif<NotifRevealForceArgs>) {
     const { force } = notif.args;
@@ -491,6 +491,47 @@ class NotificationManager {
     await this.game.gameMap.forces[`${MERRY_MEN}_${toSpaceId}`].addCards(
       forces
     );
+  }
+
+  async notif_moveMerryMenPrivate(notif: Notif<NotifMoveMerryMenPrivateArgs>) {
+    const { forces } = notif.args;
+
+    const promises = forces.map((force) =>
+      this.game.gameMap.forces[`${MERRY_MEN}_${force.location}`].addCard(force)
+    );
+
+    await Promise.all(promises);
+  }
+
+  async notif_moveMerryMenPublic(notif: Notif<NotifMoveMerryMenPublicArgs>) {
+    const { moves } = notif.args;
+
+    const selectedForces: GestForce[] = [];
+    const promises = [];
+
+    moves.forEach((move) => {
+      const selectedForce = this.game.gameMap.getForcePublic({
+        type: move.from.type,
+        spaceId: move.from.spaceId,
+        hidden: move.from.hidden,
+        exclude: selectedForces,
+      });
+      selectedForce.type = move.to.type;
+      selectedForce.hidden = move.to.hidden;
+      promises.push(
+        this.game.gameMap.forces[`${MERRY_MEN}_${move.to.spaceId}`].addCard(
+          selectedForce
+        )
+      );
+      selectedForces.push(selectedForce);
+    });
+
+    await Promise.all(promises);
+    // const promises = forces.map((force) =>
+    //   this.game.gameMap.forces[`${MERRY_MEN}_${force.location}`].addCard(force)
+    // );
+
+    // await Promise.all(promises);
   }
 
   async notif_sneakMerryMen(notif: Notif<NotifSneakMerryMenArgs>) {

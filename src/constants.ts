@@ -76,7 +76,7 @@ const SPACES = [
 ];
 
 const USED_CARRIAGES = 'usedCarriages';
-const PRISION = 'prison';
+const PRISON = 'prison';
 
 /**
  * Force types

@@ -380,11 +380,17 @@ class GameMap {
   }
 
   hideForcePublic({ force }: { force: GestForce }) {
-    const selected = this.getForcePublic({
+    const input = {
       type: force.type,
       spaceId: force.location,
       hidden: false,
-    });
+    };
+
+    console.log('selected input', input);
+
+    const selected = this.getForcePublic(input);
+    
+    console.log('selected', selected);
 
     selected.type = force.type;
     if (force.type === ROBIN_HOOD) {
@@ -397,6 +403,11 @@ class GameMap {
 
     selected.hidden = force.hidden;
     this.game.forceManager.updateCardInformations(selected);
+    if (force.type === ROBIN_HOOD) {
+      const backNode = document.getElementById(`${selected.id}-back`);
+      backNode.replaceChildren();
+      backNode.setAttribute('data-type', MERRY_MEN);
+    }
   }
 
   hideForcePrivate({ force }: { force: GestForce }) {
@@ -413,6 +424,10 @@ class GameMap {
     selected.type = force.type;
     selected.hidden = force.hidden;
     this.game.forceManager.updateCardInformations(selected);
+    if (force.type === ROBIN_HOOD) {
+      const backNode = document.getElementById(`${selected.id}-back`);
+      backNode.setAttribute('data-type', ROBIN_HOOD);
+    }
   }
 
   revealForcePrivate({ force }: { force: GestForce }) {
@@ -459,7 +474,7 @@ class GameMap {
     await this.forces[toStockId].addCard(force);
   }
 
-  setSpaceStatus({ spaceId, status }: { spaceId: string; status: string; }) {
+  setSpaceStatus({ spaceId, status }: { spaceId: string; status: string }) {
     const markers = this.parishStatusMarkers[spaceId].getCards();
     if (markers.length > 0) {
       const marker = markers[0];

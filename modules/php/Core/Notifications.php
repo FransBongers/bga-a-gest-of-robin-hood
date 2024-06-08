@@ -172,6 +172,42 @@ class Notifications
     return $map[$action];
   }
 
+  // $moves[] = [
+  //   'force' => $force,
+  //   'from' => [
+  //     'hidden' => true,
+  //     'spaceId' => $robinHoodFromLocation,
+  //     'space' => $fromSpace,
+  //   ],
+  //   'to' => [
+  //     'hidden' => true,
+  //     'spaceId' => $force->isRobinHood() ? $robinHoodSpaceId : $merryManSpaceId,
+  //     'space' => $force->isRobinHood() ? $robinHoodSpace : $merryManSpace,
+  //   ]
+  // ];
+  private static function mapMerryMenMoves($moves)
+  {
+    return array_map(function ($move) {
+
+      $fromHidden = $move['from']['hidden'];
+      $toHidden = $move['to']['hidden'];
+      $force = $move['force'];
+      $isRobinHood = $force->isRobinHood();
+      return [
+        'from' => [
+          'type' => $isRobinHood && $fromHidden ? MERRY_MEN : $force->getType(),
+          'hidden' => $move['from']['hidden'],
+          'spaceId' => $move['from']['spaceId'],
+        ],
+        'to' => [
+          'type' => $toHidden ? MERRY_MEN : $force->getType(),
+          'hidden' => $toHidden,
+          'spaceId' => $move['to']['spaceId'],
+        ]
+      ];
+    }, $moves);
+  }
+
   // ..######......###....##.....##.########
   // .##....##....##.##...###...###.##......
   // .##.........##...##..####.####.##......
@@ -204,9 +240,9 @@ class Notifications
 
   public static function drawAndRevealCard($card)
   {
-    self::notifyAll("drawAndRevealCard", clienttranslate('A new card is drawn from the Event deck: ${tkn_boldText_cardTitle}'), [
+    self::notifyAll("drawAndRevealCard", clienttranslate('A new card is drawn from the Event deck: ${tkn_cardName}'), [
       'card' => $card,
-      'tkn_boldText_cardTitle' => $card->getTitle(),
+      'tkn_cardName' => self::tknCardNameArg($card),
     ]);
   }
 
@@ -682,6 +718,35 @@ class Notifications
       'tkn_boldText_toSpace' => $toSpace->getName(),
       'count' => count($merryMen),
       'i18n' => ['tkn_boldText_fromSpace', 'tkn_boldText_toSpace']
+    ]);
+  }
+
+  public static function swashbuckleMoves($player, $moves, $fromSpace)
+  {
+    $text = count($moves) === 1 ?
+      clienttranslate('${player_name} moves ${count} Merry Man from ${tkn_boldText_fromSpace} to ${tkn_boldText_toSpace1}') :
+      clienttranslate('${player_name} moves ${count} Merry Men from ${tkn_boldText_fromSpace} to ${tkn_boldText_toSpace1} and ${tkn_boldText_toSpace2}');
+
+    self::notify($player, 'moveMerryMenPrivate', $text, [
+      'player' => $player,
+      'count' => count($moves),
+      'forces' => array_map(function ($move) {
+        return $move['force'];
+      }, $moves),
+      'tkn_boldText_fromSpace' => $fromSpace->getName(),
+      'tkn_boldText_toSpace1' => $moves[0]['to']['space']->getName(),
+      'tkn_boldText_toSpace2' => count($moves) === 2 ? $moves[1]['to']['space']->getName() : '',
+      'i18n' => ['tkn_boldText_fromSpace', 'tkn_boldText_toSpace1', 'tkn_boldText_toSpace2']
+    ]);
+
+    self::notifyAll('moveMerryMenPublic', $text, [
+      'player' => $player,
+      'moves' => self::mapMerryMenMoves($moves),
+      'tkn_boldText_fromSpace' => $fromSpace->getName(),
+      'tkn_boldText_toSpace1' => $moves[0]['to']['space']->getName(),
+      'tkn_boldText_toSpace2' => count($moves) === 2 ? $moves[1]['to']['space']->getName() : '',
+      'i18n' => ['tkn_boldText_fromSpace', 'tkn_boldText_toSpace1', 'tkn_boldText_toSpace2'],
+      'count' => count($moves),
     ]);
   }
 }

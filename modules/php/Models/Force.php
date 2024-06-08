@@ -78,6 +78,11 @@ class Force extends \AGestOfRobinHood\Helpers\DB_Model
     return $this->type === MERRY_MEN || $this->type === ROBIN_HOOD;
   }
 
+  public function isMerryManNotRobinHood()
+  {
+    return $this->type === MERRY_MEN;
+  }
+
   public function isHenchman()
   {
     return $this->type === HENCHMEN;

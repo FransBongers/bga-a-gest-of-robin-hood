@@ -113,7 +113,7 @@ class Forces extends \AGestOfRobinHood\Helpers\Pieces
 
     $forces = self::getAll();
 
-    $locationsOnMap = array_merge(SPACES, [USED_CARRIAGES, PRISION]);
+    $locationsOnMap = array_merge(SPACES, [USED_CARRIAGES, PRISON]);
 
     foreach ($forces as $forceId => $force) {
       $location = $force->getLocation();

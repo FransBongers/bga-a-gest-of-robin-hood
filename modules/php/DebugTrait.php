@@ -24,8 +24,10 @@ trait DebugTrait
   function test()
   {
     $rh = Forces::get(ROBIN_HOOD);
-    $rh->setLocation(ROBIN_HOOD_SUPPLY);
-    $rh->setHidden(1);
+    // $rh->setLocation(ROBIN_HOOD_SUPPLY);
+    $rh->reveal(Players::get());
+
+    // $rh->hide(Players::get());
 
     // Players::getRobinHoodPlayer()->incShillings(10);
     // Forces::get(ROBIN_HOOD)->setHidden(0);

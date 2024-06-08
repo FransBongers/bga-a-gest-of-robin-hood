@@ -78,6 +78,7 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     selectTravellerCardOption: SelectTravellerCardOptionState;
     setupRobinHood: SetupRobinHoodState;
     sneak: SneakState;
+    swashbuckle: SwashbuckleState;
     turncoat: TurncoatState;
   };
 
@@ -130,6 +131,7 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
       selectTravellerCardOption: new SelectTravellerCardOptionState(this),
       setupRobinHood: new SetupRobinHoodState(this),
       sneak: new SneakState(this),
+      swashbuckle: new SwashbuckleState(this),
       turncoat: new TurncoatState(this),
     };
 
