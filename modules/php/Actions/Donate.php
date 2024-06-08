@@ -32,13 +32,9 @@ class Donate extends \AGestOfRobinHood\Models\AtomicAction
 
   public function argsDonate()
   {
-    $player = self::getPlayer();
-
     $possible = $this->getPossibleSpaces();
     $data = [
       'spaces' => $possible,
-      'max' => min(count($possible), 2, floor($player->getShillings() / 2)),
-
     ];
 
     return $data;
@@ -71,32 +67,33 @@ class Donate extends \AGestOfRobinHood\Models\AtomicAction
   {
     self::checkAction('actDonate');
 
-    $selectedSpaceIds = $args['selectedSpaceIds'];
+    $spaceId = $args['spaceId'];
 
     $stateArgs = $this->argsDonate();
 
-    if (count($selectedSpaceIds) > $stateArgs['max']) {
+    // if (count($selectedSpaceIds) > $stateArgs['max']) {
+    //   throw new \feException("ERROR 023");
+    // }
+
+    $space = Utils::array_find($stateArgs['spaces'], function ($space) use ($spaceId) {
+      return $spaceId === $space->getId();
+    });
+
+    if ($space === null) {
       throw new \feException("ERROR 023");
     }
 
-    $spaces = Utils::filter($stateArgs['spaces'], function ($space) use ($selectedSpaceIds) {
-      return in_array($space->getId(), $selectedSpaceIds);
-    });
-
-    if (count($spaces) !== count($selectedSpaceIds)) {
-      throw new \feException("ERROR 024");
-    }
-
     $player = self::getPlayer();
-    $shillings = $player->getShillings();
 
-    if (count($selectedSpaceIds) * 2 > $shillings) {
-      throw new \feException("ERROR 025");
-    }
+    $player->payShillings(2);
+    $space->revolt($player);
 
-    foreach ($spaces as $space) {
-      $player->payShillings(2);
-      $space->revolt($player);
+    if (count(Engine::getResolvedActions([DONATE])) === 0 && $this->canBePerformed($player)) {
+      $this->ctx->insertAsBrother(new LeafNode([
+        'action' => DONATE,
+        'playerId' => $player->getId(),
+        'optional' => true,
+      ]));
     }
 
     $this->resolveAction($args);
@@ -117,7 +114,11 @@ class Donate extends \AGestOfRobinHood\Models\AtomicAction
 
   public function canBePerformed($player)
   {
-    return true;
+    if ($player->getShillings() < 2) {
+      return false;
+    }
+
+    return count($this->getPossibleSpaces()) > 0;
   }
 
   public function getPossibleSpaces()

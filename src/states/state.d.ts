@@ -21,9 +21,15 @@ interface OnEnteringChooseActionStateArgs extends CommonArgs {
   plotsAndDeeds: boolean;
 }
 
+interface OnEnteringConfiscateStateArgs extends CommonArgs {
+  _private: {
+    spaces: GestSpace[];
+    availableCarriageTypes: string[];
+  };
+}
+
 interface OnEnteringDonateStateArgs extends CommonArgs {
   spaces: GestSpace[];
-  max: number;
 }
 
 interface OnEnteringHireStateArgs extends CommonArgs {

@@ -49,7 +49,7 @@ class GameMap extends \APP_DbObject
       $spaceIds[] = $location;
     }
 
-    $spaceIds = array_unique($spaceIds);
+    $spaceIds = array_values(array_unique($spaceIds));
 
     return Spaces::get($spaceIds)->toArray();
   }

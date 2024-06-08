@@ -64,6 +64,7 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     confirmTurn: ConfirmTurnState;
     // Game
     chooseAction: ChooseActionState;
+    confiscate: ConfiscateState;
     donate: DonateState;
     hire: HireState;
     moveCarriage: MoveCarriageState;
@@ -112,6 +113,7 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
       confirmTurn: new ConfirmTurnState(this),
       // Game
       chooseAction: new ChooseActionState(this),
+      confiscate: new ConfiscateState(this),
       donate: new DonateState(this),
       hire: new HireState(this),
       moveCarriage: new MoveCarriageState(this),

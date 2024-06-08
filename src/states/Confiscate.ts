@@ -1,19 +1,19 @@
-class DonateState implements State {
+class ConfiscateState implements State {
   private game: AGestOfRobinHoodGame;
-  private args: OnEnteringDonateStateArgs;
-
+  private args: OnEnteringConfiscateStateArgs;
+  
   constructor(game: AGestOfRobinHoodGame) {
     this.game = game;
   }
 
-  onEnteringState(args: OnEnteringDonateStateArgs) {
-    debug('Entering DonateState');
-    this.args = args;
+  onEnteringState(args: OnEnteringConfiscateStateArgs) {
+    debug('Entering ConfiscateState');
+      this.args = args;
     this.updateInterfaceInitialStep();
   }
 
   onLeavingState() {
-    debug('Leaving DonateState');
+    debug('Leaving ConfiscateState');
   }
 
   setDescription(activePlayerId: number) {}
@@ -38,19 +38,19 @@ class DonateState implements State {
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({
-      text: _('${you} must select a Parish to Donate in'),
+      text: _('${you} must select a Parish to Confiscate in'),
       args: {
         you: '${you}',
       },
     });
 
-    this.args.spaces.forEach((space) => {
+    this.args._private.spaces.forEach((space) =>
       this.game.addPrimaryActionButton({
         id: `${space.id}_btn`,
         text: _(space.name),
-        callback: () => this.updateInterfaceConfirm({ space }),
-      });
-    });
+        callback: () => this.updateInterfaceSelectCarriage({ space }),
+      })
+    );
 
     this.game.addPassButton({
       optionalAction: this.args.optionalAction,
@@ -58,22 +58,51 @@ class DonateState implements State {
     this.game.addUndoButtons(this.args);
   }
 
-  private updateInterfaceConfirm({ space }: { space: GestSpace }) {
+  private updateInterfaceSelectCarriage({ space }: { space: GestSpace }) {
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({
-      text: _('Donate in ${spaceName}?'),
+      text: _('${you} must select which type of Carriage to place'),
+      args: {
+        you: '${you}',
+      },
+    });
+
+    this.args._private.availableCarriageTypes.forEach((carriageType) =>
+      this.game.addPrimaryActionButton({
+        id: `${carriageType}_btn`,
+        text: carriageType,
+        callback: () => this.updateInterfaceConfirm({ space, carriageType }),
+      })
+    );
+
+    this.game.addCancelButton();
+  }
+
+  private updateInterfaceConfirm({
+    carriageType,
+    space,
+  }: {
+    carriageType: string;
+    space: GestSpace;
+  }) {
+    this.game.clearPossible();
+
+    this.game.clientUpdatePageTitle({
+      text: _('Place ${carriageType} in ${spaceName}?'),
       args: {
         spaceName: _(space.name),
+        carriageType: carriageType,
       },
     });
 
     const callback = () => {
       this.game.clearPossible();
       this.game.takeAction({
-        action: 'actDonate',
+        action: 'actConfiscate',
         args: {
           spaceId: space.id,
+          carriageType,
         },
       });
     };

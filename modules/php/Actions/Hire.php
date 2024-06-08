@@ -41,11 +41,11 @@ class Hire extends \AGestOfRobinHood\Actions\Plot
 
   public function stHire()
   {
-    $player = self::getPlayer();
+    // $player = self::getPlayer();
 
-    if (!$this->canBePerformed($player, $player->getShillings())) {
-      $this->resolveAction(['automatic' => true]);
-    }
+    // if (!$this->canBePerformed($player, $player->getShillings())) {
+    //   $this->resolveAction(['automatic' => true]);
+    // }
   }
 
   // ....###....########...######....######.
@@ -169,7 +169,18 @@ class Hire extends \AGestOfRobinHood\Actions\Plot
     $availableHenchmen = count(Forces::getInLocation(HENCHMEN_SUPPLY));
     $options = [];
 
+    $alreadyHiredSpaceIds = [];
+    $nodes = Engine::getResolvedActions([HIRE]);
+    foreach ($nodes as $node) {
+      $resArgs = $node->getActionResolutionArgs();
+      $alreadyHiredSpaceIds[] = $resArgs['spaceId'];
+    }
+
     foreach (Spaces::getAll() as $spaceId => $space) {
+      if (in_array($spaceId, $alreadyHiredSpaceIds)) {
+        continue;
+      }
+
       if ($space->isSubmissive() && $availableHenchmen > 0) {
         $options[$spaceId] = [
           'action' => 'place',

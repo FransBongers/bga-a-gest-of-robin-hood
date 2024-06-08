@@ -1720,6 +1720,7 @@ var AGestOfRobinHood = (function () {
             confirmPartialTurn: new ConfirmPartialTurnState(this),
             confirmTurn: new ConfirmTurnState(this),
             chooseAction: new ChooseActionState(this),
+            confiscate: new ConfiscateState(this),
             donate: new DonateState(this),
             hire: new HireState(this),
             moveCarriage: new MoveCarriageState(this),
@@ -4536,14 +4537,100 @@ var ConfirmTurnState = (function () {
     };
     return ConfirmTurnState;
 }());
+var ConfiscateState = (function () {
+    function ConfiscateState(game) {
+        this.game = game;
+    }
+    ConfiscateState.prototype.onEnteringState = function (args) {
+        debug('Entering ConfiscateState');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    ConfiscateState.prototype.onLeavingState = function () {
+        debug('Leaving ConfiscateState');
+    };
+    ConfiscateState.prototype.setDescription = function (activePlayerId) { };
+    ConfiscateState.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must select a Parish to Confiscate in'),
+            args: {
+                you: '${you}',
+            },
+        });
+        this.args._private.spaces.forEach(function (space) {
+            return _this.game.addPrimaryActionButton({
+                id: "".concat(space.id, "_btn"),
+                text: _(space.name),
+                callback: function () { return _this.updateInterfaceSelectCarriage({ space: space }); },
+            });
+        });
+        this.game.addPassButton({
+            optionalAction: this.args.optionalAction,
+        });
+        this.game.addUndoButtons(this.args);
+    };
+    ConfiscateState.prototype.updateInterfaceSelectCarriage = function (_a) {
+        var _this = this;
+        var space = _a.space;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must select which type of Carriage to place'),
+            args: {
+                you: '${you}',
+            },
+        });
+        this.args._private.availableCarriageTypes.forEach(function (carriageType) {
+            return _this.game.addPrimaryActionButton({
+                id: "".concat(carriageType, "_btn"),
+                text: carriageType,
+                callback: function () { return _this.updateInterfaceConfirm({ space: space, carriageType: carriageType }); },
+            });
+        });
+        this.game.addCancelButton();
+    };
+    ConfiscateState.prototype.updateInterfaceConfirm = function (_a) {
+        var _this = this;
+        var carriageType = _a.carriageType, space = _a.space;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('Place ${carriageType} in ${spaceName}?'),
+            args: {
+                spaceName: _(space.name),
+                carriageType: carriageType,
+            },
+        });
+        var callback = function () {
+            _this.game.clearPossible();
+            _this.game.takeAction({
+                action: 'actConfiscate',
+                args: {
+                    spaceId: space.id,
+                    carriageType: carriageType,
+                },
+            });
+        };
+        if (this.game.settings.get({
+            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+        }) === PREF_ENABLED) {
+            callback();
+        }
+        else {
+            this.game.addConfirmButton({
+                callback: callback,
+            });
+        }
+        this.game.addCancelButton();
+    };
+    return ConfiscateState;
+}());
 var DonateState = (function () {
     function DonateState(game) {
-        this.selectedParishes = [];
         this.game = game;
     }
     DonateState.prototype.onEnteringState = function (args) {
         debug('Entering DonateState');
-        this.selectedParishes = [];
         this.args = args;
         this.updateInterfaceInitialStep();
     };
@@ -4555,59 +4642,31 @@ var DonateState = (function () {
         var _this = this;
         this.game.clearPossible();
         this.game.clientUpdatePageTitle({
-            text: _('${you} must select Parishes to Donate to'),
+            text: _('${you} must select a Parish to Donate in'),
             args: {
                 you: '${you}',
             },
         });
-        this.args.spaces
-            .filter(function (space) {
-            return !_this.selectedParishes.some(function (selectedSpace) { return selectedSpace.id === space.id; });
-        })
-            .forEach(function (space) {
+        this.args.spaces.forEach(function (space) {
             _this.game.addPrimaryActionButton({
                 id: "".concat(space.id, "_btn"),
                 text: _(space.name),
-                callback: function () {
-                    _this.selectedParishes.push(space);
-                    if (_this.selectedParishes.length === _this.args.max) {
-                        _this.updateInterfaceConfirm();
-                    }
-                    else {
-                        _this.updateInterfaceInitialStep();
-                    }
-                },
+                callback: function () { return _this.updateInterfaceConfirm({ space: space }); },
             });
         });
-        if (this.selectedParishes.length > 0 &&
-            this.selectedParishes.length < this.args.max) {
-            this.game.addPrimaryActionButton({
-                id: 'done_btn',
-                text: _('Done'),
-                callback: function () { return _this.updateInterfaceConfirm(); },
-            });
-        }
-        if (this.selectedParishes.length === 0) {
-            this.game.addPassButton({
-                optionalAction: this.args.optionalAction,
-            });
-            this.game.addUndoButtons(this.args);
-        }
-        else {
-            this.game.addCancelButton();
-        }
+        this.game.addPassButton({
+            optionalAction: this.args.optionalAction,
+        });
+        this.game.addUndoButtons(this.args);
     };
-    DonateState.prototype.updateInterfaceConfirm = function () {
+    DonateState.prototype.updateInterfaceConfirm = function (_a) {
         var _this = this;
-        var _a;
+        var space = _a.space;
         this.game.clearPossible();
         this.game.clientUpdatePageTitle({
-            text: this.selectedParishes.length === 1
-                ? _('Donate in ${spaceName}?')
-                : _('Donate in ${spaceName} and ${spaceName2}?'),
+            text: _('Donate in ${spaceName}?'),
             args: {
-                spaceName: _(this.selectedParishes[0].name),
-                spaceName2: _((_a = this.selectedParishes[1]) === null || _a === void 0 ? void 0 : _a.name),
+                spaceName: _(space.name),
             },
         });
         var callback = function () {
@@ -4615,7 +4674,7 @@ var DonateState = (function () {
             _this.game.takeAction({
                 action: 'actDonate',
                 args: {
-                    selectedSpaceIds: _this.selectedParishes.map(function (space) { return space.id; }),
+                    spaceId: space.id,
                 },
             });
         };
