@@ -1683,6 +1683,7 @@ var FLIP_ALL_MERRY_MAN_TO_HIDDEN = 'flipAllMerryManToHidden';
 var PASSIVE = 'passive';
 var REVOLTING = 'revolting';
 var SUBMISSIVE = 'submissive';
+var GAIN_TWO_SHILLINGS = 'gainTwoShillings';
 define([
     'dojo',
     'dojo/_base/declare',
@@ -6163,13 +6164,11 @@ var SelectDeedState = (function () {
 }());
 var SelectPlotState = (function () {
     function SelectPlotState(game) {
-        this.selectedSpaces = [];
         this.game = game;
     }
     SelectPlotState.prototype.onEnteringState = function (args) {
         debug('Entering SelectPlotState');
         this.args = args;
-        this.selectedSpaces = [];
         this.updateInterfaceInitialStep();
     };
     SelectPlotState.prototype.onLeavingState = function () {
@@ -6180,7 +6179,9 @@ var SelectPlotState = (function () {
         var _this = this;
         this.game.clearPossible();
         this.game.clientUpdatePageTitle({
-            text: _('${you} must select a Plot'),
+            text: this.args.extraOptionId
+                ? _('${you} must select a Plot')
+                : _('${you} must select an option'),
             args: {
                 you: '${you}',
             },
@@ -6193,6 +6194,9 @@ var SelectPlotState = (function () {
                 callback: function () { return _this.updateInterfaceConfirm({ plotId: plotId, plotName: plotName }); },
             });
         });
+        if (this.args.extraOptionId) {
+            this.addExtraOptionButton();
+        }
         this.game.addPassButton({
             optionalAction: this.args.optionalAction,
         });
@@ -6200,20 +6204,31 @@ var SelectPlotState = (function () {
     };
     SelectPlotState.prototype.updateInterfaceConfirm = function (_a) {
         var _this = this;
-        var plotId = _a.plotId, plotName = _a.plotName;
+        var plotId = _a.plotId, plotName = _a.plotName, extraOptionId = _a.extraOptionId;
         this.game.clearPossible();
-        this.game.clientUpdatePageTitle({
-            text: _('Perform ${plotName} Plot?'),
-            args: {
-                plotName: _(plotName),
-            },
-        });
+        if (plotId) {
+            this.game.clientUpdatePageTitle({
+                text: _('Perform ${plotName} Plot?'),
+                args: {
+                    plotName: _(plotName),
+                },
+            });
+        }
+        else if (extraOptionId) {
+            this.game.clientUpdatePageTitle({
+                text: _('${extraOptionText}?'),
+                args: {
+                    extraOptionText: _(this.getExtraOptionText({ extraOptionId: extraOptionId })),
+                },
+            });
+        }
         var callback = function () {
             _this.game.clearPossible();
             _this.game.takeAction({
                 action: 'actSelectPlot',
                 args: {
                     plotId: plotId,
+                    extraOptionId: extraOptionId,
                 },
             });
         };
@@ -6228,6 +6243,26 @@ var SelectPlotState = (function () {
             });
         }
         this.game.addCancelButton();
+    };
+    SelectPlotState.prototype.getExtraOptionText = function (_a) {
+        var extraOptionId = _a.extraOptionId;
+        switch (extraOptionId) {
+            case GAIN_TWO_SHILLINGS:
+                return _('Gain 2 Shillings');
+        }
+    };
+    SelectPlotState.prototype.addExtraOptionButton = function () {
+        var _this = this;
+        var extraOptionId = this.args.extraOptionId;
+        switch (extraOptionId) {
+            case GAIN_TWO_SHILLINGS:
+                this.game.addPrimaryActionButton({
+                    id: "extraOp_btn",
+                    text: _(this.getExtraOptionText({ extraOptionId: extraOptionId })),
+                    callback: function () { return _this.updateInterfaceConfirm({ extraOptionId: extraOptionId }); },
+                });
+                break;
+        }
     };
     return SelectPlotState;
 }());

@@ -14,7 +14,7 @@ class RobinHood extends \AGestOfRobinHood\Models\Force
     $this->name = clienttranslate('Robin Hood');
     $this->publicName = clienttranslate('Merry Man');
     $this->publicType = MERRY_MEN;
-    $this->supply = MERRY_MEN_SUPPLY;
+    $this->supply = ROBIN_HOOD_SUPPLY;
   }
 
   public function reveal($player = null)

@@ -147,6 +147,7 @@ interface OnEnteringSelectDeedStateArgs extends CommonArgs {
 
 interface OnEnteringSelectPlotStateArgs extends CommonArgs {
   options: Record<string, string>;
+  extraOptionId: null | 'gainTwoShillings';
 }
 
 interface OnEnteringSelectTravellerCardOptionStateArgs extends CommonArgs {

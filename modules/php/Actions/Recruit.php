@@ -82,7 +82,7 @@ class Recruit extends \AGestOfRobinHood\Actions\Plot
       });
       // Can you replace Robin Hood with a camp?
       $merryMen = Utils::filter($forcesInSpace, function ($force) {
-        return $force->getType() === MERRY_MEN;
+        return $force->isMerryMan();
       });
       $recruitOptions = [];
       if ($hasCamp && $supplyCount >= 2) {
@@ -241,6 +241,9 @@ class Recruit extends \AGestOfRobinHood\Actions\Plot
     Forces::get($merryManId)->returnToSupply($player);
     $camp = Forces::getTopOf(CAMPS_SUPPLY);
     $camp->setLocation($space->getId());
+    if ($space->isForest()) {
+      $camp->setHidden(0);
+    }
     Notifications::placeForce($player, $camp, $space);
   }
 

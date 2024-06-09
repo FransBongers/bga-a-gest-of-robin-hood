@@ -427,4 +427,18 @@ $machinestates = array(
         'action' => 'stAtomicAction',
         'transitions' => [],
     ],
+    ST_ROYAL_INSPECTION_UNREST => [
+        'name' => 'royalInspectionUnrest',
+        'description' => '',
+        'type' => 'game',
+        'action' => 'stAtomicAction',
+        'transitions' => [],
+    ],
+    ST_ROYAL_INSPECTION_MISCHIEF => [
+        'name' => 'royalInspectionMischief',
+        'description' => '',
+        'type' => 'game',
+        'action' => 'stAtomicAction',
+        'transitions' => [],
+    ],
 );

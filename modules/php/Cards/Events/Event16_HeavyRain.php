@@ -2,6 +2,8 @@
 
 namespace AGestOfRobinHood\Cards\Events;
 
+use AGestOfRobinHood\Managers\Players;
+
 class Event16_HeavyRain extends \AGestOfRobinHood\Models\EventCard
 {
   public function __construct($row)
@@ -14,5 +16,25 @@ class Event16_HeavyRain extends \AGestOfRobinHood\Models\EventCard
     $this->carriageMoves = 0;
     $this->eventType = FORTUNE_EVENT;
     $this->setupLocation = FORTUNE_EVENTS_POOL;
+  }
+
+  public function getFlow()
+  {
+    $order = Players::getEligibilityOrder();
+
+    return [
+      'children' => [
+        [
+          'action' => SELECT_PLOT,
+          'playerId' => $order[0],
+          'source' => $this->id, 
+        ],
+        [
+          'action' => SELECT_PLOT,
+          'playerId' => $order[1],
+          'source' => $this->id,
+        ],
+      ]
+    ];
   }
 }

@@ -125,6 +125,8 @@ class Capture extends \AGestOfRobinHood\Actions\Plot
       }
     }
 
+    Notifications::log('camps', $camps);
+
     $maxNumberOfPiecesToCapture = $space->isRevolting() ? floor($numberOfHenchmen / 2) : $numberOfHenchmen;
     $numberOfCapturedRevealedMerryMen = min($maxNumberOfPiecesToCapture, count($revealedMerryMen));
     shuffle($revealedMerryMen);
@@ -164,11 +166,12 @@ class Capture extends \AGestOfRobinHood\Actions\Plot
       Players::moveRoyalFavour($player, 1, ORDER);
     }
     // Notifs
-
+    Notifications::log('remainingPiecesToCapture', $remainingPiecesToCapture);
     if (!$hasHiddenMerryMen && $remainingPiecesToCapture > 0 && count($camps) > 0) {
       $numberOfReturnedCamps = min(count($camps), $remainingPiecesToCapture);
+      Notifications::log('numberOfReturnedCamps', $numberOfReturnedCamps);
       for($j = 0; $j < $numberOfReturnedCamps ; $j++) {
-        $camp = $camps[$i];
+        $camp = $camps[$j];
         $camp->returnToSupply($player);
       }
     }

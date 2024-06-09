@@ -255,15 +255,19 @@ class Players extends \AGestOfRobinHood\Helpers\DB_Manager
     $order = [];
     $firstEligible = Markers::getTopOf(Locations::initiativeTrack(FIRST_ELIGIBLE));
     if ($firstEligible->getId() === ROBIN_HOOD_ELIGIBILITY_MARKER) {
-      $order[] = Players::get(self::getRobinHoodPlayerId())->getId();
+      // $order[] = Players::get(self::getRobinHoodPlayerId())->getId();
+      $order[] = self::getRobinHoodPlayerId();
     } else {
-      $order[] = Players::get(self::getSheriffPlayerId())->getId();
+      // $order[] = Players::get(self::getSheriffPlayerId())->getId();
+      $order[] = self::getSheriffPlayerId();
     }
     $secondEligible = Markers::getTopOf(Locations::initiativeTrack(SECOND_ELIGIBLE));
     if ($secondEligible->getId() === ROBIN_HOOD_ELIGIBILITY_MARKER) {
-      $order[] = Players::get(self::getRobinHoodPlayerId())->getId();
+      // $order[] = Players::get(self::getRobinHoodPlayerId())->getId();
+      $order[] = self::getRobinHoodPlayerId();
     } else {
-      $order[] = Players::get(self::getSheriffPlayerId())->getId();
+      // $order[] = Players::get(self::getSheriffPlayerId())->getId();
+      $order[] = self::getSheriffPlayerId();
     };
     return $order;
   }

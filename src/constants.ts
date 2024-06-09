@@ -114,3 +114,8 @@ const FLIP_ALL_MERRY_MAN_TO_HIDDEN = 'flipAllMerryManToHidden';
 const PASSIVE = 'passive';
 const REVOLTING = 'revolting';
 const SUBMISSIVE = 'submissive';
+
+/**
+ * Constants used for event effects
+ */
+const GAIN_TWO_SHILLINGS = 'gainTwoShillings';

@@ -10,7 +10,7 @@ class Plot extends \AGestOfRobinHood\Models\AtomicAction
   public function insertPlotAction($player)
   {
     $selectedAction = $this->getSelectedAction();
-    if ($selectedAction === SINGLE_PLOT) {
+    if ($selectedAction === null || $selectedAction === SINGLE_PLOT) {
       return;
       // Check for smaller than two as the current action is not resolved yet
     }
@@ -27,7 +27,12 @@ class Plot extends \AGestOfRobinHood\Models\AtomicAction
 
   public function getSelectedAction()
   {
-    $node = Engine::getResolvedActions([CHOOSE_ACTION])[0];
+    $nodes = Engine::getResolvedActions([CHOOSE_ACTION]);
+    // Can happen if select plot was result of event
+    if (count($nodes) === 0) {
+      return null;
+    }
+    $node = $nodes[0];
     $action = $node->getActionResolutionArgs()['action'];
     return $action;
   }

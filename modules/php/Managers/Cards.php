@@ -176,9 +176,9 @@ class Cards extends \AGestOfRobinHood\Helpers\Pieces
   public static function drawAndRevealCard() {
     $card = self::getTopOf(EVENTS_DECK);
     Notifications::drawAndRevealCard($card);
+    Cards::insertOnTop($card->getId(), EVENTS_DISCARD);
     
-    $card->setLocation(EVENTS_DISCARD);
-    return $card;
+    return Cards::get($card->getId());
   }
 
   public static function drawAndRevealTravellerCard($player) {

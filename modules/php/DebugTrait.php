@@ -38,6 +38,11 @@ trait DebugTrait
     // Notifications::log('card', Cards::get('Traveller04_NobleKnight')->getStaticData());
   }
 
+  public function debugDeck()
+  {
+    Notifications::log('deck', Cards::getInLocationOrdered(EVENTS_DECK)->toArray());
+  }
+
   public function debugPlaceHenchmen($spaceId, $number)
   {
     $result = [];

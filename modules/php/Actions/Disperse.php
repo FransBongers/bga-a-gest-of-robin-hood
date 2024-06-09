@@ -171,7 +171,7 @@ class Disperse extends \AGestOfRobinHood\Models\AtomicAction
 
   public function canBePerformed($player)
   {
-    if ($player->getShillingd() < 3) {
+    if ($player->getShillings() < 3) {
       return false;
     }
 

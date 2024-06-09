@@ -1,7 +1,6 @@
 class SelectPlotState implements State {
   private game: AGestOfRobinHoodGame;
   private args: OnEnteringSelectPlotStateArgs;
-  private selectedSpaces: GestSpace[] = [];
 
   constructor(game: AGestOfRobinHoodGame) {
     this.game = game;
@@ -10,7 +9,6 @@ class SelectPlotState implements State {
   onEnteringState(args: OnEnteringSelectPlotStateArgs) {
     debug('Entering SelectPlotState');
     this.args = args;
-    this.selectedSpaces = [];
     this.updateInterfaceInitialStep();
   }
 
@@ -40,7 +38,9 @@ class SelectPlotState implements State {
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({
-      text: _('${you} must select a Plot'),
+      text: this.args.extraOptionId
+        ? _('${you} must select a Plot')
+        : _('${you} must select an option'),
       args: {
         you: '${you}',
       },
@@ -53,6 +53,9 @@ class SelectPlotState implements State {
         callback: () => this.updateInterfaceConfirm({ plotId, plotName }),
       });
     });
+    if (this.args.extraOptionId) {
+      this.addExtraOptionButton();
+    }
 
     this.game.addPassButton({
       optionalAction: this.args.optionalAction,
@@ -115,18 +118,29 @@ class SelectPlotState implements State {
   private updateInterfaceConfirm({
     plotId,
     plotName,
+    extraOptionId,
   }: {
-    plotId: string;
-    plotName: string;
+    plotId?: string;
+    plotName?: string;
+    extraOptionId?: string;
   }) {
     this.game.clearPossible();
 
-    this.game.clientUpdatePageTitle({
-      text: _('Perform ${plotName} Plot?'),
-      args: {
-        plotName: _(plotName),
-      },
-    });
+    if (plotId) {
+      this.game.clientUpdatePageTitle({
+        text: _('Perform ${plotName} Plot?'),
+        args: {
+          plotName: _(plotName),
+        },
+      });
+    } else if (extraOptionId) {
+      this.game.clientUpdatePageTitle({
+        text: _('${extraOptionText}?'),
+        args: {
+          extraOptionText: _(this.getExtraOptionText({ extraOptionId })),
+        },
+      });
+    }
 
     const callback = () => {
       this.game.clearPossible();
@@ -134,6 +148,7 @@ class SelectPlotState implements State {
         action: 'actSelectPlot',
         args: {
           plotId,
+          extraOptionId,
         },
       });
     };
@@ -161,36 +176,25 @@ class SelectPlotState implements State {
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
-  // createSpacesLog() {
-  //   switch (this.selectedSpaces.length) {
-  //     case 1:
-  //       return {
-  //         log: '${spaceName}',
-  //         args: {
-  //           spaceName: _(this.selectedSpaces[0].name),
-  //         },
-  //       };
-  //     case 2:
-  //       return {
-  //         log: _('${spaceName} and ${spaceName2}'),
-  //         args: {
-  //           spaceName: _(this.selectedSpaces[0].name),
-  //           spaceName2: _(this.selectedSpaces[1].name),
-  //         },
-  //       };
-  //     case 3:
-  //       return {
-  //         log: _('${spaceName}, ${spaceName2} and ${spaceName3}'),
-  //         args: {
-  //           spaceName: _(this.selectedSpaces[0].name),
-  //           spaceName2: _(this.selectedSpaces[1].name),
-  //           spaceName3: _(this.selectedSpaces[2].name),
-  //         },
-  //       };
-  //     default:
-  //       return '';
-  //   }
-  // }
+  private getExtraOptionText({ extraOptionId }: { extraOptionId: string }) {
+    switch (extraOptionId) {
+      case GAIN_TWO_SHILLINGS:
+        return _('Gain 2 Shillings');
+    }
+  }
+
+  private addExtraOptionButton() {
+    const { extraOptionId } = this.args;
+    switch (extraOptionId) {
+      case GAIN_TWO_SHILLINGS:
+        this.game.addPrimaryActionButton({
+          id: `extraOp_btn`,
+          text: _(this.getExtraOptionText({ extraOptionId })),
+          callback: () => this.updateInterfaceConfirm({ extraOptionId }),
+        });
+        break;
+    }
+  }
 
   //  ..######..##.......####..######..##....##
   //  .##....##.##........##..##....##.##...##.

@@ -56,5 +56,6 @@ class Traveller05_RichardAtTheLea extends \AGestOfRobinHood\Models\TravellerCard
     if ($darkOrLight === 'dark') {
       return false;
     }
+    return true;
   }
 }

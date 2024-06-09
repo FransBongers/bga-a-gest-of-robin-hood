@@ -61,18 +61,32 @@ trait TurnTrait
       ];
     }
 
+    $resolveEvent = $card->isFortuneEvent() || $card->isRoyalInspection();
 
     // Sheriff must move carriages
     // Fortune event resolve
     // Resolve Royal inspection
-    
+
     if (count($node['children']) > 0) {
-      Engine::setup($node, ['method' => 'stInitTurnOrder']);
+      Engine::setup($node, $resolveEvent ? ['method' => 'stResolveEvent'] :  ['method' => 'stInitTurnOrder']);
       Engine::proceed();
+    } else if ($resolveEvent) {
+      $this->stResolveEvent();
     } else {
       $this->stInitTurnOrder();
     }
   }
+
+  function stResolveEvent()
+  {
+    $card = Cards::getTopOf(EVENTS_DISCARD);
+
+    $node = $card->getFlow();
+
+    Engine::setup($node, ['method' => 'stStartOfRound']);
+    Engine::proceed();
+  }
+
 
   function stInitTurnOrder()
   {

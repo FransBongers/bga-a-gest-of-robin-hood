@@ -10,17 +10,16 @@ use AGestOfRobinHood\Core\Stats;
 use AGestOfRobinHood\Helpers\GameMap;
 use AGestOfRobinHood\Helpers\Locations;
 use AGestOfRobinHood\Helpers\Utils;
-use AGestOfRobinHood\Managers\Forces;
 use AGestOfRobinHood\Managers\Markers;
 use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\Spaces;
 
 
-class Inspire extends \AGestOfRobinHood\Models\AtomicAction
+class RoyalInspectionUnrest extends \AGestOfRobinHood\Models\AtomicAction
 {
   public function getState()
   {
-    return ST_INSPIRE;
+    return ST_ROYAL_INSPECTION_UNREST;
   }
 
   // ..######..########....###....########.########
@@ -39,21 +38,11 @@ class Inspire extends \AGestOfRobinHood\Models\AtomicAction
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function stInspire()
+  public function stRoyalInspectionUnrest()
   {
-    $player = self::getPlayer();
-    $robinHood = Forces::get(ROBIN_HOOD);
-    $robinHood->reveal($player);
-
-    $space = $robinHood->getSpace();
-    if ($space->getStatus() === REVOLTING) {
-      Players::moveRoyalFavour($player, 1, JUSTICE);
-    } else if ($space->getStatus() === SUBMISSIVE) {
-      $space->revolt($player);
-    }
-
-    $this->resolveAction(['automatic' => true]);
+    // $this->resolveAction(['automatic' => true]);
   }
+
 
   // ....###....########...######....######.
   // ...##.##...##.....##.##....##..##....##
@@ -63,7 +52,7 @@ class Inspire extends \AGestOfRobinHood\Models\AtomicAction
   // .##.....##.##....##..##....##..##....##
   // .##.....##.##.....##..######....######.
 
-  public function argsInspire()
+  public function argsRoyalInspectionUnrest()
   {
     $data = [];
 
@@ -86,16 +75,17 @@ class Inspire extends \AGestOfRobinHood\Models\AtomicAction
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function actPassInspire()
+  public function actPassRoyalInspectionUnrest()
   {
     $player = self::getPlayer();
     // Stats::incPassActionCount($player->getId(), 1);
     Engine::resolve(PASS);
   }
 
-  public function actInspire($args)
+  public function actRoyalInspectionUnrest($args)
   {
-    self::checkAction('actInspire');
+    self::checkAction('actRoyalInspectionUnrest');
+
 
     $this->resolveAction($args);
   }
@@ -108,28 +98,5 @@ class Inspire extends \AGestOfRobinHood\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
-  public function getName()
-  {
-    return clienttranslate('Inspire');
-  }
 
-  public function canBePerformed($player)
-  {
-    $robinHood = Forces::get(ROBIN_HOOD);
-    if (!$robinHood->IsHidden()) {
-      return false;
-    }
-    if (!in_array($robinHood->getLocation(), PARISHES)) {
-      return false;
-    }
-    $space = Spaces::get($robinHood->getLocation());
-
-    return $space->isSubmissive() || $space->isRevolting();
-  }
-
-
-  public function getPossibleSpaces()
-  {
-    return GameMap::getSpacesWithMerryMen();
-  }
 }

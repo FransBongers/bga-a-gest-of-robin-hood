@@ -13,9 +13,9 @@ use AGestOfRobinHood\Helpers\Utils;
 use AGestOfRobinHood\Managers\AtomicActions;
 use AGestOfRobinHood\Managers\Markers;
 use AGestOfRobinHood\Managers\Players;
+use AGestOfRobinHood\Spaces\Nottingham;
 
-
-class SelectPlot extends \AGestOfRobinHood\Models\AtomicAction
+class SelectPlot extends \AGestOfRobinHood\Actions\Plot
 {
   public function getState()
   {
@@ -38,8 +38,12 @@ class SelectPlot extends \AGestOfRobinHood\Models\AtomicAction
 
     $player = self::getPlayer();
 
+
+
+
     $data = [
       'options' => $this->getOptions($player),
+      'extraOptionId' => $this->getExtraOptionId(),
       // $player->isRobinHood() ?
       //   $this->getRobinHoodOptions($player, $numberOfSpaces) :
       //   $this->getSheriffOptions($player, $numberOfSpaces),
@@ -76,66 +80,52 @@ class SelectPlot extends \AGestOfRobinHood\Models\AtomicAction
   public function actSelectPlot($args)
   {
     self::checkAction('actSelectPlot');
-    $plotId = $args['plotId'];
+    $plotId = isset($args['plotId']) ? $args['plotId'] : null;
+    $extraOptionId = isset($args['extraOptionId']) ? $args['extraOptionId'] : null;
+
+    Notifications::log('actSelectPlot', $args);
     // $spaceIds = $args['spaceIds'];
 
     $stateArgs = $this->argsSelectPlot();
 
     $options = $stateArgs['options'];
 
-    if (!isset($options[$plotId])) {
+    if ($plotId === null && $extraOptionId === null) {
+      throw new \feException("ERROR 045");
+    }
+
+    if ($plotId !== null && !isset($options[$plotId])) {
       throw new \feException("ERROR 006");
     }
 
-    // $option = $options[$plotId];
-    // $targetSpaces = [];
-
-    // foreach ($spaceIds as $spaceId) {
-    //   $space = Utils::array_find($option['spaces'], function ($space) use ($spaceId) {
-    //     return $space->getId() === $spaceId;
-    //   });
-    //   if ($space === null) {
-    //     throw new \feException("ERROR 007");
-    //   }
-    //   $targetSpaces[] = $space;
-    // }
-
-    Notifications::selectedPlot(self::getPlayer(), $options[$plotId]);
-
-    $parent = $this->ctx->getParent();
-    // Plots that can be resolved automatically
-
-    $parent->pushChild(new LeafNode([
-      'action' => $plotId,
-      'playerId' => $this->ctx->getPlayerId(),
-      // 'optional' => true,
-    ]));
-
-    // if (in_array($plotId, [HIRE])) {
-    //   $parent->pushChild(new LeafNode([
-    //     'action' => $plotId,
-    //     'playerId' => $this->ctx->getPlayerId(),
-    //     'spaceIds' => $spaceIds,
-    //   ]));
-    // } else {
-
-    //   for ($i = 0; $i < count($targetSpaces); $i++) {
-    //     $parent->pushChild(new LeafNode([
-    //       'action' => $plotId,
-    //       'playerId' => $this->ctx->getPlayerId(),
-    //       'spaceIds' => $spaceIds,
-    //       // 'optional' => true,
-    //     ]));
-    //   }
-    // }
-
-    if ($this->getSelectedAction() === PLOTS_AND_DEEDS) {
-      $parent->pushChild(new LeafNode([
-        'action' => SELECT_DEED,
-        'playerId' => $this->ctx->getPlayerId(),
-        'optional' => true,
-      ]));
+    if ($extraOptionId !== null && $extraOptionId !== $stateArgs['extraOptionId']) {
+      throw new \feException("ERROR 046");
     }
+
+    if ($plotId !== null) {
+      Notifications::selectedPlot(self::getPlayer(), $options[$plotId]);
+      $parent = $this->ctx->getParent();
+
+      $this->ctx->insertAsBrother(new LeafNode([
+        'action' => $plotId,
+        'playerId' => $this->ctx->getPlayerId(),
+        // 'optional' => true,
+      ]));
+
+
+      if ($this->getSelectedAction() === PLOTS_AND_DEEDS) {
+        $parent->pushChild(new LeafNode([
+          'action' => SELECT_DEED,
+          'playerId' => $this->ctx->getPlayerId(),
+          'optional' => true,
+        ]));
+      }
+    } else if ($extraOptionId !== null) {
+      $this->resolveExtraOption($extraOptionId);
+    }
+
+
+
 
     $this->resolveAction($args);
   }
@@ -148,11 +138,33 @@ class SelectPlot extends \AGestOfRobinHood\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
-  public function getSelectedAction()
+  private function resolveExtraOption($extraOptionId)
   {
-    $node = Engine::getResolvedActions([CHOOSE_ACTION])[0];
-    $action = $node->getActionResolutionArgs()['action'];
-    return $action;
+    $player = self::getPlayer();
+
+    switch ($extraOptionId) {
+      case GAIN_TWO_SHILLINGS:
+        Notifications::extraOption($player, $extraOptionId);
+        $player->incShillings(2);
+        break;
+    }
+  }
+
+  private function getExtraOptionId()
+  {
+    $info = $this->ctx->getInfo();
+
+    if (isset($info['source'])) {
+      $source = $info['source'];
+      switch ($source) {
+        case 'Event16_HeavyRain':
+          return GAIN_TWO_SHILLINGS;
+          defaukt:
+          return null;
+      }
+    } else {
+      return null;
+    }
   }
 
   public function getOptions($player)

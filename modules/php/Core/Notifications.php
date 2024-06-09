@@ -599,7 +599,7 @@ class Notifications
 
   public static function returnToSupply($player, $force, $space, $isHidden)
   {
-    $actingPlayer = $force->isMerryMan() && !$player->isRobinHood() ? Players::getRobinHoodPlayer() : $player;
+    $actingPlayer = ($force->isMerryMan() || $force->isCamp()) && !$player->isRobinHood() ? Players::getRobinHoodPlayer() : $player;
 
     self::notify($actingPlayer, 'returnToSupplyPrivate', clienttranslate('${player_name} returns ${tkn_boldText_forceName} from ${tkn_boldText_spaceName} to Available Forces'), [
       'player' => $actingPlayer,
@@ -698,6 +698,17 @@ class Notifications
       //   'args' => $spacesArgs,
       // ],
       'i18n' => ['tkn_boldText_plotName']
+    ]);
+  }
+
+  public static function extraOption($player, $extraOptionId)
+  {
+    $textMap = [
+      GAIN_TWO_SHILLINGS => clienttranslate('${player_name} chooses to gain 2 Shillings')
+    ];
+
+    self::message($textMap[$extraOptionId], [
+      'player' => $player,
     ]);
   }
 

@@ -87,15 +87,35 @@ class Card extends \AGestOfRobinHood\Helpers\DB_Model
   {
   }
 
-  public function canPerformDarkEffect($player) {
+  public function canPerformDarkEffect($player)
+  {
     return true;
   }
 
-  public function canPerformLightEffect($player) {
+  public function canPerformLightEffect($player)
+  {
     return true;
   }
 
-  public function requiresRoll($darkOrLight) {
+  public function requiresRoll($darkOrLight)
+  {
     return true;
+  }
+
+  public function isFortuneEvent()
+  {
+    return $this->eventType === FORTUNE_EVENT;
+  }
+
+  public function isRoyalInspection()
+  {
+    return $this->eventType === ROYAL_INSPECTION;
+  }
+
+  public function getFlow()
+  {
+    return [
+      'children' => []
+    ];
   }
 }
