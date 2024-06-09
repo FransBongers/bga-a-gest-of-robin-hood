@@ -1724,6 +1724,7 @@ var AGestOfRobinHood = (function () {
             capture: new CaptureState(this),
             chooseAction: new ChooseActionState(this),
             confiscate: new ConfiscateState(this),
+            disperse: new DisperseState(this),
             donate: new DonateState(this),
             hire: new HireState(this),
             moveCarriage: new MoveCarriageState(this),
@@ -4872,6 +4873,197 @@ var ConfiscateState = (function () {
         this.game.addCancelButton();
     };
     return ConfiscateState;
+}());
+var DisperseState = (function () {
+    function DisperseState(game) {
+        this.game = game;
+    }
+    DisperseState.prototype.onEnteringState = function (args) {
+        debug('Entering DisperseState');
+        this.args = args;
+        this.selectedOption = null;
+        this.publicForcesCamps = [];
+        this.publicForcesMerryMen = [];
+        this.selectedCamps = [];
+        this.selectedMerryMen = [];
+        this.updateInterfaceInitialStep();
+    };
+    DisperseState.prototype.onLeavingState = function () {
+        debug('Leaving DisperseState');
+    };
+    DisperseState.prototype.setDescription = function (activePlayerId) { };
+    DisperseState.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must select a Parish to Disperse in'),
+            args: {
+                you: '${you}',
+            },
+        });
+        Object.entries(this.args.options).forEach(function (_a) {
+            var spaceId = _a[0], option = _a[1];
+            return _this.game.addPrimaryActionButton({
+                id: "".concat(spaceId, "_btn"),
+                text: _(option.space.name),
+                callback: function () {
+                    _this.selectedOption = option;
+                    _this.selectPublicForces();
+                    _this.updateInterfaceSelectMerryMenAndCamps();
+                },
+            });
+        });
+        this.game.addPassButton({
+            optionalAction: this.args.optionalAction,
+        });
+        this.game.addUndoButtons(this.args);
+    };
+    DisperseState.prototype.updateInterfaceSelectMerryMenAndCamps = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} may select up to two pieces to remove'),
+            args: {
+                you: '${you}',
+            },
+        });
+        this.setMerryMenSelectable();
+        if (this.selectedMerryMen.length === this.publicForcesMerryMen.length) {
+            this.setCampsSelectable();
+        }
+        this.game.addPrimaryActionButton({
+            id: 'done_btn',
+            text: _('Done'),
+            callback: function () { return _this.updateInterfaceConfirm(); },
+            extraClasses: this.selectedMerryMen.length + this.selectedCamps.length === 0
+                ? DISABLED
+                : '',
+        });
+        this.game.addCancelButton();
+    };
+    DisperseState.prototype.updateInterfaceConfirm = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.selectedCamps.forEach(function (camp) {
+            return _this.game.setElementSelected({ id: camp.id });
+        });
+        this.selectedMerryMen.forEach(function (merryMan) {
+            return _this.game.setElementSelected({ id: merryMan.id });
+        });
+        this.game.clientUpdatePageTitle({
+            text: _('Dispers in ${spaceName}?'),
+            args: {
+                spaceName: _(this.selectedOption.space.name),
+            },
+        });
+        var callback = function () {
+            _this.game.clearPossible();
+            _this.game.takeAction({
+                action: 'actDisperse',
+                args: {
+                    spaceId: _this.selectedOption.space.id,
+                    camps: _this.selectedCamps.map(function (camp) { return ({
+                        type: camp.type,
+                        hidden: camp.hidden,
+                    }); }),
+                    merryMen: _this.selectedMerryMen.map(function (merryMan) { return ({
+                        type: merryMan.type,
+                        hidden: merryMan.hidden,
+                    }); }),
+                },
+            });
+        };
+        if (this.game.settings.get({
+            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+        }) === PREF_ENABLED) {
+            callback();
+        }
+        else {
+            this.game.addConfirmButton({
+                callback: callback,
+            });
+        }
+        this.game.addCancelButton();
+    };
+    DisperseState.prototype.selectPublicForces = function () {
+        var _this = this;
+        this.selectedOption.merryMen.forEach(function (_a) {
+            var type = _a.type, hidden = _a.hidden;
+            var merryMan = _this.game.gameMap.getForcePublic({
+                type: type,
+                hidden: hidden,
+                spaceId: _this.selectedOption.space.id,
+                exclude: _this.publicForcesMerryMen,
+            });
+            _this.publicForcesMerryMen.push(merryMan);
+        });
+        console.log('optionCamps', this.selectedOption.camps);
+        this.selectedOption.camps.forEach(function (_a) {
+            var type = _a.type, hidden = _a.hidden;
+            var camp = _this.game.gameMap.getForcePublic({
+                type: type,
+                hidden: hidden,
+                spaceId: _this.selectedOption.space.id,
+                exclude: _this.publicForcesCamps,
+            });
+            console.log('camp', camp);
+            _this.publicForcesCamps.push(camp);
+        });
+    };
+    DisperseState.prototype.setCampsSelectable = function () {
+        var _this = this;
+        this.selectedCamps.forEach(function (camp) {
+            _this.game.setElementSelected({ id: camp.id });
+            _this.game.setElementSelectable({
+                id: camp.id,
+                callback: function () {
+                    _this.selectedCamps = _this.selectedCamps.filter(function (selected) { return selected.id !== camp.id; });
+                    _this.updateInterfaceSelectMerryMenAndCamps();
+                },
+            });
+        });
+        this.publicForcesCamps
+            .filter(function (publicForce) {
+            return !_this.selectedCamps.some(function (camp) { return camp.id === publicForce.id; });
+        })
+            .forEach(function (camp) {
+            _this.game.setElementSelectable({
+                id: camp.id,
+                callback: function () {
+                    _this.selectedCamps.push(camp);
+                    _this.updateInterfaceSelectMerryMenAndCamps();
+                },
+            });
+        });
+    };
+    DisperseState.prototype.setMerryMenSelectable = function () {
+        var _this = this;
+        this.selectedMerryMen.forEach(function (merryMan) {
+            _this.game.setElementSelected({ id: merryMan.id });
+            _this.game.setElementSelectable({
+                id: merryMan.id,
+                callback: function () {
+                    _this.selectedMerryMen = _this.selectedMerryMen.filter(function (selected) { return selected.id !== merryMan.id; });
+                    _this.selectedCamps = [];
+                    _this.updateInterfaceSelectMerryMenAndCamps();
+                },
+            });
+        });
+        this.publicForcesMerryMen
+            .filter(function (publicForce) {
+            return !_this.selectedMerryMen.some(function (merryMan) { return merryMan.id === publicForce.id; });
+        })
+            .forEach(function (merryMan) {
+            _this.game.setElementSelectable({
+                id: merryMan.id,
+                callback: function () {
+                    _this.selectedMerryMen.push(merryMan);
+                    _this.updateInterfaceSelectMerryMenAndCamps();
+                },
+            });
+        });
+    };
+    return DisperseState;
 }());
 var DonateState = (function () {
     function DonateState(game) {

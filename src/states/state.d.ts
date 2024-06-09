@@ -32,6 +32,21 @@ interface OnEnteringConfiscateStateArgs extends CommonArgs {
   };
 }
 
+interface DisperseTarget {
+  type: string;
+  hidden: boolean;
+}
+
+interface DisperseOption {
+  space: GestSpace;
+  camps: DisperseTarget[];
+  merryMen: DisperseTarget[];
+}
+
+interface OnEnteringDisperseStateArgs extends CommonArgs {
+  options: Record<string, DisperseOption>
+}
+
 interface OnEnteringDonateStateArgs extends CommonArgs {
   spaces: GestSpace[];
 }

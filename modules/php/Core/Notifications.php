@@ -248,6 +248,16 @@ class Notifications
     ]);
   }
 
+  public static function disperse($player, $space, $merryMen, $camps)
+  {
+    self::message(clienttranslate('${player_name} removes ${count} pieces from ${tkn_boldText_spaceName}'), [
+      'player' => $player,
+      'tkn_boldText_spaceName' => $space->getName(),
+      'count' => count($merryMen) + count($camps),
+      'i18n' => ['tkn_boldText_spaceName'],
+    ]);
+  }
+
   public static function drawAndRevealCard($card)
   {
     self::notifyAll("drawAndRevealCard", clienttranslate('A new card is drawn from the Event deck: ${tkn_cardName}'), [
@@ -589,8 +599,10 @@ class Notifications
 
   public static function returnToSupply($player, $force, $space, $isHidden)
   {
-    self::notify($player, 'returnToSupplyPrivate', clienttranslate('${player_name} returns ${tkn_boldText_forceName} from ${tkn_boldText_spaceName} to Available Forces'), [
-      'player' => $player,
+    $actingPlayer = $force->isMerryMan() && !$player->isRobinHood() ? Players::getRobinHoodPlayer() : $player;
+
+    self::notify($actingPlayer, 'returnToSupplyPrivate', clienttranslate('${player_name} returns ${tkn_boldText_forceName} from ${tkn_boldText_spaceName} to Available Forces'), [
+      'player' => $actingPlayer,
       'you' => '${you}',
       'force' => $force,
       'spaceId' => $space->getId(),
@@ -599,7 +611,7 @@ class Notifications
     ]);
 
     self::notifyAll('returnToSupply', clienttranslate('${player_name} returns ${tkn_boldText_forceName} from ${tkn_boldText_spaceName} to Available Forces'), [
-      'player' => $player,
+      'player' => $actingPlayer,
       'force' => [
         'type' => $isHidden ? $force->getPublicType() : $force->getType(),
         'hidden' => $isHidden,
