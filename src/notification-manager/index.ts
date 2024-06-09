@@ -64,6 +64,7 @@ class NotificationManager {
       'moveMerryMenPrivate', // Robin Hood player
       'moveForces',
       'moveRoyalFavourMarker',
+      'moveRoyalInspectionMarker',
       'passAction',
       'revealCarriage',
       'revealForce',
@@ -75,6 +76,7 @@ class NotificationManager {
       'placeMerryMen',
       'placeMerryMenPrivate',
       'putCardInVictimsPile',
+      'redeploymentSheriff',
       'removeCardFromGame',
       'returnToSupply',
       'returnToSupplyPrivate',
@@ -273,7 +275,9 @@ class NotificationManager {
         });
         selectedForces.push(selected);
       });
-      await this.game.gameMap.forces[`${MERRY_MEN}_${PRISON}`].addCards(selectedForces);
+      await this.game.gameMap.forces[`${MERRY_MEN}_${PRISON}`].addCards(
+        selectedForces
+      );
     }
   }
 
@@ -408,6 +412,16 @@ class NotificationManager {
     });
   }
 
+  async notif_moveRoyalInspectionMarker(
+    notif: Notif<NotifMoveRoyalInspectionMarkerArgs>
+  ) {
+    const { marker } = notif.args;
+    await this.game.gameMap.moveMarker({
+      id: marker.id,
+      location: marker.location,
+    });
+  }
+
   async notif_payShillings(notif: Notif<NotifPayShillingsArgs>) {
     const { amount, playerId } = notif.args;
     this.getPlayer({ playerId }).counters.shillings.incValue(-amount);
@@ -462,6 +476,18 @@ class NotificationManager {
   async notif_putCardInVictimsPile(
     notif: Notif<NotifPutCardInVictimsPileArgs>
   ) {}
+
+  async notif_redeploymentSheriff(notif: Notif<NotifRedeploymentSheriffArgs>) {
+    const { forces } = notif.args;
+
+    const promises = [];
+    // TODO: check if already in destination for sheriff player?
+    forces.forEach((force) => {
+      promises.push(this.game.gameMap.forces[`${HENCHMEN}_${force.location}`].addCard(force));
+    });
+
+    await Promise.all(promises);
+  }
 
   async notif_removeCardFromGame(notif: Notif<NotifRemoveCardFromGameArgs>) {}
 

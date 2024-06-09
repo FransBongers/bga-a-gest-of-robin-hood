@@ -21,15 +21,41 @@ class Event_RoyalInspection extends \AGestOfRobinHood\Models\EventCard
 
   public function getFlow()
   {
+    $robinHoodPlayerId = Players::getRobinHoodPlayerId();
+    $sheriffPlayerId = Players::getSheriffPlayerId();
+
     return [
       'children' => [
         [
           'action' => ROYAL_INSPECTION_UNREST,
-          'playerId' => Players::getRobinHoodPlayerId(),
+          'playerId' => $robinHoodPlayerId,
+          'isKingRichardsReturn' => $this->id === 'Event32_KingRichardsReturn',
         ],
         [
           'action' => ROYAL_INSPECTION_MISCHIEF,
-          'playerId' => Players::getRobinHoodPlayerId(),
+          'playerId' => $robinHoodPlayerId,
+        ],
+        [
+          'action' => ROYAL_INSPECTION_GOVERNANCE,
+          'playerId' => $sheriffPlayerId,
+        ],
+        [
+          'action' => ROYAL_INSPECTION_REDEPLOYMENT_SHERIFF,
+          'playerId' => $sheriffPlayerId,
+        ],
+        [
+          'action' => ROYAL_INSPECTION_HIDE_ALL_MERRY_MEN,
+          'playerId' => $robinHoodPlayerId,
+        ],
+        [
+          'action' => ROYAL_INSPECTION_REDEPLOYMENT_ROBIN_HOOD,
+          'playerId' => $robinHoodPlayerId,
+        ],
+        // Place Robin Hood if in Available
+        // Swap Robin Hood with another piece
+        [
+          'action' => ROYAL_INSPECTION_RESET,
+          'playerId' => $robinHoodPlayerId,
         ],
       ]
     ];

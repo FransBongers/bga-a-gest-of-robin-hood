@@ -127,13 +127,14 @@ class Force extends \AGestOfRobinHood\Helpers\DB_Model
 
   public function returnToSupply($player)
   {
-    $space = Spaces::get($this->getLocation());
+    $fromPrison = $this->location === PRISON;
+    $space = $fromPrison ? null : Spaces::get($this->getLocation());
     $this->setLocation($this->supply);
     $isHidden = $this->isHidden();
     if ($this->type !== HENCHMEN) {
       $this->setHidden(1);
     }
-    Notifications::returnToSupply($player, $this, $space, $isHidden);
+    Notifications::returnToSupply($player, $this, $space, $isHidden, $fromPrison);
     if ($this->type === CAMP) {
       Players::moveRoyalFavour($player, 1, ORDER);
     }

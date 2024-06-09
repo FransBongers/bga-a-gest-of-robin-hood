@@ -424,11 +424,17 @@ class Notifications
     ]);
   }
 
-  public static function moveRoyalFavourMarker($player, $marker, $steps, $direction)
+  public static function moveRoyalFavourMarker($player, $marker, $steps, $direction, $royalInspection = false)
   {
     $text = $steps === 1 ?
       clienttranslate('${player_name} moves Royal Favour ${numberOfSteps} step towards ${tkn_boldText_direction}') :
       clienttranslate('${player_name} moves Royal Favour ${numberOfSteps} steps towards ${tkn_boldText_direction}');
+
+    if ($royalInspection && $steps === 1) {
+      $text = clienttranslate('Royal Favour shifts ${numberOfSteps} step towards ${tkn_boldText_direction}');
+    } else if ($royalInspection) {
+      $text = clienttranslate('Royal Favour shifts ${numberOfSteps} steps towards ${tkn_boldText_direction}');
+    }
 
     self::notifyAll("moveRoyalFavourMarker", $text, [
       'player' => $player,
@@ -436,6 +442,13 @@ class Notifications
       'marker' => $marker,
       'numberOfSteps' => $steps,
       'i18n' => ['tkn_boldText_direction']
+    ]);
+  }
+
+  public static function moveRoyalInspectionMarker($marker)
+  {
+    self::notifyAll("moveRoyalInspectionMarker", '', [
+      'marker' => $marker->jsonSerialize(),
     ]);
   }
 
@@ -597,7 +610,7 @@ class Notifications
     ]);
   }
 
-  public static function returnToSupply($player, $force, $space, $isHidden)
+  public static function returnToSupply($player, $force, $space, $isHidden, $fromPrison = false)
   {
     $actingPlayer = ($force->isMerryMan() || $force->isCamp()) && !$player->isRobinHood() ? Players::getRobinHoodPlayer() : $player;
 
@@ -605,9 +618,10 @@ class Notifications
       'player' => $actingPlayer,
       'you' => '${you}',
       'force' => $force,
-      'spaceId' => $space->getId(),
+      'spaceId' => $fromPrison ? PRISON : $space->getId(),
       'tkn_boldText_forceName' => $force->getName(),
-      'tkn_boldText_spaceName' => $space->getName(),
+      'tkn_boldText_spaceName' => $fromPrison ? clienttranslate('Prison') : $space->getName(),
+      'i18n' => ['tkn_boldText_forceName', 'tkn_boldText_spaceName']
     ]);
 
     self::notifyAll('returnToSupply', clienttranslate('${player_name} returns ${tkn_boldText_forceName} from ${tkn_boldText_spaceName} to Available Forces'), [
@@ -616,9 +630,10 @@ class Notifications
         'type' => $isHidden ? $force->getPublicType() : $force->getType(),
         'hidden' => $isHidden,
       ],
-      'spaceId' => $space->getId(),
+      'spaceId' => $fromPrison ? PRISON : $space->getId(),
       'tkn_boldText_forceName' => $force->getPublicName(),
-      'tkn_boldText_spaceName' => $space->getName(),
+      'tkn_boldText_spaceName' => $fromPrison ? clienttranslate('Prison') : $space->getName(),
+      'i18n' => ['tkn_boldText_forceName', 'tkn_boldText_spaceName']
     ]);
   }
 
@@ -637,6 +652,31 @@ class Notifications
       'spaceId' => $space->getId(),
       'status' => $status,
       'i18n' => ['tkn_boldText_parishName', 'tkn_boldText_status']
+    ]);
+  }
+
+  public static function redeploymentSheriff($player, $forces)
+  {
+    self::notifyAll("redeploymentSheriff", clienttranslate('${player_name} redeploys their Henchmen'), [
+      'player' => $player,
+      'forces' => $forces,
+    ]);
+  }
+
+  public static function redeploymentRobinHood($player, $forces, $moves)
+  {
+    $text = clienttranslate('${player_name} redeploys their Merry Men');
+
+
+    self::notify($player, 'moveMerryMenPrivate', $text, [
+      'player' => $player,
+      'count' => count($moves),
+      'forces' => $forces,
+    ]);
+
+    self::notifyAll('moveMerryMenPublic', $text, [
+      'player' => $player,
+      'moves' => $moves,
     ]);
   }
 
@@ -659,6 +699,13 @@ class Notifications
     self::message($text, [
       'player' => $player,
       'tkn_dieResult' => self::tknDieResultArg($dieColor, $dieResult),
+    ]);
+  }
+
+  public static function royalInspectionUnrestPhase($marker)
+  {
+    self::notifyAll("moveRoyalInspectionMarker", clienttranslate('Royal Inspection Round'), [
+      'marker' => $marker->jsonSerialize(),
     ]);
   }
 

@@ -143,7 +143,6 @@ class GameMap {
       if (!forces) {
         return;
       }
-      console.log('forces', spaceId, forces)
       // const henchmenBox = document.getElementById(`henchmen_${spaceId}`);
       if (forces.Henchmen?.length > 0) {
         forces.Henchmen.forEach((henchman) => {
@@ -303,7 +302,7 @@ class GameMap {
     spaceId: string;
     count: number;
   }) {
-    console.log('addPublicForces',  type, hidden, count, spaceId);
+
     for (let i = 0; i < count; i++) {
       let stockId = `${type}_${spaceId}`;
       if (type === ROBIN_HOOD) {
@@ -356,7 +355,6 @@ class GameMap {
 
   addPrivateForce({ force }: { force: GestForce }) {
     const id = this.getStockIdPrivate({ force });
-    console.log('addPrivateForce id',id);
     this.forces[id].addCard(force);
   }
 
@@ -395,12 +393,8 @@ class GameMap {
       hidden: false,
     };
 
-    console.log('selected input', input);
-
     const selected = this.getForcePublic(input);
     
-    console.log('selected', selected);
-
     selected.type = force.type;
     if (force.type === ROBIN_HOOD) {
       selected.type = MERRY_MEN;

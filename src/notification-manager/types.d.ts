@@ -97,6 +97,10 @@ interface NotifMoveRoyalFavourMarkerArgs extends NotifWithPlayerArgs {
   marker: GestMarker;
 }
 
+interface NotifMoveRoyalInspectionMarkerArgs extends NotifWithPlayerArgs {
+  marker: GestMarker;
+}
+
 interface NotifPassActionArgs extends NotifWithPlayerArgs {
   amount: number;
 }
@@ -136,6 +140,10 @@ interface NotifPlaceMerryMenPrivateArgs extends NotifWithPlayerArgs {
 
 interface NotifPutCardInVictimsPileArgs {
   card: GestCard;
+}
+
+interface NotifRedeploymentSheriffArgs {
+  forces: GestForce[];
 }
 
 interface NotifRemoveCardFromGameArgs {

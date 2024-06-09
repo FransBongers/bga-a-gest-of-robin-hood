@@ -75,6 +75,9 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     recruit: RecruitState;
     ride: RideState;
     rob: RobState;
+    royalInspectionRedeploymentRobinHood: RoyalInspectionRedeploymentRobinHoodState;
+    royalInspectionRedeploymentSheriff: RoyalInspectionRedeploymentSheriffState;
+    royalInspectionReturnMerryMenFromPrison: RoyalInspectionReturnMerryMenFromPrisonState;
     selectDeed: SelectDeedState;
     selectPlot: SelectPlotState;
     selectTravellerCardOption: SelectTravellerCardOptionState;
@@ -130,6 +133,9 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
       recruit: new RecruitState(this),
       ride: new RideState(this),
       rob: new RobState(this),
+      royalInspectionRedeploymentRobinHood: new RoyalInspectionRedeploymentRobinHoodState(this),
+      royalInspectionRedeploymentSheriff: new RoyalInspectionRedeploymentSheriffState(this),
+      royalInspectionReturnMerryMenFromPrison: new RoyalInspectionReturnMerryMenFromPrisonState(this),
       selectDeed: new SelectDeedState(this),
       selectPlot: new SelectPlotState(this),
       selectTravellerCardOption: new SelectTravellerCardOptionState(this),

@@ -23,10 +23,10 @@ trait DebugTrait
 
   function test()
   {
-    $rh = Forces::get(ROBIN_HOOD);
-    // $rh->setLocation(ROBIN_HOOD_SUPPLY);
-    $rh->reveal(Players::get());
-
+    // Forces::get('merryMen_9')->setLocation(NEWARK);
+    Forces::getTopOf(CAMPS_SUPPLY)->setLocation(BINGHAM);
+    // AtomicActions::get(ROYAL_INSPECTION_REDEPLOYMENT_SHERIFF)->getOptions();
+    // $result = array_values(Spaces::getAll());
     // $rh->hide(Players::get());
 
     // Players::getRobinHoodPlayer()->incShillings(10);

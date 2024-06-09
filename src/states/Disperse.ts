@@ -177,7 +177,6 @@ class DisperseState implements State {
       });
       this.publicForcesMerryMen.push(merryMan);
     });
-    console.log('optionCamps', this.selectedOption.camps);
     this.selectedOption.camps.forEach(({ type, hidden }: DisperseTarget) => {
       const camp = this.game.gameMap.getForcePublic({
         type,
@@ -185,7 +184,6 @@ class DisperseState implements State {
         spaceId: this.selectedOption.space.id,
         exclude: this.publicForcesCamps,
       });
-      console.log('camp', camp);
       this.publicForcesCamps.push(camp);
     });
   }

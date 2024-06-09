@@ -162,6 +162,14 @@ $machinestates = array(
     // .##....##..##.....##.##.....##.##......
     // ..######...##.....##.##.....##.########
 
+    ST_PRE_END_GAME => [
+        'name' => 'preEndGame',
+        'description' => '',
+        'type' => 'game',
+        'action' => 'stAtomicAction',
+        'transitions' => [],
+    ],
+
     // Final state.
     // Please do not modify (and do not overload action/args methods).
     ST_END_GAME => [
@@ -347,7 +355,6 @@ $machinestates = array(
         'type' => 'activeplayer',
         'args' => 'argsAtomicAction',
         'action' => 'stAtomicAction',
-        // 'transitions' => [],
         'possibleactions' => ['actRide', 'actPassOptionalAction', 'actRestart'],
     ],
     ST_CONFISCATE => [
@@ -357,7 +364,6 @@ $machinestates = array(
         'type' => 'activeplayer',
         'args' => 'argsAtomicAction',
         'action' => 'stAtomicAction',
-        // 'transitions' => [],
         'possibleactions' => ['actConfiscate', 'actPassOptionalAction', 'actRestart'],
     ],
     ST_DISPERSE => [
@@ -367,7 +373,6 @@ $machinestates = array(
         'type' => 'activeplayer',
         'args' => 'argsAtomicAction',
         'action' => 'stAtomicAction',
-        // 'transitions' => [],
         'possibleactions' => ['actDisperse', 'actPassOptionalAction', 'actRestart'],
     ],
     ST_HIRE => [
@@ -377,7 +382,6 @@ $machinestates = array(
         'type' => 'activeplayer',
         'args' => 'argsAtomicAction',
         'action' => 'stAtomicAction',
-        // 'transitions' => [],
         'possibleactions' => ['actHire', 'actPassOptionalAction', 'actRestart'],
     ],
     ST_PATROL => [
@@ -387,7 +391,6 @@ $machinestates = array(
         'type' => 'activeplayer',
         'args' => 'argsAtomicAction',
         'action' => 'stAtomicAction',
-        // 'transitions' => [],
         'possibleactions' => ['actPatrol', 'actPassOptionalAction', 'actRestart'],
     ],
     ST_CAPTURE => [
@@ -397,7 +400,6 @@ $machinestates = array(
         'type' => 'activeplayer',
         'args' => 'argsAtomicAction',
         'action' => 'stAtomicAction',
-        // 'transitions' => [],
         'possibleactions' => ['actCapture', 'actPassOptionalAction', 'actRestart'],
     ],
     ST_SELECT_TRAVELLER_CARD_OPTION => [
@@ -407,7 +409,6 @@ $machinestates = array(
         'type' => 'activeplayer',
         'args' => 'argsAtomicAction',
         'action' => 'stAtomicAction',
-        // 'transitions' => [],
         'possibleactions' => ['actSelectTravellerCardOption', 'actPassOptionalAction', 'actRestart'],
     ],
     ST_PLACE_MERRY_MAN_IN_SPACE => [
@@ -417,7 +418,6 @@ $machinestates = array(
         'type' => 'activeplayer',
         'args' => 'argsAtomicAction',
         'action' => 'stAtomicAction',
-        // 'transitions' => [],
         'possibleactions' => ['actPlaceMerryManInSpace', 'actPassOptionalAction', 'actRestart'],
     ],
     ST_PUT_CARD_IN_VICTIMS_PILE => [
@@ -436,6 +436,54 @@ $machinestates = array(
     ],
     ST_ROYAL_INSPECTION_MISCHIEF => [
         'name' => 'royalInspectionMischief',
+        'description' => '',
+        'type' => 'game',
+        'action' => 'stAtomicAction',
+        'transitions' => [],
+    ],
+    ST_ROYAL_INSPECTION_RETURN_MERRY_MEN_FROM_PRISON => [
+        'name' => 'royalInspectionReturnMerryMenFromPrison',
+        'description' => clienttranslate('${actplayer} must return Merry Men from Prison'),
+        'descriptionmyturn' => clienttranslate('${you}'),
+        'type' => 'activeplayer',
+        'args' => 'argsAtomicAction',
+        'action' => 'stAtomicAction',
+        'possibleactions' => ['actRoyalInspectionReturnMerryMenFromPrison', 'actPassOptionalAction', 'actRestart'],
+    ],
+    ST_ROYAL_INSPECTION_REDEPLOYMENT_SHERIFF => [
+        'name' => 'royalInspectionRedeploymentSheriff',
+        'description' => clienttranslate('${actplayer} must redeploy Henchman'),
+        'descriptionmyturn' => clienttranslate('${you}'),
+        'type' => 'activeplayer',
+        'args' => 'argsAtomicAction',
+        'action' => 'stAtomicAction',
+        'possibleactions' => ['actRoyalInspectionRedeploymentSheriff', 'actPassOptionalAction', 'actRestart'],
+    ],
+    ST_ROYAL_INSPECTION_REDEPLOYMENT_ROBIN_HOOD => [
+        'name' => 'royalInspectionRedeploymentRobinHood',
+        'description' => clienttranslate('${actplayer} must redeploy Merry Men'),
+        'descriptionmyturn' => clienttranslate('${you}'),
+        'type' => 'activeplayer',
+        'args' => 'argsAtomicAction',
+        'action' => 'stAtomicAction',
+        'possibleactions' => ['actRoyalInspectionRedeploymentRobinHood', 'actPassOptionalAction', 'actRestart'],
+    ],    
+    ST_ROYAL_INSPECTION_HIDE_ALL_MERRY_MEN => [
+        'name' => 'royalInspectionHideAllMerryMen',
+        'description' => '',
+        'type' => 'game',
+        'action' => 'stAtomicAction',
+        'transitions' => [],
+    ],
+    ST_ROYAL_INSPECTION_RESET => [
+        'name' => 'royalInspectionReset',
+        'description' => '',
+        'type' => 'game',
+        'action' => 'stAtomicAction',
+        'transitions' => [],
+    ],
+    ST_ROYAL_INSPECTION_GOVERNANCE => [
+        'name' => 'royalInspectionGovernance',
         'description' => '',
         'type' => 'game',
         'action' => 'stAtomicAction',

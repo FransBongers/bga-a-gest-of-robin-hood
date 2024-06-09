@@ -278,10 +278,9 @@ class Players extends \AGestOfRobinHood\Helpers\DB_Manager
     return PlayersExtra::DB()->update(['shillings' => $value], $playerId);
   }
 
-  public static function moveRoyalFavour($player, $steps, $direction)
+  public static function moveRoyalFavour($player, $steps, $direction, $royalInspection = false)
   {
     $rfMarker = Markers::get(ROYAL_FAVOUR_MARKER);
-    Notifications::log('rfMarker', $rfMarker);
     $currentLocation = $rfMarker->getLocation();
     $splitLocation = explode('_', $currentLocation);
     $sameDirection = Utils::startsWith($currentLocation, $direction);
@@ -307,7 +306,7 @@ class Players extends \AGestOfRobinHood\Helpers\DB_Manager
 
     $rfMarker->setLocation($newLocation);
 
-    Notifications::moveRoyalFavourMarker($player, $rfMarker, $steps, $direction);
+    Notifications::moveRoyalFavourMarker($player, $rfMarker, $steps, $direction, $royalInspection);
 
 
     // $otherPlayer = Players::getOther($player->getId());

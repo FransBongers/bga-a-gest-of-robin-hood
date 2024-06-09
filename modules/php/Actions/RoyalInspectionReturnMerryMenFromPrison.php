@@ -11,16 +11,17 @@ use AGestOfRobinHood\Core\Stats;
 use AGestOfRobinHood\Helpers\GameMap;
 use AGestOfRobinHood\Helpers\Locations;
 use AGestOfRobinHood\Helpers\Utils;
+use AGestOfRobinHood\Managers\Forces;
 use AGestOfRobinHood\Managers\Markers;
 use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\Spaces;
 
 
-class RoyalInspectionUnrest extends \AGestOfRobinHood\Models\AtomicAction
+class RoyalInspectionReturnMerryMenFromPrison extends \AGestOfRobinHood\Models\AtomicAction
 {
   public function getState()
   {
-    return ST_ROYAL_INSPECTION_UNREST;
+    return ST_ROYAL_INSPECTION_RETURN_MERRY_MEN_FROM_PRISON;
   }
 
   // ..######..########....###....########.########
@@ -39,36 +40,18 @@ class RoyalInspectionUnrest extends \AGestOfRobinHood\Models\AtomicAction
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function stRoyalInspectionUnrest()
+  public function stRoyalInspectionReturnMerryMenFromPrison()
   {
-
-    $player = self::getPlayer();
-    $riMarker = Markers::get(ROYAL_INSPECTION_MARKER);
-    $riMarker->setLocation(Locations::royalInspectionTrack(UNREST));
-    Notifications::royalInspectionUnrestPhase($riMarker);
-    $numberOfSubmissiveParishes = count(Utils::filter(Spaces::get(PARISHES)->toArray(), function ($space) {
-      return $space->isSubmissive();
-    }));
-    if ($numberOfSubmissiveParishes >= 5) {
-      Players::moveRoyalFavour($player, 1, ORDER, true);
-    } else if ($numberOfSubmissiveParishes >= 3) {
-      Players::moveRoyalFavour($player, 1, JUSTICE, true);
-    } else if ($numberOfSubmissiveParishes >= 1) {
-      Players::moveRoyalFavour($player, 2, JUSTICE, true);
-    } else if ($numberOfSubmissiveParishes === 0) {
-      Players::moveRoyalFavour($player, 3, JUSTICE, true);
-    }
-
-    $rfMarker = Markers::get(ROYAL_FAVOUR_MARKER);
-    $currentLocation = $rfMarker->getLocation();
-    $splitLocation = explode('_', $currentLocation);
-    $currentValue = intval($splitLocation[1]);
-
-    if ($this->ctx->getInfo()['isKingRichardsReturn'] || $currentValue >= 5) {
-      Game::get()->gamestate->jumpToState(ST_PRE_END_GAME);
+    $options = $this->getOptions();
+    if ($options['robinHoodInPrison']) {
       return;
     }
-
+    $merryMen = $options['merryMen'];
+    shuffle($merryMen);
+    $player = self::getPlayer();
+    for ($i = 0; $i < $options['numberToReturn']; $i++) {
+      $merryMen[$i]->returnToSupply($player);
+    }
     $this->resolveAction(['automatic' => true]);
   }
 
@@ -81,9 +64,13 @@ class RoyalInspectionUnrest extends \AGestOfRobinHood\Models\AtomicAction
   // .##.....##.##....##..##....##..##....##
   // .##.....##.##.....##..######....######.
 
-  public function argsRoyalInspectionUnrest()
+  public function argsRoyalInspectionReturnMerryMenFromPrison()
   {
-    $data = [];
+    $data = [
+      '_private' => [
+        $this->ctx->getPlayerId() => $this->getOptions(),
+      ],
+    ];
 
     return $data;
   }
@@ -104,17 +91,33 @@ class RoyalInspectionUnrest extends \AGestOfRobinHood\Models\AtomicAction
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function actPassRoyalInspectionUnrest()
+  public function actPassRoyalInspectionReturnMerryMenFromPrison()
   {
     $player = self::getPlayer();
     // Stats::incPassActionCount($player->getId(), 1);
     Engine::resolve(PASS);
   }
 
-  public function actRoyalInspectionUnrest($args)
+  public function actRoyalInspectionReturnMerryMenFromPrison($args)
   {
-    self::checkAction('actRoyalInspectionUnrest');
+    self::checkAction('actRoyalInspectionReturnMerryMenFromPrison');
+    $merryManIds = $args['merryManIds'];
 
+    $stateArgs = $this->getOptions();
+
+    $merryMen = Utils::filter($stateArgs['merryMen'], function ($force) use ($merryManIds) {
+      return in_array($force->getId(), $merryManIds);
+    });
+
+    if (count($merryMen) !== count($merryManIds)) {
+      throw new \feException("ERROR 047");
+    }
+
+    $player = self::getPlayer();
+
+    foreach ($merryMen as $merryMan) {
+      $merryMan->returnToSupply($player);
+    }
 
     $this->resolveAction($args);
   }
@@ -127,5 +130,16 @@ class RoyalInspectionUnrest extends \AGestOfRobinHood\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
+  private function getOptions()
+  {
+    $merryMen = Forces::getInLocation(PRISON)->toArray();
 
+    return [
+      'merryMen' => $merryMen,
+      'numberToReturn' => floor(count($merryMen) / 2),
+      'robinHoodInPrison' => Utils::array_some($merryMen, function ($merryMan) {
+        return $merryMan->isRobinHood();
+      }),
+    ];
+  }
 }

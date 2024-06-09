@@ -139,6 +139,38 @@ interface OnEnteringRobStateArgs extends CommonArgs {
   };
 }
 
+interface RedeploymentOption {
+  henchman: GestForce;
+  spaceIds: string[];
+}
+
+interface RedeploymentOptionRH {
+  merryMan: GestForce;
+  spaceIds: string[];
+}
+
+interface OnEnteringRoyalInspectionRedeploymentRobinHoodStateArgs extends CommonArgs {
+  _private: {
+    spaces: GestSpace[];
+    merryMenMustMove: Record<string, RedeploymentOptionRH>;
+    merryMenMayMove: Record<string, RedeploymentOptionRH>;
+  }
+}
+
+interface OnEnteringRoyalInspectionRedeploymentSheriffStateArgs extends CommonArgs {
+  spaces: GestSpace[];
+  henchmenMustMove: Record<string, RedeploymentOption>;
+  henchmenMayMove: Record<string, RedeploymentOption>;
+}
+
+interface OnEnteringRoyalInspectionReturnMerryMenFromPrisonStateArgs extends CommonArgs {
+  _private: {
+    merryMen: GestForce[];
+    numberToReturn: number;
+    robinHoodInPrison: boolean;
+  };
+}
+
 interface OnEnteringSelectDeedStateArgs extends CommonArgs {
   _private: {
     options: Record<string, string>;
