@@ -7,17 +7,20 @@ use AGestOfRobinHood\Core\Engine;
 use AGestOfRobinHood\Core\Engine\LeafNode;
 use AGestOfRobinHood\Core\Globals;
 use AGestOfRobinHood\Core\Stats;
+use AGestOfRobinHood\Helpers\GameMap;
 use AGestOfRobinHood\Helpers\Locations;
 use AGestOfRobinHood\Helpers\Utils;
+use AGestOfRobinHood\Managers\AtomicActions;
+use AGestOfRobinHood\Managers\Cards;
 use AGestOfRobinHood\Managers\Markers;
 use AGestOfRobinHood\Managers\Players;
+use AGestOfRobinHood\Spaces\Nottingham;
 
-
-class ChooseAction extends \AGestOfRobinHood\Models\AtomicAction
+class SelectEventEffect extends \AGestOfRobinHood\Actions\Plot
 {
   public function getState()
   {
-    return ST_CHOOSE_ACTION;
+    return ST_SELECT_EVENT_EFFECT;
   }
 
   // ....###....########...######....######.
@@ -28,12 +31,19 @@ class ChooseAction extends \AGestOfRobinHood\Models\AtomicAction
   // .##.....##.##....##..##....##..##....##
   // .##.....##.##.....##..######....######.
 
-  public function argsChooseAction()
+  public function argsSelectEventEffect()
   {
+    // $action = $this->getSelectedAction();
+
+    // $numberOfSpaces = $action === PLOTS_AND_DEEDS ? 3 : 1;
+
+    $player = self::getPlayer();
+    $card = Cards::getTopOf(EVENTS_DISCARD);
+
     $data = [
-      SINGLE_PLOT => Markers::getTopOf(Locations::initiativeTrack(SINGLE_PLOT)) === null,
-      EVENT => Markers::getTopOf(Locations::initiativeTrack(EVENT)) === null,
-      PLOTS_AND_DEEDS => Markers::getTopOf(Locations::initiativeTrack(PLOTS_AND_DEEDS)) === null,
+      'card' => $card,
+      'canPerformDarkEffect' => $card->canPerformDarkEffect($player),
+      'canPerformLightEffect' => $card->canPerformLightEffect($player),
     ];
 
     return $data;
@@ -55,35 +65,40 @@ class ChooseAction extends \AGestOfRobinHood\Models\AtomicAction
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function actPassChooseAction()
+  public function actPassSelectEventEffect()
   {
     $player = self::getPlayer();
+
+    // Notifications::passAction($player, $shillings);
     // Stats::incPassActionCount($player->getId(), 1);
     Engine::resolve(PASS);
   }
 
-  // public function actPlayerAction($cardId, $strength)
-  public function actChooseAction($args)
+  public function actSelectEventEffect($args)
   {
-    self::checkAction('actChooseAction');
-    $action = $args['action'];
-    $pass = $args['pass'];
+    self::checkAction('actSelectEventEffect');
 
-    $stateArgs = $this->argsChooseAction();
+    $effect = $args['effect'];
 
-    if (!$stateArgs[$action]) {
-      throw new \feException("ERROR 003");
+    $stateArgs = $this->argsSelectEventEffect();
+
+    if ($effect === 'dark' && !$stateArgs['canPerformDarkEffect']) {
+      throw new \feException("ERROR 055");
     }
+
+    if ($effect === 'light' && !$stateArgs['canPerformLightEffect']) {
+      throw new \feException("ERROR 056");
+    }
+
     $player = self::getPlayer();
-    $marker = $player->getEligibilityMarker();
-    $marker->setLocation(Locations::initiativeTrack($action));
+    $card =  $stateArgs['card'];
 
-    Notifications::chooseAction($player, $marker, $action, $pass);
+    Notifications::resolveEventEffect($player, $card, $effect);
 
-    if ($pass) {
-      $this->handlePass($player, $action);
-    } else {
-      $this->handleAction($player, $action);
+    if ($effect === 'dark') {
+      $card->resolveDarkEffect($player, true, $this->ctx);
+    } else if ($effect === 'light') {
+      $card->resolveLightEffect($player, true, $this->ctx);
     }
 
 
@@ -99,39 +114,4 @@ class ChooseAction extends \AGestOfRobinHood\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
-  private function handlePass($player, $action)
-  {
-    $shillings = 1;
-
-    if ($player->isSheriff()) {
-      if ($action === EVENT) {
-        $shillings = 2;
-      } else if ($action === PLOTS_AND_DEEDS) {
-        $shillings = 3;
-      }
-    }
-
-    $player->incShillings($shillings);
-  }
-
-  private function handleAction($player, $action)
-  {
-    $parent = $this->ctx->getParent();
-
-    switch ($action) {
-      case SINGLE_PLOT:
-      case PLOTS_AND_DEEDS:
-        $parent->pushChild(new LeafNode([
-          'action' => SELECT_PLOT,
-          'playerId' => $this->ctx->getPlayerId(),
-        ]));
-        break;
-      case EVENT:
-        $parent->pushChild(new LeafNode([
-          'action' => SELECT_EVENT_EFFECT,
-          'playerId' => $this->ctx->getPlayerId(),
-        ]));
-        break;
-    }
-  }
 }

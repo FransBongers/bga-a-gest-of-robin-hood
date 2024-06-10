@@ -507,4 +507,22 @@ $machinestates = array(
         'action' => 'stAtomicAction',
         'possibleactions' => ['actRoyalInspectionSwapRobinHood', 'actPassOptionalAction', 'actRestart'],
     ],
+    ST_SELECT_EVENT_EFFECT => [
+        'name' => 'selectEventEffect',
+        'description' => clienttranslate('${actplayer} must execute either the unshaded or shaded effect on the current Event card'),
+        'descriptionmyturn' => clienttranslate('${you}'),
+        'type' => 'activeplayer',
+        'args' => 'argsAtomicAction',
+        'action' => 'stAtomicAction',
+        'possibleactions' => ['actSelectEventEffect', 'actPassOptionalAction', 'actRestart'],
+    ],
+    ST_EVENT_AMBUSH_DARK => [
+        'name' => 'eventAmbushDark',
+        'description' => clienttranslate('${actplayer} must execute either the unshaded or shaded effect on the current Event card'),
+        'descriptionmyturn' => clienttranslate('${you}'),
+        'type' => 'activeplayer',
+        'args' => 'argsAtomicAction',
+        'action' => 'stAtomicAction',
+        'possibleactions' => ['actEventAmbushDark', 'actPassOptionalAction', 'actRestart'],
+    ],
 );

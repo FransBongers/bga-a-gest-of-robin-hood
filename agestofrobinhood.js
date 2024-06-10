@@ -1727,6 +1727,7 @@ var AGestOfRobinHood = (function () {
             confiscate: new ConfiscateState(this),
             disperse: new DisperseState(this),
             donate: new DonateState(this),
+            eventAmbushDark: new EventAmbushDarkState(this),
             hire: new HireState(this),
             moveCarriage: new MoveCarriageState(this),
             patrol: new PatrolState(this),
@@ -1740,6 +1741,7 @@ var AGestOfRobinHood = (function () {
             royalInspectionReturnMerryMenFromPrison: new RoyalInspectionReturnMerryMenFromPrisonState(this),
             royalInspectionSwapRobinHood: new RoyalInspectionSwapRobinHoodState(this),
             selectDeed: new SelectDeedState(this),
+            selectEventEffect: new SelectEventEffectState(this),
             selectPlot: new SelectPlotState(this),
             selectTravellerCardOption: new SelectTravellerCardOptionState(this),
             setupRobinHood: new SetupRobinHoodState(this),
@@ -5111,6 +5113,79 @@ var DisperseState = (function () {
     };
     return DisperseState;
 }());
+var EventAmbushDarkState = (function () {
+    function EventAmbushDarkState(game) {
+        this.game = game;
+    }
+    EventAmbushDarkState.prototype.onEnteringState = function (args) {
+        debug('Entering EventAmbushDarkState');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    EventAmbushDarkState.prototype.onLeavingState = function () {
+        debug('Leaving EventAmbushDarkState');
+    };
+    EventAmbushDarkState.prototype.setDescription = function (activePlayerId) { };
+    EventAmbushDarkState.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must select a Forest space'),
+            args: {
+                you: '${you}',
+            },
+        });
+        Object.entries(this.args.options)
+            .filter(function (_a) {
+            var spaceId = _a[0], possible = _a[1];
+            return possible;
+        })
+            .forEach(function (_a) {
+            var spaceId = _a[0], possible = _a[1];
+            _this.game.addPrimaryActionButton({
+                id: "".concat(spaceId, "_btn"),
+                text: _(spaceId),
+                callback: function () { return _this.updateInterfaceConfirm({ spaceId: spaceId }); },
+            });
+        });
+        this.game.addPassButton({
+            optionalAction: this.args.optionalAction,
+        });
+        this.game.addUndoButtons(this.args);
+    };
+    EventAmbushDarkState.prototype.updateInterfaceConfirm = function (_a) {
+        var _this = this;
+        var spaceId = _a.spaceId;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('Reveal all Merry Men in ${spaceName}?'),
+            args: {
+                spaceName: spaceId,
+            },
+        });
+        var callback = function () {
+            _this.game.clearPossible();
+            _this.game.takeAction({
+                action: 'actEventAmbushDark',
+                args: {
+                    spaceId: spaceId,
+                },
+            });
+        };
+        if (this.game.settings.get({
+            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+        }) === PREF_ENABLED) {
+            callback();
+        }
+        else {
+            this.game.addConfirmButton({
+                callback: callback,
+            });
+        }
+        this.game.addCancelButton();
+    };
+    return EventAmbushDarkState;
+}());
 var DonateState = (function () {
     function DonateState(game) {
         this.game = game;
@@ -6948,6 +7023,88 @@ var SelectDeedState = (function () {
         this.game.addCancelButton();
     };
     return SelectDeedState;
+}());
+var SelectEventEffectState = (function () {
+    function SelectEventEffectState(game) {
+        this.game = game;
+    }
+    SelectEventEffectState.prototype.onEnteringState = function (args) {
+        debug('Entering SelectEventEffectState');
+        this.args = args;
+        this.staticData = this.game.getStaticCardData({
+            cardId: this.args.card.id,
+        });
+        this.updateInterfaceInitialStep();
+    };
+    SelectEventEffectState.prototype.onLeavingState = function () {
+        debug('Leaving SelectEventEffectState');
+    };
+    SelectEventEffectState.prototype.setDescription = function (activePlayerId) { };
+    SelectEventEffectState.prototype.updateInterfaceInitialStep = function () {
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must select which effect on the current Event card to execute'),
+            args: {
+                you: '${you}',
+            },
+        });
+        this.addOptionButtons();
+        this.game.addPassButton({
+            optionalAction: this.args.optionalAction,
+        });
+        this.game.addUndoButtons(this.args);
+    };
+    SelectEventEffectState.prototype.updateInterfaceConfirm = function (_a) {
+        var _this = this;
+        var effect = _a.effect;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('Execute ${option}?'),
+            args: {
+                option: effect === 'light'
+                    ? _(this.staticData.titleLight)
+                    : _(this.staticData.titleDark),
+            },
+        });
+        var callback = function () {
+            _this.game.clearPossible();
+            _this.game.takeAction({
+                action: 'actSelectEventEffect',
+                args: {
+                    effect: effect,
+                },
+            });
+        };
+        if (this.game.settings.get({
+            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+        }) === PREF_ENABLED) {
+            callback();
+        }
+        else {
+            this.game.addConfirmButton({
+                callback: callback,
+            });
+        }
+        this.game.addCancelButton();
+    };
+    SelectEventEffectState.prototype.addOptionButtons = function () {
+        var _this = this;
+        if (this.staticData.titleLight && this.args.canPerformLightEffect) {
+            this.game.addPrimaryActionButton({
+                id: "light_option_btn",
+                text: _(this.staticData.titleLight),
+                callback: function () { return _this.updateInterfaceConfirm({ effect: 'light' }); },
+            });
+        }
+        if (this.staticData.titleDark && this.args.canPerformDarkEffect) {
+            this.game.addPrimaryActionButton({
+                id: "darkt_option_btn",
+                text: _(this.staticData.titleDark),
+                callback: function () { return _this.updateInterfaceConfirm({ effect: 'dark' }); },
+            });
+        }
+    };
+    return SelectEventEffectState;
 }());
 var SelectPlotState = (function () {
     function SelectPlotState(game) {

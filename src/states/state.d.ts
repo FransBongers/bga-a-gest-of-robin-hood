@@ -51,6 +51,10 @@ interface OnEnteringDonateStateArgs extends CommonArgs {
   spaces: GestSpace[];
 }
 
+interface OnEnteringEventAmbushDarkStateArgs extends CommonArgs {
+  options: Record<string, GestSpace>;
+}
+
 interface OnEnteringHireStateArgs extends CommonArgs {
   options: Record<
     string,
@@ -191,6 +195,12 @@ interface OnEnteringSelectDeedStateArgs extends CommonArgs {
   _private: {
     options: Record<string, string>;
   };
+}
+
+interface OnEnteringSelectEventEffectStateArgs extends CommonArgs {
+  card: GestCard;
+  canPerformDarkEffect: boolean;
+  canPerformLightEffect: boolean;
 }
 
 interface OnEnteringSelectPlotStateArgs extends CommonArgs {

@@ -637,6 +637,15 @@ class Notifications
     ]);
   }
 
+  public static function resolveEventEffect($player, $card, $effect)
+  {
+    self::message(clienttranslate('${player_name} choosed to execute ${tkn_boldText_effectName}'),[
+      'player' => $player,
+      'tkn_boldText_effectName' => $effect === 'dark' ? $card->getTitleDark() : $card->getTitleLight(),
+      'i18n' => ['tkn_boldText_effectName']
+    ]);
+  }
+
   public static function parishStatus($player, $space, $status)
   {
     $statusNameMap = [
