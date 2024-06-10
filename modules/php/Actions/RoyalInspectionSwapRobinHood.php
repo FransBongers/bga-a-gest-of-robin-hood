@@ -15,13 +15,13 @@ use AGestOfRobinHood\Managers\Forces;
 use AGestOfRobinHood\Managers\Markers;
 use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\Spaces;
+use PDO;
 
-
-class RoyalInspectionRedeploymentSheriff extends \AGestOfRobinHood\Models\AtomicAction
+class RoyalInspectionSwapRobinHood extends \AGestOfRobinHood\Models\AtomicAction
 {
   public function getState()
   {
-    return ST_ROYAL_INSPECTION_REDEPLOYMENT_SHERIFF;
+    return ST_ROYAL_INSPECTION_SWAP_ROBIN_HOOD;
   }
 
   // ..######..########....###....########.########
@@ -40,13 +40,11 @@ class RoyalInspectionRedeploymentSheriff extends \AGestOfRobinHood\Models\Atomic
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function stRoyalInspectionRedeploymentSheriff()
+  public function stRoyalInspectionSwapRobinHood()
   {
-    $riMarker = Markers::get(ROYAL_INSPECTION_MARKER);
-    $riMarker->setLocation(Locations::royalInspectionTrack(REDEPLOYMENT));
-    Notifications::moveRoyalInspectionMarker($riMarker);
-
-    // $this->resolveAction(['automatic' => true]);
+    if (Forces::get(ROBIN_HOOD)->getLocation() === PRISON) {
+      $this->resolveAction(['automatic' => true]);
+    }
   }
 
 
@@ -58,11 +56,18 @@ class RoyalInspectionRedeploymentSheriff extends \AGestOfRobinHood\Models\Atomic
   // .##.....##.##....##..##....##..##....##
   // .##.....##.##.....##..######....######.
 
-  public function argsRoyalInspectionRedeploymentSheriff()
+  public function argsRoyalInspectionSwapRobinHood()
   {
-    // $data = [];
+    $data = [
+      '_private' => [
+        $this->ctx->getPlayerId() => [
+          'robinHood' => Forces::get(ROBIN_HOOD),
+          'merryMen' => $this->getOptions()
+        ],
+      ]
+    ];
 
-    return $this->getOptions();
+    return $data;
   }
 
   //  .########..##..........###....##....##.########.########.
@@ -81,46 +86,35 @@ class RoyalInspectionRedeploymentSheriff extends \AGestOfRobinHood\Models\Atomic
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function actPassRoyalInspectionRedeploymentSheriff()
+  public function actPassRoyalInspectionSwapRobinHood()
   {
     $player = self::getPlayer();
+    Notifications::swapRobinHood($player, []);
     // Stats::incPassActionCount($player->getId(), 1);
     Engine::resolve(PASS);
   }
 
-  public function actRoyalInspectionRedeploymentSheriff($args)
+  public function actRoyalInspectionSwapRobinHood($args)
   {
-    self::checkAction('actRoyalInspectionRedeploymentSheriff');
-    $requiredMoves = $args['requiredMoves'];
-    $optionalMoves = $args['optionalMoves'];
+    self::checkAction('actRoyalInspectionSwapRobinHood');
+    $merryManId = $args['merryManId'];
 
-    $stateArgs = $this->getOptions();
+    $merryMan = Utils::array_find($this->getOptions(), function ($option) use ($merryManId) {
+      return $option->getId() === $merryManId;
+    });
 
-    $forces = [];
-
-    foreach ($stateArgs['henchmenMustMove'] as $henchmanId => $option) {
-      $henchman = $option['henchman'];
-      $destination = $requiredMoves[$henchman->getId()];
-      if (!in_array($destination, $option['spaceIds'])) {
-        throw new \feException("ERROR 048");
-      }
-      $henchman->setLocation($destination);
-      $forces[] = $henchman;
+    if ($merryMan === null) {
+      throw new \feException("ERROR 053");
     }
 
-    foreach ($optionalMoves as $henchmanId) {
-      if (!isset($stateArgs['henchmenMayMove'][$henchmanId])) {
-        throw new \feException("ERROR 049");
-      }
-      $henchman = $stateArgs['henchmenMayMove'][$henchmanId]['henchman'];
-      $henchman->setLocation(NOTTINGHAM);
-      $forces[] = $henchman;
-    }
+    $robinHood = Forces::get(ROBIN_HOOD);
+    $fromLocationRH = $robinHood->getLocation();
+    $fromLocationMM = $merryMan->getLocation();
 
-    $usedCarriages = Forces::getInLocation(USED_CARRIAGES)->toArray();
-    Forces::moveAllInLocation(USED_CARRIAGES,CARRIAGE_SUPPLY);
+    $robinHood->setLocation($fromLocationMM);
+    $merryMan->setLocation($fromLocationRH);
 
-    Notifications::redeploymentSheriff(self::getPlayer(), $forces, $usedCarriages);
+    Notifications::swapRobinHood(self::getPlayer(), [$robinHood, $merryMan]);
 
     $this->resolveAction($args);
   }
@@ -135,43 +129,8 @@ class RoyalInspectionRedeploymentSheriff extends \AGestOfRobinHood\Models\Atomic
 
   public function getOptions()
   {
-    $henchmenMustMove = [];
-    $henchmenMayMove = [];
-
-    $spaces = Spaces::getAll();
-    $spacesArray = $spaces->toArray();
-    $submissiveSpaceIds =
-      array_map(
-        function ($subSpace) {
-          return $subSpace->getId();
-        },
-        Utils::filter($spacesArray, function ($space) {
-          return $space->isSubmissive();
-        })
-      );
-    $henchmen = Forces::getOfType(HENCHMEN);
-    foreach ($henchmen as $henchman) {
-      $spaceId = $henchman->getLocation();
-      if ($spaceId === HENCHMEN_SUPPLY || $spaceId === NOTTINGHAM) {
-        continue;
-      }
-      $space = $spaces[$spaceId];
-      if ($space->isRevolting() || $space->isForest()) {
-        $henchmenMustMove[$henchman->getId()] = [
-          'henchman' => $henchman,
-          'spaceIds' => $submissiveSpaceIds,
-        ];
-      } else {
-        $henchmenMayMove[$henchman->getId()] = [
-          'henchman' => $henchman,
-          'spaceIds' => [NOTTINGHAM],
-        ];
-      }
-    }
-    return [
-      'spaces' => $spaces,
-      'henchmenMayMove' => $henchmenMayMove,
-      'henchmenMustMove' => $henchmenMustMove,
-    ];
+    return Utils::filter(Forces::getOfType(MERRY_MEN), function ($merryMan) {
+      return !in_array($merryMan->getLocation(), [PRISON, MERRY_MEN_SUPPLY]);
+    });
   }
 }

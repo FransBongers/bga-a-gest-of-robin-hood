@@ -1734,9 +1734,11 @@ var AGestOfRobinHood = (function () {
             recruit: new RecruitState(this),
             ride: new RideState(this),
             rob: new RobState(this),
+            royalInspectionPlaceRobinHood: new RoyalInspectionPlaceRobinHoodState(this),
             royalInspectionRedeploymentRobinHood: new RoyalInspectionRedeploymentRobinHoodState(this),
             royalInspectionRedeploymentSheriff: new RoyalInspectionRedeploymentSheriffState(this),
             royalInspectionReturnMerryMenFromPrison: new RoyalInspectionReturnMerryMenFromPrisonState(this),
+            royalInspectionSwapRobinHood: new RoyalInspectionSwapRobinHoodState(this),
             selectDeed: new SelectDeedState(this),
             selectPlot: new SelectPlotState(this),
             selectTravellerCardOption: new SelectTravellerCardOptionState(this),
@@ -3421,6 +3423,7 @@ var NotificationManager = (function () {
             'putCardInVictimsPile',
             'redeploymentSheriff',
             'removeCardFromGame',
+            'returnTravellersDiscardToMainDeck',
             'returnToSupply',
             'returnToSupplyPrivate',
             'sneakMerryMen',
@@ -3828,6 +3831,7 @@ var NotificationManager = (function () {
                         return [4, Promise.all(promises)];
                     case 1:
                         _a.sent();
+                        this.game.gameMap.forces["".concat(CARRIAGE, "_").concat(USED_CARRIAGES)].removeAll();
                         return [2];
                 }
             });
@@ -3970,6 +3974,11 @@ var NotificationManager = (function () {
                 }
             });
         });
+    };
+    NotificationManager.prototype.notif_returnTravellersDiscardToMainDeck = function (notif) {
+        return __awaiter(this, void 0, void 0, function () { return __generator(this, function (_a) {
+            return [2];
+        }); });
     };
     NotificationManager.prototype.notif_sneakMerryMen = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
@@ -6128,6 +6137,75 @@ var RobState = (function () {
     };
     return RobState;
 }());
+var RoyalInspectionPlaceRobinHoodState = (function () {
+    function RoyalInspectionPlaceRobinHoodState(game) {
+        this.game = game;
+    }
+    RoyalInspectionPlaceRobinHoodState.prototype.onEnteringState = function (args) {
+        debug('Entering RoyalInspectionPlaceRobinHoodState');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    RoyalInspectionPlaceRobinHoodState.prototype.onLeavingState = function () {
+        debug('Leaving RoyalInspectionPlaceRobinHoodState');
+    };
+    RoyalInspectionPlaceRobinHoodState.prototype.setDescription = function (activePlayerId) { };
+    RoyalInspectionPlaceRobinHoodState.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must select a Forest to place Robin Hood in'),
+            args: {
+                you: '${you}',
+            },
+        });
+        Object.values(this.args._private.spaces).forEach(function (space) {
+            _this.game.addPrimaryActionButton({
+                id: "".concat(space.id, "_btn"),
+                text: _(space.name),
+                callback: function () {
+                    _this.updateInterfaceConfirm({ space: space });
+                },
+            });
+        });
+        this.game.addPassButton({
+            optionalAction: this.args.optionalAction,
+        });
+        this.game.addUndoButtons(this.args);
+    };
+    RoyalInspectionPlaceRobinHoodState.prototype.updateInterfaceConfirm = function (_a) {
+        var _this = this;
+        var space = _a.space, _b = _a.placeRobinHood, placeRobinHood = _b === void 0 ? false : _b;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('Place Robin Hood in ${spaceName}?'),
+            args: {
+                spaceName: _(space.name),
+            },
+        });
+        var callback = function () {
+            _this.game.clearPossible();
+            _this.game.takeAction({
+                action: 'actRoyalInspectionPlaceRobinHood',
+                args: {
+                    spaceId: space.id,
+                },
+            });
+        };
+        if (this.game.settings.get({
+            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+        }) === PREF_ENABLED) {
+            callback();
+        }
+        else {
+            this.game.addConfirmButton({
+                callback: callback,
+            });
+        }
+        this.game.addCancelButton();
+    };
+    return RoyalInspectionPlaceRobinHoodState;
+}());
 var RoyalInspectionRedeploymentRobinHoodState = (function () {
     function RoyalInspectionRedeploymentRobinHoodState(game) {
         this.game = game;
@@ -6658,6 +6736,148 @@ var RoyalInspectionReturnMerryMenFromPrisonState = (function () {
         }
     };
     return RoyalInspectionReturnMerryMenFromPrisonState;
+}());
+var RoyalInspectionSwapRobinHoodState = (function () {
+    function RoyalInspectionSwapRobinHoodState(game) {
+        this.game = game;
+    }
+    RoyalInspectionSwapRobinHoodState.prototype.onEnteringState = function (args) {
+        debug('Entering RoyalInspectionSwapRobinHoodState');
+        this.args = args;
+        this.localMoves = {};
+        this.updateInterfaceInitialStep();
+    };
+    RoyalInspectionSwapRobinHoodState.prototype.onLeavingState = function () {
+        debug('Leaving RoyalInspectionSwapRobinHoodState');
+    };
+    RoyalInspectionSwapRobinHoodState.prototype.setDescription = function (activePlayerId) { };
+    RoyalInspectionSwapRobinHoodState.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} may select a Merry Man to swap with Robin Hood'),
+            args: {
+                you: '${you}',
+            },
+        });
+        Object.values(this.args._private.merryMen).forEach(function (merryMan) {
+            _this.game.setElementSelectable({
+                id: merryMan.id,
+                callback: function () { return __awaiter(_this, void 0, void 0, function () {
+                    var robinHood, currentRobinHoodLocation, currentMerryManLocation;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                robinHood = this.args._private.robinHood;
+                                currentRobinHoodLocation = robinHood.location;
+                                currentMerryManLocation = merryMan.location;
+                                merryMan.location = currentRobinHoodLocation;
+                                robinHood.location = currentMerryManLocation;
+                                return [4, Promise.all([
+                                        this.game.gameMap.forces["".concat(MERRY_MEN, "_").concat(merryMan.location)].addCard(merryMan),
+                                        this.game.gameMap.forces["".concat(MERRY_MEN, "_").concat(robinHood.location)].addCard(robinHood),
+                                    ])];
+                            case 1:
+                                _a.sent();
+                                this.addLocalMove({
+                                    fromSpaceId: currentRobinHoodLocation,
+                                    force: robinHood,
+                                });
+                                this.addLocalMove({
+                                    fromSpaceId: currentMerryManLocation,
+                                    force: merryMan,
+                                });
+                                this.updateInterfaceConfirm({ merryManId: merryMan.id });
+                                return [2];
+                        }
+                    });
+                }); },
+            });
+        });
+        this.game.addPassButton({
+            optionalAction: this.args.optionalAction,
+        });
+        this.game.addUndoButtons(this.args);
+    };
+    RoyalInspectionSwapRobinHoodState.prototype.updateInterfaceConfirm = function (_a) {
+        var _this = this;
+        var merryManId = _a.merryManId;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('Confirm swap?'),
+            args: {},
+        });
+        var callback = function () {
+            _this.game.clearPossible();
+            _this.game.takeAction({
+                action: 'actRoyalInspectionSwapRobinHood',
+                args: {
+                    merryManId: merryManId,
+                },
+            });
+        };
+        if (this.game.settings.get({
+            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+        }) === PREF_ENABLED) {
+            callback();
+        }
+        else {
+            this.game.addConfirmButton({
+                callback: callback,
+            });
+        }
+        this.addCancelButton();
+    };
+    RoyalInspectionSwapRobinHoodState.prototype.addLocalMove = function (_a) {
+        var fromSpaceId = _a.fromSpaceId, force = _a.force;
+        if (this.localMoves[fromSpaceId]) {
+            this.localMoves[fromSpaceId].push(force);
+        }
+        else {
+            this.localMoves[fromSpaceId] = [force];
+        }
+    };
+    RoyalInspectionSwapRobinHoodState.prototype.addCancelButton = function () {
+        var _this = this;
+        this.game.addDangerActionButton({
+            id: 'cancel_btn',
+            text: _('Cancel'),
+            callback: function () { return __awaiter(_this, void 0, void 0, function () {
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0: return [4, this.revertLocalMoves()];
+                        case 1:
+                            _a.sent();
+                            this.game.onCancel();
+                            return [2];
+                    }
+                });
+            }); },
+        });
+    };
+    RoyalInspectionSwapRobinHoodState.prototype.revertLocalMoves = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var promises;
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        promises = [];
+                        Object.entries(this.localMoves).forEach(function (_a) {
+                            var spaceId = _a[0], forces = _a[1];
+                            promises.push(_this.game.gameMap.forces["".concat(MERRY_MEN, "_").concat(spaceId)].addCards(forces.map(function (force) {
+                                return __assign(__assign({}, force), { location: spaceId });
+                            })));
+                        });
+                        return [4, Promise.all(promises)];
+                    case 1:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    return RoyalInspectionSwapRobinHoodState;
 }());
 var SelectDeedState = (function () {
     function SelectDeedState(game) {

@@ -23,8 +23,9 @@ trait DebugTrait
 
   function test()
   {
+    Forces::get(ROBIN_HOOD)->setLocation(ROBIN_HOOD_SUPPLY);
     // Forces::get('merryMen_9')->setLocation(NEWARK);
-    Forces::getTopOf(CAMPS_SUPPLY)->setLocation(BINGHAM);
+    // Forces::getTopOf(CAMPS_SUPPLY)->setLocation(BINGHAM);
     // AtomicActions::get(ROYAL_INSPECTION_REDEPLOYMENT_SHERIFF)->getOptions();
     // $result = array_values(Spaces::getAll());
     // $rh->hide(Players::get());

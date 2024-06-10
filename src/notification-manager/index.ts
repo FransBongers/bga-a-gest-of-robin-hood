@@ -78,6 +78,7 @@ class NotificationManager {
       'putCardInVictimsPile',
       'redeploymentSheriff',
       'removeCardFromGame',
+      'returnTravellersDiscardToMainDeck',
       'returnToSupply',
       'returnToSupplyPrivate',
       'sneakMerryMen',
@@ -483,10 +484,13 @@ class NotificationManager {
     const promises = [];
     // TODO: check if already in destination for sheriff player?
     forces.forEach((force) => {
-      promises.push(this.game.gameMap.forces[`${HENCHMEN}_${force.location}`].addCard(force));
+      promises.push(
+        this.game.gameMap.forces[`${HENCHMEN}_${force.location}`].addCard(force)
+      );
     });
 
     await Promise.all(promises);
+    this.game.gameMap.forces[`${CARRIAGE}_${USED_CARRIAGES}`].removeAll();
   }
 
   async notif_removeCardFromGame(notif: Notif<NotifRemoveCardFromGameArgs>) {}
@@ -582,6 +586,10 @@ class NotificationManager {
 
     // await Promise.all(promises);
   }
+
+  async notif_returnTravellersDiscardToMainDeck(
+    notif: Notif<NotifReturnTravellersDiscardToMainDeckrgs>
+  ) {}
 
   async notif_sneakMerryMen(notif: Notif<NotifSneakMerryMenArgs>) {
     const { moves, fromSpaceId: spaceId, toSpaceId } = notif.args;

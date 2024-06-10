@@ -44,7 +44,7 @@ interface DisperseOption {
 }
 
 interface OnEnteringDisperseStateArgs extends CommonArgs {
-  options: Record<string, DisperseOption>
+  options: Record<string, DisperseOption>;
 }
 
 interface OnEnteringDonateStateArgs extends CommonArgs {
@@ -139,6 +139,12 @@ interface OnEnteringRobStateArgs extends CommonArgs {
   };
 }
 
+interface OnEnteringRoyalInspectionPlaceRobinHoodStateArgs extends CommonArgs {
+  _private: {
+    spaces: GestSpace[];
+  };
+}
+
 interface RedeploymentOption {
   henchman: GestForce;
   spaceIds: string[];
@@ -149,25 +155,35 @@ interface RedeploymentOptionRH {
   spaceIds: string[];
 }
 
-interface OnEnteringRoyalInspectionRedeploymentRobinHoodStateArgs extends CommonArgs {
+interface OnEnteringRoyalInspectionRedeploymentRobinHoodStateArgs
+  extends CommonArgs {
   _private: {
     spaces: GestSpace[];
     merryMenMustMove: Record<string, RedeploymentOptionRH>;
     merryMenMayMove: Record<string, RedeploymentOptionRH>;
-  }
+  };
 }
 
-interface OnEnteringRoyalInspectionRedeploymentSheriffStateArgs extends CommonArgs {
+interface OnEnteringRoyalInspectionRedeploymentSheriffStateArgs
+  extends CommonArgs {
   spaces: GestSpace[];
   henchmenMustMove: Record<string, RedeploymentOption>;
   henchmenMayMove: Record<string, RedeploymentOption>;
 }
 
-interface OnEnteringRoyalInspectionReturnMerryMenFromPrisonStateArgs extends CommonArgs {
+interface OnEnteringRoyalInspectionReturnMerryMenFromPrisonStateArgs
+  extends CommonArgs {
   _private: {
     merryMen: GestForce[];
     numberToReturn: number;
     robinHoodInPrison: boolean;
+  };
+}
+
+interface OnEnteringRoyalInspectionSwapRobinHoodStateArgs extends CommonArgs {
+  _private: {
+    merryMen: GestForce[];
+    robinHood: GestForce;
   };
 }
 

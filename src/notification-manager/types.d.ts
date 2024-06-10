@@ -174,6 +174,8 @@ interface NotifRevoltArgs extends NotifWithPlayerArgs {
   spaceId: string;
 }
 
+interface NotifReturnTravellersDiscardToMainDeckrgs {}
+
 interface NotifSneakMerryMenArgs extends NotifWithPlayerArgs {
   moves: {
     hide: number;

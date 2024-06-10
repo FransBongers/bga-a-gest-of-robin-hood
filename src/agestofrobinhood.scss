@@ -28,7 +28,11 @@
 @import '../node_modules/bga-cards/bga-cards';
 
 html {
-  background: url('') rgb(192, 192, 192);
+  background-image: url("img/background.jpg");
+  // background: url('') rgb(192, 192, 192);
+  background-attachment: fixed; // no scroll
+  background-position: center; // where to fix picture from
+  background-size: cover; // will cover screen but parts of image might be outside screen
 }
 
 :root {

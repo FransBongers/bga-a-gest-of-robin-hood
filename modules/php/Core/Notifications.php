@@ -655,11 +655,12 @@ class Notifications
     ]);
   }
 
-  public static function redeploymentSheriff($player, $forces)
+  public static function redeploymentSheriff($player, $forces, $carriages)
   {
-    self::notifyAll("redeploymentSheriff", clienttranslate('${player_name} redeploys their Henchmen'), [
+    self::notifyAll("redeploymentSheriff", clienttranslate('${player_name} redeploys their Henchmen and returns all used Carriages to Available Forces'), [
       'player' => $player,
       'forces' => $forces,
+      'numberOfCarriages' => count($carriages),
     ]);
   }
 
@@ -689,6 +690,10 @@ class Notifications
     ]);
   }
 
+  public static function returnTravellersDiscardToMainDeck()
+  {
+    self::notifyAll("returnTravellersDiscardToMainDeck", clienttranslate('The Traveller deck discard pile is shuffled into the main deck'), []);
+  }
 
   public static function robResult($player, $dieColor, $dieResult, $success)
   {
@@ -827,6 +832,20 @@ class Notifications
       'tkn_boldText_toSpace2' => count($moves) === 2 ? $moves[1]['to']['space']->getName() : '',
       'i18n' => ['tkn_boldText_fromSpace', 'tkn_boldText_toSpace1', 'tkn_boldText_toSpace2'],
       'count' => count($moves),
+    ]);
+  }
+
+  public static function swapRobinHood($player, $forces)
+  {
+    if (count($forces) > 0) {
+      self::notify($player, 'moveMerryMenPrivate', '', [
+        'player' => $player,
+        'forces' => $forces,
+      ]);
+    }
+
+    self::message(clienttranslate('${player_name} may have secretly swapped Robin Hood with another Merry Man on the map'), [
+      'player' => $player,
     ]);
   }
 }

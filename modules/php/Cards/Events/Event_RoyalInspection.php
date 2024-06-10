@@ -51,8 +51,15 @@ class Event_RoyalInspection extends \AGestOfRobinHood\Models\EventCard
           'action' => ROYAL_INSPECTION_REDEPLOYMENT_ROBIN_HOOD,
           'playerId' => $robinHoodPlayerId,
         ],
-        // Place Robin Hood if in Available
-        // Swap Robin Hood with another piece
+        [
+          'action' => ROYAL_INSPECTION_PLACE_ROBIN_HOOD,
+          'playerId' => $robinHoodPlayerId,
+        ],
+        [
+          'action' => ROYAL_INSPECTION_SWAP_ROBIN_HOOD,
+          'playerId' => $robinHoodPlayerId,
+          'optional' => true,
+        ],
         [
           'action' => ROYAL_INSPECTION_RESET,
           'playerId' => $robinHoodPlayerId,

@@ -15,13 +15,13 @@ use AGestOfRobinHood\Managers\Forces;
 use AGestOfRobinHood\Managers\Markers;
 use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\Spaces;
+use PDO;
 
-
-class RoyalInspectionRedeploymentSheriff extends \AGestOfRobinHood\Models\AtomicAction
+class RoyalInspectionPlaceRobinHood extends \AGestOfRobinHood\Models\AtomicAction
 {
   public function getState()
   {
-    return ST_ROYAL_INSPECTION_REDEPLOYMENT_SHERIFF;
+    return ST_ROYAL_INSPECTION_PLACE_ROBIN_HOOD;
   }
 
   // ..######..########....###....########.########
@@ -40,13 +40,11 @@ class RoyalInspectionRedeploymentSheriff extends \AGestOfRobinHood\Models\Atomic
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function stRoyalInspectionRedeploymentSheriff()
+  public function stRoyalInspectionPlaceRobinHood()
   {
-    $riMarker = Markers::get(ROYAL_INSPECTION_MARKER);
-    $riMarker->setLocation(Locations::royalInspectionTrack(REDEPLOYMENT));
-    Notifications::moveRoyalInspectionMarker($riMarker);
-
-    // $this->resolveAction(['automatic' => true]);
+    if (Forces::get(ROBIN_HOOD)->getLocation() !== ROBIN_HOOD_SUPPLY) {
+      $this->resolveAction(['automatic' => true]);
+    }
   }
 
 
@@ -58,11 +56,17 @@ class RoyalInspectionRedeploymentSheriff extends \AGestOfRobinHood\Models\Atomic
   // .##.....##.##....##..##....##..##....##
   // .##.....##.##.....##..######....######.
 
-  public function argsRoyalInspectionRedeploymentSheriff()
+  public function argsRoyalInspectionPlaceRobinHood()
   {
-    // $data = [];
+    $data = [
+      '_private' => [
+        $this->ctx->getPlayerId() => [
+          'spaces' => $this->getOptions()
+        ],
+      ]
+    ];
 
-    return $this->getOptions();
+    return $data;
   }
 
   //  .########..##..........###....##....##.########.########.
@@ -81,46 +85,27 @@ class RoyalInspectionRedeploymentSheriff extends \AGestOfRobinHood\Models\Atomic
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function actPassRoyalInspectionRedeploymentSheriff()
+  public function actPassRoyalInspectionPlaceRobinHood()
   {
     $player = self::getPlayer();
     // Stats::incPassActionCount($player->getId(), 1);
     Engine::resolve(PASS);
   }
 
-  public function actRoyalInspectionRedeploymentSheriff($args)
+  public function actRoyalInspectionPlaceRobinHood($args)
   {
-    self::checkAction('actRoyalInspectionRedeploymentSheriff');
-    $requiredMoves = $args['requiredMoves'];
-    $optionalMoves = $args['optionalMoves'];
+    self::checkAction('actRoyalInspectionPlaceRobinHood');
+    $spaceId = $args['spaceId'];
 
-    $stateArgs = $this->getOptions();
+    $space = Utils::array_find($this->getOptions(), function ($option) use ($spaceId) {
+      return $option->getId() === $spaceId;
+    });
 
-    $forces = [];
-
-    foreach ($stateArgs['henchmenMustMove'] as $henchmanId => $option) {
-      $henchman = $option['henchman'];
-      $destination = $requiredMoves[$henchman->getId()];
-      if (!in_array($destination, $option['spaceIds'])) {
-        throw new \feException("ERROR 048");
-      }
-      $henchman->setLocation($destination);
-      $forces[] = $henchman;
+    if ($space === null) {
+      throw new \feException("ERROR 054");
     }
 
-    foreach ($optionalMoves as $henchmanId) {
-      if (!isset($stateArgs['henchmenMayMove'][$henchmanId])) {
-        throw new \feException("ERROR 049");
-      }
-      $henchman = $stateArgs['henchmenMayMove'][$henchmanId]['henchman'];
-      $henchman->setLocation(NOTTINGHAM);
-      $forces[] = $henchman;
-    }
-
-    $usedCarriages = Forces::getInLocation(USED_CARRIAGES)->toArray();
-    Forces::moveAllInLocation(USED_CARRIAGES,CARRIAGE_SUPPLY);
-
-    Notifications::redeploymentSheriff(self::getPlayer(), $forces, $usedCarriages);
+    $this->placeMerryMen(self::getPlayer(), PLACE_MERRY_MAN, $space, true);
 
     $this->resolveAction($args);
   }
@@ -133,45 +118,31 @@ class RoyalInspectionRedeploymentSheriff extends \AGestOfRobinHood\Models\Atomic
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
+  private function placeMerryMen($player, $recruitOption, $space, $recruitRobinHood)
+  {
+    $merryMenToPlace = [];
+    $robinHood = null;
+    $originalNumber = $recruitOption === PLACE_MERRY_MAN ? 1 : 2;
+    $numberToPlace = $originalNumber;
+    $spaceId = $space->getId();
+
+    if ($recruitRobinHood) {
+      $robinHood = Forces::get(ROBIN_HOOD);
+      $robinHood->setLocation($spaceId);
+      $numberToPlace--;
+    }
+
+    for ($i = 0; $i < $numberToPlace; $i++) {
+      $merryMan = Forces::getTopOf(MERRY_MEN_SUPPLY);
+      $merryMan->setLocation($spaceId);
+      $merryMenToPlace[] = $merryMan;
+    }
+
+    Notifications::recruitMerryMen($player, $originalNumber, $robinHood, $merryMenToPlace, $space);
+  }
+
   public function getOptions()
   {
-    $henchmenMustMove = [];
-    $henchmenMayMove = [];
-
-    $spaces = Spaces::getAll();
-    $spacesArray = $spaces->toArray();
-    $submissiveSpaceIds =
-      array_map(
-        function ($subSpace) {
-          return $subSpace->getId();
-        },
-        Utils::filter($spacesArray, function ($space) {
-          return $space->isSubmissive();
-        })
-      );
-    $henchmen = Forces::getOfType(HENCHMEN);
-    foreach ($henchmen as $henchman) {
-      $spaceId = $henchman->getLocation();
-      if ($spaceId === HENCHMEN_SUPPLY || $spaceId === NOTTINGHAM) {
-        continue;
-      }
-      $space = $spaces[$spaceId];
-      if ($space->isRevolting() || $space->isForest()) {
-        $henchmenMustMove[$henchman->getId()] = [
-          'henchman' => $henchman,
-          'spaceIds' => $submissiveSpaceIds,
-        ];
-      } else {
-        $henchmenMayMove[$henchman->getId()] = [
-          'henchman' => $henchman,
-          'spaceIds' => [NOTTINGHAM],
-        ];
-      }
-    }
-    return [
-      'spaces' => $spaces,
-      'henchmenMayMove' => $henchmenMayMove,
-      'henchmenMustMove' => $henchmenMustMove,
-    ];
+    return Spaces::get([SHIRE_WOOD, SOUTHWELL_FOREST])->toArray();
   }
 }

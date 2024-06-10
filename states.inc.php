@@ -489,4 +489,22 @@ $machinestates = array(
         'action' => 'stAtomicAction',
         'transitions' => [],
     ],
+    ST_ROYAL_INSPECTION_PLACE_ROBIN_HOOD => [
+        'name' => 'royalInspectionPlaceRobinHood',
+        'description' => clienttranslate('${actplayer} must place Robin Hood in any Forest'),
+        'descriptionmyturn' => clienttranslate('${you}'),
+        'type' => 'activeplayer',
+        'args' => 'argsAtomicAction',
+        'action' => 'stAtomicAction',
+        'possibleactions' => ['actRoyalInspectionPlaceRobinHood', 'actPassOptionalAction', 'actRestart'],
+    ],
+    ST_ROYAL_INSPECTION_SWAP_ROBIN_HOOD => [
+        'name' => 'royalInspectionSwapRobinHood',
+        'description' => clienttranslate('${actplayer} may swap Robin Hood with any Merrt Man on the map'),
+        'descriptionmyturn' => clienttranslate('${you}'),
+        'type' => 'activeplayer',
+        'args' => 'argsAtomicAction',
+        'action' => 'stAtomicAction',
+        'possibleactions' => ['actRoyalInspectionSwapRobinHood', 'actPassOptionalAction', 'actRestart'],
+    ],
 );
