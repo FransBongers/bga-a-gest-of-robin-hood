@@ -108,11 +108,11 @@ class EventATaleOfTwoLoversLight extends \AGestOfRobinHood\Actions\Plot
       return $force->getId() === $merryManId;
     });
     if ($merryMan === null) {
-      throw new \feException("ERROR 066");
+      throw new \feException("ERROR 067");
     }
 
     if ($henchmenCount > count($option['henchmen'])) {
-      throw new \feException("ERROR 067");
+      throw new \feException("ERROR 068");
     }
 
     $player = self::getPlayer();

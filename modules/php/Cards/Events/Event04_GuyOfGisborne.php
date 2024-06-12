@@ -5,6 +5,7 @@ namespace AGestOfRobinHood\Cards\Events;
 use AGestOfRobinHood\Core\Engine\LeafNode;
 use AGestOfRobinHood\Core\Notifications;
 use AGestOfRobinHood\Helpers\Utils;
+use AGestOfRobinHood\Managers\Cards;
 use AGestOfRobinHood\Managers\Forces;
 
 class Event04_GuyOfGisborne extends \AGestOfRobinHood\Models\EventCard
@@ -23,11 +24,21 @@ class Event04_GuyOfGisborne extends \AGestOfRobinHood\Models\EventCard
     $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 
+  public function resolveLightEffect($player, $successful, $ctx = null, $space = null)
+  {
+    $ctx->insertAsBrother(new LeafNode([
+      'action' => EVENT_GUY_OF_GISBORNE,
+      'playerId' => $player->getId(),
+      'optional' => true,
+    ]));
+  }
+
   public function resolveDarkEffect($player, $successful, $ctx = null, $space = null)
   {
-    $this->setLocation(TRAVELLERS_DECK);
+    $card = Cards::get('Traveller12_GuyOfGisborne');
+    $card->setLocation(TRAVELLERS_DECK);
 
-    Notifications::placeCardInTravellersDeck($player, $this);
+    Notifications::placeCardInTravellersDeck($player, $card);
 
     $ctx->insertAsBrother(new LeafNode([
       'action' => REMOVE_TRAVELLER,
@@ -39,25 +50,15 @@ class Event04_GuyOfGisborne extends \AGestOfRobinHood\Models\EventCard
     ]));
   }
 
-  public function resolveLightEffect($player, $successful, $ctx = null, $space = null)
-  {
-    // TODO
-    // $ctx->insertAsBrother(new LeafNode([
-    //   'action' => EVENT_GUY_OF_GISBORNE,
-    //   'playerId' => $player->getId(),
-    //   'effect' => LIGHT,
-    // ]));
-  }
-
-  public function canPerformDarkEffect($player)
-  {
-    return true;
-  }
-
   public function canPerformLightEffect($player)
   {
     return Utils::array_some(Forces::getOfType(MERRY_MEN), function ($merryMan) {
       return in_array($merryMan->getLocation(), SPACES);
     });
+  }
+
+  public function canPerformDarkEffect($player)
+  {
+    return true;
   }
 }

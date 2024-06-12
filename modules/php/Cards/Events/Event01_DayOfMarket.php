@@ -2,6 +2,8 @@
 
 namespace AGestOfRobinHood\Cards\Events;
 
+use AGestOfRobinHood\Managers\Players;
+
 class Event01_DayOfMarket extends \AGestOfRobinHood\Models\EventCard
 {
   public function __construct($row)
@@ -14,5 +16,23 @@ class Event01_DayOfMarket extends \AGestOfRobinHood\Models\EventCard
     $this->carriageMoves = 2;
     $this->eventType = FORTUNE_EVENT;
     $this->setupLocation = FORTUNE_EVENTS_POOL;
+  }
+
+  public function getFlow()
+  {
+    return [
+      'children' => [
+        [
+          'action' => FORTUNE_EVENT_DAY_OF_MARKET_SHERIFF,
+          'playerId' => Players::getSheriffPlayerId(),
+          'optional' => true,
+        ],
+        [
+          'action' => FORTUNE_EVENT_DAY_OF_MARKET_ROBIN_HOOD,
+          'playerId' => Players::getRobinHoodPlayerId(),
+          'optional' => true,
+        ],
+      ]
+    ];
   }
 }

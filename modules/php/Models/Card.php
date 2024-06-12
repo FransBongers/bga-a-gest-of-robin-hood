@@ -86,6 +86,13 @@ class Card extends \AGestOfRobinHood\Helpers\DB_Model
     Notifications::removeCardFromGame($player, $this, $fromLocation);
   }
 
+  public function removeToVictimsPile($player)
+  {
+    $fromLocation = $this->getLocation();
+    $this->setLocation(TRAVELLERS_VICTIMS_PILE);
+    Notifications::putCardInVictimsPile($player, $this, $fromLocation);
+  }
+
   public function resolveDarkEffect($player, $successful, $ctx = null, $space = null)
   {
   }

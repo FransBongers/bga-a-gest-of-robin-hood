@@ -42,7 +42,13 @@ class FortuneEventQueenEleanor extends \AGestOfRobinHood\Actions\Plot
   public function stFortuneEventQueenEleanor()
   {
 
-    // $this->resolveAction(['automatic' => true]);
+    if (count($this->getNobleKnightsInTravellersDeck()) > 0) {
+      return;
+    }
+
+    $this->moveRoyalFavourMaker();
+
+    $this->resolveAction(['automatic' => true]);
   }
 
   // ....###....########...######....######.
@@ -56,9 +62,7 @@ class FortuneEventQueenEleanor extends \AGestOfRobinHood\Actions\Plot
   public function argsFortuneEventQueenEleanor()
   {
 
-    $data = [
-
-    ];
+    $data = [];
 
     return $data;
   }
@@ -89,7 +93,21 @@ class FortuneEventQueenEleanor extends \AGestOfRobinHood\Actions\Plot
   public function actFortuneEventQueenEleanor($args)
   {
     self::checkAction('actFortuneEventQueenEleanor');
+    $removeNobleKnight = $args['removeNobleKnight'];
 
+    $cards = $this->getNobleKnightsInTravellersDeck();
+
+    if (count($cards) === 0) {
+      throw new \feException("ERROR 072");
+    }
+
+    $player = self::getPlayer();
+
+    if ($removeNobleKnight) {
+      $cards[0]->removeToVictimsPile($player);
+    }
+
+    $this->moveRoyalFavourMaker();
 
     $this->resolveAction($args);
   }
@@ -102,4 +120,18 @@ class FortuneEventQueenEleanor extends \AGestOfRobinHood\Actions\Plot
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
+  private function getNobleKnightsInTravellersDeck()
+  {
+    $cards = Cards::getMany(KNIGHT_IDS)->toArray();
+    return Utils::filter($cards, function ($card) {
+      return $card->getLocation() === TRAVELLERS_DECK;
+    });
+  }
+
+  private function moveRoyalFavourMaker()
+  {
+    $count = Cards::countInLocation(TRAVELLERS_VICTIMS_PILE);
+    $direction = $count >= 4 ? ORDER : JUSTICE;
+    Players::moveRoyalFavour(self::getPlayer(), 1, $direction);
+  }
 }

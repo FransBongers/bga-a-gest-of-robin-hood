@@ -69,6 +69,31 @@ interface OnEnteringEventATaleOfTwoLoversLightStateArgs extends CommonArgs {
   >;
 }
 
+interface OnEnteringEventGuyOfGisborneStateArgs extends CommonArgs {
+  _private: {
+    merryMen: GestForce[];
+  };
+}
+
+interface OnEnteringEventLittleJohnStateArgs extends CommonArgs {
+  spaces: GestSpace[];
+}
+
+interface OnEnteringFortuneEventDayOfMarketRobinHoodStateArgs
+  extends CommonArgs {
+  _private: {
+    merryMen: GestForce[];
+    amount: number;
+  };
+}
+
+interface OnEnteringFortuneEventDayOfMarketSheriffStateArgs extends CommonArgs {
+  henchmen: GestForce[];
+  maxNumber: number;
+}
+
+interface OnEnteringFortuneEventQueenEleanorStateArgs extends CommonArgs {}
+
 interface OnEnteringHireStateArgs extends CommonArgs {
   options: Record<
     string,

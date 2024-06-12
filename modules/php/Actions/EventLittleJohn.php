@@ -17,11 +17,11 @@ use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\Spaces;
 
 
-class EventGuyOfGisborne extends \AGestOfRobinHood\Actions\Plot
+class EventLittleJohn extends \AGestOfRobinHood\Actions\Plot
 {
   public function getState()
   {
-    return ST_EVENT_GUY_OF_GISBORNE;
+    return ST_EVENT_LITTLE_JOHN;
   }
 
   // ..######..########....###....########.########
@@ -40,8 +40,14 @@ class EventGuyOfGisborne extends \AGestOfRobinHood\Actions\Plot
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function stEventGuyOfGisborne()
+  public function stEventLittleJohn()
   {
+    $spaces = $this->getOptions();
+    if (count($spaces) > 1) {
+      return;
+    }
+    $spaces[0]->setToSubmissive(self::getPlayer());
+    $this->resolveAction(['automatic' => true]);
   }
 
   // ....###....########...######....######.
@@ -52,15 +58,11 @@ class EventGuyOfGisborne extends \AGestOfRobinHood\Actions\Plot
   // .##.....##.##....##..##....##..##....##
   // .##.....##.##.....##..######....######.
 
-  public function argsEventGuyOfGisborne()
+  public function argsEventLittleJohn()
   {
 
     $data = [
-      '_private' => [
-        $this->ctx->getPlayerId() => [
-          'merryMen' => $this->getOptions()
-        ]
-      ]
+      'spaces' => $this->getOptions()
     ];
 
     return $data;
@@ -82,71 +84,29 @@ class EventGuyOfGisborne extends \AGestOfRobinHood\Actions\Plot
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function actPassEventGuyOfGisborne()
+  public function actPassEventLittleJohn()
   {
     $player = self::getPlayer();
     // Stats::incPassActionCount($player->getId(), 1);
     Engine::resolve(PASS);
   }
 
-  public function actEventGuyOfGisborne($args)
+  public function actEventLittleJohn($args)
   {
-    self::checkAction('actEventGuyOfGisborne');
-    $merryManId = $args['merryManId'];
+    self::checkAction('actEventLittleJohn');
+    $spaceId = $args['spaceId'];
 
-    $merryMen = $this->getOptions();
+    $options = $this->getOptions();
 
-    $merryMan = Utils::array_find($merryMen, function ($force) use ($merryManId) {
-      return $force->getId() === $merryManId;
+    $space = Utils::array_find($options, function ($option) use ($spaceId) {
+      return $option->getId() === $spaceId;
     });
 
-    if ($merryMan === null) {
-      throw new \feException("ERROR 073");
+    if ($space === null) {
+      throw new \feException("ERROR 074");
     }
 
-    $robinHood = Forces::get(ROBIN_HOOD);
-    $fromLocationRH = $robinHood->getLocation();
-    $fromLocationMM = $merryMan->getLocation();
-
-    $player = self::getPlayer();
-
-    $space = Spaces::get($fromLocationMM);
-
-    if ($fromLocationRH === ROBIN_HOOD_SUPPLY) {
-      $merryMan->returnToSupply($player);
-      GameMap::placeMerryMan($player, $space, true);
-    } else {
-      $robinHood->setLocation($fromLocationMM);
-      $robinHood->setHidden(1);
-      $merryMan->setLocation($fromLocationRH);
-      $merryMan->setHidden(0);
-      $moves = [];
-      $moves[] = [
-        'from' => [
-          'type' => $robinHood->isHidden() ? MERRY_MEN : ROBIN_HOOD,
-          'hidden' => $robinHood->isHidden(),
-          'spaceId' => $fromLocationRH,
-        ],
-        'to' => [
-          'type' => MERRY_MEN,
-          'hidden' => true,
-          'spaceId' => $fromLocationMM,
-        ]
-      ];
-      $moves[] = [
-        'from' => [
-          'type' => MERRY_MEN,
-          'hidden' => $merryMan->isHidden(),
-          'spaceId' => $fromLocationMM,
-        ],
-        'to' => [
-          'type' => MERRY_MEN,
-          'hidden' => false,
-          'spaceId' => $fromLocationRH,
-        ]
-      ];
-      Notifications::swapRobinHoodGuyOfGisborne(self::getPlayer(), [$robinHood, $merryMan], $moves, $space);
-    }
+    $space->setToSubmissive(self::getPlayer());
 
     $this->resolveAction($args);
   }
@@ -161,8 +121,18 @@ class EventGuyOfGisborne extends \AGestOfRobinHood\Actions\Plot
 
   public function getOptions()
   {
-    return Utils::filter(Forces::getOfType(MERRY_MEN), function ($merryMan) {
-      return in_array($merryMan->getLocation(), SPACES);
-    });
+    $forces = Forces::getAll()->toArray();
+    $parishes = Spaces::getMany(PARISHES)->toArray();
+
+    $spaces = [];
+    foreach ($parishes as $parish) {
+      if ($parish->isRevolting() && Utils::array_some($forces, function ($force) use ($parish) {
+        return $force->getLocation() === $parish->getId() && $force->isMerryMan() && !$force->isHidden();
+      })) {
+        $spaces[] = $parish;
+      };
+    }
+
+    return $spaces;
   }
 }

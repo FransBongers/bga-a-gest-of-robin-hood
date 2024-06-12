@@ -565,11 +565,22 @@ class Notifications
     ]));
   }
 
-  public static function putCardInVictimsPile($player, $card)
+  public static function putCardInVictimsPile($player, $card, $fromLocation = null)
   {
-    self::notifyAll("putCardInVictimsPile", clienttranslate('${player_name} puts ${tkn_cardName} in the Victims Pile'), [
+    $text = clienttranslate('${player_name} puts ${tkn_cardName} in the Victims Pile');
+
+    if ($fromLocation !== null) {
+      $textMap = [
+        TRAVELLERS_DECK => clienttranslate('${player_name} removes ${tkn_cardName} from the Traveller Deck to the Victims Pile'),
+        TRAVELLERS_DISCARD => clienttranslate('${player_name} removes ${tkn_cardName} from the discard pile to the Victims Pile'),
+      ];
+      $text = $textMap[$fromLocation];
+    }
+
+    self::notifyAll("putCardInVictimsPile", $text, [
       'player' => $player,
       'card' => $card,
+      'fromLocation' => $fromLocation,
       'tkn_cardName' => self::tknCardNameArg($card),
     ]);
   }
@@ -930,6 +941,25 @@ class Notifications
 
     self::message(clienttranslate('${player_name} may have secretly swapped Robin Hood with another Merry Man on the map'), [
       'player' => $player,
+    ]);
+  }
+
+  public static function swapRobinHoodGuyOfGisborne($player, $forces, $moves, $space)
+  {
+    $text = clienttranslate('${player_name} swaps Robin Hood with a Merry Man in ${tkn_boldText_spaceName}');
+
+    self::notify($player, 'moveMerryMenPrivate', $text, [
+      'player' => $player,
+      'forces' => $forces,
+      'tkn_boldText_spaceName' => $space->getName(),
+      'i18n' => ['tkn_boldText_spaceName']
+    ]);
+
+    self::notifyAll('moveMerryMenPublic', $text, [
+      'player' => $player,
+      'moves' => $moves,
+      'tkn_boldText_spaceName' => $space->getName(),
+      'i18n' => ['tkn_boldText_spaceName']
     ]);
   }
 }

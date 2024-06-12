@@ -70,6 +70,11 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     donate: DonateState;
     eventATaleOfTwoLoversLight: EventATaleOfTwoLoversLightState;
     eventAmbushDark: EventAmbushDarkState;
+    eventGuyOfGisborne: EventGuyOfGisborneState;
+    eventLittleJohn: EventLittleJohnState;
+    fortuneEventDayOfMarketRobinHood: FortuneEventDayOfMarketRobinHoodState;
+    fortuneEventDayOfMarketSheriff: FortuneEventDayOfMarketSheriffState;
+    fortuneEventQueenEleanor: FortuneEventQueenEleanorState;
     hire: HireState;
     moveCarriage: MoveCarriageState;
     patrol: PatrolState;
@@ -136,6 +141,11 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
       donate: new DonateState(this),
       eventATaleOfTwoLoversLight: new EventATaleOfTwoLoversLightState(this),
       eventAmbushDark: new EventAmbushDarkState(this),
+      eventGuyOfGisborne: new EventGuyOfGisborneState(this),
+      eventLittleJohn: new EventLittleJohnState(this),
+      fortuneEventDayOfMarketRobinHood: new FortuneEventDayOfMarketRobinHoodState(this),
+      fortuneEventDayOfMarketSheriff: new FortuneEventDayOfMarketSheriffState(this),
+      fortuneEventQueenEleanor: new FortuneEventQueenEleanorState(this),
       hire: new HireState(this),
       moveCarriage: new MoveCarriageState(this),
       patrol: new PatrolState(this),

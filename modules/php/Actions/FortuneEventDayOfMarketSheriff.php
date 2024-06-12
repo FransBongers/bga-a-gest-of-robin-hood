@@ -7,7 +7,6 @@ use AGestOfRobinHood\Core\Engine;
 use AGestOfRobinHood\Core\Engine\LeafNode;
 use AGestOfRobinHood\Core\Globals;
 use AGestOfRobinHood\Core\Stats;
-use AGestOfRobinHood\Helpers\GameMap;
 use AGestOfRobinHood\Helpers\Locations;
 use AGestOfRobinHood\Helpers\Utils;
 use AGestOfRobinHood\Managers\Cards;
@@ -17,11 +16,11 @@ use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\Spaces;
 
 
-class EventGuyOfGisborne extends \AGestOfRobinHood\Actions\Plot
+class FortuneEventDayOfMarketSheriff extends \AGestOfRobinHood\Actions\Plot
 {
   public function getState()
   {
-    return ST_EVENT_GUY_OF_GISBORNE;
+    return ST_FORTUNE_EVENT_DAY_OF_MARKET_SHERIFF;
   }
 
   // ..######..########....###....########.########
@@ -40,8 +39,12 @@ class EventGuyOfGisborne extends \AGestOfRobinHood\Actions\Plot
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function stEventGuyOfGisborne()
+  public function stFortuneEventDayOfMarketSheriff()
   {
+    $options = $this->getOptions();
+    if ($options['maxNumber'] === 0) {
+      $this->resolveAction(['automatic' => true, 'henchmenIds' => []]);
+    }
   }
 
   // ....###....########...######....######.
@@ -52,18 +55,9 @@ class EventGuyOfGisborne extends \AGestOfRobinHood\Actions\Plot
   // .##.....##.##....##..##....##..##....##
   // .##.....##.##.....##..######....######.
 
-  public function argsEventGuyOfGisborne()
+  public function argsFortuneEventDayOfMarketSheriff()
   {
-
-    $data = [
-      '_private' => [
-        $this->ctx->getPlayerId() => [
-          'merryMen' => $this->getOptions()
-        ]
-      ]
-    ];
-
-    return $data;
+    return $this->getOptions();
   }
 
   //  .########..##..........###....##....##.########.########.
@@ -82,71 +76,36 @@ class EventGuyOfGisborne extends \AGestOfRobinHood\Actions\Plot
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function actPassEventGuyOfGisborne()
+  public function actPassFortuneEventDayOfMarketSheriff()
   {
     $player = self::getPlayer();
     // Stats::incPassActionCount($player->getId(), 1);
     Engine::resolve(PASS);
   }
 
-  public function actEventGuyOfGisborne($args)
+  public function actFortuneEventDayOfMarketSheriff($args)
   {
-    self::checkAction('actEventGuyOfGisborne');
-    $merryManId = $args['merryManId'];
+    self::checkAction('actFortuneEventDayOfMarketSheriff');
+    $henchmenIds = $args['henchmenIds'];
 
-    $merryMen = $this->getOptions();
+    $options = $this->getOptions();
 
-    $merryMan = Utils::array_find($merryMen, function ($force) use ($merryManId) {
-      return $force->getId() === $merryManId;
-    });
-
-    if ($merryMan === null) {
-      throw new \feException("ERROR 073");
+    if (count($henchmenIds) > $options['maxNumber']) {
+      throw new \feException("ERROR 069");
     }
-
-    $robinHood = Forces::get(ROBIN_HOOD);
-    $fromLocationRH = $robinHood->getLocation();
-    $fromLocationMM = $merryMan->getLocation();
-
     $player = self::getPlayer();
 
-    $space = Spaces::get($fromLocationMM);
-
-    if ($fromLocationRH === ROBIN_HOOD_SUPPLY) {
-      $merryMan->returnToSupply($player);
-      GameMap::placeMerryMan($player, $space, true);
-    } else {
-      $robinHood->setLocation($fromLocationMM);
-      $robinHood->setHidden(1);
-      $merryMan->setLocation($fromLocationRH);
-      $merryMan->setHidden(0);
-      $moves = [];
-      $moves[] = [
-        'from' => [
-          'type' => $robinHood->isHidden() ? MERRY_MEN : ROBIN_HOOD,
-          'hidden' => $robinHood->isHidden(),
-          'spaceId' => $fromLocationRH,
-        ],
-        'to' => [
-          'type' => MERRY_MEN,
-          'hidden' => true,
-          'spaceId' => $fromLocationMM,
-        ]
-      ];
-      $moves[] = [
-        'from' => [
-          'type' => MERRY_MEN,
-          'hidden' => $merryMan->isHidden(),
-          'spaceId' => $fromLocationMM,
-        ],
-        'to' => [
-          'type' => MERRY_MEN,
-          'hidden' => false,
-          'spaceId' => $fromLocationRH,
-        ]
-      ];
-      Notifications::swapRobinHoodGuyOfGisborne(self::getPlayer(), [$robinHood, $merryMan], $moves, $space);
+    foreach($henchmenIds as $henchmanId) {
+      $henchman = Utils::array_find($options['henchmen'], function ($force) use ($henchmanId) {
+        return $force->getId() === $henchmanId;
+      });
+      if ($henchman === null) {
+        throw new \feException("ERROR 070");
+      }
+      $henchman->returnToSupply($player);
     }
+
+    $player->incShillings(count($henchmenIds));
 
     $this->resolveAction($args);
   }
@@ -159,10 +118,17 @@ class EventGuyOfGisborne extends \AGestOfRobinHood\Actions\Plot
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
-  public function getOptions()
+  private function getOptions()
   {
-    return Utils::filter(Forces::getOfType(MERRY_MEN), function ($merryMan) {
-      return in_array($merryMan->getLocation(), SPACES);
+    $henchmen = Utils::filter(Forces::getOfType(HENCHMEN), function ($force) {
+      return in_array($force->getLocation(), SPACES);
     });
+    $submissiveParishes = Utils::filter(Spaces::getMany(PARISHES)->toArray(), function ($parish) {
+      return $parish->isSubmissive();
+    });
+    return [
+      'henchmen' => $henchmen,
+      'maxNumber' => min(count($submissiveParishes), count($henchmen)),
+    ];
   }
 }

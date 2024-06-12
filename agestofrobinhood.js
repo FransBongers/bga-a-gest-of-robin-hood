@@ -1753,6 +1753,11 @@ var AGestOfRobinHood = (function () {
             donate: new DonateState(this),
             eventATaleOfTwoLoversLight: new EventATaleOfTwoLoversLightState(this),
             eventAmbushDark: new EventAmbushDarkState(this),
+            eventGuyOfGisborne: new EventGuyOfGisborneState(this),
+            eventLittleJohn: new EventLittleJohnState(this),
+            fortuneEventDayOfMarketRobinHood: new FortuneEventDayOfMarketRobinHoodState(this),
+            fortuneEventDayOfMarketSheriff: new FortuneEventDayOfMarketSheriffState(this),
+            fortuneEventQueenEleanor: new FortuneEventQueenEleanorState(this),
             hire: new HireState(this),
             moveCarriage: new MoveCarriageState(this),
             patrol: new PatrolState(this),
@@ -5406,6 +5411,73 @@ var EventATaleOfTwoLoversLightState = (function () {
     };
     return EventATaleOfTwoLoversLightState;
 }());
+var EventGuyOfGisborneState = (function () {
+    function EventGuyOfGisborneState(game) {
+        this.game = game;
+    }
+    EventGuyOfGisborneState.prototype.onEnteringState = function (args) {
+        debug('Entering EventGuyOfGisborneState');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    EventGuyOfGisborneState.prototype.onLeavingState = function () {
+        debug('Leaving EventGuyOfGisborneState');
+    };
+    EventGuyOfGisborneState.prototype.setDescription = function (activePlayerId) { };
+    EventGuyOfGisborneState.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} may select a Merry Man to swap with Robin Hood'),
+            args: {
+                you: '${you}',
+            },
+        });
+        this.args._private.merryMen.forEach(function (merryMan) {
+            _this.game.setElementSelectable({
+                id: merryMan.id,
+                callback: function () { return _this.updateInterfaceConfirm({ merryMan: merryMan }); },
+            });
+        });
+        this.game.addPassButton({
+            optionalAction: this.args.optionalAction,
+        });
+        this.game.addUndoButtons(this.args);
+    };
+    EventGuyOfGisborneState.prototype.updateInterfaceConfirm = function (_a) {
+        var _this = this;
+        var merryMan = _a.merryMan;
+        this.game.clearPossible();
+        this.game.setElementSelected({ id: merryMan.id });
+        this.game.clientUpdatePageTitle({
+            text: _('Swap Robin Hood with Merry Man in ${spaceName}?  '),
+            args: {
+                spaceName: _(this.game.gamedatas.spaces[merryMan.location].name),
+            },
+        });
+        var callback = function () {
+            _this.game.clearPossible();
+            _this.game.takeAction({
+                action: 'actEventGuyOfGisborne',
+                args: {
+                    merryManId: merryMan.id,
+                },
+            });
+        };
+        if (this.game.settings.get({
+            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+        }) === PREF_ENABLED) {
+            callback();
+        }
+        else {
+            this.game.addConfirmButton({
+                callback: callback,
+            });
+        }
+        this.game.addCancelButton();
+    };
+    return EventGuyOfGisborneState;
+}());
 var EventAmbushDarkState = (function () {
     function EventAmbushDarkState(game) {
         this.game = game;
@@ -5478,6 +5550,288 @@ var EventAmbushDarkState = (function () {
         this.game.addCancelButton();
     };
     return EventAmbushDarkState;
+}());
+var EventLittleJohnState = (function () {
+    function EventLittleJohnState(game) {
+        this.game = game;
+    }
+    EventLittleJohnState.prototype.onEnteringState = function (args) {
+        debug('Entering EventLittleJohnState');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    EventLittleJohnState.prototype.onLeavingState = function () {
+        debug('Leaving EventLittleJohnState');
+    };
+    EventLittleJohnState.prototype.setDescription = function (activePlayerId) { };
+    EventLittleJohnState.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} may select a Revolting Parish to set to Submissive'),
+            args: {
+                you: '${you}',
+            },
+        });
+        this.args.spaces.forEach(function (space) {
+            _this.game.addPrimaryActionButton({
+                id: "".concat(space.id, "_btn"),
+                text: _(space.name),
+                callback: function () { return _this.updateInterfaceConfirm({ space: space }); },
+            });
+        });
+        this.game.addPassButton({
+            optionalAction: this.args.optionalAction,
+        });
+        this.game.addUndoButtons(this.args);
+    };
+    EventLittleJohnState.prototype.updateInterfaceConfirm = function (_a) {
+        var _this = this;
+        var space = _a.space;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('Set ${spaceName} to Submissive?'),
+            args: {
+                spaceName: _(space.name),
+            },
+        });
+        var callback = function () {
+            _this.game.clearPossible();
+            _this.game.takeAction({
+                action: 'actEventLittleJohn',
+                args: {
+                    spaceId: space.id,
+                },
+            });
+        };
+        if (this.game.settings.get({
+            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+        }) === PREF_ENABLED) {
+            callback();
+        }
+        else {
+            this.game.addConfirmButton({
+                callback: callback,
+            });
+        }
+        this.game.addCancelButton();
+    };
+    return EventLittleJohnState;
+}());
+var FortuneEventDayOfMarketRobinHoodState = (function () {
+    function FortuneEventDayOfMarketRobinHoodState(game) {
+        this.game = game;
+    }
+    FortuneEventDayOfMarketRobinHoodState.prototype.onEnteringState = function (args) {
+        debug('Entering FortuneEventDayOfMarketRobinHoodState');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    FortuneEventDayOfMarketRobinHoodState.prototype.onLeavingState = function () {
+        debug('Leaving FortuneEventDayOfMarketRobinHoodState');
+    };
+    FortuneEventDayOfMarketRobinHoodState.prototype.setDescription = function (activePlayerId) { };
+    FortuneEventDayOfMarketRobinHoodState.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} may select a Merry Man to remove'),
+            args: {
+                you: '${you}',
+            },
+        });
+        this.args._private.merryMen.forEach(function (merryMan) {
+            _this.game.setElementSelectable({
+                id: merryMan.id,
+                callback: function () { return _this.updateInterfaceConfirm({ merryMan: merryMan }); },
+            });
+        });
+        this.game.addPassButton({
+            optionalAction: this.args.optionalAction,
+        });
+        this.game.addUndoButtons(this.args);
+    };
+    FortuneEventDayOfMarketRobinHoodState.prototype.updateInterfaceConfirm = function (_a) {
+        var _this = this;
+        var merryMan = _a.merryMan;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('Remove your Merry Man to gain ${amount} Shillings?'),
+            args: {
+                amount: this.args._private.amount,
+            },
+        });
+        this.game.setElementSelected({ id: merryMan.id });
+        var callback = function () {
+            _this.game.clearPossible();
+            _this.game.takeAction({
+                action: 'actFortuneEventDayOfMarketRobinHood',
+                args: {
+                    merryManId: merryMan.id,
+                },
+            });
+        };
+        if (this.game.settings.get({
+            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+        }) === PREF_ENABLED) {
+            callback();
+        }
+        else {
+            this.game.addConfirmButton({
+                callback: callback,
+            });
+        }
+        this.game.addCancelButton();
+    };
+    return FortuneEventDayOfMarketRobinHoodState;
+}());
+var FortuneEventDayOfMarketSheriffState = (function () {
+    function FortuneEventDayOfMarketSheriffState(game) {
+        this.selectedHenchmenIds = [];
+        this.game = game;
+    }
+    FortuneEventDayOfMarketSheriffState.prototype.onEnteringState = function (args) {
+        debug('Entering FortuneEventDayOfMarketSheriffState');
+        this.args = args;
+        this.selectedHenchmenIds = [];
+        this.updateInterfaceInitialStep();
+    };
+    FortuneEventDayOfMarketSheriffState.prototype.onLeavingState = function () {
+        debug('Leaving FortuneEventDayOfMarketSheriffState');
+    };
+    FortuneEventDayOfMarketSheriffState.prototype.setDescription = function (activePlayerId) { };
+    FortuneEventDayOfMarketSheriffState.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.updatePageTitle();
+        this.args.henchmen.forEach(function (henchman) {
+            _this.game.setElementSelectable({
+                id: henchman.id,
+                callback: function () { return _this.handleHenchmenClick({ henchman: henchman }); },
+            });
+        });
+        this.game.addPrimaryActionButton({
+            id: 'done_btn',
+            text: _('Done'),
+            callback: function () { return _this.updateInterfaceConfirm(); },
+        });
+        this.game.addPassButton({
+            optionalAction: this.args.optionalAction,
+        });
+        this.game.addUndoButtons(this.args);
+    };
+    FortuneEventDayOfMarketSheriffState.prototype.updateInterfaceConfirm = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('Return ${count} Henchmen to Available to gain ${count} Shillings?'),
+            args: {
+                count: this.selectedHenchmenIds.length,
+            },
+        });
+        this.selectedHenchmenIds.forEach(function (henchmanId) {
+            return _this.game.setElementSelected({ id: henchmanId });
+        });
+        var callback = function () {
+            _this.game.clearPossible();
+            _this.game.takeAction({
+                action: 'actFortuneEventDayOfMarketSheriff',
+                args: {
+                    henchmenIds: _this.selectedHenchmenIds,
+                },
+            });
+        };
+        if (this.game.settings.get({
+            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+        }) === PREF_ENABLED) {
+            callback();
+        }
+        else {
+            this.game.addConfirmButton({
+                callback: callback,
+            });
+        }
+        this.game.addCancelButton();
+    };
+    FortuneEventDayOfMarketSheriffState.prototype.updatePageTitle = function () {
+        this.game.clientUpdatePageTitle({
+            text: _('${you} may select Henchmen to remove (up to ${count} remaining)'),
+            args: {
+                you: '${you}',
+                count: this.args.maxNumber - this.selectedHenchmenIds.length
+            },
+        });
+    };
+    FortuneEventDayOfMarketSheriffState.prototype.handleHenchmenClick = function (_a) {
+        var henchman = _a.henchman;
+        if (this.selectedHenchmenIds.includes(henchman.id)) {
+            this.game.removeSelectedFromElement({ id: henchman.id });
+            this.selectedHenchmenIds = this.selectedHenchmenIds.filter(function (id) { return id !== henchman.id; });
+        }
+        else {
+            this.game.setElementSelected({ id: henchman.id });
+            this.selectedHenchmenIds.push(henchman.id);
+        }
+        this.updatePageTitle();
+        if (this.selectedHenchmenIds.length === this.args.maxNumber) {
+            this.updateInterfaceConfirm();
+        }
+    };
+    return FortuneEventDayOfMarketSheriffState;
+}());
+var FortuneEventQueenEleanorState = (function () {
+    function FortuneEventQueenEleanorState(game) {
+        this.game = game;
+    }
+    FortuneEventQueenEleanorState.prototype.onEnteringState = function (args) {
+        debug('Entering FortuneEventQueenEleanorState');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    FortuneEventQueenEleanorState.prototype.onLeavingState = function () {
+        debug('Leaving FortuneEventQueenEleanorState');
+    };
+    FortuneEventQueenEleanorState.prototype.setDescription = function (activePlayerId) { };
+    FortuneEventQueenEleanorState.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('Remove a Noble Knight from the Traveller deck to the Victims Pile?'),
+            args: {
+                you: '${you}',
+            },
+        });
+        this.game.addPrimaryActionButton({
+            id: 'yes_btn',
+            text: _('Yes'),
+            callback: function () { return _this.updateInterfaceConfirm({ removeNobleKnight: true }); },
+        });
+        this.game.addPrimaryActionButton({
+            id: 'no_btn',
+            text: _('No'),
+            callback: function () { return _this.updateInterfaceConfirm({ removeNobleKnight: false }); },
+        });
+        this.game.addPassButton({
+            optionalAction: this.args.optionalAction,
+        });
+        this.game.addUndoButtons(this.args);
+    };
+    FortuneEventQueenEleanorState.prototype.updateInterfaceConfirm = function (_a) {
+        var _this = this;
+        var removeNobleKnight = _a.removeNobleKnight;
+        this.game.clearPossible();
+        var callback = function () {
+            _this.game.clearPossible();
+            _this.game.takeAction({
+                action: 'actFortuneEventQueenEleanor',
+                args: {
+                    removeNobleKnight: removeNobleKnight,
+                },
+            });
+        };
+        callback();
+    };
+    return FortuneEventQueenEleanorState;
 }());
 var HireState = (function () {
     function HireState(game) {

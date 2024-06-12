@@ -86,4 +86,27 @@ class GameMap extends \APP_DbObject
 
     return $result;
   }
+
+  public static function placeMerryMan($player, $space, $placeRobinHood)
+  {
+    $merryMenToPlace = [];
+    $robinHood = null;
+    $originalNumber = 1;
+    $numberToPlace = $originalNumber;
+    $spaceId = $space->getId();
+
+    if ($placeRobinHood) {
+      $robinHood = Forces::get(ROBIN_HOOD);
+      $robinHood->setLocation($spaceId);
+      $numberToPlace--;
+    }
+
+    for ($i = 0; $i < $numberToPlace; $i++) {
+      $merryMan = Forces::getTopOf(MERRY_MEN_SUPPLY);
+      $merryMan->setLocation($spaceId);
+      $merryMenToPlace[] = $merryMan;
+    }
+
+    Notifications::recruitMerryMen($player, $originalNumber, $robinHood, $merryMenToPlace, $space);
+  }
 }

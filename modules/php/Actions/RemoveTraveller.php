@@ -57,7 +57,10 @@ class RemoveTraveller extends \AGestOfRobinHood\Actions\Plot
       if ($to[0] === REMOVED_FROM_GAME) {
         $card->removeFromGame($player);
       }
-      // TODO: remove to victims pile
+      if ($to[0] === TRAVELLERS_VICTIMS_PILE) {
+        $card->setLocation(TRAVELLERS_VICTIMS_PILE);
+        Notifications::putCardInVictimsPile(self::getPlayer(), $card);
+      }
       $this->checkShuffle();
       $this->resolveAction(['automatic' => true]);
       return;
@@ -170,6 +173,9 @@ class RemoveTraveller extends \AGestOfRobinHood\Actions\Plot
       $cardsInLocation = Utils::filter(Cards::getInLocation($fromLocation)->toArray(), function ($card) use ($cardType) {
         if ($cardType === MONK) {
           return in_array($card->getId(), MONK_IDS);
+        }
+        if ($cardType === KNIGHT) {
+          return in_array($card->getId(), KNIGHT_IDS);
         }
         return false;
       });
