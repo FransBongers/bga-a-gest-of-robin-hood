@@ -2,6 +2,7 @@
 
 namespace AGestOfRobinHood\Models;
 
+use AGestOfRobinHood\Core\Globals;
 use AGestOfRobinHood\Core\Notifications;
 use AGestOfRobinHood\Helpers\Utils;
 use AGestOfRobinHood\Managers\Connections;
@@ -30,12 +31,14 @@ class Space extends \AGestOfRobinHood\Helpers\DB_Model
 
   protected $staticAttributes = [
     'adjacentSpaceIds',
+    'adjacentViaOllertonHillSpaceIds',
     'name',
     'road',
     'setupStatus',
   ];
 
   protected $adjacentSpaceIds = [];
+  protected $adjacentViaOllertonHillSpaceIds = [];
   protected $name = '';
   protected $setupStatus = null;
   protected $road = null;
@@ -60,10 +63,18 @@ class Space extends \AGestOfRobinHood\Helpers\DB_Model
     ];
   }
 
+  public function getAdjacentSpacesIds()
+  {
+    if (Globals::getOllertonHillAdjacency()) {
+      return array_merge($this->adjacentSpaceIds, $this->adjacentViaOllertonHillSpaceIds);
+    } else {
+      return $this->adjacentSpaceIds;
+    }
+  }
 
   public function getAdjacentSpaces()
   {
-    return Spaces::get($this->adjacentSpaceIds)->toArray();
+    return Spaces::get($this->getAdjacentSpacesIds())->toArray();
   }
 
   public function getSingleForce($type)

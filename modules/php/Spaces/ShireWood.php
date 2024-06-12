@@ -1,4 +1,5 @@
 <?php
+
 namespace AGestOfRobinHood\Spaces;
 
 class ShireWood extends \AGestOfRobinHood\Models\Space
@@ -14,6 +15,9 @@ class ShireWood extends \AGestOfRobinHood\Models\Space
       MANSFIELD,
       NOTTINGHAM,
       SOUTHWELL_FOREST,
+    ];
+    $this->adjacentViaOllertonHillSpaceIds = [
+      TUXFORD
     ];
     $this->road = NOTTINGHAM;
   }

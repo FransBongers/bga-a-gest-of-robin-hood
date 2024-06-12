@@ -13,6 +13,9 @@ class Blyth extends \AGestOfRobinHood\Models\Space
       SHIRE_WOOD,
       TUXFORD,
     ];
+    $this->adjacentViaOllertonHillSpaceIds = [
+      SOUTHWELL_FOREST
+    ];
     $this->road = TUXFORD;
   }
 }

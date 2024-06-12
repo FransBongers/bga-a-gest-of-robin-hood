@@ -1,19 +1,18 @@
-class PlaceMerryManInSpaceState implements State {
-  private game: AGestOfRobinHoodGame;
-  private args: OnEnteringPlaceMerryManInSpaceStateArgs;
+class PlaceHenchmenState extends PlaceForcesState implements State {
+  private args: OnEnteringPlaceHenchmenStateArgs;
 
   constructor(game: AGestOfRobinHoodGame) {
-    this.game = game;
+    super(game);
   }
 
-  onEnteringState(args: OnEnteringPlaceMerryManInSpaceStateArgs) {
-    debug('Entering PlaceMerryManInSpaceState');
+  onEnteringState(args: OnEnteringPlaceHenchmenStateArgs) {
+    debug('Entering PlaceHenchmenState');
     this.args = args;
     this.updateInterfaceInitialStep();
   }
 
   onLeavingState() {
-    debug('Leaving PlaceMerryManInSpaceState');
+    debug('Leaving PlaceHenchmenState');
   }
 
   setDescription(activePlayerId: number) {}
@@ -38,30 +37,19 @@ class PlaceMerryManInSpaceState implements State {
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({
-      text: _('${you} must select a Space to place a Merry Man in'),
+      text: _('${you} must select a space to place Henchmen in'),
       args: {
         you: '${you}',
       },
     });
 
-    Object.values(this.args._private.spaces).forEach((space) => {
+    Object.entries(this.args.spaces).forEach(([spaceId, space]) =>
       this.game.addPrimaryActionButton({
         id: `${space.id}_btn`,
         text: _(space.name),
-        callback: () => {
-          if (
-            this.args._private.robinHoodInSupply &&
-            !this.args._private.merryMenInSupply
-          ) {
-            this.updateInterfaceConfirm({ space, placeRobinHood: true });
-          } else if (this.args._private.robinHoodInSupply) {
-            this.updateInterfacePlaceRobinHood({ space });
-          } else {
-            this.updateInterfaceConfirm({ space });
-          }
-        },
-      });
-    });
+        callback: () => this.updateInterfaceSelectNumberOfHenchmen({ space }),
+      })
+    );
 
     this.game.addPassButton({
       optionalAction: this.args.optionalAction,
@@ -69,54 +57,57 @@ class PlaceMerryManInSpaceState implements State {
     this.game.addUndoButtons(this.args);
   }
 
-  private updateInterfacePlaceRobinHood({ space }: { space: GestSpace }) {
+  private updateInterfaceSelectNumberOfHenchmen({
+    space,
+  }: {
+    space: GestSpace;
+  }) {
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({
-      text: _('Place Robin Hood?'),
-      args: {},
+      text: _('${you} must choose how many Henchmen to place'),
+      args: {
+        you: '${you}',
+      },
     });
 
-    this.game.addPrimaryActionButton({
-      id: 'yes_btn',
-      text: _('Yes'),
-      callback: () =>
-        this.updateInterfaceConfirm({ space, placeRobinHood: true }),
-    });
-    this.game.addPrimaryActionButton({
-      id: 'no_btn',
-      text: _('No'),
-      callback: () =>
-        this.updateInterfaceConfirm({ space, placeRobinHood: false }),
-    });
+    for (let i = 0; i <= this.args.maxNumber; i++) {
+      this.game.addPrimaryActionButton({
+        id: `${i}_btn`,
+        text: `${i}`,
+        callback: () => {
+          this.updateInterfaceConfirm({ space, count: i });
+        },
+      });
+    }
+
     this.game.addCancelButton();
   }
 
   private updateInterfaceConfirm({
     space,
-    placeRobinHood = false,
+    count,
   }: {
     space: GestSpace;
-    placeRobinHood?: boolean;
+    count: number;
   }) {
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({
-      text: placeRobinHood
-        ? _('Place Robin Hood in ${spaceName}?')
-        : _('Place a Merry Man in ${spaceName}?'),
+      text: _('Place ${count} Henchmen in ${spaceName}?'),
       args: {
         spaceName: _(space.name),
+        count,
       },
     });
 
     const callback = () => {
       this.game.clearPossible();
       this.game.takeAction({
-        action: 'actPlaceMerryManInSpace',
+        action: 'actPlaceHenchmen',
         args: {
           spaceId: space.id,
-          placeRobinHood,
+          count,
         },
       });
     };

@@ -1,19 +1,19 @@
-class PlaceMerryManInSpaceState implements State {
+class EventATaleOfTwoLoversLightState implements State {
   private game: AGestOfRobinHoodGame;
-  private args: OnEnteringPlaceMerryManInSpaceStateArgs;
+  private args: OnEnteringEventATaleOfTwoLoversLightStateArgs;
 
   constructor(game: AGestOfRobinHoodGame) {
     this.game = game;
   }
 
-  onEnteringState(args: OnEnteringPlaceMerryManInSpaceStateArgs) {
-    debug('Entering PlaceMerryManInSpaceState');
+  onEnteringState(args: OnEnteringEventATaleOfTwoLoversLightStateArgs) {
+    debug('Entering EventATaleOfTwoLoversLightState');
     this.args = args;
     this.updateInterfaceInitialStep();
   }
 
   onLeavingState() {
-    debug('Leaving PlaceMerryManInSpaceState');
+    debug('Leaving EventATaleOfTwoLoversLightState');
   }
 
   setDescription(activePlayerId: number) {}
@@ -38,30 +38,19 @@ class PlaceMerryManInSpaceState implements State {
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({
-      text: _('${you} must select a Space to place a Merry Man in'),
+      text: _('${you} must select a Space'),
       args: {
         you: '${you}',
       },
     });
 
-    Object.values(this.args._private.spaces).forEach((space) => {
+    Object.entries(this.args._private).forEach(([spaceId, option]) =>
       this.game.addPrimaryActionButton({
-        id: `${space.id}_btn`,
-        text: _(space.name),
-        callback: () => {
-          if (
-            this.args._private.robinHoodInSupply &&
-            !this.args._private.merryMenInSupply
-          ) {
-            this.updateInterfaceConfirm({ space, placeRobinHood: true });
-          } else if (this.args._private.robinHoodInSupply) {
-            this.updateInterfacePlaceRobinHood({ space });
-          } else {
-            this.updateInterfaceConfirm({ space });
-          }
-        },
-      });
-    });
+        id: `${spaceId}_btn`,
+        text: _(option.space.name),
+        callback: () => this.updateInterfaceSelectMerryMen(option),
+      })
+    );
 
     this.game.addPassButton({
       optionalAction: this.args.optionalAction,
@@ -69,54 +58,108 @@ class PlaceMerryManInSpaceState implements State {
     this.game.addUndoButtons(this.args);
   }
 
-  private updateInterfacePlaceRobinHood({ space }: { space: GestSpace }) {
+  private updateInterfaceSelectMerryMen({
+    space,
+    merryMen,
+    henchmen,
+  }: {
+    space: GestSpace;
+    merryMen: GestForce[];
+    henchmen: GestForce[];
+  }) {
     this.game.clearPossible();
+    if (merryMen.length === 1) {
+      this.updateInterfaceSelectHenchmen({
+        space,
+        henchmen,
+        merryMan: merryMen[0],
+      });
+      return;
+    }
 
     this.game.clientUpdatePageTitle({
-      text: _('Place Robin Hood?'),
-      args: {},
+      text: _('${you} must select a Merry Man to remove from the game'),
+      args: {
+        you: '${you}',
+      },
     });
 
-    this.game.addPrimaryActionButton({
-      id: 'yes_btn',
-      text: _('Yes'),
-      callback: () =>
-        this.updateInterfaceConfirm({ space, placeRobinHood: true }),
+    merryMen.forEach((merryMan) => {
+      this.game.setElementSelectable({
+        id: merryMan.id,
+        callback: () =>
+          this.updateInterfaceSelectHenchmen({ space, merryMan, henchmen }),
+      });
     });
-    this.game.addPrimaryActionButton({
-      id: 'no_btn',
-      text: _('No'),
-      callback: () =>
-        this.updateInterfaceConfirm({ space, placeRobinHood: false }),
+
+    this.game.addCancelButton();
+  }
+
+  private updateInterfaceSelectHenchmen({
+    space,
+    merryMan,
+    henchmen,
+  }: {
+    space: GestSpace;
+    merryMan: GestForce;
+    henchmen: GestForce[];
+  }) {
+    this.game.clearPossible();
+    if (henchmen.length === 0) {
+      this.updateInterfaceConfirm({ space, merryMan, henchmenCount: 0 });
+      return;
+    }
+
+    this.game.clientUpdatePageTitle({
+      text: _('${you} must choose how many Henchmen to remove from the game'),
+      args: {
+        you: '${you}',
+      },
     });
+
+    for (let i = 0; i <= henchmen.length; i++) {
+      this.game.addPrimaryActionButton({
+        id: `${i}_btn`,
+        text: `${i}`,
+        callback: () => {
+          this.updateInterfaceConfirm({ space, henchmenCount: i, merryMan });
+        },
+      });
+    }
+
     this.game.addCancelButton();
   }
 
   private updateInterfaceConfirm({
     space,
-    placeRobinHood = false,
+    merryMan,
+    henchmenCount,
   }: {
     space: GestSpace;
-    placeRobinHood?: boolean;
+    merryMan: GestForce;
+    henchmenCount: number;
   }) {
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({
-      text: placeRobinHood
-        ? _('Place Robin Hood in ${spaceName}?')
-        : _('Place a Merry Man in ${spaceName}?'),
+      text: _(
+        'Remove 1 Merry Man and ${count} Henchmen from ${spaceName} from the game?'
+      ),
       args: {
         spaceName: _(space.name),
+        count: henchmenCount,
       },
     });
+    this.game.setElementSelected({ id: merryMan.id });
 
     const callback = () => {
       this.game.clearPossible();
       this.game.takeAction({
-        action: 'actPlaceMerryManInSpace',
+        action: 'actEventATaleOfTwoLoversLight',
         args: {
           spaceId: space.id,
-          placeRobinHood,
+          merryManId: merryMan.id,
+          henchmenCount,
         },
       });
     };

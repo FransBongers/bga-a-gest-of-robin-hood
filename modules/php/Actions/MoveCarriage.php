@@ -73,6 +73,7 @@ class MoveCarriage extends \AGestOfRobinHood\Models\AtomicAction
 
     $bringHenchman = $args['bringHenchman'];
     $carriageId = $args['carriageId'];
+    $toSpaceId = $args['toSpaceId'];
 
     $options = $this->getOptions();
 
@@ -86,7 +87,14 @@ class MoveCarriage extends \AGestOfRobinHood\Models\AtomicAction
     }
 
     $fromSpace = $option['from'];
-    $toSpace = $option['to'];
+    $toSpace = Utils::array_find($option['to'], function ($space) use ($toSpaceId) {
+      return $space->getId() === $toSpaceId;
+    });
+
+    if ($toSpace === null) {
+      throw new \feException("ERROR 059");
+    }
+
     $carriage = $option['carriage'];
     $toSpaceId = $toSpace->getId();
     $carriage->setLocation($toSpaceId);
@@ -150,6 +158,10 @@ class MoveCarriage extends \AGestOfRobinHood\Models\AtomicAction
     $alreadyMovedCarriageIds = $this->getAlreadyMovedCarriageIds();
 
     $options = [];
+    $info = $this->ctx->getInfo();
+    $numberOfSpaces = isset($info['numberOfSpaces']) ? $info['numberOfSpaces'] : 1;
+
+    Notifications::log('numberOfSpaces', $numberOfSpaces);
 
     foreach ($carriages as $carriage) {
       if (in_array($carriage->getId(), $alreadyMovedCarriageIds)) {
@@ -157,9 +169,16 @@ class MoveCarriage extends \AGestOfRobinHood\Models\AtomicAction
       }
 
       $space = Spaces::get($carriage->getLocation());
+      $nextSpace = $space->getNextSpaceAlongRoad();
+      Notifications::log('nextSpace', $nextSpace);
+      $to = [$nextSpace];
+      if ($numberOfSpaces === 2 && $nextSpace->getId() !== NOTTINGHAM) {
+        $to[] = $nextSpace->getNextSpaceAlongRoad();
+      }
+
       $options[$carriage->getId()] = [
         'from' => $space,
-        'to' => $space->getNextSpaceAlongRoad(),
+        'to' => $to,
         'carriage' => $carriage,
         'canBringHenchman' => count($space->getForces(HENCHMEN)) > 0
       ];

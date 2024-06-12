@@ -483,6 +483,15 @@ class Notifications
     ]);
   }
 
+  public static function placeCardInTravellersDeck($player, $card)
+  {
+    self::notifyAll('placeCardInTravellersDeck', clienttranslate('${player_name} places ${tkn_cardName} in the Travellers Deck'), [
+      'player' => $player,
+      'card' => $card,
+      'tkn_cardName' => self::tknCardNameArg($card),
+    ]);
+  }
+
 
   public static function placeForce($player, $force, $space)
   {
@@ -601,12 +610,49 @@ class Notifications
     self::placeMerryMen($player, $robinHood, $merryMenToPlace, $textPublic, $textPrivate, $publicTextArgs, $privateTextArgs);
   }
 
-  public static function removeCardFromGame($player, $card)
+  public static function removeCardFromGame($player, $card, $fromLocation = null)
   {
-    self::notifyAll("removeCardFromGame", clienttranslate('${player_name} removes ${tkn_cardName} from the game'), [
+    $text = clienttranslate('${player_name} removes ${tkn_cardName} from the game');
+
+    if ($fromLocation !== null) {
+      $textMap = [
+        TRAVELLERS_DECK => clienttranslate('${player_name} removes ${tkn_cardName} from the Travellers Deck from the game'),
+        TRAVELLERS_DISCARD => clienttranslate('${player_name} removes ${tkn_cardName} from the discard pile from the game'),
+      ];
+      $text = $textMap[$fromLocation];
+    }
+
+    self::notifyAll("removeCardFromGame", $text, [
       'player' => $player,
       'card' => $card,
       'tkn_cardName' => self::tknCardNameArg($card),
+    ]);
+  }
+
+  public static function removeForceFromGame($player, $force, $space, $isHidden, $fromPrison = false)
+  {
+    $actingPlayer = ($force->isMerryMan() || $force->isCamp()) && !$player->isRobinHood() ? Players::getRobinHoodPlayer() : $player;
+
+    self::notify($actingPlayer, 'removeForceFromGamePrivate', clienttranslate('${player_name} removes ${tkn_boldText_forceName} from ${tkn_boldText_spaceName} from the game'), [
+      'player' => $actingPlayer,
+      'you' => '${you}',
+      'force' => $force,
+      'spaceId' => $fromPrison ? PRISON : $space->getId(),
+      'tkn_boldText_forceName' => $force->getName(),
+      'tkn_boldText_spaceName' => $fromPrison ? clienttranslate('Prison') : $space->getName(),
+      'i18n' => ['tkn_boldText_forceName', 'tkn_boldText_spaceName']
+    ]);
+
+    self::notifyAll('removeForceFromGamePublic', clienttranslate('${player_name} removes ${tkn_boldText_forceName} from ${tkn_boldText_spaceName} from the game'), [
+      'player' => $actingPlayer,
+      'force' => [
+        'type' => $isHidden ? $force->getPublicType() : $force->getType(),
+        'hidden' => $isHidden,
+      ],
+      'spaceId' => $fromPrison ? PRISON : $space->getId(),
+      'tkn_boldText_forceName' => $force->getPublicName(),
+      'tkn_boldText_spaceName' => $fromPrison ? clienttranslate('Prison') : $space->getName(),
+      'i18n' => ['tkn_boldText_forceName', 'tkn_boldText_spaceName']
     ]);
   }
 
@@ -639,7 +685,7 @@ class Notifications
 
   public static function resolveEventEffect($player, $card, $effect)
   {
-    self::message(clienttranslate('${player_name} choosed to execute ${tkn_boldText_effectName}'),[
+    self::message(clienttranslate('${player_name} choosed to execute ${tkn_boldText_effectName}'), [
       'player' => $player,
       'tkn_boldText_effectName' => $effect === 'dark' ? $card->getTitleDark() : $card->getTitleLight(),
       'i18n' => ['tkn_boldText_effectName']
@@ -789,31 +835,60 @@ class Notifications
     self::placeMerryMen($player, $robinHood, $merryMen, $textPublic, $textPrivate);
   }
 
-  public static function sneakMerryMen($player, $merryMen, $moves, $fromSpace, $toSpace)
+  public static function shuffleTravellersDeck($player)
   {
-    self::notify($player, 'sneakMerryMenPrivate', clienttranslate('${player_name} moves ${count} Merry Men from ${tkn_boldText_fromSpace} to ${tkn_boldText_toSpace}'), [
+    self::message(clienttranslate('${player_name} shuffles the Travellers Deck'), [
       'player' => $player,
-      'count' => count($merryMen),
-      'forces' => $merryMen,
-      'fromSpaceId' => $fromSpace->getId(),
-      'toSpaceId' => $toSpace->getId(),
-      'tkn_boldText_fromSpace' => $fromSpace->getName(),
-      'tkn_boldText_toSpace' => $toSpace->getName(),
-      'i18n' => ['tkn_boldText_fromSpace', 'tkn_boldText_toSpace']
-    ]);
-
-
-    self::notifyAll('sneakMerryMen', clienttranslate('${player_name} moves ${count} Merry Men from ${tkn_boldText_fromSpace} to ${tkn_boldText_toSpace}'), [
-      'player' => $player,
-      'moves' => $moves,
-      'fromSpaceId' => $fromSpace->getId(),
-      'toSpaceId' => $toSpace->getId(),
-      'tkn_boldText_fromSpace' => $fromSpace->getName(),
-      'tkn_boldText_toSpace' => $toSpace->getName(),
-      'count' => count($merryMen),
-      'i18n' => ['tkn_boldText_fromSpace', 'tkn_boldText_toSpace']
     ]);
   }
+
+  public static function sneakMerryMen($player, $forces, $moves, $fromSpace)
+  {
+    $text = clienttranslate('${player_name} sneaks ${count} Merry Men from ${tkn_boldText_fromSpace}');
+
+
+    self::notify($player, 'moveMerryMenPrivate', $text, [
+      'player' => $player,
+      'count' => count($moves),
+      'forces' => $forces,
+      'tkn_boldText_fromSpace' => $fromSpace->getName(),
+      'i18n' => ['tkn_boldText_fromSpace']
+    ]);
+
+    self::notifyAll('moveMerryMenPublic', $text, [
+      'player' => $player,
+      'moves' => $moves,
+      'count' => count($moves),
+      'tkn_boldText_fromSpace' => $fromSpace->getName(),
+      'i18n' => ['tkn_boldText_fromSpace']
+    ]);
+  }
+
+  // public static function sneakMerryMen($player, $merryMen, $moves, $fromSpace, $toSpace)
+  // {
+  //   self::notify($player, 'sneakMerryMenPrivate', clienttranslate('${player_name} moves ${count} Merry Men from ${tkn_boldText_fromSpace} to ${tkn_boldText_toSpace}'), [
+  //     'player' => $player,
+  //     'count' => count($merryMen),
+  //     'forces' => $merryMen,
+  //     'fromSpaceId' => $fromSpace->getId(),
+  //     'toSpaceId' => $toSpace->getId(),
+  //     'tkn_boldText_fromSpace' => $fromSpace->getName(),
+  //     'tkn_boldText_toSpace' => $toSpace->getName(),
+  //     'i18n' => ['tkn_boldText_fromSpace', 'tkn_boldText_toSpace']
+  //   ]);
+
+
+  //   self::notifyAll('sneakMerryMen', clienttranslate('${player_name} moves ${count} Merry Men from ${tkn_boldText_fromSpace} to ${tkn_boldText_toSpace}'), [
+  //     'player' => $player,
+  //     'moves' => $moves,
+  //     'fromSpaceId' => $fromSpace->getId(),
+  //     'toSpaceId' => $toSpace->getId(),
+  //     'tkn_boldText_fromSpace' => $fromSpace->getName(),
+  //     'tkn_boldText_toSpace' => $toSpace->getName(),
+  //     'count' => count($merryMen),
+  //     'i18n' => ['tkn_boldText_fromSpace', 'tkn_boldText_toSpace']
+  //   ]);
+  // }
 
   public static function swashbuckleMoves($player, $moves, $fromSpace)
   {

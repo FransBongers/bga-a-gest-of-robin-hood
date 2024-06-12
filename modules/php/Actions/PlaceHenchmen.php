@@ -7,7 +7,6 @@ use AGestOfRobinHood\Core\Engine;
 use AGestOfRobinHood\Core\Engine\LeafNode;
 use AGestOfRobinHood\Core\Globals;
 use AGestOfRobinHood\Core\Stats;
-use AGestOfRobinHood\Helpers\GameMap;
 use AGestOfRobinHood\Helpers\Locations;
 use AGestOfRobinHood\Helpers\Utils;
 use AGestOfRobinHood\Managers\Forces;
@@ -16,11 +15,11 @@ use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\Spaces;
 
 
-class Inspire extends \AGestOfRobinHood\Models\AtomicAction
+class PlaceHenchmen extends \AGestOfRobinHood\Actions\Plot
 {
   public function getState()
   {
-    return ST_INSPIRE;
+    return ST_PLACE_HENCHMEN;
   }
 
   // ..######..########....###....########.########
@@ -39,20 +38,14 @@ class Inspire extends \AGestOfRobinHood\Models\AtomicAction
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function stInspire()
+  public function stPlaceHenchmen()
   {
-    $player = self::getPlayer();
-    $robinHood = Forces::get(ROBIN_HOOD);
-    $robinHood->reveal($player);
 
-    $space = $robinHood->getSpace();
-    if ($space->getStatus() === REVOLTING) {
-      Players::moveRoyalFavour($player, 1, JUSTICE);
-    } else if ($space->getStatus() === SUBMISSIVE) {
-      $space->revolt($player);
+    $count = Forces::getInLocation(HENCHMEN_SUPPLY);
+
+    if ($count === 0) {
+      $this->resolveAction(['automatic' => true]);
     }
-
-    $this->resolveAction(['automatic' => true]);
   }
 
   // ....###....########...######....######.
@@ -63,11 +56,9 @@ class Inspire extends \AGestOfRobinHood\Models\AtomicAction
   // .##.....##.##....##..##....##..##....##
   // .##.....##.##.....##..######....######.
 
-  public function argsInspire()
+  public function argsPlaceHenchmen()
   {
-    $data = [];
-
-    return $data;
+    return $this->getOptions();
   }
 
   //  .########..##..........###....##....##.########.########.
@@ -86,16 +77,38 @@ class Inspire extends \AGestOfRobinHood\Models\AtomicAction
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function actPassInspire()
+  public function actPassPlaceHenchmen()
   {
     $player = self::getPlayer();
     // Stats::incPassActionCount($player->getId(), 1);
     Engine::resolve(PASS);
   }
 
-  public function actInspire($args)
+  public function actPlaceHenchmen($args)
   {
-    self::checkAction('actInspire');
+    self::checkAction('actPlaceHenchmen');
+    $spaceId = $args['spaceId'];
+    $count = $args['count'];
+
+    $options = $this->getOptions();
+
+    if (!isset($options['spaces'][$spaceId])) {
+      throw new \feException("ERROR 064");
+    }
+    $space = $options['spaces'][$spaceId];
+
+    if ($count > $options['maxNumber'] || $count > count($options['henchmen'])) {
+      throw new \feException("ERROR 065");
+    }
+
+    $forces = [];
+    for ($i = 0; $i < $count; $i++) {
+      $henchman = $options['henchmen'][$i];
+      $henchman->setLocation($spaceId);
+      $forces[] = $henchman;
+    }
+
+    Notifications::placeHenchmen(self::getPlayer(), $forces, $space);
 
     $this->resolveAction($args);
   }
@@ -108,23 +121,20 @@ class Inspire extends \AGestOfRobinHood\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
-  public function getName()
+
+  private function getOptions()
   {
-    return clienttranslate('Inspire');
+    $info = $this->ctx->getInfo();
+    $maxNumber = $info['maxNumber'];
+    $locationIds = $info['locationIds'];
+
+    $spaces = Spaces::get($locationIds);
+
+    $henchmen = Forces::getTopOf(HENCHMEN_SUPPLY, 2, false)->toArray();
+    return [
+      'spaces' => $spaces,
+      'henchmen' => $henchmen,
+      'maxNumber' => min(count($henchmen), $maxNumber),
+    ];
   }
-
-  public function canBePerformed($player)
-  {
-    $robinHood = Forces::get(ROBIN_HOOD);
-    if (!$robinHood->IsHidden()) {
-      return false;
-    }
-    if (!in_array($robinHood->getLocation(), PARISHES)) {
-      return false;
-    }
-    $space = Spaces::get($robinHood->getLocation());
-
-    return $space->isSubmissive() || $space->isRevolting();
-  }
-
 }

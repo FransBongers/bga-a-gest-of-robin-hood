@@ -2,6 +2,14 @@
 
 namespace AGestOfRobinHood\Cards\Events;
 
+use AGestOfRobinHood\Core\Engine\LeafNode;
+use AGestOfRobinHood\Core\Globals;
+use AGestOfRobinHood\Core\Notifications;
+use AGestOfRobinHood\Helpers\Utils;
+use AGestOfRobinHood\Managers\Forces;
+use AGestOfRobinHood\Managers\Players;
+use AGestOfRobinHood\Managers\Spaces;
+
 class Event20_MajorOak extends \AGestOfRobinHood\Models\EventCard
 {
   public function __construct($row)
@@ -16,5 +24,36 @@ class Event20_MajorOak extends \AGestOfRobinHood\Models\EventCard
     $this->carriageMoves = 2;
     $this->eventType = REGULAR_EVENT;
     $this->setupLocation = REGULAR_EVENTS_POOL;
+  }
+
+  public function resolveDarkEffect($player, $successful, $ctx = null, $space = null)
+  {
+    $ctx->insertAsBrother(new LeafNode([
+      'action' => REMOVE_CAMP,
+      'playerId' => $player->getId(),
+      'fromSpaceIds' => [SHIRE_WOOD, SOUTHWELL_FOREST],
+    ]));
+  }
+
+  public function resolveLightEffect($player, $successful, $ctx = null, $space = null)
+  {
+    $camp = Forces::getTopOf(CAMPS_SUPPLY);
+    $camp->setLocation(OLLERTON_HILL);
+    $camp->setHidden(0);
+    Notifications::placeForce($player, $camp, Spaces::get(OLLERTON_HILL));
+    Players::moveRoyalFavour($player, 1, JUSTICE);
+    Globals::setOllertonHillAdjacency(true);
+  }
+
+  public function canPerformDarkEffect($player)
+  {
+    return Utils::array_some(Forces::getOfType(CAMP), function ($camp) {
+      return in_array($camp->getLocation(), [SHIRE_WOOD, SOUTHWELL_FOREST]);
+    });
+  }
+
+  public function canPerformLightEffect($player)
+  {
+    return count(Forces::getInLocation(CAMPS_SUPPLY)->toArray()) > 0;
   }
 }

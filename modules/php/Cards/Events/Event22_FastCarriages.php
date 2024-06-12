@@ -2,6 +2,10 @@
 
 namespace AGestOfRobinHood\Cards\Events;
 
+use AGestOfRobinHood\Core\Engine;
+use AGestOfRobinHood\Core\Engine\LeafNode;
+use AGestOfRobinHood\Helpers\GameMap;
+
 class Event22_FastCarriages extends \AGestOfRobinHood\Models\EventCard
 {
   public function __construct($row)
@@ -16,5 +20,48 @@ class Event22_FastCarriages extends \AGestOfRobinHood\Models\EventCard
     $this->carriageMoves = 1;
     $this->eventType = REGULAR_EVENT;
     $this->setupLocation = REGULAR_EVENTS_POOL;
+  }
+
+  public function resolveDarkEffect($player, $successful, $ctx = null, $space = null)
+  {
+    // $this->setLocation(TRAVELLERS_DECK);
+
+    // Notifications::placeCardInTravellersDeck($player, $this);
+
+    $ctx->insertAsBrother(new LeafNode([
+      'action' => MOVE_CARRIAGE,
+      'playerId' => $player->getId(),
+      'numberOfSpaces' => 2,
+    ]));
+  }
+
+  public function resolveLightEffect($player, $successful, $ctx = null, $space = null)
+  {
+    $ctx->insertAsBrother(Engine::buildTree([
+      'children' => [
+        [
+          'action' => SNEAK,
+          'playerId' => $player->getId(),
+          'cost' => 0,
+          'optional' => true,
+        ],
+        [
+          'action' => ROB,
+          'playerId' => $player->getId(),
+          'source' => $this->id,
+          'optional' => true,
+        ]
+      ]
+    ]));
+  }
+
+  public function canPerformDarkEffect($player)
+  {
+    return GameMap::carriagesAreOnTheMap();
+  }
+
+  public function canPerformLightEffect($player)
+  {
+    return GameMap::merryManAreOnTheMap();
   }
 }

@@ -20,9 +20,12 @@ interface OnEnteringCaptureStateArgs extends CommonArgs {
 }
 
 interface OnEnteringChooseActionStateArgs extends CommonArgs {
-  event: boolean;
-  singlePlot: boolean;
-  plotsAndDeeds: boolean;
+  track: {
+    event: boolean;
+    singlePlot: boolean;
+    plotsAndDeeds: boolean;
+  };
+  canResolveEvent: boolean;
 }
 
 interface OnEnteringConfiscateStateArgs extends CommonArgs {
@@ -55,6 +58,17 @@ interface OnEnteringEventAmbushDarkStateArgs extends CommonArgs {
   options: Record<string, GestSpace>;
 }
 
+interface OnEnteringEventATaleOfTwoLoversLightStateArgs extends CommonArgs {
+  _private: Record<
+    string,
+    {
+      space: GestSpace;
+      merryMen: GestForce[];
+      henchmen: GestForce[];
+    }
+  >;
+}
+
 interface OnEnteringHireStateArgs extends CommonArgs {
   options: Record<
     string,
@@ -66,17 +80,16 @@ interface OnEnteringHireStateArgs extends CommonArgs {
   >;
 }
 
+interface MoveCarriageOption {
+  canBringHenchman: boolean;
+  carriage: GestForce;
+  from: GestSpace;
+  to: GestSpace[];
+}
+
 interface OnEnteringMoveCarriageStateArgs extends CommonArgs {
   _private?: {
-    options: Record<
-      string,
-      {
-        canBringHenchman: boolean;
-        carriage: GestForce;
-        from: GestSpace;
-        to: GestSpace;
-      }
-    >;
+    options: Record<string, MoveCarriageOption>;
   };
 }
 
@@ -88,6 +101,12 @@ interface OnEnteringPatrolStateArgs extends CommonArgs {
       adjacentHenchmen: GestForce[];
     }
   >;
+}
+
+interface OnEnteringPlaceHenchmenStateArgs extends CommonArgs {
+  henchmen: GestForce[];
+  maxNumber: number;
+  spaces: Record<string, GestSpace>;
 }
 
 interface OnEnteringPlaceMerryManInSpaceStateArgs extends CommonArgs {
@@ -102,6 +121,15 @@ interface RecruitOption {
   space: GestSpace;
   merryMen: GestForce[];
   recruitOptions: string[];
+}
+
+interface OnEnteringRemoveCampStateArgs extends CommonArgs {
+  camps: GestForce[];
+}
+
+interface OnEnteringRemoveTravellerStateArgs extends CommonArgs {
+  cardType: string;
+  from: string[];
 }
 
 interface OnEnteringRecruitStateArgs extends CommonArgs {
@@ -214,16 +242,15 @@ interface OnEnteringSelectTravellerCardOptionStateArgs extends CommonArgs {
 
 interface OnEnteringSetupRobinHoodArgs extends CommonArgs {}
 
+interface SneakOption {
+  adjacentSpaces: GestSpace[];
+  space: GestSpace;
+  merryMen: GestForce[];
+}
+
 interface OnEnteringSneakStateArgs extends CommonArgs {
   _private: {
-    options: Record<
-      string,
-      {
-        adjacentSpaces: GestSpace[];
-        space: GestSpace;
-        merryMen: GestForce[];
-      }
-    >;
+    options: Record<string, SneakOption>;
   };
 }
 

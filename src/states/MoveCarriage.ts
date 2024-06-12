@@ -53,15 +53,65 @@ class MoveCarriageState implements State {
     this.game.addUndoButtons(this.args);
   }
 
+  private updateInterfaceSelectTo({ option }: { option: MoveCarriageOption }) {
+    if (option.to.length === 1) {
+      this.updateInterfaceBringHenchman({
+        carriage: option.carriage,
+        to: option.to[0],
+        from: option.from,
+        canBringHenchman: option.canBringHenchman,
+      });
+      return;
+    }
+    this.game.clearPossible();
+    this.game.setElementSelected({ id: option.carriage.id });
+
+    this.game.clientUpdatePageTitle({
+      text: _('${you} must select a Space to move you Carriage to'),
+      args: {
+        you: '${you}',
+      },
+    });
+
+    option.to.forEach((space) => {
+      this.game.addPrimaryActionButton({
+        id: `${space.id}_btn`,
+        text: _(space.name),
+        callback: () => {
+          this.updateInterfaceBringHenchman({
+            carriage: option.carriage,
+            to: space,
+            from: option.from,
+            canBringHenchman: option.canBringHenchman,
+          });
+        },
+      });
+    });
+
+    this.game.addCancelButton();
+  }
+
   private updateInterfaceBringHenchman({
     carriage,
     from,
     to,
+    canBringHenchman,
   }: {
     carriage: GestForce;
     from: GestSpace;
     to: GestSpace;
+    canBringHenchman: boolean;
   }) {
+    if (!canBringHenchman) {
+      this.updateInterfaceConfirm({
+        carriage,
+        to,
+        from,
+        bringHenchman: false,
+      });
+      return;
+    }
+
     this.game.clearPossible();
     this.game.setElementSelected({ id: carriage.id });
 
@@ -126,6 +176,7 @@ class MoveCarriageState implements State {
         args: {
           carriageId: carriage.id,
           bringHenchman,
+          toSpaceId: to.id,
         },
       });
     };
@@ -162,37 +213,14 @@ class MoveCarriageState implements State {
         this.game.setElementSelectable({
           id: carriageId,
           callback: () => {
-            if (option.canBringHenchman) {
-              this.updateInterfaceBringHenchman({
-                carriage: option.carriage,
-                from: option.from,
-                to: option.to,
-              });
-            } else {
-              this.updateInterfaceConfirm({
-                carriage: option.carriage,
-                from: option.from,
-                to: option.to,
-                bringHenchman: false,
-              });
-            }
+            this.updateInterfaceSelectTo({
+              option,
+            });
           },
         });
       }
     );
   }
-
-  // addActionButtons() {
-  //   [SINGLE_PLOT, EVENT, PLOTS_AND_DEEDS].forEach((action) => {
-  //     if (this.args[action]) {
-  //       this.game.addPrimaryActionButton({
-  //         id: `${action}_select`,
-  //         text: this.getActionName({ action }),
-  //         callback: () => this.updateInterfaceConfirm({ action }),
-  //       });
-  //     }
-  //   });
-  // }
 
   //  ..######..##.......####..######..##....##
   //  .##....##.##........##..##....##.##...##.

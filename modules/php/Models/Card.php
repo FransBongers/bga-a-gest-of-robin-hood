@@ -79,6 +79,13 @@ class Card extends \AGestOfRobinHood\Helpers\DB_Model
     $this->location = $location;
   }
 
+  public function removeFromGame($player)
+  {
+    $fromLocation = $this->getLocation();
+    $this->setLocation(REMOVED_FROM_GAME);
+    Notifications::removeCardFromGame($player, $this, $fromLocation);
+  }
+
   public function resolveDarkEffect($player, $successful, $ctx = null, $space = null)
   {
   }

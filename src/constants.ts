@@ -116,6 +116,32 @@ const REVOLTING = 'revolting';
 const SUBMISSIVE = 'submissive';
 
 /**
- * Constants used for event effects
+ * Card locations
+ */
+const REGULAR_EVENTS_POOL = 'regularEventsPool';
+const FORTUNE_EVENTS_POOL = 'fortuneEventsPool';
+const ROYAL_INSPECTIONS_POOL = 'royalInspectionsPool';
+const EVENTS_DECK = 'eventsDeck';
+const TRAVELLERS_DECK = 'travellersDeck';
+const TRAVELLERS_POOL = 'travellersPool';
+
+const EVENTS_DISCARD = 'eventsDiscard';
+const TRAVELLERS_DISCARD = 'travellersDiscard';
+const TRAVELLERS_VICTIMS_PILE = 'travellersVictimsPile';
+
+const REMOVED_FROM_GAME = 'removedFromGame';
+
+/**
+ * Constants used ofr event effects
  */
 const GAIN_TWO_SHILLINGS = 'gainTwoShillings';
+const LIGHT = 'light';
+const DARK = 'dark';
+
+const MONK = 'monk';
+
+const MONK_IDS = [
+  'Traveller06_Monks',
+  'Traveller07_Monks',
+  'Traveller08_Monks',
+];

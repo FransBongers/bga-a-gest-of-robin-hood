@@ -139,4 +139,17 @@ class Force extends \AGestOfRobinHood\Helpers\DB_Model
       Players::moveRoyalFavour($player, 1, ORDER);
     }
   }
+
+  public function removeFromGame($player)
+  {
+    $fromPrison = $this->location === PRISON;
+    $space = $fromPrison ? null : Spaces::get($this->getLocation());
+    $this->setLocation(REMOVED_FROM_GAME);
+    $isHidden = $this->isHidden();
+
+    Notifications::removeForceFromGame($player, $this, $space, $isHidden, $fromPrison);
+    if ($this->type === CAMP) {
+      Players::moveRoyalFavour($player, 1, ORDER);
+    }
+  }
 }

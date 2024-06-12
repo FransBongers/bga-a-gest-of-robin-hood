@@ -70,6 +70,7 @@ class NotificationManager {
       'revealForce',
       'parishStatus',
       'payShillings',
+      'placeCardInTravellersDeck',
       'placeForceAll',
       'placeForce',
       'placeForcePrivate',
@@ -78,6 +79,8 @@ class NotificationManager {
       'putCardInVictimsPile',
       'redeploymentSheriff',
       'removeCardFromGame',
+      'removeForceFromGamePrivate',
+      'removeForceFromGamePublic',
       'returnTravellersDiscardToMainDeck',
       'returnToSupply',
       'returnToSupplyPrivate',
@@ -132,6 +135,7 @@ class NotificationManager {
         'placeForce',
         'sneakMerryMen',
         'moveMerryMenPublic',
+        'removeForceFromGamePublic',
       ].forEach((notifId) => {
         this.game
           .framework()
@@ -428,6 +432,10 @@ class NotificationManager {
     this.getPlayer({ playerId }).counters.shillings.incValue(-amount);
   }
 
+  async notif_placeCardInTravellersDeck(notif: Notif<NotifPayShillingsArgs>) {
+
+  }
+
   async notif_placeForce(notif: Notif<NotifPlaceForceArgs>) {
     const { force, spaceId, count } = notif.args;
     this.game.gameMap.addPublicForces({
@@ -478,6 +486,12 @@ class NotificationManager {
     notif: Notif<NotifPutCardInVictimsPileArgs>
   ) {}
 
+  async notif_parishStatus(notif: Notif<NotifParishStatusArgs>) {
+    const { spaceId, status } = notif.args;
+    this.game.gameMap.setSpaceStatus({ spaceId, status });
+  }
+
+
   async notif_redeploymentSheriff(notif: Notif<NotifRedeploymentSheriffArgs>) {
     const { forces } = notif.args;
 
@@ -494,6 +508,22 @@ class NotificationManager {
   }
 
   async notif_removeCardFromGame(notif: Notif<NotifRemoveCardFromGameArgs>) {}
+
+  async notif_removeForceFromGamePublic(notif: Notif<NotifReturnToSupplyArgs>) {
+    const { force, spaceId } = notif.args;
+    await this.game.gameMap.removeFromGamePublic({
+      type: force.type,
+      hidden: force.hidden,
+      fromSpaceId: spaceId,
+    });
+  }
+
+  async notif_removeForceFromGamePrivate(
+    notif: Notif<NotifReturnToSupplyPrivateArgs>
+  ) {
+    const { force } = notif.args;
+    await this.game.forceManager.removeCard(force);
+  }
 
   async notif_revealForce(notif: Notif<NotifRevealForceArgs>) {
     const { force } = notif.args;
@@ -522,11 +552,6 @@ class NotificationManager {
       hidden: force.hidden,
       fromSpaceId: spaceId,
     });
-  }
-
-  async notif_parishStatus(notif: Notif<NotifParishStatusArgs>) {
-    const { spaceId, status } = notif.args;
-    this.game.gameMap.setSpaceStatus({ spaceId, status });
   }
 
   async notif_returnToSupplyPrivate(

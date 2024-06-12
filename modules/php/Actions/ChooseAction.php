@@ -9,6 +9,7 @@ use AGestOfRobinHood\Core\Globals;
 use AGestOfRobinHood\Core\Stats;
 use AGestOfRobinHood\Helpers\Locations;
 use AGestOfRobinHood\Helpers\Utils;
+use AGestOfRobinHood\Managers\Cards;
 use AGestOfRobinHood\Managers\Markers;
 use AGestOfRobinHood\Managers\Players;
 
@@ -30,11 +31,26 @@ class ChooseAction extends \AGestOfRobinHood\Models\AtomicAction
 
   public function argsChooseAction()
   {
+    $eventAvailable = Markers::getTopOf(Locations::initiativeTrack(EVENT)) === null;
+
     $data = [
-      SINGLE_PLOT => Markers::getTopOf(Locations::initiativeTrack(SINGLE_PLOT)) === null,
-      EVENT => Markers::getTopOf(Locations::initiativeTrack(EVENT)) === null,
-      PLOTS_AND_DEEDS => Markers::getTopOf(Locations::initiativeTrack(PLOTS_AND_DEEDS)) === null,
+      'track' => [
+        SINGLE_PLOT => Markers::getTopOf(Locations::initiativeTrack(SINGLE_PLOT)) === null,
+        EVENT => $eventAvailable,
+        PLOTS_AND_DEEDS => Markers::getTopOf(Locations::initiativeTrack(PLOTS_AND_DEEDS)) === null,
+      ],
+      'canResolveEvent' => $eventAvailable
     ];
+
+    if ($data['track'][EVENT]) {
+      $player = self::getPlayer();
+      $card = Cards::getTopOf(EVENTS_DISCARD);
+      if ($player->isRobinHood()) {
+        $data['canResolveEvent'] = $card->canPerformLightEffect($player);
+      } else if ($player->isSheriff()) {
+        $data['canResolveEvent'] = $card->canPerformDarkEffect($player);
+      }
+    }
 
     return $data;
   }
@@ -71,9 +87,14 @@ class ChooseAction extends \AGestOfRobinHood\Models\AtomicAction
 
     $stateArgs = $this->argsChooseAction();
 
-    if (!$stateArgs[$action]) {
+    if (!$stateArgs['track'][$action]) {
       throw new \feException("ERROR 003");
     }
+
+    if ($action === EVENT && !$stateArgs['canResolveEvent']) {
+      throw new \feException("ERROR 058");
+    }
+
     $player = self::getPlayer();
     $marker = $player->getEligibilityMarker();
     $marker->setLocation(Locations::initiativeTrack($action));
@@ -127,10 +148,16 @@ class ChooseAction extends \AGestOfRobinHood\Models\AtomicAction
         ]));
         break;
       case EVENT:
-        $parent->pushChild(new LeafNode([
-          'action' => SELECT_EVENT_EFFECT,
-          'playerId' => $this->ctx->getPlayerId(),
-        ]));
+        $card = Cards::getTopOf(EVENTS_DISCARD);
+        if ($player->isRobinHood()) {
+          $card->resolveLightEffect($player, true, $this->ctx);
+        } else {
+          $card->resolveDarkEffect($player, true, $this->ctx);
+        }
+        // $parent->pushChild(new LeafNode([
+        //   'action' => SELECT_EVENT_EFFECT,
+        //   'playerId' => $this->ctx->getPlayerId(),
+        // ]));
         break;
     }
   }

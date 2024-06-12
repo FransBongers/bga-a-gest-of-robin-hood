@@ -23,7 +23,12 @@ trait DebugTrait
 
   function test()
   {
-    Forces::get(ROBIN_HOOD)->setLocation(ROBIN_HOOD_SUPPLY);
+    // Globals::setOllertonHillAdjacency(true);
+    Cards::get('Traveller07_Monks')->setLocation(TRAVELLERS_DISCARD);
+    // $this->debugPlaceForces(TALLAGE_CARRIAGE,TUXFORD,1);
+    // $this->debugPlaceMerryMen(SHIRE_WOOD, 2);
+    // $this->debugPlaceMerryMen(SOUTHWELL_FOREST, 1);
+    // Forces::get(ROBIN_HOOD)->setLocation(ROBIN_HOOD_SUPPLY);
     // Forces::get('merryMen_9')->setLocation(NEWARK);
     // Forces::getTopOf(CAMPS_SUPPLY)->setLocation(BINGHAM);
     // AtomicActions::get(ROYAL_INSPECTION_REDEPLOYMENT_SHERIFF)->getOptions();
@@ -44,11 +49,48 @@ trait DebugTrait
     Notifications::log('deck', Cards::getInLocationOrdered(EVENTS_DECK)->toArray());
   }
 
+  public function debugPlaceForces($type, $spaceId, $number)
+  {
+    $supplyMap = [
+      HENCHMEN => HENCHMEN_SUPPLY,
+      ROBIN_HOOD => ROBIN_HOOD_SUPPLY,
+      MERRY_MEN => MERRY_MEN_SUPPLY,
+      TALLAGE_CARRIAGE => CARRIAGE_SUPPLY,
+      TRAP_CARRIAGE => CARRIAGE_SUPPLY,
+      TRIBUTE_CARRIAGE => CARRIAGE_SUPPLY,
+    ];
+
+    $result = [];
+    for ($i = 0; $i < $number; $i++) {
+      $force = Forces::getTopOf($supplyMap[$type]);
+      if ($force === null) {
+        continue;
+      }
+      $force->setLocation($spaceId);
+      $result[] = $force;
+    }
+    return $result;
+  }
+
   public function debugPlaceHenchmen($spaceId, $number)
   {
     $result = [];
     for ($i = 0; $i < $number; $i++) {
       $henchman = Forces::getTopOf(HENCHMEN_SUPPLY);
+      if ($henchman === null) {
+        continue;
+      }
+      $henchman->setLocation($spaceId);
+      $result[] = $henchman;
+    }
+    return $result;
+  }
+
+  public function debugPlaceMerryMen($spaceId, $number)
+  {
+    $result = [];
+    for ($i = 0; $i < $number; $i++) {
+      $henchman = Forces::getTopOf(MERRY_MEN_SUPPLY);
       if ($henchman === null) {
         continue;
       }

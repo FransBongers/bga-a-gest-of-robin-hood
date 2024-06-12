@@ -10,49 +10,16 @@ use AGestOfRobinHood\Core\Stats;
 use AGestOfRobinHood\Helpers\GameMap;
 use AGestOfRobinHood\Helpers\Locations;
 use AGestOfRobinHood\Helpers\Utils;
-use AGestOfRobinHood\Managers\Forces;
 use AGestOfRobinHood\Managers\Markers;
 use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\Spaces;
+use AGestOfRobinHood\Spaces\Nottingham;
 
-
-class Inspire extends \AGestOfRobinHood\Models\AtomicAction
+class RemoveCamp extends \AGestOfRobinHood\Models\AtomicAction
 {
   public function getState()
   {
-    return ST_INSPIRE;
-  }
-
-  // ..######..########....###....########.########
-  // .##....##....##......##.##......##....##......
-  // .##..........##.....##...##.....##....##......
-  // ..######.....##....##.....##....##....######..
-  // .......##....##....#########....##....##......
-  // .##....##....##....##.....##....##....##......
-  // ..######.....##....##.....##....##....########
-
-  // ....###.....######..########.####..#######..##....##
-  // ...##.##...##....##....##.....##..##.....##.###...##
-  // ..##...##..##..........##.....##..##.....##.####..##
-  // .##.....##.##..........##.....##..##.....##.##.##.##
-  // .#########.##..........##.....##..##.....##.##..####
-  // .##.....##.##....##....##.....##..##.....##.##...###
-  // .##.....##..######.....##....####..#######..##....##
-
-  public function stInspire()
-  {
-    $player = self::getPlayer();
-    $robinHood = Forces::get(ROBIN_HOOD);
-    $robinHood->reveal($player);
-
-    $space = $robinHood->getSpace();
-    if ($space->getStatus() === REVOLTING) {
-      Players::moveRoyalFavour($player, 1, JUSTICE);
-    } else if ($space->getStatus() === SUBMISSIVE) {
-      $space->revolt($player);
-    }
-
-    $this->resolveAction(['automatic' => true]);
+    return ST_REMOVE_CAMP;
   }
 
   // ....###....########...######....######.
@@ -63,9 +30,22 @@ class Inspire extends \AGestOfRobinHood\Models\AtomicAction
   // .##.....##.##....##..##....##..##....##
   // .##.....##.##.....##..######....######.
 
-  public function argsInspire()
+  public function argsRemoveCamp()
   {
-    $data = [];
+    $info = $this->ctx->getInfo();
+    $fromSpaceIds = $info['fromSpaceIds'];
+
+    $camps = [];
+
+    foreach ($fromSpaceIds as $spaceId) {
+      $camps = array_merge($camps, Utils::filter(Spaces::get($spaceId)->getForces(), function ($force) {
+        return $force->isCamp();
+      }));
+    }
+
+    $data = [
+      'camps' => $camps,
+    ];
 
     return $data;
   }
@@ -86,16 +66,39 @@ class Inspire extends \AGestOfRobinHood\Models\AtomicAction
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function actPassInspire()
+  public function actPassRemoveCamp()
   {
     $player = self::getPlayer();
     // Stats::incPassActionCount($player->getId(), 1);
     Engine::resolve(PASS);
   }
 
-  public function actInspire($args)
+  // public function actPlayerAction($cardId, $strength)
+  public function actRemoveCamp($args)
   {
-    self::checkAction('actInspire');
+    self::checkAction('actRemoveCamp');
+    $spaceId = $args['spaceId'];
+    $hidden = $args['hidden'];
+
+    $info = $this->ctx->getInfo();
+    $fromSpaceIds = $info['fromSpaceIds'];
+
+    if (!in_array($spaceId, $fromSpaceIds)) {
+      throw new \feException("ERROR 060");
+    }
+    $space = Spaces::get($spaceId);
+
+    $camps = Utils::filter($space->getForces(), function ($force) use ($hidden) {
+      return $force->isCamp() && $force->isHidden() === $hidden;
+    });
+
+    if (count($camps) === 0) {
+      throw new \feException("ERROR 061");
+    }
+
+    $player = self::getPlayer();
+
+    $camps[0]->returnToSupply($player);
 
     $this->resolveAction($args);
   }
@@ -107,24 +110,4 @@ class Inspire extends \AGestOfRobinHood\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
-
-  public function getName()
-  {
-    return clienttranslate('Inspire');
-  }
-
-  public function canBePerformed($player)
-  {
-    $robinHood = Forces::get(ROBIN_HOOD);
-    if (!$robinHood->IsHidden()) {
-      return false;
-    }
-    if (!in_array($robinHood->getLocation(), PARISHES)) {
-      return false;
-    }
-    $space = Spaces::get($robinHood->getLocation());
-
-    return $space->isSubmissive() || $space->isRevolting();
-  }
-
 }

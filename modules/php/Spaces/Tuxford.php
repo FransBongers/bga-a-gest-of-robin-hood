@@ -15,6 +15,9 @@ class Tuxford extends \AGestOfRobinHood\Models\Space
       RETFORD,
       TUXFORD,
     ];
+    $this->adjacentViaOllertonHillSpaceIds = [
+      SHIRE_WOOD
+    ];
     $this->road = SOUTHWELL_FOREST;
   }
 }

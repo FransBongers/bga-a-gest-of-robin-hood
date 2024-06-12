@@ -15,13 +15,21 @@ class Plot extends \AGestOfRobinHood\Models\AtomicAction
       // Check for smaller than two as the current action is not resolved yet
     }
     $action = $this->ctx->getAction();
+    $info = $this->ctx->getInfo();
+    $sourceIsSet = isset($info['source']);
 
-    if ($selectedAction === PLOTS_AND_DEEDS && count(Engine::getResolvedActions([$action])) < 2) {
-      $this->ctx->insertAsBrother(new LeafNode([
+    $extraActionsDueToEvent = $selectedAction === EVENT && $action === ROB && $sourceIsSet && $info['source'] === 'Event22_FastCarriages';
+    if (($extraActionsDueToEvent || $selectedAction === PLOTS_AND_DEEDS) && count(Engine::getResolvedActions([$action])) < 2) {
+      $leafNode = [
         'action' => $action,
         'playerId' => $player->getId(),
         'optional' => true,
-      ]));
+      ];
+      if ($sourceIsSet) {
+        $leafNode['source'] = $info['source'];
+      }
+
+      $this->ctx->insertAsBrother(new LeafNode($leafNode));
     }
   }
 

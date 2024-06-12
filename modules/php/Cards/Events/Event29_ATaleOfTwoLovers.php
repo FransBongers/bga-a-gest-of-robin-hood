@@ -2,6 +2,9 @@
 
 namespace AGestOfRobinHood\Cards\Events;
 
+use AGestOfRobinHood\Core\Engine\LeafNode;
+use AGestOfRobinHood\Helpers\GameMap;
+
 class Event29_ATaleOfTwoLovers extends \AGestOfRobinHood\Models\EventCard
 {
   public function __construct($row)
@@ -16,5 +19,32 @@ class Event29_ATaleOfTwoLovers extends \AGestOfRobinHood\Models\EventCard
     $this->carriageMoves = 1;
     $this->eventType = REGULAR_EVENT;
     $this->setupLocation = REGULAR_EVENTS_POOL;
+  }
+
+  public function resolveLightEffect($player, $successful, $ctx = null, $space = null)
+  {
+    $player->payShillings(1);
+
+    $ctx->insertAsBrother(new LeafNode([
+      'action' => EVENT_A_TALE_OF_TWO_LOVERS_LIGHT,
+      'playerId' => $player->getId(),
+    ]));
+  }
+
+  public function resolveDarkEffect($player, $successful, $ctx = null, $space = null)
+  {
+    $player->incShillings(2);
+
+    $ctx->insertAsBrother(new LeafNode([
+      'action' => PLACE_HENCHMEN,
+      'playerId' => $player->getId(),
+      'maxNumber' => 2,
+      'locationIds' => PARISHES,
+    ]));
+  }
+
+  public function canPerformLightEffect($player)
+  {
+    return $player->getShillings() > 0 && GameMap::merryManAreOnTheMap();
   }
 }

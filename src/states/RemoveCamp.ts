@@ -1,19 +1,19 @@
-class PlaceMerryManInSpaceState implements State {
+class RemoveCampState implements State {
   private game: AGestOfRobinHoodGame;
-  private args: OnEnteringPlaceMerryManInSpaceStateArgs;
+  private args: OnEnteringRemoveCampStateArgs;
 
   constructor(game: AGestOfRobinHoodGame) {
     this.game = game;
   }
 
-  onEnteringState(args: OnEnteringPlaceMerryManInSpaceStateArgs) {
-    debug('Entering PlaceMerryManInSpaceState');
+  onEnteringState(args: OnEnteringRemoveCampStateArgs) {
+    debug('Entering RemoveCampState');
     this.args = args;
     this.updateInterfaceInitialStep();
   }
 
   onLeavingState() {
-    debug('Leaving PlaceMerryManInSpaceState');
+    debug('Leaving RemoveCampState');
   }
 
   setDescription(activePlayerId: number) {}
@@ -38,28 +38,24 @@ class PlaceMerryManInSpaceState implements State {
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({
-      text: _('${you} must select a Space to place a Merry Man in'),
+      text: _('${you} must select a Camp to remove'),
       args: {
         you: '${you}',
       },
     });
 
-    Object.values(this.args._private.spaces).forEach((space) => {
-      this.game.addPrimaryActionButton({
-        id: `${space.id}_btn`,
-        text: _(space.name),
-        callback: () => {
-          if (
-            this.args._private.robinHoodInSupply &&
-            !this.args._private.merryMenInSupply
-          ) {
-            this.updateInterfaceConfirm({ space, placeRobinHood: true });
-          } else if (this.args._private.robinHoodInSupply) {
-            this.updateInterfacePlaceRobinHood({ space });
-          } else {
-            this.updateInterfaceConfirm({ space });
-          }
-        },
+    const camps: GestForce[] = [];
+    this.args.camps.forEach((camp) => {
+      const selectedCamp = this.game.gameMap.getForcePublic({
+        type: CAMP,
+        spaceId: camp.location,
+        hidden: camp.hidden,
+        exclude: camps,
+      });
+      camps.push(selectedCamp);
+      this.game.setElementSelectable({
+        id: selectedCamp.id,
+        callback: () => this.updateInterfaceConfirm({ camp: selectedCamp }),
       });
     });
 
@@ -69,54 +65,24 @@ class PlaceMerryManInSpaceState implements State {
     this.game.addUndoButtons(this.args);
   }
 
-  private updateInterfacePlaceRobinHood({ space }: { space: GestSpace }) {
+  private updateInterfaceConfirm({ camp }: { camp: GestForce }) {
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({
-      text: _('Place Robin Hood?'),
-      args: {},
-    });
-
-    this.game.addPrimaryActionButton({
-      id: 'yes_btn',
-      text: _('Yes'),
-      callback: () =>
-        this.updateInterfaceConfirm({ space, placeRobinHood: true }),
-    });
-    this.game.addPrimaryActionButton({
-      id: 'no_btn',
-      text: _('No'),
-      callback: () =>
-        this.updateInterfaceConfirm({ space, placeRobinHood: false }),
-    });
-    this.game.addCancelButton();
-  }
-
-  private updateInterfaceConfirm({
-    space,
-    placeRobinHood = false,
-  }: {
-    space: GestSpace;
-    placeRobinHood?: boolean;
-  }) {
-    this.game.clearPossible();
-
-    this.game.clientUpdatePageTitle({
-      text: placeRobinHood
-        ? _('Place Robin Hood in ${spaceName}?')
-        : _('Place a Merry Man in ${spaceName}?'),
+      text: _('Remove camp from ${spaceName}?'),
       args: {
-        spaceName: _(space.name),
+        spaceName: _(this.game.gamedatas.spaces[camp.location].name),
       },
     });
+    this.game.setElementSelected({ id: camp.id });
 
     const callback = () => {
       this.game.clearPossible();
       this.game.takeAction({
-        action: 'actPlaceMerryManInSpace',
+        action: 'actRemoveCamp',
         args: {
-          spaceId: space.id,
-          placeRobinHood,
+          spaceId: camp.location,
+          hidden: camp.hidden,
         },
       });
     };

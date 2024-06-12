@@ -68,13 +68,17 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     confiscate: ConfiscateState;
     disperse: DisperseState
     donate: DonateState;
+    eventATaleOfTwoLoversLight: EventATaleOfTwoLoversLightState;
     eventAmbushDark: EventAmbushDarkState;
     hire: HireState;
     moveCarriage: MoveCarriageState;
     patrol: PatrolState;
+    placeHenchmen: PlaceHenchmenState;
     placeMerryManInSpace: PlaceMerryManInSpaceState;
     recruit: RecruitState;
     ride: RideState;
+    removeCamp: RemoveCampState;
+    removeTraveller: RemoveTravellerState;
     rob: RobState;
     royalInspectionPlaceRobinHood: RoyalInspectionPlaceRobinHoodState;
     royalInspectionRedeploymentRobinHood: RoyalInspectionRedeploymentRobinHoodState;
@@ -130,13 +134,17 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
       confiscate: new ConfiscateState(this),
       disperse: new DisperseState(this),
       donate: new DonateState(this),
+      eventATaleOfTwoLoversLight: new EventATaleOfTwoLoversLightState(this),
       eventAmbushDark: new EventAmbushDarkState(this),
       hire: new HireState(this),
       moveCarriage: new MoveCarriageState(this),
       patrol: new PatrolState(this),
+      placeHenchmen: new PlaceHenchmenState(this),
       placeMerryManInSpace: new PlaceMerryManInSpaceState(this),
       recruit: new RecruitState(this),
       ride: new RideState(this),
+      removeCamp: new RemoveCampState(this),
+      removeTraveller: new RemoveTravellerState(this),
       rob: new RobState(this),
       royalInspectionPlaceRobinHood: new RoyalInspectionPlaceRobinHoodState(this),
       royalInspectionRedeploymentRobinHood: new RoyalInspectionRedeploymentRobinHoodState(this),

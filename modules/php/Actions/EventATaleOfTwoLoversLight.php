@@ -10,17 +10,18 @@ use AGestOfRobinHood\Core\Stats;
 use AGestOfRobinHood\Helpers\GameMap;
 use AGestOfRobinHood\Helpers\Locations;
 use AGestOfRobinHood\Helpers\Utils;
+use AGestOfRobinHood\Managers\Cards;
 use AGestOfRobinHood\Managers\Forces;
 use AGestOfRobinHood\Managers\Markers;
 use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\Spaces;
 
 
-class Inspire extends \AGestOfRobinHood\Models\AtomicAction
+class EventATaleOfTwoLoversLight extends \AGestOfRobinHood\Actions\Plot
 {
   public function getState()
   {
-    return ST_INSPIRE;
+    return ST_EVENT_A_TALE_OF_TWO_LOVERS_LIGHT;
   }
 
   // ..######..########....###....########.########
@@ -39,20 +40,10 @@ class Inspire extends \AGestOfRobinHood\Models\AtomicAction
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function stInspire()
+  public function stEventATaleOfTwoLoversLight()
   {
-    $player = self::getPlayer();
-    $robinHood = Forces::get(ROBIN_HOOD);
-    $robinHood->reveal($player);
 
-    $space = $robinHood->getSpace();
-    if ($space->getStatus() === REVOLTING) {
-      Players::moveRoyalFavour($player, 1, JUSTICE);
-    } else if ($space->getStatus() === SUBMISSIVE) {
-      $space->revolt($player);
-    }
-
-    $this->resolveAction(['automatic' => true]);
+    // $this->resolveAction(['automatic' => true]);
   }
 
   // ....###....########...######....######.
@@ -63,9 +54,14 @@ class Inspire extends \AGestOfRobinHood\Models\AtomicAction
   // .##.....##.##....##..##....##..##....##
   // .##.....##.##.....##..######....######.
 
-  public function argsInspire()
+  public function argsEventATaleOfTwoLoversLight()
   {
-    $data = [];
+
+    $data = [
+      '_private' => [
+        $this->ctx->getPlayerId() => $this->getOptions(),
+      ]
+    ];
 
     return $data;
   }
@@ -86,16 +82,48 @@ class Inspire extends \AGestOfRobinHood\Models\AtomicAction
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function actPassInspire()
+  public function actPassEventATaleOfTwoLoversLight()
   {
     $player = self::getPlayer();
     // Stats::incPassActionCount($player->getId(), 1);
     Engine::resolve(PASS);
   }
 
-  public function actInspire($args)
+  public function actEventATaleOfTwoLoversLight($args)
   {
-    self::checkAction('actInspire');
+    self::checkAction('actEventATaleOfTwoLoversLight');
+    $spaceId = $args['spaceId'];
+    $merryManId = $args['merryManId'];
+    $henchmenCount = $args['henchmenCount'];
+
+    $options = $this->getOptions();
+
+    if (!isset($options[$spaceId])) {
+      throw new \feException("ERROR 066");
+    }
+
+    $option = $options[$spaceId];
+
+    $merryMan = Utils::array_find($option['merryMen'], function ($force) use ($merryManId) {
+      return $force->getId() === $merryManId;
+    });
+    if ($merryMan === null) {
+      throw new \feException("ERROR 066");
+    }
+
+    if ($henchmenCount > count($option['henchmen'])) {
+      throw new \feException("ERROR 067");
+    }
+
+    $player = self::getPlayer();
+
+    $merryMan->removeFromGame($player);
+
+    for ($i = 0; $i < $henchmenCount; $i++) {
+      $option['henchmen'][$i]->removeFromGame($player);
+    }
+
+    Players::moveRoyalFavour($player, 1, JUSTICE);
 
     $this->resolveAction($args);
   }
@@ -108,23 +136,18 @@ class Inspire extends \AGestOfRobinHood\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
-  public function getName()
+  public function getOptions()
   {
-    return clienttranslate('Inspire');
-  }
+    $options = GameMap::getSpacesWithMerryMen();
 
-  public function canBePerformed($player)
-  {
-    $robinHood = Forces::get(ROBIN_HOOD);
-    if (!$robinHood->IsHidden()) {
-      return false;
+    $henchmen = Forces::getOfType(HENCHMEN);
+
+    foreach ($options as $spaceId => $option) {
+      $henchmenInSpace = Utils::filter($henchmen, function ($force) use ($spaceId) {
+        return $force->getLocation() === $spaceId;
+      });
+      $options[$spaceId]['henchmen'] = $henchmenInSpace;
     }
-    if (!in_array($robinHood->getLocation(), PARISHES)) {
-      return false;
-    }
-    $space = Spaces::get($robinHood->getLocation());
-
-    return $space->isSubmissive() || $space->isRevolting();
+    return $options;
   }
-
 }

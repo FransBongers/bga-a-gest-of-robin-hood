@@ -1,19 +1,19 @@
-class PlaceMerryManInSpaceState implements State {
+class RemoveTravellerState implements State {
   private game: AGestOfRobinHoodGame;
-  private args: OnEnteringPlaceMerryManInSpaceStateArgs;
+  private args: OnEnteringRemoveTravellerStateArgs;
 
   constructor(game: AGestOfRobinHoodGame) {
     this.game = game;
   }
 
-  onEnteringState(args: OnEnteringPlaceMerryManInSpaceStateArgs) {
-    debug('Entering PlaceMerryManInSpaceState');
+  onEnteringState(args: OnEnteringRemoveTravellerStateArgs) {
+    debug('Entering RemoveTravellerState');
     this.args = args;
     this.updateInterfaceInitialStep();
   }
 
   onLeavingState() {
-    debug('Leaving PlaceMerryManInSpaceState');
+    debug('Leaving RemoveTravellerState');
   }
 
   setDescription(activePlayerId: number) {}
@@ -37,29 +37,14 @@ class PlaceMerryManInSpaceState implements State {
   private updateInterfaceInitialStep() {
     this.game.clearPossible();
 
-    this.game.clientUpdatePageTitle({
-      text: _('${you} must select a Space to place a Merry Man in'),
-      args: {
-        you: '${you}',
-      },
-    });
+    this.updatePageTitle();
 
-    Object.values(this.args._private.spaces).forEach((space) => {
+    const camps: GestForce[] = [];
+    this.args.from.forEach((location) => {
       this.game.addPrimaryActionButton({
-        id: `${space.id}_btn`,
-        text: _(space.name),
-        callback: () => {
-          if (
-            this.args._private.robinHoodInSupply &&
-            !this.args._private.merryMenInSupply
-          ) {
-            this.updateInterfaceConfirm({ space, placeRobinHood: true });
-          } else if (this.args._private.robinHoodInSupply) {
-            this.updateInterfacePlaceRobinHood({ space });
-          } else {
-            this.updateInterfaceConfirm({ space });
-          }
-        },
+        id: `${location}_btn`,
+        text: this.getLocationName({ location }),
+        callback: () => this.updateInterfaceConfirm({ location }),
       });
     });
 
@@ -69,54 +54,17 @@ class PlaceMerryManInSpaceState implements State {
     this.game.addUndoButtons(this.args);
   }
 
-  private updateInterfacePlaceRobinHood({ space }: { space: GestSpace }) {
+  private updateInterfaceConfirm({ location }: { location: string }) {
     this.game.clearPossible();
 
-    this.game.clientUpdatePageTitle({
-      text: _('Place Robin Hood?'),
-      args: {},
-    });
-
-    this.game.addPrimaryActionButton({
-      id: 'yes_btn',
-      text: _('Yes'),
-      callback: () =>
-        this.updateInterfaceConfirm({ space, placeRobinHood: true }),
-    });
-    this.game.addPrimaryActionButton({
-      id: 'no_btn',
-      text: _('No'),
-      callback: () =>
-        this.updateInterfaceConfirm({ space, placeRobinHood: false }),
-    });
-    this.game.addCancelButton();
-  }
-
-  private updateInterfaceConfirm({
-    space,
-    placeRobinHood = false,
-  }: {
-    space: GestSpace;
-    placeRobinHood?: boolean;
-  }) {
-    this.game.clearPossible();
-
-    this.game.clientUpdatePageTitle({
-      text: placeRobinHood
-        ? _('Place Robin Hood in ${spaceName}?')
-        : _('Place a Merry Man in ${spaceName}?'),
-      args: {
-        spaceName: _(space.name),
-      },
-    });
+    this.updatePageTitleConfirm({ location });
 
     const callback = () => {
       this.game.clearPossible();
       this.game.takeAction({
-        action: 'actPlaceMerryManInSpace',
+        action: 'actRemoveTraveller',
         args: {
-          spaceId: space.id,
-          placeRobinHood,
+          from: location,
         },
       });
     };
@@ -143,6 +91,39 @@ class PlaceMerryManInSpaceState implements State {
   //  .##.....##....##.....##..##........##.....##.......##...
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
+
+  private updatePageTitle() {
+    if (this.args.cardType === MONK) {
+      this.game.clientUpdatePageTitle({
+        text: _('${you} must choose where to remove a Monk from'),
+        args: {
+          you: '${you}',
+        },
+      });
+    }
+  }
+
+  private updatePageTitleConfirm({ location }: { location: string }) {
+    if (this.args.cardType === MONK) {
+      this.game.clientUpdatePageTitle({
+        text: _('Remove a Monk from the ${locationName}'),
+        args: {
+          locationName: this.getLocationName({ location }),
+        },
+      });
+    }
+  }
+
+  private getLocationName({ location }) {
+    switch (location) {
+      case TRAVELLERS_DECK:
+        return _('Travellers Deck');
+      case TRAVELLERS_DISCARD:
+        return _('Discard pile');
+      default:
+        return '';
+    }
+  }
 
   //  ..######..##.......####..######..##....##
   //  .##....##.##........##..##....##.##...##.

@@ -139,13 +139,17 @@ class ChooseActionState implements State {
 
   addActionButtons({ pass }: { pass: boolean }) {
     [SINGLE_PLOT, EVENT, PLOTS_AND_DEEDS].forEach((action) => {
-      if (this.args[action]) {
-        this.game.addPrimaryActionButton({
-          id: `${action}_select`,
-          text: this.getActionName({ action }),
-          callback: () => this.updateInterfaceConfirm({ action, pass }),
-        });
+      if (!this.args.track[action]) {
+        return;
       }
+      if (action === EVENT && !this.args.canResolveEvent && !pass) {
+        return;
+      }
+      this.game.addPrimaryActionButton({
+        id: `${action}_select`,
+        text: this.getActionName({ action }),
+        callback: () => this.updateInterfaceConfirm({ action, pass }),
+      });
     });
   }
 

@@ -245,6 +245,7 @@ class Recruit extends \AGestOfRobinHood\Actions\Plot
       $camp->setHidden(0);
     }
     Notifications::placeForce($player, $camp, $space);
+    Players::moveRoyalFavour($player, 1, JUSTICE);
   }
 
   private function placeMerryMen($player, $recruitOption, $space, $recruitRobinHood)

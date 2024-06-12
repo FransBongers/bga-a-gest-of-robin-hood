@@ -2,6 +2,8 @@
 
 namespace AGestOfRobinHood\Cards\Events;
 
+use AGestOfRobinHood\Managers\Players;
+
 class Event03_QueenEleanor extends \AGestOfRobinHood\Models\EventCard
 {
   public function __construct($row)
@@ -14,5 +16,17 @@ class Event03_QueenEleanor extends \AGestOfRobinHood\Models\EventCard
     $this->carriageMoves = 0;
     $this->eventType = FORTUNE_EVENT;
     $this->setupLocation = FORTUNE_EVENTS_POOL;
+  }
+
+  public function getFlow()
+  {
+    return [
+      'children' => [
+        [
+          'action' => FORTUNE_EVENT_QUEEN_ELEANOR,
+          'playerId' => Players::getSheriffPlayerId(),
+        ],
+      ]
+    ];
   }
 }

@@ -14,6 +14,9 @@ class SouthwellForest extends \AGestOfRobinHood\Models\Space
       SHIRE_WOOD,
       TUXFORD,
     ];
+    $this->adjacentViaOllertonHillSpaceIds = [
+      BLYTH
+    ];
     $this->road = NOTTINGHAM;
   }
 }

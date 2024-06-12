@@ -12,6 +12,7 @@ class Bingham extends \AGestOfRobinHood\Models\Space
     $this->adjacentSpaceIds = [
       REMSTON
     ];
+    
     $this->road = REMSTON;
   }
 }

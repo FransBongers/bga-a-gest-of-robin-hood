@@ -1,18 +1,19 @@
-class SneakState implements State {
-  private game: AGestOfRobinHoodGame;
+class SneakState extends MoveForcesState implements State {
   private args: OnEnteringSneakStateArgs;
-  private selectedSpace: string | null = null;
-  private selectedMerryMen: string[] = [];
+  private selectedOption: SneakOption | null = null;
+  private moves: Record<string, string[]>;
 
   constructor(game: AGestOfRobinHoodGame) {
-    this.game = game;
+    super(game);
   }
 
   onEnteringState(args: OnEnteringSneakStateArgs) {
     debug('Entering SneakState');
     this.args = args;
-    this.selectedSpace = null;
-    this.selectedMerryMen = [];
+    this.selectedOption = null;
+    this.moves = {};
+    this.localMoves = {};
+
     this.updateInterfaceInitialStep();
   }
 
@@ -42,70 +43,111 @@ class SneakState implements State {
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({
-      text: _('${you} must select Merry Men to move'),
+      text: _('${you} must select a space to move Merry Men from'),
       args: {
         you: '${you}',
       },
     });
 
-    this.game.addPrimaryActionButton({
-      id: 'done_btn',
-      text: _('Done'),
-      callback: () => this.updateInterfaceSelectAdjacentSpace(),
-      extraClasses:
-        this.selectedSpace === null || this.selectedMerryMen.length === 0
-          ? 'disabled'
-          : '',
+    Object.entries(this.args._private.options).forEach(([spacId, option]) => {
+      this.game.addPrimaryActionButton({
+        id: `${spacId}_btn`,
+        text: _(option.space.name),
+        callback: () => {
+          this.selectedOption = option;
+          this.udpateInterfaceSelectMerryMan();
+        },
+      });
     });
-
-    this.setMerryMenSelectable();
 
     this.game.addPassButton({
       optionalAction: this.args.optionalAction,
     });
-    if (this.selectedSpace !== null) {
-      this.game.addCancelButton();
-    } else {
-      this.game.addUndoButtons(this.args);
-    }
+
+    this.game.addUndoButtons(this.args);
   }
 
-  private updateInterfaceSelectAdjacentSpace() {
+  private udpateInterfaceSelectMerryMan() {
     this.game.clearPossible();
+    const movedMerryMen = Object.values(this.moves).flat();
+
+    if (movedMerryMen.length === this.selectedOption.merryMen.length) {
+      this.updateInterfaceConfirm();
+      return;
+    }
 
     this.game.clientUpdatePageTitle({
-      text: _('${you} must select an adjacent space to move to'),
+      text: _('${you} must select a Merry Man to move'),
       args: {
         you: '${you}',
       },
     });
 
-    this.selectedMerryMen.forEach((merryManId) =>
-      this.game.setElementSelected({ id: merryManId })
-    );
-    const option = this.args._private.options[this.selectedSpace];
-    option.adjacentSpaces.forEach((space) => {
+    this.selectedOption.merryMen
+      .filter((merryMan) => !movedMerryMen.includes(merryMan.id))
+      .forEach((merryMan) => {
+        this.game.setElementSelectable({
+          id: merryMan.id,
+          callback: () => this.updateInterfaceSelectAdjacentSpace({ merryMan }),
+        });
+      });
+
+    this.game.addPrimaryActionButton({
+      id: 'done_btn',
+      text: _('Done'),
+      callback: () => this.updateInterfaceConfirm(),
+      extraClasses: movedMerryMen.length === 0 ? DISABLED : '',
+    });
+
+    this.addCancelButton();
+  }
+
+  private updateInterfaceSelectAdjacentSpace({
+    merryMan,
+  }: {
+    merryMan: GestForce;
+  }) {
+    this.game.clearPossible();
+
+    this.game.clientUpdatePageTitle({
+      text: _('${you} must select an adjacent space to move your Merry Man to'),
+      args: {
+        you: '${you}',
+      },
+    });
+
+    this.game.setElementSelected({ id: merryMan.id });
+    this.selectedOption.adjacentSpaces.forEach((space) => {
       this.game.addPrimaryActionButton({
         id: `${space.id}_btn`,
         text: _(space.name),
-        callback: () => this.updateInterfaceConfirm({ toSpace: space }),
+        callback: async () => {
+          const fromSpaceId = merryMan.location;
+          merryMan.location = space.id;
+          this.addLocalMove({ force: merryMan, fromSpaceId });
+          if (this.moves[space.id]) {
+            this.moves[space.id].push(merryMan.id);
+          } else {
+            this.moves[space.id] = [merryMan.id];
+          }
+          // this.moves[merryMan.id] = space.id;
+          await this.game.gameMap.forces[`${MERRY_MEN}_${space.id}`].addCard(
+            merryMan
+          );
+          this.udpateInterfaceSelectMerryMan();
+        },
       });
     });
-    this.game.addCancelButton();
+
+    this.addCancelButton();
   }
 
-  private updateInterfaceConfirm({ toSpace }: { toSpace: GestSpace }) {
+  private updateInterfaceConfirm() {
     this.game.clearPossible();
 
-    this.selectedMerryMen.forEach((merryManId) =>
-      this.game.setElementSelected({ id: merryManId })
-    );
-
     this.game.clientUpdatePageTitle({
-      text: _('Move Merry Men to ${spacesName}?'),
-      args: {
-        spacesName: _(toSpace.name),
-      },
+      text: _('Confirm moves?'),
+      args: {},
     });
 
     const callback = () => {
@@ -113,9 +155,8 @@ class SneakState implements State {
       this.game.takeAction({
         action: 'actSneak',
         args: {
-          fromSpaceId: this.selectedSpace,
-          toSpaceId: toSpace.id,
-          merryMenIds: this.selectedMerryMen,
+          spaceId: this.selectedOption.space.id,
+          moves: this.moves,
         },
       });
     };
@@ -132,7 +173,7 @@ class SneakState implements State {
       });
     }
 
-    this.game.addCancelButton();
+    this.addCancelButton();
   }
 
   //  .##.....##.########.####.##.......####.########.##....##
@@ -142,40 +183,6 @@ class SneakState implements State {
   //  .##.....##....##.....##..##........##.....##.......##...
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
-
-  setMerryMenSelectable() {
-    Object.entries(this.args._private.options).forEach(([spaceId, option]) => {
-      if (this.selectedSpace && this.selectedSpace !== spaceId) {
-        return;
-      }
-      option.merryMen.forEach((merryMan) => {
-        if (
-          this.selectedMerryMen.some((selectedId) => selectedId === merryMan.id)
-        ) {
-          this.game.setElementSelected({ id: merryMan.id });
-          this.game.setElementSelectable({
-            id: merryMan.id,
-            callback: () =>
-              this.handleMerryMenClick({
-                currentStatus: 'selected',
-                merryManId: merryMan.id,
-                spaceId: option.space.id,
-              }),
-          });
-        } else {
-          this.game.setElementSelectable({
-            id: merryMan.id,
-            callback: () =>
-              this.handleMerryMenClick({
-                currentStatus: 'selectable',
-                merryManId: merryMan.id,
-                spaceId: option.space.id,
-              }),
-          });
-        }
-      });
-    });
-  }
 
   //  ..######..##.......####..######..##....##
   //  .##....##.##........##..##....##.##...##.
@@ -192,31 +199,4 @@ class SneakState implements State {
   // .##.....##.#########.##..####.##.....##.##.......##.............##
   // .##.....##.##.....##.##...###.##.....##.##.......##.......##....##
   // .##.....##.##.....##.##....##.########..########.########..######.
-
-  private handleMerryMenClick({
-    currentStatus,
-    merryManId,
-    spaceId,
-  }: {
-    currentStatus: 'selected' | 'selectable';
-    merryManId: string;
-    spaceId: string;
-  }) {
-    if (currentStatus === 'selectable') {
-      this.selectedMerryMen.push(merryManId);
-    } else if (currentStatus === 'selected') {
-      this.selectedMerryMen = this.selectedMerryMen.filter(
-        (id) => id !== merryManId
-      );
-    }
-    if (currentStatus === 'selectable' && this.selectedSpace === null) {
-      this.selectedSpace = spaceId;
-    } else if (
-      currentStatus === 'selected' &&
-      this.selectedMerryMen.length === 0
-    ) {
-      this.selectedSpace = null;
-    }
-    this.updateInterfaceInitialStep();
-  }
 }

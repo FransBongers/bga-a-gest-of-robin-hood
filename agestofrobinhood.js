@@ -1611,6 +1611,12 @@ var CardManager = (function () {
     };
     return CardManager;
 }());
+var PlaceForcesState = (function () {
+    function PlaceForcesState(game) {
+        this.game = game;
+    }
+    return PlaceForcesState;
+}());
 var MIN_PLAY_AREA_WIDTH = 1500;
 var MIN_NOTIFICATION_MS = 1200;
 var ENABLED = 'enabled';
@@ -1683,7 +1689,25 @@ var FLIP_ALL_MERRY_MAN_TO_HIDDEN = 'flipAllMerryManToHidden';
 var PASSIVE = 'passive';
 var REVOLTING = 'revolting';
 var SUBMISSIVE = 'submissive';
+var REGULAR_EVENTS_POOL = 'regularEventsPool';
+var FORTUNE_EVENTS_POOL = 'fortuneEventsPool';
+var ROYAL_INSPECTIONS_POOL = 'royalInspectionsPool';
+var EVENTS_DECK = 'eventsDeck';
+var TRAVELLERS_DECK = 'travellersDeck';
+var TRAVELLERS_POOL = 'travellersPool';
+var EVENTS_DISCARD = 'eventsDiscard';
+var TRAVELLERS_DISCARD = 'travellersDiscard';
+var TRAVELLERS_VICTIMS_PILE = 'travellersVictimsPile';
+var REMOVED_FROM_GAME = 'removedFromGame';
 var GAIN_TWO_SHILLINGS = 'gainTwoShillings';
+var LIGHT = 'light';
+var DARK = 'dark';
+var MONK = 'monk';
+var MONK_IDS = [
+    'Traveller06_Monks',
+    'Traveller07_Monks',
+    'Traveller08_Monks',
+];
 define([
     'dojo',
     'dojo/_base/declare',
@@ -1727,13 +1751,17 @@ var AGestOfRobinHood = (function () {
             confiscate: new ConfiscateState(this),
             disperse: new DisperseState(this),
             donate: new DonateState(this),
+            eventATaleOfTwoLoversLight: new EventATaleOfTwoLoversLightState(this),
             eventAmbushDark: new EventAmbushDarkState(this),
             hire: new HireState(this),
             moveCarriage: new MoveCarriageState(this),
             patrol: new PatrolState(this),
+            placeHenchmen: new PlaceHenchmenState(this),
             placeMerryManInSpace: new PlaceMerryManInSpaceState(this),
             recruit: new RecruitState(this),
             ride: new RideState(this),
+            removeCamp: new RemoveCampState(this),
+            removeTraveller: new RemoveTravellerState(this),
             rob: new RobState(this),
             royalInspectionPlaceRobinHood: new RoyalInspectionPlaceRobinHoodState(this),
             royalInspectionRedeploymentRobinHood: new RoyalInspectionRedeploymentRobinHoodState(this),
@@ -3151,6 +3179,26 @@ var GameMap = (function () {
             });
         });
     };
+    GameMap.prototype.removeFromGamePublic = function (_a) {
+        return __awaiter(this, arguments, void 0, function (_b) {
+            var selected;
+            var type = _b.type, hidden = _b.hidden, fromSpaceId = _b.fromSpaceId;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        selected = this.getForcePublic({
+                            type: type,
+                            spaceId: fromSpaceId,
+                            hidden: hidden,
+                        });
+                        return [4, this.game.forceManager.removeCard(selected)];
+                    case 1:
+                        _c.sent();
+                        return [2];
+                }
+            });
+        });
+    };
     GameMap.prototype.returnToSupplyPublic = function (_a) {
         return __awaiter(this, arguments, void 0, function (_b) {
             var selected;
@@ -3417,6 +3465,7 @@ var NotificationManager = (function () {
             'revealForce',
             'parishStatus',
             'payShillings',
+            'placeCardInTravellersDeck',
             'placeForceAll',
             'placeForce',
             'placeForcePrivate',
@@ -3425,6 +3474,8 @@ var NotificationManager = (function () {
             'putCardInVictimsPile',
             'redeploymentSheriff',
             'removeCardFromGame',
+            'removeForceFromGamePrivate',
+            'removeForceFromGamePublic',
             'returnTravellersDiscardToMainDeck',
             'returnToSupply',
             'returnToSupplyPrivate',
@@ -3461,6 +3512,7 @@ var NotificationManager = (function () {
                 'placeForce',
                 'sneakMerryMen',
                 'moveMerryMenPublic',
+                'removeForceFromGamePublic',
             ].forEach(function (notifId) {
                 _this.game
                     .framework()
@@ -3741,6 +3793,13 @@ var NotificationManager = (function () {
             });
         });
     };
+    NotificationManager.prototype.notif_placeCardInTravellersDeck = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2];
+            });
+        });
+    };
     NotificationManager.prototype.notif_placeForce = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
             var _a, force, spaceId, count;
@@ -3818,6 +3877,16 @@ var NotificationManager = (function () {
             return [2];
         }); });
     };
+    NotificationManager.prototype.notif_parishStatus = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, spaceId, status;
+            return __generator(this, function (_b) {
+                _a = notif.args, spaceId = _a.spaceId, status = _a.status;
+                this.game.gameMap.setSpaceStatus({ spaceId: spaceId, status: status });
+                return [2];
+            });
+        });
+    };
     NotificationManager.prototype.notif_redeploymentSheriff = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
             var forces, promises;
@@ -3843,6 +3912,40 @@ var NotificationManager = (function () {
         return __awaiter(this, void 0, void 0, function () { return __generator(this, function (_a) {
             return [2];
         }); });
+    };
+    NotificationManager.prototype.notif_removeForceFromGamePublic = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, force, spaceId;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = notif.args, force = _a.force, spaceId = _a.spaceId;
+                        return [4, this.game.gameMap.removeFromGamePublic({
+                                type: force.type,
+                                hidden: force.hidden,
+                                fromSpaceId: spaceId,
+                            })];
+                    case 1:
+                        _b.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    NotificationManager.prototype.notif_removeForceFromGamePrivate = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var force;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        force = notif.args.force;
+                        return [4, this.game.forceManager.removeCard(force)];
+                    case 1:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
     };
     NotificationManager.prototype.notif_revealForce = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
@@ -3885,16 +3988,6 @@ var NotificationManager = (function () {
                         _b.sent();
                         return [2];
                 }
-            });
-        });
-    };
-    NotificationManager.prototype.notif_parishStatus = function (notif) {
-        return __awaiter(this, void 0, void 0, function () {
-            var _a, spaceId, status;
-            return __generator(this, function (_b) {
-                _a = notif.args, spaceId = _a.spaceId, status = _a.status;
-                this.game.gameMap.setSpaceStatus({ spaceId: spaceId, status: status });
-                return [2];
             });
         });
     };
@@ -4760,13 +4853,17 @@ var ChooseActionState = (function () {
         var _this = this;
         var pass = _a.pass;
         [SINGLE_PLOT, EVENT, PLOTS_AND_DEEDS].forEach(function (action) {
-            if (_this.args[action]) {
-                _this.game.addPrimaryActionButton({
-                    id: "".concat(action, "_select"),
-                    text: _this.getActionName({ action: action }),
-                    callback: function () { return _this.updateInterfaceConfirm({ action: action, pass: pass }); },
-                });
+            if (!_this.args.track[action]) {
+                return;
             }
+            if (action === EVENT && !_this.args.canResolveEvent && !pass) {
+                return;
+            }
+            _this.game.addPrimaryActionButton({
+                id: "".concat(action, "_select"),
+                text: _this.getActionName({ action: action }),
+                callback: function () { return _this.updateInterfaceConfirm({ action: action, pass: pass }); },
+            });
         });
     };
     return ChooseActionState;
@@ -5113,6 +5210,202 @@ var DisperseState = (function () {
     };
     return DisperseState;
 }());
+var DonateState = (function () {
+    function DonateState(game) {
+        this.game = game;
+    }
+    DonateState.prototype.onEnteringState = function (args) {
+        debug('Entering DonateState');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    DonateState.prototype.onLeavingState = function () {
+        debug('Leaving DonateState');
+    };
+    DonateState.prototype.setDescription = function (activePlayerId) { };
+    DonateState.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must select a Parish to Donate in'),
+            args: {
+                you: '${you}',
+            },
+        });
+        this.args.spaces.forEach(function (space) {
+            _this.game.addPrimaryActionButton({
+                id: "".concat(space.id, "_btn"),
+                text: _(space.name),
+                callback: function () { return _this.updateInterfaceConfirm({ space: space }); },
+            });
+        });
+        this.game.addPassButton({
+            optionalAction: this.args.optionalAction,
+        });
+        this.game.addUndoButtons(this.args);
+    };
+    DonateState.prototype.updateInterfaceConfirm = function (_a) {
+        var _this = this;
+        var space = _a.space;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('Donate in ${spaceName}?'),
+            args: {
+                spaceName: _(space.name),
+            },
+        });
+        var callback = function () {
+            _this.game.clearPossible();
+            _this.game.takeAction({
+                action: 'actDonate',
+                args: {
+                    spaceId: space.id,
+                },
+            });
+        };
+        if (this.game.settings.get({
+            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+        }) === PREF_ENABLED) {
+            callback();
+        }
+        else {
+            this.game.addConfirmButton({
+                callback: callback,
+            });
+        }
+        this.game.addCancelButton();
+    };
+    return DonateState;
+}());
+var EventATaleOfTwoLoversLightState = (function () {
+    function EventATaleOfTwoLoversLightState(game) {
+        this.game = game;
+    }
+    EventATaleOfTwoLoversLightState.prototype.onEnteringState = function (args) {
+        debug('Entering EventATaleOfTwoLoversLightState');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    EventATaleOfTwoLoversLightState.prototype.onLeavingState = function () {
+        debug('Leaving EventATaleOfTwoLoversLightState');
+    };
+    EventATaleOfTwoLoversLightState.prototype.setDescription = function (activePlayerId) { };
+    EventATaleOfTwoLoversLightState.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must select a Space'),
+            args: {
+                you: '${you}',
+            },
+        });
+        Object.entries(this.args._private).forEach(function (_a) {
+            var spaceId = _a[0], option = _a[1];
+            return _this.game.addPrimaryActionButton({
+                id: "".concat(spaceId, "_btn"),
+                text: _(option.space.name),
+                callback: function () { return _this.updateInterfaceSelectMerryMen(option); },
+            });
+        });
+        this.game.addPassButton({
+            optionalAction: this.args.optionalAction,
+        });
+        this.game.addUndoButtons(this.args);
+    };
+    EventATaleOfTwoLoversLightState.prototype.updateInterfaceSelectMerryMen = function (_a) {
+        var _this = this;
+        var space = _a.space, merryMen = _a.merryMen, henchmen = _a.henchmen;
+        this.game.clearPossible();
+        if (merryMen.length === 1) {
+            this.updateInterfaceSelectHenchmen({
+                space: space,
+                henchmen: henchmen,
+                merryMan: merryMen[0],
+            });
+            return;
+        }
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must select a Merry Man to remove from the game'),
+            args: {
+                you: '${you}',
+            },
+        });
+        merryMen.forEach(function (merryMan) {
+            _this.game.setElementSelectable({
+                id: merryMan.id,
+                callback: function () {
+                    return _this.updateInterfaceSelectHenchmen({ space: space, merryMan: merryMan, henchmen: henchmen });
+                },
+            });
+        });
+        this.game.addCancelButton();
+    };
+    EventATaleOfTwoLoversLightState.prototype.updateInterfaceSelectHenchmen = function (_a) {
+        var _this = this;
+        var space = _a.space, merryMan = _a.merryMan, henchmen = _a.henchmen;
+        this.game.clearPossible();
+        if (henchmen.length === 0) {
+            this.updateInterfaceConfirm({ space: space, merryMan: merryMan, henchmenCount: 0 });
+            return;
+        }
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must choose how many Henchmen to remove from the game'),
+            args: {
+                you: '${you}',
+            },
+        });
+        var _loop_3 = function (i) {
+            this_1.game.addPrimaryActionButton({
+                id: "".concat(i, "_btn"),
+                text: "".concat(i),
+                callback: function () {
+                    _this.updateInterfaceConfirm({ space: space, henchmenCount: i, merryMan: merryMan });
+                },
+            });
+        };
+        var this_1 = this;
+        for (var i = 0; i <= henchmen.length; i++) {
+            _loop_3(i);
+        }
+        this.game.addCancelButton();
+    };
+    EventATaleOfTwoLoversLightState.prototype.updateInterfaceConfirm = function (_a) {
+        var _this = this;
+        var space = _a.space, merryMan = _a.merryMan, henchmenCount = _a.henchmenCount;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('Remove 1 Merry Man and ${count} Henchmen from ${spaceName} from the game?'),
+            args: {
+                spaceName: _(space.name),
+                count: henchmenCount,
+            },
+        });
+        this.game.setElementSelected({ id: merryMan.id });
+        var callback = function () {
+            _this.game.clearPossible();
+            _this.game.takeAction({
+                action: 'actEventATaleOfTwoLoversLight',
+                args: {
+                    spaceId: space.id,
+                    merryManId: merryMan.id,
+                    henchmenCount: henchmenCount,
+                },
+            });
+        };
+        if (this.game.settings.get({
+            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+        }) === PREF_ENABLED) {
+            callback();
+        }
+        else {
+            this.game.addConfirmButton({
+                callback: callback,
+            });
+        }
+        this.game.addCancelButton();
+    };
+    return EventATaleOfTwoLoversLightState;
+}());
 var EventAmbushDarkState = (function () {
     function EventAmbushDarkState(game) {
         this.game = game;
@@ -5186,73 +5479,6 @@ var EventAmbushDarkState = (function () {
     };
     return EventAmbushDarkState;
 }());
-var DonateState = (function () {
-    function DonateState(game) {
-        this.game = game;
-    }
-    DonateState.prototype.onEnteringState = function (args) {
-        debug('Entering DonateState');
-        this.args = args;
-        this.updateInterfaceInitialStep();
-    };
-    DonateState.prototype.onLeavingState = function () {
-        debug('Leaving DonateState');
-    };
-    DonateState.prototype.setDescription = function (activePlayerId) { };
-    DonateState.prototype.updateInterfaceInitialStep = function () {
-        var _this = this;
-        this.game.clearPossible();
-        this.game.clientUpdatePageTitle({
-            text: _('${you} must select a Parish to Donate in'),
-            args: {
-                you: '${you}',
-            },
-        });
-        this.args.spaces.forEach(function (space) {
-            _this.game.addPrimaryActionButton({
-                id: "".concat(space.id, "_btn"),
-                text: _(space.name),
-                callback: function () { return _this.updateInterfaceConfirm({ space: space }); },
-            });
-        });
-        this.game.addPassButton({
-            optionalAction: this.args.optionalAction,
-        });
-        this.game.addUndoButtons(this.args);
-    };
-    DonateState.prototype.updateInterfaceConfirm = function (_a) {
-        var _this = this;
-        var space = _a.space;
-        this.game.clearPossible();
-        this.game.clientUpdatePageTitle({
-            text: _('Donate in ${spaceName}?'),
-            args: {
-                spaceName: _(space.name),
-            },
-        });
-        var callback = function () {
-            _this.game.clearPossible();
-            _this.game.takeAction({
-                action: 'actDonate',
-                args: {
-                    spaceId: space.id,
-                },
-            });
-        };
-        if (this.game.settings.get({
-            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
-        }) === PREF_ENABLED) {
-            callback();
-        }
-        else {
-            this.game.addConfirmButton({
-                callback: callback,
-            });
-        }
-        this.game.addCancelButton();
-    };
-    return DonateState;
-}());
 var HireState = (function () {
     function HireState(game) {
         this.game = game;
@@ -5305,8 +5531,8 @@ var HireState = (function () {
                 you: '${you}',
             },
         });
-        var _loop_3 = function (i) {
-            this_1.game.addPrimaryActionButton({
+        var _loop_4 = function (i) {
+            this_2.game.addPrimaryActionButton({
                 id: "place_".concat(i, "_btn"),
                 text: "".concat(i),
                 callback: function () { return _this.updateInterfaceConfirm({
@@ -5316,9 +5542,9 @@ var HireState = (function () {
                 }); }
             });
         };
-        var this_1 = this;
+        var this_2 = this;
         for (var i = 1; i <= max; i++) {
-            _loop_3(i);
+            _loop_4(i);
         }
         this.game.addCancelButton();
     };
@@ -5388,9 +5614,54 @@ var MoveCarriageState = (function () {
         });
         this.game.addUndoButtons(this.args);
     };
+    MoveCarriageState.prototype.updateInterfaceSelectTo = function (_a) {
+        var _this = this;
+        var option = _a.option;
+        if (option.to.length === 1) {
+            this.updateInterfaceBringHenchman({
+                carriage: option.carriage,
+                to: option.to[0],
+                from: option.from,
+                canBringHenchman: option.canBringHenchman,
+            });
+            return;
+        }
+        this.game.clearPossible();
+        this.game.setElementSelected({ id: option.carriage.id });
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must select a Space to move you Carriage to'),
+            args: {
+                you: '${you}',
+            },
+        });
+        option.to.forEach(function (space) {
+            _this.game.addPrimaryActionButton({
+                id: "".concat(space.id, "_btn"),
+                text: _(space.name),
+                callback: function () {
+                    _this.updateInterfaceBringHenchman({
+                        carriage: option.carriage,
+                        to: space,
+                        from: option.from,
+                        canBringHenchman: option.canBringHenchman,
+                    });
+                },
+            });
+        });
+        this.game.addCancelButton();
+    };
     MoveCarriageState.prototype.updateInterfaceBringHenchman = function (_a) {
         var _this = this;
-        var carriage = _a.carriage, from = _a.from, to = _a.to;
+        var carriage = _a.carriage, from = _a.from, to = _a.to, canBringHenchman = _a.canBringHenchman;
+        if (!canBringHenchman) {
+            this.updateInterfaceConfirm({
+                carriage: carriage,
+                to: to,
+                from: from,
+                bringHenchman: false,
+            });
+            return;
+        }
         this.game.clearPossible();
         this.game.setElementSelected({ id: carriage.id });
         this.game.clientUpdatePageTitle({
@@ -5444,6 +5715,7 @@ var MoveCarriageState = (function () {
                 args: {
                     carriageId: carriage.id,
                     bringHenchman: bringHenchman,
+                    toSpaceId: to.id,
                 },
             });
         };
@@ -5470,26 +5742,69 @@ var MoveCarriageState = (function () {
             _this.game.setElementSelectable({
                 id: carriageId,
                 callback: function () {
-                    if (option.canBringHenchman) {
-                        _this.updateInterfaceBringHenchman({
-                            carriage: option.carriage,
-                            from: option.from,
-                            to: option.to,
-                        });
-                    }
-                    else {
-                        _this.updateInterfaceConfirm({
-                            carriage: option.carriage,
-                            from: option.from,
-                            to: option.to,
-                            bringHenchman: false,
-                        });
-                    }
+                    _this.updateInterfaceSelectTo({
+                        option: option,
+                    });
                 },
             });
         });
     };
     return MoveCarriageState;
+}());
+var MoveForcesState = (function () {
+    function MoveForcesState(game) {
+        this.game = game;
+    }
+    MoveForcesState.prototype.addLocalMove = function (_a) {
+        var fromSpaceId = _a.fromSpaceId, force = _a.force;
+        if (this.localMoves[fromSpaceId]) {
+            this.localMoves[fromSpaceId].push(force);
+        }
+        else {
+            this.localMoves[fromSpaceId] = [force];
+        }
+    };
+    MoveForcesState.prototype.addCancelButton = function () {
+        var _this = this;
+        this.game.addDangerActionButton({
+            id: 'cancel_btn',
+            text: _('Cancel'),
+            callback: function () { return __awaiter(_this, void 0, void 0, function () {
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0: return [4, this.revertLocalMoves()];
+                        case 1:
+                            _a.sent();
+                            this.game.onCancel();
+                            return [2];
+                    }
+                });
+            }); },
+        });
+    };
+    MoveForcesState.prototype.revertLocalMoves = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var promises;
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        promises = [];
+                        Object.entries(this.localMoves).forEach(function (_a) {
+                            var spaceId = _a[0], forces = _a[1];
+                            promises.push(_this.game.gameMap.forces["".concat(MERRY_MEN, "_").concat(spaceId)].addCards(forces.map(function (force) {
+                                return __assign(__assign({}, force), { location: spaceId });
+                            })));
+                        });
+                        return [4, Promise.all(promises)];
+                    case 1:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    return MoveForcesState;
 }());
 var PatrolState = (function () {
     function PatrolState(game) {
@@ -5607,6 +5922,102 @@ var PatrolState = (function () {
     };
     return PatrolState;
 }());
+var PlaceHenchmenState = (function (_super) {
+    __extends(PlaceHenchmenState, _super);
+    function PlaceHenchmenState(game) {
+        return _super.call(this, game) || this;
+    }
+    PlaceHenchmenState.prototype.onEnteringState = function (args) {
+        debug('Entering PlaceHenchmenState');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    PlaceHenchmenState.prototype.onLeavingState = function () {
+        debug('Leaving PlaceHenchmenState');
+    };
+    PlaceHenchmenState.prototype.setDescription = function (activePlayerId) { };
+    PlaceHenchmenState.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must select a space to place Henchmen in'),
+            args: {
+                you: '${you}',
+            },
+        });
+        Object.entries(this.args.spaces).forEach(function (_a) {
+            var spaceId = _a[0], space = _a[1];
+            return _this.game.addPrimaryActionButton({
+                id: "".concat(space.id, "_btn"),
+                text: _(space.name),
+                callback: function () { return _this.updateInterfaceSelectNumberOfHenchmen({ space: space }); },
+            });
+        });
+        this.game.addPassButton({
+            optionalAction: this.args.optionalAction,
+        });
+        this.game.addUndoButtons(this.args);
+    };
+    PlaceHenchmenState.prototype.updateInterfaceSelectNumberOfHenchmen = function (_a) {
+        var _this = this;
+        var space = _a.space;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must choose how many Henchmen to place'),
+            args: {
+                you: '${you}',
+            },
+        });
+        var _loop_5 = function (i) {
+            this_3.game.addPrimaryActionButton({
+                id: "".concat(i, "_btn"),
+                text: "".concat(i),
+                callback: function () {
+                    _this.updateInterfaceConfirm({ space: space, count: i });
+                },
+            });
+        };
+        var this_3 = this;
+        for (var i = 0; i <= this.args.maxNumber; i++) {
+            _loop_5(i);
+        }
+        this.game.addCancelButton();
+    };
+    PlaceHenchmenState.prototype.updateInterfaceConfirm = function (_a) {
+        var _this = this;
+        var space = _a.space, count = _a.count;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('Place ${count} Henchmen in ${spaceName}?'),
+            args: {
+                spaceName: _(space.name),
+                count: count,
+            },
+        });
+        var callback = function () {
+            _this.game.clearPossible();
+            _this.game.takeAction({
+                action: 'actPlaceHenchmen',
+                args: {
+                    spaceId: space.id,
+                    count: count,
+                },
+            });
+        };
+        if (this.game.settings.get({
+            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+        }) === PREF_ENABLED) {
+            callback();
+        }
+        else {
+            this.game.addConfirmButton({
+                callback: callback,
+            });
+        }
+        this.game.addCancelButton();
+    };
+    return PlaceHenchmenState;
+}(PlaceForcesState));
 var PlaceMerryManInSpaceState = (function () {
     function PlaceMerryManInSpaceState(game) {
         this.game = game;
@@ -5624,7 +6035,7 @@ var PlaceMerryManInSpaceState = (function () {
         var _this = this;
         this.game.clearPossible();
         this.game.clientUpdatePageTitle({
-            text: _('${you} must select a Space place a Merry Man in'),
+            text: _('${you} must select a Space to place a Merry Man in'),
             args: {
                 you: '${you}',
             },
@@ -5896,6 +6307,172 @@ var RecruitState = (function () {
         }
     };
     return RecruitState;
+}());
+var RemoveCampState = (function () {
+    function RemoveCampState(game) {
+        this.game = game;
+    }
+    RemoveCampState.prototype.onEnteringState = function (args) {
+        debug('Entering RemoveCampState');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    RemoveCampState.prototype.onLeavingState = function () {
+        debug('Leaving RemoveCampState');
+    };
+    RemoveCampState.prototype.setDescription = function (activePlayerId) { };
+    RemoveCampState.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must select a Camp to remove'),
+            args: {
+                you: '${you}',
+            },
+        });
+        var camps = [];
+        this.args.camps.forEach(function (camp) {
+            var selectedCamp = _this.game.gameMap.getForcePublic({
+                type: CAMP,
+                spaceId: camp.location,
+                hidden: camp.hidden,
+                exclude: camps,
+            });
+            camps.push(selectedCamp);
+            _this.game.setElementSelectable({
+                id: selectedCamp.id,
+                callback: function () { return _this.updateInterfaceConfirm({ camp: selectedCamp }); },
+            });
+        });
+        this.game.addPassButton({
+            optionalAction: this.args.optionalAction,
+        });
+        this.game.addUndoButtons(this.args);
+    };
+    RemoveCampState.prototype.updateInterfaceConfirm = function (_a) {
+        var _this = this;
+        var camp = _a.camp;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('Remove camp from ${spaceName}?'),
+            args: {
+                spaceName: _(this.game.gamedatas.spaces[camp.location].name),
+            },
+        });
+        this.game.setElementSelected({ id: camp.id });
+        var callback = function () {
+            _this.game.clearPossible();
+            _this.game.takeAction({
+                action: 'actRemoveCamp',
+                args: {
+                    spaceId: camp.location,
+                    hidden: camp.hidden,
+                },
+            });
+        };
+        if (this.game.settings.get({
+            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+        }) === PREF_ENABLED) {
+            callback();
+        }
+        else {
+            this.game.addConfirmButton({
+                callback: callback,
+            });
+        }
+        this.game.addCancelButton();
+    };
+    return RemoveCampState;
+}());
+var RemoveTravellerState = (function () {
+    function RemoveTravellerState(game) {
+        this.game = game;
+    }
+    RemoveTravellerState.prototype.onEnteringState = function (args) {
+        debug('Entering RemoveTravellerState');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    RemoveTravellerState.prototype.onLeavingState = function () {
+        debug('Leaving RemoveTravellerState');
+    };
+    RemoveTravellerState.prototype.setDescription = function (activePlayerId) { };
+    RemoveTravellerState.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.updatePageTitle();
+        var camps = [];
+        this.args.from.forEach(function (location) {
+            _this.game.addPrimaryActionButton({
+                id: "".concat(location, "_btn"),
+                text: _this.getLocationName({ location: location }),
+                callback: function () { return _this.updateInterfaceConfirm({ location: location }); },
+            });
+        });
+        this.game.addPassButton({
+            optionalAction: this.args.optionalAction,
+        });
+        this.game.addUndoButtons(this.args);
+    };
+    RemoveTravellerState.prototype.updateInterfaceConfirm = function (_a) {
+        var _this = this;
+        var location = _a.location;
+        this.game.clearPossible();
+        this.updatePageTitleConfirm({ location: location });
+        var callback = function () {
+            _this.game.clearPossible();
+            _this.game.takeAction({
+                action: 'actRemoveTraveller',
+                args: {
+                    from: location,
+                },
+            });
+        };
+        if (this.game.settings.get({
+            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+        }) === PREF_ENABLED) {
+            callback();
+        }
+        else {
+            this.game.addConfirmButton({
+                callback: callback,
+            });
+        }
+        this.game.addCancelButton();
+    };
+    RemoveTravellerState.prototype.updatePageTitle = function () {
+        if (this.args.cardType === MONK) {
+            this.game.clientUpdatePageTitle({
+                text: _('${you} must choose where to remove a Monk from'),
+                args: {
+                    you: '${you}',
+                },
+            });
+        }
+    };
+    RemoveTravellerState.prototype.updatePageTitleConfirm = function (_a) {
+        var location = _a.location;
+        if (this.args.cardType === MONK) {
+            this.game.clientUpdatePageTitle({
+                text: _('Remove a Monk from the ${locationName}'),
+                args: {
+                    locationName: this.getLocationName({ location: location }),
+                },
+            });
+        }
+    };
+    RemoveTravellerState.prototype.getLocationName = function (_a) {
+        var location = _a.location;
+        switch (location) {
+            case TRAVELLERS_DECK:
+                return _('Travellers Deck');
+            case TRAVELLERS_DISCARD:
+                return _('Discard pile');
+            default:
+                return '';
+        }
+    };
+    return RemoveTravellerState;
 }());
 var RideState = (function () {
     function RideState(game) {
@@ -7389,17 +7966,19 @@ var SetupRobinHoodState = (function () {
     };
     return SetupRobinHoodState;
 }());
-var SneakState = (function () {
+var SneakState = (function (_super) {
+    __extends(SneakState, _super);
     function SneakState(game) {
-        this.selectedSpace = null;
-        this.selectedMerryMen = [];
-        this.game = game;
+        var _this = _super.call(this, game) || this;
+        _this.selectedOption = null;
+        return _this;
     }
     SneakState.prototype.onEnteringState = function (args) {
         debug('Entering SneakState');
         this.args = args;
-        this.selectedSpace = null;
-        this.selectedMerryMen = [];
+        this.selectedOption = null;
+        this.moves = {};
+        this.localMoves = {};
         this.updateInterfaceInitialStep();
     };
     SneakState.prototype.onLeavingState = function () {
@@ -7410,73 +7989,112 @@ var SneakState = (function () {
         var _this = this;
         this.game.clearPossible();
         this.game.clientUpdatePageTitle({
-            text: _('${you} must select Merry Men to move'),
+            text: _('${you} must select a space to move Merry Men from'),
             args: {
                 you: '${you}',
             },
+        });
+        Object.entries(this.args._private.options).forEach(function (_a) {
+            var spacId = _a[0], option = _a[1];
+            _this.game.addPrimaryActionButton({
+                id: "".concat(spacId, "_btn"),
+                text: _(option.space.name),
+                callback: function () {
+                    _this.selectedOption = option;
+                    _this.udpateInterfaceSelectMerryMan();
+                },
+            });
+        });
+        this.game.addPassButton({
+            optionalAction: this.args.optionalAction,
+        });
+        this.game.addUndoButtons(this.args);
+    };
+    SneakState.prototype.udpateInterfaceSelectMerryMan = function () {
+        var _this = this;
+        this.game.clearPossible();
+        var movedMerryMen = Object.values(this.moves).flat();
+        if (movedMerryMen.length === this.selectedOption.merryMen.length) {
+            this.updateInterfaceConfirm();
+            return;
+        }
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must select a Merry Man to move'),
+            args: {
+                you: '${you}',
+            },
+        });
+        this.selectedOption.merryMen
+            .filter(function (merryMan) { return !movedMerryMen.includes(merryMan.id); })
+            .forEach(function (merryMan) {
+            _this.game.setElementSelectable({
+                id: merryMan.id,
+                callback: function () { return _this.updateInterfaceSelectAdjacentSpace({ merryMan: merryMan }); },
+            });
         });
         this.game.addPrimaryActionButton({
             id: 'done_btn',
             text: _('Done'),
-            callback: function () { return _this.updateInterfaceSelectAdjacentSpace(); },
-            extraClasses: this.selectedSpace === null || this.selectedMerryMen.length === 0
-                ? 'disabled'
-                : '',
+            callback: function () { return _this.updateInterfaceConfirm(); },
+            extraClasses: movedMerryMen.length === 0 ? DISABLED : '',
         });
-        this.setMerryMenSelectable();
-        this.game.addPassButton({
-            optionalAction: this.args.optionalAction,
-        });
-        if (this.selectedSpace !== null) {
-            this.game.addCancelButton();
-        }
-        else {
-            this.game.addUndoButtons(this.args);
-        }
+        this.addCancelButton();
     };
-    SneakState.prototype.updateInterfaceSelectAdjacentSpace = function () {
+    SneakState.prototype.updateInterfaceSelectAdjacentSpace = function (_a) {
         var _this = this;
+        var merryMan = _a.merryMan;
         this.game.clearPossible();
         this.game.clientUpdatePageTitle({
-            text: _('${you} must select an adjacent space to move to'),
+            text: _('${you} must select an adjacent space to move your Merry Man to'),
             args: {
                 you: '${you}',
             },
         });
-        this.selectedMerryMen.forEach(function (merryManId) {
-            return _this.game.setElementSelected({ id: merryManId });
-        });
-        var option = this.args._private.options[this.selectedSpace];
-        option.adjacentSpaces.forEach(function (space) {
+        this.game.setElementSelected({ id: merryMan.id });
+        this.selectedOption.adjacentSpaces.forEach(function (space) {
             _this.game.addPrimaryActionButton({
                 id: "".concat(space.id, "_btn"),
                 text: _(space.name),
-                callback: function () { return _this.updateInterfaceConfirm({ toSpace: space }); },
+                callback: function () { return __awaiter(_this, void 0, void 0, function () {
+                    var fromSpaceId;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                fromSpaceId = merryMan.location;
+                                merryMan.location = space.id;
+                                this.addLocalMove({ force: merryMan, fromSpaceId: fromSpaceId });
+                                if (this.moves[space.id]) {
+                                    this.moves[space.id].push(merryMan.id);
+                                }
+                                else {
+                                    this.moves[space.id] = [merryMan.id];
+                                }
+                                return [4, this.game.gameMap.forces["".concat(MERRY_MEN, "_").concat(space.id)].addCard(merryMan)];
+                            case 1:
+                                _a.sent();
+                                this.udpateInterfaceSelectMerryMan();
+                                return [2];
+                        }
+                    });
+                }); },
             });
         });
-        this.game.addCancelButton();
+        this.addCancelButton();
     };
-    SneakState.prototype.updateInterfaceConfirm = function (_a) {
+    SneakState.prototype.updateInterfaceConfirm = function () {
         var _this = this;
-        var toSpace = _a.toSpace;
         this.game.clearPossible();
-        this.selectedMerryMen.forEach(function (merryManId) {
-            return _this.game.setElementSelected({ id: merryManId });
-        });
         this.game.clientUpdatePageTitle({
-            text: _('Move Merry Men to ${spacesName}?'),
-            args: {
-                spacesName: _(toSpace.name),
-            },
+            text: _('Confirm moves?'),
+            args: {},
         });
         var callback = function () {
             _this.game.clearPossible();
             _this.game.takeAction({
                 action: 'actSneak',
                 args: {
-                    fromSpaceId: _this.selectedSpace,
-                    toSpaceId: toSpace.id,
-                    merryMenIds: _this.selectedMerryMen,
+                    spaceId: _this.selectedOption.space.id,
+                    moves: _this.moves,
                 },
             });
         };
@@ -7490,63 +8108,10 @@ var SneakState = (function () {
                 callback: callback,
             });
         }
-        this.game.addCancelButton();
-    };
-    SneakState.prototype.setMerryMenSelectable = function () {
-        var _this = this;
-        Object.entries(this.args._private.options).forEach(function (_a) {
-            var spaceId = _a[0], option = _a[1];
-            if (_this.selectedSpace && _this.selectedSpace !== spaceId) {
-                return;
-            }
-            option.merryMen.forEach(function (merryMan) {
-                if (_this.selectedMerryMen.some(function (selectedId) { return selectedId === merryMan.id; })) {
-                    _this.game.setElementSelected({ id: merryMan.id });
-                    _this.game.setElementSelectable({
-                        id: merryMan.id,
-                        callback: function () {
-                            return _this.handleMerryMenClick({
-                                currentStatus: 'selected',
-                                merryManId: merryMan.id,
-                                spaceId: option.space.id,
-                            });
-                        },
-                    });
-                }
-                else {
-                    _this.game.setElementSelectable({
-                        id: merryMan.id,
-                        callback: function () {
-                            return _this.handleMerryMenClick({
-                                currentStatus: 'selectable',
-                                merryManId: merryMan.id,
-                                spaceId: option.space.id,
-                            });
-                        },
-                    });
-                }
-            });
-        });
-    };
-    SneakState.prototype.handleMerryMenClick = function (_a) {
-        var currentStatus = _a.currentStatus, merryManId = _a.merryManId, spaceId = _a.spaceId;
-        if (currentStatus === 'selectable') {
-            this.selectedMerryMen.push(merryManId);
-        }
-        else if (currentStatus === 'selected') {
-            this.selectedMerryMen = this.selectedMerryMen.filter(function (id) { return id !== merryManId; });
-        }
-        if (currentStatus === 'selectable' && this.selectedSpace === null) {
-            this.selectedSpace = spaceId;
-        }
-        else if (currentStatus === 'selected' &&
-            this.selectedMerryMen.length === 0) {
-            this.selectedSpace = null;
-        }
-        this.updateInterfaceInitialStep();
+        this.addCancelButton();
     };
     return SneakState;
-}());
+}(MoveForcesState));
 var SwashbuckleState = (function () {
     function SwashbuckleState(game) {
         this.game = game;

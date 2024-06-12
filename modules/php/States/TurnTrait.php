@@ -93,60 +93,6 @@ trait TurnTrait
     $this->initCustomTurnOrder('default', Players::getEligibilityOrder(), \ST_TURNACTION, ST_END_OF_ROUND, false);
   }
 
-  // function stTurnAction()
-  // {
-  //   $firstEligible = Markers::getTopOf(Locations::initiativeTrack(FIRST_ELIGIBLE));
-
-  //   $playerId = null;
-  //   if ($firstEligible->getId() === ROBIN_HOOD_ELIGIBILITY_MARKER) {
-  //     $playerId = Players::getRobinHoodPlayerId();
-  //   } else if ($firstEligible->getId() === SHERIFF_ELIGIBILITY_MARKER) {
-  //     $playerId = Players::getSheriffPlayerId();
-  //   }
-
-  //   $this->gamestate->changeActivePlayer($playerId);
-  //   self::giveExtraTime($playerId);
-
-  //   $node = [
-  //     'children' => [
-  //       [
-  //         'action' => CHOOSE_ACTION,
-  //         'playerId' => $playerId,
-  //       ],
-  //     ],
-  //   ];
-
-  //   Engine::setup($node, ['method' => 'stSecondEligible']);
-  //   Engine::proceed();
-  // }
-
-  // function stSecondEligible()
-  // {
-  //   $secondEligible = Markers::getTopOf(Locations::initiativeTrack(SECOND_ELIGIBLE));
-
-  //   $playerId = null;
-  //   if ($secondEligible->getId() === ROBIN_HOOD_ELIGIBILITY_MARKER) {
-  //     $playerId = Players::getRobinHoodPlayerId();
-  //   } else if ($secondEligible->getId() === SHERIFF_ELIGIBILITY_MARKER) {
-  //     $playerId = Players::getSheriffPlayerId();
-  //   }
-
-  //   $this->gamestate->changeActivePlayer($playerId);
-  //   self::giveExtraTime($playerId);
-
-  //   $node = [
-  //     'children' => [
-  //       [
-  //         'action' => CHOOSE_ACTION,
-  //         'playerId' => $playerId,
-  //       ],
-  //     ],
-  //   ];
-
-  //   Engine::setup($node, ['method' => 'stEndOfRound']);
-  //   Engine::proceed();
-  // }
-
   function stEndOfRound()
   {
     $markers = Markers::get([ROBIN_HOOD_ELIGIBILITY_MARKER, SHERIFF_ELIGIBILITY_MARKER])->toArray();

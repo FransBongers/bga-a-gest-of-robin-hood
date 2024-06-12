@@ -31,26 +31,59 @@ class GameMap extends \APP_DbObject
     return count(self::getCarriagesOnMap());
   }
 
+  public static function carriagesAreOnTheMap()
+  {
+    $forces = Forces::getAll()->toArray();
+
+    return Utils::array_some($forces, function ($force) {
+      return $force->isCarriage() && in_array($force->getLocation(), SPACES);
+    });
+  }
+
+  public static function merryManAreOnTheMap($hidden = false)
+  {
+    $merryMen = Forces::getOfType(MERRY_MEN);
+    $merryMen[] = Forces::get(ROBIN_HOOD);
+
+    return Utils::array_some($merryMen, function ($merryMan) use ($hidden) {
+      $location = $merryMan->getLocation();
+      if (!in_array($location, SPACES)) {
+        return false;
+      }
+      if ($hidden && !$merryMan->isHidden()) {
+        return false;
+      }
+      return true;
+    });
+  }
+
   public static function getSpacesWithMerryMen($hidden = false)
   {
     $merryMen = Forces::getOfType(MERRY_MEN);
     $merryMen[] = Forces::get(ROBIN_HOOD);
 
-    $spaceIds = [];
+    $spaces = Spaces::getAll();
 
-    foreach ($merryMen as $merryMan) {
-      $location = $merryMan->getLocation();
-      if (!in_array($location, SPACES)) {
-        continue;
+    $result = [];
+
+    foreach ($spaces as $spaceId => $space) {
+      $merryMenInSpace = Utils::filter($merryMen, function ($force) use ($spaceId, $hidden) {
+        if ($force->getLocation() !== $spaceId) {
+          return false;
+        };
+        if ($hidden && !$force->isHidden()) {
+          return false;
+        }
+        return true;
+      });
+      if (count($merryMenInSpace) > 0) {
+        $result[$spaceId] = [
+          'space' => $space,
+          'merryMen' => $merryMenInSpace
+        ];
       }
-      if ($hidden && !($merryMan->isHidden() || $merryMan->getId() === ROBIN_HOOD)) {
-        continue;
-      }
-      $spaceIds[] = $location;
     }
 
-    $spaceIds = array_values(array_unique($spaceIds));
-
-    return Spaces::get($spaceIds)->toArray();
+    return $result;
   }
 }

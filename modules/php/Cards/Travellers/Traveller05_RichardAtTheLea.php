@@ -35,8 +35,7 @@ class Traveller05_RichardAtTheLea extends \AGestOfRobinHood\Models\TravellerCard
       Notifications::placeForce($player, $camp, $space);
       Players::moveRoyalFavour($player, 1, JUSTICE);
     }
-    $this->setLocation(REMOVED_FROM_GAME);
-    Notifications::removeCardFromGame($player, $this);
+    $this->removeFromGame($player);
   }
 
   public function resolveLightEffect($player, $successful, $ctx = null, $space = null)

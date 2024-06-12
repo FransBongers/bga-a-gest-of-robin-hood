@@ -442,6 +442,25 @@ class GameMap {
     await this.forces[toStockId].addCard(force);
   }
 
+
+  async removeFromGamePublic({
+    type,
+    hidden,
+    fromSpaceId,
+  }: {
+    type: string;
+    hidden: boolean;
+    fromSpaceId: string;
+  }) {
+    const selected = this.getForcePublic({
+      type: type,
+      spaceId: fromSpaceId,
+      hidden,
+    });
+
+    await this.game.forceManager.removeCard(selected);
+  }
+
   async returnToSupplyPublic({
     type,
     hidden,

@@ -22,6 +22,7 @@ class Globals extends \AGestOfRobinHood\Helpers\DB_Manager
     'firstPlayer' => 'int',
     // 'activePlayerId' => 'int',
     'test' => 'obj',
+    'ollertonHillAdjacency' => 'bool'
   ];
 
   protected static $table = 'global_variables';
@@ -146,6 +147,6 @@ class Globals extends \AGestOfRobinHood\Helpers\DB_Manager
   public static function setupNewGame($players, $options)
   {
     // Game options
-
+    self::setOllertonHillAdjacency(false);
   }
 }

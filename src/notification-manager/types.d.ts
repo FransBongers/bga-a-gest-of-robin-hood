@@ -114,6 +114,10 @@ interface NotifPayShillingsArgs extends NotifWithPlayerArgs {
   amount: number;
 }
 
+interface NotifPlaceCardInTravellersDeckArgs extends NotifWithPlayerArgs {
+  card: GestCard;
+}
+
 interface NotifPlaceForceArgs extends NotifWithPlayerArgs {
   force: {
     type: string;
