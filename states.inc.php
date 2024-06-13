@@ -597,13 +597,13 @@ $machinestates = array(
         'action' => 'stAtomicAction',
         'possibleactions' => ['actFortuneEventDayOfMarketRobinHood', 'actPassOptionalAction', 'actRestart'],
     ],
-    ST_EVENT_LITTLE_JOHN => [
-        'name' => 'eventLittleJohn',
+    ST_EVENT_SELECT_SPACE => [
+        'name' => 'eventSelectSpace',
         'description' => clienttranslate('${actplayer} must select a single space'),
         'descriptionmyturn' => clienttranslate('${you}'),
         'type' => 'activeplayer',
         'args' => 'argsAtomicAction',
         'action' => 'stAtomicAction',
-        'possibleactions' => ['actEventLittleJohn', 'actPassOptionalAction', 'actRestart'],
+        'possibleactions' => ['actEventSelectSpace', 'actPassOptionalAction', 'actRestart'],
     ],
 );

@@ -68,6 +68,7 @@
     "src/states/EventGuyOfGisborne.ts",
     "src/states/EventAmbushDark.ts",
     "src/states/EventLittleJohn.ts",
+    "src/states/EventSelectSpace.ts",
     "src/states/FortuneEventDayOfMarketRobinHood.ts",
     "src/states/FortuneEventDayOfMarketSheriff.ts",
     "src/states/FortuneEventQueenEleanor.ts",

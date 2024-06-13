@@ -962,4 +962,11 @@ class Notifications
       'i18n' => ['tkn_boldText_spaceName']
     ]);
   }
+
+  public static function unableToRevealRobinHood($player)
+  {
+    self::message(clienttranslate('${player_name} is not able to reveal Robin Hood'), [
+      'player' => $player,
+    ]);
+  }
 }

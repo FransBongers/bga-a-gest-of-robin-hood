@@ -38,7 +38,9 @@ class HireState implements State {
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({
-      text: _('${you} must select a space to Hire in'),
+      text: this.args.optionalAction
+        ? _('${you} may select a space to Hire in')
+        : _('${you} must select a space to Hire in'),
       args: {
         you: '${you}',
       },
@@ -88,11 +90,12 @@ class HireState implements State {
       this.game.addPrimaryActionButton({
         id: `place_${i}_btn`,
         text: `${i}`,
-        callback: () => this.updateInterfaceConfirm({
-          count: i,
-          action,
-          space
-        })
+        callback: () =>
+          this.updateInterfaceConfirm({
+            count: i,
+            action,
+            space,
+          }),
       });
     }
 

@@ -2,6 +2,15 @@
 
 namespace AGestOfRobinHood\Cards\Events;
 
+use AGestOfRobinHood\Core\Engine\LeafNode;
+use AGestOfRobinHood\Core\Notifications;
+use AGestOfRobinHood\Helpers\GameMap;
+use AGestOfRobinHood\Helpers\Utils;
+use AGestOfRobinHood\Managers\Cards;
+use AGestOfRobinHood\Managers\AtomicActions;
+use AGestOfRobinHood\Managers\Players;
+use AGestOfRobinHood\Managers\Spaces;
+
 class Event08_WardenOfTheForest extends \AGestOfRobinHood\Models\EventCard
 {
   public function __construct($row)
@@ -14,5 +23,39 @@ class Event08_WardenOfTheForest extends \AGestOfRobinHood\Models\EventCard
     $this->carriageMoves = 0;
     $this->eventType = FORTUNE_EVENT;
     $this->setupLocation = FORTUNE_EVENTS_POOL;
+  }
+
+  public function getFlow()
+  {
+    $nodes = [
+      'children' => [
+      ],
+    ];
+
+    $hire = AtomicActions::get(HIRE);
+    $sheriff = Players::getSheriffPlayer();
+
+    if ($hire->canBePerformed($sheriff, $sheriff->getShillings())) {
+      $nodes['children'][] = [
+        'action' => HIRE,
+        'playerId' => $sheriff->getId(),
+        'optional' => true,
+        'source' => $this->id,
+      ];
+    }
+
+    $donate = AtomicActions::get(DONATE);
+    $robinHood = Players::getRobinHoodPlayer();
+
+    if ($donate->canBePerformed($robinHood, $robinHood->getShillings())) {
+      $nodes['children'][] = [
+        'action' => DONATE,
+        'playerId' => $robinHood->getId(),
+        'optional' => true,
+        'source' => $this->id,
+      ];
+    }
+
+    return $nodes;
   }
 }

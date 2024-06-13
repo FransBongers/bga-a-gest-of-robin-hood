@@ -4,31 +4,36 @@ namespace AGestOfRobinHood\Actions;
 
 use AGestOfRobinHood\Core\Engine;
 use AGestOfRobinHood\Core\Engine\LeafNode;
+use AGestOfRobinHood\Core\Notifications;
+use AGestOfRobinHood\Managers\Cards;
 
 class Plot extends \AGestOfRobinHood\Models\AtomicAction
 {
   public function insertPlotAction($player)
   {
     $selectedAction = $this->getSelectedAction();
-    if ($selectedAction === null || $selectedAction === SINGLE_PLOT) {
+    if ($selectedAction === SINGLE_PLOT || ($selectedAction === null && !Cards::getTopOf(EVENTS_DISCARD)->isFortuneEvent())) {
       return;
-      // Check for smaller than two as the current action is not resolved yet
     }
     $action = $this->ctx->getAction();
     $info = $this->ctx->getInfo();
     $sourceIsSet = isset($info['source']);
 
-    $extraActionsDueToEvent = $selectedAction === EVENT && $action === ROB && $sourceIsSet && $info['source'] === 'Event22_FastCarriages';
-    if (($extraActionsDueToEvent || $selectedAction === PLOTS_AND_DEEDS) && count(Engine::getResolvedActions([$action])) < 2) {
-      $leafNode = [
-        'action' => $action,
-        'playerId' => $player->getId(),
-        'optional' => true,
-      ];
-      if ($sourceIsSet) {
-        $leafNode['source'] = $info['source'];
-      }
+    $leafNode = [
+      'action' => $action,
+      'playerId' => $player->getId(),
+      'optional' => true,
+    ];
+    if ($sourceIsSet) {
+      $leafNode['source'] = $info['source'];
+    }
+    $numberOfResolvedActions = count(Engine::getResolvedActions([$action]));
 
+    $extraActionPlotsAndDeeds = $selectedAction === PLOTS_AND_DEEDS && $numberOfResolvedActions < 2;
+    $extraActionFastCarriages = $selectedAction === EVENT && $action === ROB && $sourceIsSet && $info['source'] === 'Event22_FastCarriages' && $numberOfResolvedActions < 2;
+    $extraActionWardenOfTheForest = $sourceIsSet && $info['source'] === 'Event08_WardenOfTheForest' && $action === HIRE && $numberOfResolvedActions < 1;
+    Notifications::log('extraActionWardenOfTheForest', $extraActionWardenOfTheForest);
+    if ($extraActionPlotsAndDeeds || $extraActionFastCarriages || $extraActionWardenOfTheForest) {
       $this->ctx->insertAsBrother(new LeafNode($leafNode));
     }
   }

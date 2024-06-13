@@ -79,6 +79,13 @@ interface OnEnteringEventLittleJohnStateArgs extends CommonArgs {
   spaces: GestSpace[];
 }
 
+interface OnEnteringEventSelectSpaceStateArgs extends CommonArgs {
+  spaces: GestSpace[];
+  confirmText: string;
+  title: string;
+  titleOther: string;
+}
+
 interface OnEnteringFortuneEventDayOfMarketRobinHoodStateArgs
   extends CommonArgs {
   _private: {

@@ -7,6 +7,7 @@ use AGestOfRobinHood\Core\Engine;
 use AGestOfRobinHood\Core\Engine\LeafNode;
 use AGestOfRobinHood\Core\Globals;
 use AGestOfRobinHood\Core\Stats;
+use AGestOfRobinHood\Helpers\GameMap;
 use AGestOfRobinHood\Helpers\Locations;
 use AGestOfRobinHood\Helpers\Utils;
 use AGestOfRobinHood\Managers\Forces;
@@ -239,13 +240,7 @@ class Recruit extends \AGestOfRobinHood\Actions\Plot
   private function replaceMerryManWithCamp($player, $space, $merryManId)
   {
     Forces::get($merryManId)->returnToSupply($player);
-    $camp = Forces::getTopOf(CAMPS_SUPPLY);
-    $camp->setLocation($space->getId());
-    if ($space->isForest()) {
-      $camp->setHidden(0);
-    }
-    Notifications::placeForce($player, $camp, $space);
-    Players::moveRoyalFavour($player, 1, JUSTICE);
+    GameMap::placeCamp($player, $space);
   }
 
   private function placeMerryMen($player, $recruitOption, $space, $recruitRobinHood)

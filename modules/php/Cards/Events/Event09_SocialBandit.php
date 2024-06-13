@@ -2,6 +2,15 @@
 
 namespace AGestOfRobinHood\Cards\Events;
 
+use AGestOfRobinHood\Core\Engine\LeafNode;
+use AGestOfRobinHood\Core\Notifications;
+use AGestOfRobinHood\Helpers\GameMap;
+use AGestOfRobinHood\Helpers\Utils;
+use AGestOfRobinHood\Managers\Cards;
+use AGestOfRobinHood\Managers\Forces;
+use AGestOfRobinHood\Managers\Players;
+use AGestOfRobinHood\Managers\Spaces;
+
 class Event09_SocialBandit extends \AGestOfRobinHood\Models\EventCard
 {
   public function __construct($row)
@@ -16,5 +25,55 @@ class Event09_SocialBandit extends \AGestOfRobinHood\Models\EventCard
     $this->carriageMoves = 2;
     $this->eventType = REGULAR_EVENT;
     $this->setupLocation = REGULAR_EVENTS_POOL;
+  }
+
+  // ..######..##.....##..#######...#######...######..########
+  // .##....##.##.....##.##.....##.##.....##.##....##.##......
+  // .##.......##.....##.##.....##.##.....##.##.......##......
+  // .##.......#########.##.....##.##.....##..######..######..
+  // .##.......##.....##.##.....##.##.....##.......##.##......
+  // .##....##.##.....##.##.....##.##.....##.##....##.##......
+  // ..######..##.....##..#######...#######...######..########
+
+  // ..######..########....###....########.########
+  // .##....##....##......##.##......##....##......
+  // .##..........##.....##...##.....##....##......
+  // ..######.....##....##.....##....##....######..
+  // .......##....##....#########....##....##......
+  // .##....##....##....##.....##....##....##......
+  // ..######.....##....##.....##....##....########
+
+  public function resolveLightEffect($player, $successful, $ctx = null, $space = null)
+  {
+    $robinHood = Forces::get(ROBIN_HOOD);
+    $robinHood->reveal($player);
+
+    GameMap::placeCamp($player, Spaces::get($robinHood->getLocation()));
+
+    $player->incShillings(2);
+  }
+
+  public function resolveDarkEffect($player, $successful, $ctx = null, $space = null)
+  {
+    $robinHood = Forces::get(ROBIN_HOOD);
+    $robinHood->eventRevealBySheriff($player);
+    if (in_array($robinHood->getLocation(), PARISHES)) {
+      $space = Spaces::get($robinHood->getLocation());
+      if ($space->isRevolting()) {
+        $space->setToSubmissive($player);
+      }
+    }
+  }
+
+  public function canPerformLightEffect($player)
+  {
+    $robinHood = Forces::get(ROBIN_HOOD);
+    return $robinHood->isHidden() && in_array($robinHood->getLocation(), PARISHES);
+  }
+
+  public function canPerformDarkEffect($player)
+  {
+    $robinHood = Forces::get(ROBIN_HOOD);
+    return $robinHood->getLocation() !== PRISON;
   }
 }

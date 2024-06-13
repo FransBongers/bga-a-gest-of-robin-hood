@@ -1,22 +1,32 @@
-class EventLittleJohnState implements State {
+class EventSelectSpaceState implements State {
   private game: AGestOfRobinHoodGame;
-  private args: OnEnteringEventLittleJohnStateArgs;
+  private args: OnEnteringEventSelectSpaceStateArgs;
 
   constructor(game: AGestOfRobinHoodGame) {
     this.game = game;
   }
 
-  onEnteringState(args: OnEnteringEventLittleJohnStateArgs) {
-    debug('Entering EventLittleJohnState');
+  onEnteringState(args: OnEnteringEventSelectSpaceStateArgs) {
+    debug('Entering EventSelectSpaceState');
     this.args = args;
     this.updateInterfaceInitialStep();
   }
 
   onLeavingState() {
-    debug('Leaving EventLittleJohnState');
+    debug('Leaving EventSelectSpaceState');
   }
 
-  setDescription(activePlayerId: number) {}
+  setDescription(activePlayerId: number, args: OnEnteringEventSelectSpaceStateArgs) {
+    if (args.titleOther) {
+      this.game.clientUpdatePageTitle({
+        text: _(args.titleOther),
+        args: {
+          actplayer: '${actplayer}'
+        },
+        nonActivePlayers: true,
+      });
+    }
+  }
 
   //  .####.##....##.########.########.########..########....###.....######..########
   //  ..##..###...##....##....##.......##.....##.##.........##.##...##....##.##......
@@ -38,7 +48,7 @@ class EventLittleJohnState implements State {
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({
-      text: _('${you} may select a Revolting Parish to set to Submissive'),
+      text: _(this.args.title),
       args: {
         you: '${you}',
       },
@@ -62,7 +72,7 @@ class EventLittleJohnState implements State {
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({
-      text: _('Set ${spaceName} to Submissive?'),
+      text: _(this.args.confirmText),
       args: {
         spaceName: _(space.name),
       },
@@ -71,7 +81,7 @@ class EventLittleJohnState implements State {
     const callback = () => {
       this.game.clearPossible();
       this.game.takeAction({
-        action: 'actEventLittleJohn',
+        action: 'actEventSelectSpace',
         args: {
           spaceId: space.id,
         },

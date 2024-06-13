@@ -23,11 +23,15 @@ trait DebugTrait
 
   function test()
   {
-    $merryMan = Forces::getTopOf(MERRY_MEN_SUPPLY);
-    $merryMan->setLocation(MANSFIELD);
-    $merryMan->setHidden(0);
+    // $merryMan = Forces::getTopOf(MERRY_MEN_SUPPLY);
+    // $merryMan->setLocation(PRISON);
+    // $merryMan->setHidden(0);
+    // Spaces::get(TUXFORD)->revolt(Players::get());
     // Forces::get(ROBIN_HOOD)->setLocation(PRISON);
-    // Cards::get('Event05_LittleJohn')->insertOnTop(EVENTS_DECK);
+    // Forces::get(ROBIN_HOOD)->setHidden(1);
+    // Forces::get('merryMen_4')->setHidden(1);
+    
+    Cards::get('Event23_FriarTuck')->insertOnTop(EVENTS_DECK);
     // Globals::setOllertonHillAdjacency(true);
     // Cards::get('Traveller07_Monks')->setLocation(TRAVELLERS_DISCARD);
     // $this->debugPlaceForces(TALLAGE_CARRIAGE,TUXFORD,1);

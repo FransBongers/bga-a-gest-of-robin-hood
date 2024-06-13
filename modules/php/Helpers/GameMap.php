@@ -109,4 +109,18 @@ class GameMap extends \APP_DbObject
 
     Notifications::recruitMerryMen($player, $originalNumber, $robinHood, $merryMenToPlace, $space);
   }
+
+  public static function placeCamp($player, $space)
+  {
+    $camp = Forces::getTopOf(CAMPS_SUPPLY);
+    if ($camp === null) {
+      return;
+    }
+    $camp->setLocation($space->getId());
+    if ($space->isForest()) {
+      $camp->setHidden(0);
+    }
+    Notifications::placeForce($player, $camp, $space);
+    Players::moveRoyalFavour($player, 1, JUSTICE);
+  }
 }

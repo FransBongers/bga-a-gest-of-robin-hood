@@ -4,6 +4,7 @@ namespace AGestOfRobinHood\Forces;
 
 use AGestOfRobinHood\Core\Notifications;
 use AGestOfRobinHood\Helpers\Locations;
+use AGestOfRobinHood\Managers\Forces;
 use AGestOfRobinHood\Managers\Players;
 
 class RobinHood extends \AGestOfRobinHood\Models\Force
@@ -23,5 +24,17 @@ class RobinHood extends \AGestOfRobinHood\Models\Force
 
     $this->setHidden(0);
     Notifications::revealRobinHood($player, $this);
+  }
+
+  public function eventRevealBySheriff($player)
+  {
+    $robinHoodPlayer = Players::getRobinHoodPlayer();
+    if ($this->getLocation() === ROBIN_HOOD_SUPPLY) {
+      Notifications::unableToRevealRobinHood($robinHoodPlayer);
+      return;
+    }
+    if ($this->isHidden()) {
+      $this->reveal($player);
+    }
   }
 }

@@ -102,7 +102,11 @@ class Patrol extends \AGestOfRobinHood\Actions\Plot
     }
 
     $player = self::getPlayer();
-    $player->payShillings(2);
+    $info = $this->ctx->getInfo();
+    $cost = isset($info['cost']) ? $info['cost'] : 2;
+    if ($cost > 0) {
+      $player->payShillings($cost);
+    }
 
     $patrolSpace = $option['space'];
 

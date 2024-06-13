@@ -93,6 +93,26 @@ class Capture extends \AGestOfRobinHood\Actions\Plot
 
     $spaceId = $args['spaceId'];
 
+    $player = self::getPlayer();
+    $this->resolveCapture($player, $spaceId);
+    
+
+    $this->insertPlotAction($player);
+
+    $this->resolveAction($args);
+  }
+
+  //  .##.....##.########.####.##.......####.########.##....##
+  //  .##.....##....##.....##..##........##.....##.....##..##.
+  //  .##.....##....##.....##..##........##.....##......####..
+  //  .##.....##....##.....##..##........##.....##.......##...
+  //  .##.....##....##.....##..##........##.....##.......##...
+  //  .##.....##....##.....##..##........##.....##.......##...
+  //  ..#######.....##....####.########.####....##.......##...
+
+  public function resolveCapture($player, $spaceId)
+  {
+
     $options = $this->getOptions();
 
     $space = Utils::array_find($options, function ($optionSpace) use ($spaceId) {
@@ -125,14 +145,11 @@ class Capture extends \AGestOfRobinHood\Actions\Plot
       }
     }
 
-    Notifications::log('camps', $camps);
-
     $maxNumberOfPiecesToCapture = $space->isRevolting() ? floor($numberOfHenchmen / 2) : $numberOfHenchmen;
     $numberOfCapturedRevealedMerryMen = min($maxNumberOfPiecesToCapture, count($revealedMerryMen));
     shuffle($revealedMerryMen);
 
     $capturedPieces = [];
-    $player = self::getPlayer();
 
     for($i = 0; $i < $numberOfCapturedRevealedMerryMen ; $i++) {
       $merryMen = $revealedMerryMen[$i];
@@ -166,30 +183,15 @@ class Capture extends \AGestOfRobinHood\Actions\Plot
       Players::moveRoyalFavour($player, 1, ORDER);
     }
     // Notifs
-    Notifications::log('remainingPiecesToCapture', $remainingPiecesToCapture);
     if (!$hasHiddenMerryMen && $remainingPiecesToCapture > 0 && count($camps) > 0) {
       $numberOfReturnedCamps = min(count($camps), $remainingPiecesToCapture);
-      Notifications::log('numberOfReturnedCamps', $numberOfReturnedCamps);
       for($j = 0; $j < $numberOfReturnedCamps ; $j++) {
         $camp = $camps[$j];
         $camp->returnToSupply($player);
       }
     }
-
-    
-
-    $this->insertPlotAction($player);
-
-    $this->resolveAction($args);
   }
 
-  //  .##.....##.########.####.##.......####.########.##....##
-  //  .##.....##....##.....##..##........##.....##.....##..##.
-  //  .##.....##....##.....##..##........##.....##......####..
-  //  .##.....##....##.....##..##........##.....##.......##...
-  //  .##.....##....##.....##..##........##.....##.......##...
-  //  .##.....##....##.....##..##........##.....##.......##...
-  //  ..#######.....##....####.########.####....##.......##...
 
   public function canBePerformed($player, $availableShillings)
   {

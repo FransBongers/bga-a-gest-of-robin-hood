@@ -17,11 +17,11 @@ use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\Spaces;
 
 
-class EventLittleJohn extends \AGestOfRobinHood\Actions\Plot
+class EventSelectSpace extends \AGestOfRobinHood\Actions\Plot
 {
   public function getState()
   {
-    return ST_EVENT_LITTLE_JOHN;
+    return ST_EVENT_SELECT_SPACE;
   }
 
   // ..######..########....###....########.########
@@ -40,14 +40,18 @@ class EventLittleJohn extends \AGestOfRobinHood\Actions\Plot
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function stEventLittleJohn()
+  public function stEventSelectSpace()
   {
-    $spaces = $this->getOptions();
-    if (count($spaces) > 1) {
-      return;
+    $info = $this->ctx->getInfo();
+    $cardId = $info['cardId'];
+    $effect = $info['effect'];
+    $player = self::getPlayer();
+
+    $isResolved = Cards::get($cardId)->resolveEffectAutomatically($player, $effect, $this->ctx);
+
+    if ($isResolved) {
+      $this->resolveAction(['automatic' => true]);
     }
-    $spaces[0]->setToSubmissive(self::getPlayer());
-    $this->resolveAction(['automatic' => true]);
   }
 
   // ....###....########...######....######.
@@ -58,12 +62,13 @@ class EventLittleJohn extends \AGestOfRobinHood\Actions\Plot
   // .##.....##.##....##..##....##..##....##
   // .##.....##.##.....##..######....######.
 
-  public function argsEventLittleJohn()
+  public function argsEventSelectSpace()
   {
+    $info = $this->ctx->getInfo();
+    $cardId = $info['cardId'];
+    $effect = $info['effect'];
 
-    $data = [
-      'spaces' => $this->getOptions()
-    ];
+    $data = Cards::get($cardId)->getStateArgs($effect);
 
     return $data;
   }
@@ -84,19 +89,24 @@ class EventLittleJohn extends \AGestOfRobinHood\Actions\Plot
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function actPassEventLittleJohn()
+  public function actPassEventSelectSpace()
   {
     $player = self::getPlayer();
     // Stats::incPassActionCount($player->getId(), 1);
     Engine::resolve(PASS);
   }
 
-  public function actEventLittleJohn($args)
+  public function actEventSelectSpace($args)
   {
-    self::checkAction('actEventLittleJohn');
+    self::checkAction('actEventSelectSpace');
     $spaceId = $args['spaceId'];
 
-    $options = $this->getOptions();
+    $info = $this->ctx->getInfo();
+    $cardId = $info['cardId'];
+    $effect = $info['effect'];
+    $card = Cards::get($cardId);
+
+    $options = $card->getStateArgs($effect)['spaces'];
 
     $space = Utils::array_find($options, function ($option) use ($spaceId) {
       return $option->getId() === $spaceId;
@@ -106,7 +116,7 @@ class EventLittleJohn extends \AGestOfRobinHood\Actions\Plot
       throw new \feException("ERROR 074");
     }
 
-    $space->setToSubmissive(self::getPlayer());
+    $card->resolveEffect(self::getPlayer(), $effect, $space, $this->ctx);
 
     $this->resolveAction($args);
   }
@@ -119,20 +129,4 @@ class EventLittleJohn extends \AGestOfRobinHood\Actions\Plot
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
-  public function getOptions()
-  {
-    $forces = Forces::getAll()->toArray();
-    $parishes = Spaces::getMany(PARISHES)->toArray();
-
-    $spaces = [];
-    foreach ($parishes as $parish) {
-      if ($parish->isRevolting() && Utils::array_some($forces, function ($force) use ($parish) {
-        return $force->getLocation() === $parish->getId() && $force->isMerryMan() && !$force->isHidden();
-      })) {
-        $spaces[] = $parish;
-      };
-    }
-
-    return $spaces;
-  }
 }

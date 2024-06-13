@@ -1754,7 +1754,7 @@ var AGestOfRobinHood = (function () {
             eventATaleOfTwoLoversLight: new EventATaleOfTwoLoversLightState(this),
             eventAmbushDark: new EventAmbushDarkState(this),
             eventGuyOfGisborne: new EventGuyOfGisborneState(this),
-            eventLittleJohn: new EventLittleJohnState(this),
+            eventSelectSpace: new EventSelectSpaceState(this),
             fortuneEventDayOfMarketRobinHood: new FortuneEventDayOfMarketRobinHoodState(this),
             fortuneEventDayOfMarketSheriff: new FortuneEventDayOfMarketSheriffState(this),
             fortuneEventQueenEleanor: new FortuneEventQueenEleanorState(this),
@@ -5551,24 +5551,34 @@ var EventAmbushDarkState = (function () {
     };
     return EventAmbushDarkState;
 }());
-var EventLittleJohnState = (function () {
-    function EventLittleJohnState(game) {
+var EventSelectSpaceState = (function () {
+    function EventSelectSpaceState(game) {
         this.game = game;
     }
-    EventLittleJohnState.prototype.onEnteringState = function (args) {
-        debug('Entering EventLittleJohnState');
+    EventSelectSpaceState.prototype.onEnteringState = function (args) {
+        debug('Entering EventSelectSpaceState');
         this.args = args;
         this.updateInterfaceInitialStep();
     };
-    EventLittleJohnState.prototype.onLeavingState = function () {
-        debug('Leaving EventLittleJohnState');
+    EventSelectSpaceState.prototype.onLeavingState = function () {
+        debug('Leaving EventSelectSpaceState');
     };
-    EventLittleJohnState.prototype.setDescription = function (activePlayerId) { };
-    EventLittleJohnState.prototype.updateInterfaceInitialStep = function () {
+    EventSelectSpaceState.prototype.setDescription = function (activePlayerId, args) {
+        if (args.titleOther) {
+            this.game.clientUpdatePageTitle({
+                text: _(args.titleOther),
+                args: {
+                    actplayer: '${actplayer}'
+                },
+                nonActivePlayers: true,
+            });
+        }
+    };
+    EventSelectSpaceState.prototype.updateInterfaceInitialStep = function () {
         var _this = this;
         this.game.clearPossible();
         this.game.clientUpdatePageTitle({
-            text: _('${you} may select a Revolting Parish to set to Submissive'),
+            text: _(this.args.title),
             args: {
                 you: '${you}',
             },
@@ -5585,12 +5595,12 @@ var EventLittleJohnState = (function () {
         });
         this.game.addUndoButtons(this.args);
     };
-    EventLittleJohnState.prototype.updateInterfaceConfirm = function (_a) {
+    EventSelectSpaceState.prototype.updateInterfaceConfirm = function (_a) {
         var _this = this;
         var space = _a.space;
         this.game.clearPossible();
         this.game.clientUpdatePageTitle({
-            text: _('Set ${spaceName} to Submissive?'),
+            text: _(this.args.confirmText),
             args: {
                 spaceName: _(space.name),
             },
@@ -5598,7 +5608,7 @@ var EventLittleJohnState = (function () {
         var callback = function () {
             _this.game.clearPossible();
             _this.game.takeAction({
-                action: 'actEventLittleJohn',
+                action: 'actEventSelectSpace',
                 args: {
                     spaceId: space.id,
                 },
@@ -5616,7 +5626,7 @@ var EventLittleJohnState = (function () {
         }
         this.game.addCancelButton();
     };
-    return EventLittleJohnState;
+    return EventSelectSpaceState;
 }());
 var FortuneEventDayOfMarketRobinHoodState = (function () {
     function FortuneEventDayOfMarketRobinHoodState(game) {
@@ -5850,7 +5860,9 @@ var HireState = (function () {
         var _this = this;
         this.game.clearPossible();
         this.game.clientUpdatePageTitle({
-            text: _('${you} must select a space to Hire in'),
+            text: this.args.optionalAction
+                ? _('${you} may select a space to Hire in')
+                : _('${you} must select a space to Hire in'),
             args: {
                 you: '${you}',
             },
@@ -5889,11 +5901,13 @@ var HireState = (function () {
             this_2.game.addPrimaryActionButton({
                 id: "place_".concat(i, "_btn"),
                 text: "".concat(i),
-                callback: function () { return _this.updateInterfaceConfirm({
-                    count: i,
-                    action: action,
-                    space: space
-                }); }
+                callback: function () {
+                    return _this.updateInterfaceConfirm({
+                        count: i,
+                        action: action,
+                        space: space,
+                    });
+                },
             });
         };
         var this_2 = this;
