@@ -2,7 +2,7 @@
 
 namespace AGestOfRobinHood\Cards\Events;
 
-class Event28_NottinghamFair extends \AGestOfRobinHood\Models\EventCard
+class Event28_NottinghamFair extends \AGestOfRobinHood\Cards\Events\RegularEvent
 {
   public function __construct($row)
   {
@@ -14,7 +14,6 @@ class Event28_NottinghamFair extends \AGestOfRobinHood\Models\EventCard
     $this->titleDark = clienttranslate('Too much stout ale');
     $this->textDark = clienttranslate('Remove up to 2 Merry Men from spaces adjacent to Nottingham to Available.');
     $this->carriageMoves = 1;
-    $this->eventType = REGULAR_EVENT;
     $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 }

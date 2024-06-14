@@ -5,7 +5,7 @@ namespace AGestOfRobinHood\Cards\Events;
 use AGestOfRobinHood\Core\Engine\LeafNode;
 use AGestOfRobinHood\Helpers\GameMap;
 
-class Event29_ATaleOfTwoLovers extends \AGestOfRobinHood\Models\EventCard
+class Event29_ATaleOfTwoLovers extends \AGestOfRobinHood\Cards\Events\RegularEvent
 {
   public function __construct($row)
   {
@@ -17,11 +17,10 @@ class Event29_ATaleOfTwoLovers extends \AGestOfRobinHood\Models\EventCard
     $this->titleDark = clienttranslate('Edward of Deirwold supports the Sheriff');
     $this->textDark = clienttranslate('Gain 2 Shillings and place up to 2 Henchmen in any one Parish.');
     $this->carriageMoves = 1;
-    $this->eventType = REGULAR_EVENT;
     $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 
-  public function resolveLightEffect($player, $successful, $ctx = null, $space = null)
+  public function performLightEffect($player, $successful, $ctx = null, $space = null)
   {
     $player->payShillings(1);
 
@@ -31,7 +30,7 @@ class Event29_ATaleOfTwoLovers extends \AGestOfRobinHood\Models\EventCard
     ]));
   }
 
-  public function resolveDarkEffect($player, $successful, $ctx = null, $space = null)
+  public function performDarkEffect($player, $successful, $ctx = null, $space = null)
   {
     $player->incShillings(2);
 

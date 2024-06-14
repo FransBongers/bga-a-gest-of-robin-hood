@@ -2,7 +2,7 @@
 
 namespace AGestOfRobinHood\Cards\Events;
 
-class Event21_RobinsHorn extends \AGestOfRobinHood\Models\EventCard
+class Event21_RobinsHorn extends \AGestOfRobinHood\Cards\Events\RegularEvent
 {
   public function __construct($row)
   {
@@ -14,7 +14,6 @@ class Event21_RobinsHorn extends \AGestOfRobinHood\Models\EventCard
     $this->titleDark = clienttranslate('A common thief');
     $this->textDark = clienttranslate('Place Henchmen up to half the number of cards in the Victims Pile (rounded up) in any Parishes, then may Capture in one Parish where a Henchman was placed.');
     $this->carriageMoves = 2;
-    $this->eventType = REGULAR_EVENT;
     $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 }

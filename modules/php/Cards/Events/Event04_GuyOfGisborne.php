@@ -8,7 +8,7 @@ use AGestOfRobinHood\Helpers\Utils;
 use AGestOfRobinHood\Managers\Cards;
 use AGestOfRobinHood\Managers\Forces;
 
-class Event04_GuyOfGisborne extends \AGestOfRobinHood\Models\EventCard
+class Event04_GuyOfGisborne extends \AGestOfRobinHood\Cards\Events\RegularEvent
 {
   public function __construct($row)
   {
@@ -20,11 +20,10 @@ class Event04_GuyOfGisborne extends \AGestOfRobinHood\Models\EventCard
     $this->titleDark = clienttranslate('Ruthless second-in-command');
     $this->textDark = clienttranslate('Place Guy in the Travellers Deck and remove a Monk from the Travellers Deck or Discard from the game (if possible), then shuffle the Travellers Deck.');
     $this->carriageMoves = 1;
-    $this->eventType = REGULAR_EVENT;
     $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 
-  public function resolveLightEffect($player, $successful, $ctx = null, $space = null)
+  public function performLightEffect($player, $successful, $ctx = null, $space = null)
   {
     $ctx->insertAsBrother(new LeafNode([
       'action' => EVENT_GUY_OF_GISBORNE,
@@ -33,7 +32,7 @@ class Event04_GuyOfGisborne extends \AGestOfRobinHood\Models\EventCard
     ]));
   }
 
-  public function resolveDarkEffect($player, $successful, $ctx = null, $space = null)
+  public function performDarkEffect($player, $successful, $ctx = null, $space = null)
   {
     $card = Cards::get('Traveller12_GuyOfGisborne');
     $card->setLocation(TRAVELLERS_DECK);

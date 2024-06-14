@@ -6,7 +6,7 @@ use AGestOfRobinHood\Core\Engine;
 use AGestOfRobinHood\Core\Engine\LeafNode;
 use AGestOfRobinHood\Helpers\GameMap;
 
-class Event22_FastCarriages extends \AGestOfRobinHood\Models\EventCard
+class Event22_FastCarriages extends \AGestOfRobinHood\Cards\Events\RegularEvent
 {
   public function __construct($row)
   {
@@ -18,11 +18,10 @@ class Event22_FastCarriages extends \AGestOfRobinHood\Models\EventCard
     $this->titleDark = clienttranslate('Rapid transportation');
     $this->textDark = clienttranslate('Immediately move one Carriage up to 2 spaces.');
     $this->carriageMoves = 1;
-    $this->eventType = REGULAR_EVENT;
     $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 
-  public function resolveDarkEffect($player, $successful, $ctx = null, $space = null)
+  public function performDarkEffect($player, $successful, $ctx = null, $space = null)
   {
     // $this->setLocation(TRAVELLERS_DECK);
 
@@ -35,7 +34,7 @@ class Event22_FastCarriages extends \AGestOfRobinHood\Models\EventCard
     ]));
   }
 
-  public function resolveLightEffect($player, $successful, $ctx = null, $space = null)
+  public function performLightEffect($player, $successful, $ctx = null, $space = null)
   {
     $ctx->insertAsBrother(Engine::buildTree([
       'children' => [

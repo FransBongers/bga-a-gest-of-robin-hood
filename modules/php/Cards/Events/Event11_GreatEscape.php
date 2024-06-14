@@ -12,7 +12,7 @@ use AGestOfRobinHood\Managers\Forces;
 use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\Spaces;
 
-class Event11_GreatEscape extends \AGestOfRobinHood\Models\EventCard
+class Event11_GreatEscape extends \AGestOfRobinHood\Cards\Events\RegularEvent
 {
   public function __construct($row)
   {
@@ -24,7 +24,6 @@ class Event11_GreatEscape extends \AGestOfRobinHood\Models\EventCard
     $this->titleDark = clienttranslate('A traitor in the ranks');
     $this->textDark = clienttranslate('Reveal all Merry Men in one space, then Capture there.');
     $this->carriageMoves = 1;
-    $this->eventType = REGULAR_EVENT;
     $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 
@@ -45,7 +44,7 @@ class Event11_GreatEscape extends \AGestOfRobinHood\Models\EventCard
   // .##....##....##....##.....##....##....##......
   // ..######.....##....##.....##....##....########
 
-  public function resolveLightEffect($player, $successful, $ctx = null, $space = null)
+  public function performLightEffect($player, $successful, $ctx = null, $space = null)
   {
     $ctx->insertAsBrother(new LeafNode([
       'action' => EVENT_SELECT_SPACE,
@@ -55,7 +54,7 @@ class Event11_GreatEscape extends \AGestOfRobinHood\Models\EventCard
     ]));
   }
 
-  public function resolveDarkEffect($player, $successful, $ctx = null, $space = null)
+  public function performDarkEffect($player, $successful, $ctx = null, $space = null)
   {
     $ctx->insertAsBrother(new LeafNode([
       'action' => EVENT_SELECT_SPACE,
@@ -92,57 +91,16 @@ class Event11_GreatEscape extends \AGestOfRobinHood\Models\EventCard
   // .##....##....##....##.....##....##....##......
   // ..######.....##....##.....##....##....########
 
-  public function resolveEffectAutomatically($player, $effect, $ctx)
+  public function resolveLightEffect($player, $ctx, $space)
   {
-    if ($effect === DARK) {
-      return $this->resolveDarkEffectAutomatically($player, $ctx);
-    }
-    return false;
-  }
-
-  public function resolveEffect($player, $effect, $space, $ctx)
-  {
-    if ($effect === LIGHT && $space !== null) {
+    if ($space !== null) {
       $space->revolt($player);
     }
-    if ($effect === LIGHT) {
-      Players::moveRoyalFavour($player, 1, JUSTICE);
-    }
 
-    // DARK
-    if ($effect === DARK) {
-      $this->resolveDarkEffectAfterSelect($player, $space, $ctx);
-    }
+    Players::moveRoyalFavour($player, 1, JUSTICE);
   }
 
-  public function getStateArgs($effect)
-  {
-    if ($effect === LIGHT) {
-      return [
-        'spaces' => $this->getLightOptions(),
-        'title' => clienttranslate('${you} must select a space adjacent to Nottingham'),
-        'confirmText' => clienttranslate('Place Robin Hood and all Merry Men from Prison in ${spaceName}?'),
-        'titleOther' => clienttranslate('${actplayer} must select a space adjacent to Nottingham'),
-      ];
-    } else if ($effect === DARK) {
-      return [
-        'spaces' => $this->getDarkOptions(),
-        'title' => clienttranslate('${you} must select a space with Merry Men'),
-        'confirmText' => clienttranslate('Reveal all Merry Men in ${spaceName} and Capture there?'),
-        'titleOther' => clienttranslate('${actplayer} must select a space'),
-      ];
-    }
-  }
-
-  // .##.....##.########.####.##.......####.########.##....##
-  // .##.....##....##.....##..##........##.....##.....##..##.
-  // .##.....##....##.....##..##........##.....##......####..
-  // .##.....##....##.....##..##........##.....##.......##...
-  // .##.....##....##.....##..##........##.....##.......##...
-  // .##.....##....##.....##..##........##.....##.......##...
-  // ..#######.....##....####.########.####....##.......##...
-
-  private function resolveDarkEffectAfterSelect($player, $space, $ctx)
+  public function resolveDarkEffect($player, $ctx, $space)
   {
     $hiddenMerryMen = Utils::filter($space->getForces(), function ($force) {
       return $force->isMerryMan() && $force->isHidden();
@@ -158,7 +116,36 @@ class Event11_GreatEscape extends \AGestOfRobinHood\Models\EventCard
     }
   }
 
-  private function resolveDarkEffectAutomatically($player, $ctx)
+
+  public function getLightStateArgs()
+  {
+    return [
+      'spaces' => $this->getLightOptions(),
+      'title' => clienttranslate('${you} must select a space adjacent to Nottingham'),
+      'confirmText' => clienttranslate('Place Robin Hood and all Merry Men from Prison in ${spaceName}?'),
+      'titleOther' => clienttranslate('${actplayer} must select a space adjacent to Nottingham'),
+    ];
+  }
+
+  public function getDarkStateArgs()
+  {
+    return [
+      'spaces' => $this->getDarkOptions(),
+      'title' => clienttranslate('${you} must select a space with Merry Men'),
+      'confirmText' => clienttranslate('Reveal all Merry Men in ${spaceName} and Capture there?'),
+      'titleOther' => clienttranslate('${actplayer} must select a space'),
+    ];
+  }
+
+  // .##.....##.########.####.##.......####.########.##....##
+  // .##.....##....##.....##..##........##.....##.....##..##.
+  // .##.....##....##.....##..##........##.....##......####..
+  // .##.....##....##.....##..##........##.....##.......##...
+  // .##.....##....##.....##..##........##.....##.......##...
+  // .##.....##....##.....##..##........##.....##.......##...
+  // ..#######.....##....####.########.####....##.......##...
+
+  public function resolveDarkEffectAutomatically($player, $ctx)
   {
     $spaces = $this->getDarkOptions();
     if (count($spaces) > 1) {

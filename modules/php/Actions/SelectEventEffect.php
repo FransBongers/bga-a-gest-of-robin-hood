@@ -96,9 +96,9 @@ class SelectEventEffect extends \AGestOfRobinHood\Actions\Plot
     Notifications::resolveEventEffect($player, $card, $effect);
 
     if ($effect === 'dark') {
-      $card->resolveDarkEffect($player, true, $this->ctx);
+      $card->performDarkEffect($player, true, $this->ctx);
     } else if ($effect === 'light') {
-      $card->resolveLightEffect($player, true, $this->ctx);
+      $card->performLightEffect($player, true, $this->ctx);
     }
 
 

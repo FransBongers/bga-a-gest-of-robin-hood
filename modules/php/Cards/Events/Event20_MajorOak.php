@@ -10,7 +10,7 @@ use AGestOfRobinHood\Managers\Forces;
 use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\Spaces;
 
-class Event20_MajorOak extends \AGestOfRobinHood\Models\EventCard
+class Event20_MajorOak extends \AGestOfRobinHood\Cards\Events\RegularEvent
 {
   public function __construct($row)
   {
@@ -22,11 +22,10 @@ class Event20_MajorOak extends \AGestOfRobinHood\Models\EventCard
     $this->titleDark = clienttranslate('Camp destroyed');
     $this->textDark = clienttranslate('Remove a Camp from a Forest space (shift one step towards Order).');
     $this->carriageMoves = 2;
-    $this->eventType = REGULAR_EVENT;
     $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 
-  public function resolveDarkEffect($player, $successful, $ctx = null, $space = null)
+  public function performDarkEffect($player, $successful, $ctx = null, $space = null)
   {
     $ctx->insertAsBrother(new LeafNode([
       'action' => REMOVE_CAMP,
@@ -35,7 +34,7 @@ class Event20_MajorOak extends \AGestOfRobinHood\Models\EventCard
     ]));
   }
 
-  public function resolveLightEffect($player, $successful, $ctx = null, $space = null)
+  public function performLightEffect($player, $successful, $ctx = null, $space = null)
   {
     $camp = Forces::getTopOf(CAMPS_SUPPLY);
     $camp->setLocation(OLLERTON_HILL);

@@ -8,7 +8,7 @@ use AGestOfRobinHood\Helpers\Utils;
 use AGestOfRobinHood\Managers\Cards;
 use AGestOfRobinHood\Managers\Forces;
 
-class Event02_BishopOfHereford extends \AGestOfRobinHood\Models\EventCard
+class Event02_BishopOfHereford extends \AGestOfRobinHood\Cards\Events\RegularEvent
 {
   public function __construct($row)
   {
@@ -20,11 +20,10 @@ class Event02_BishopOfHereford extends \AGestOfRobinHood\Models\EventCard
     $this->titleDark = clienttranslate('Seeks sanctuary with the Sheriff');
     $this->textDark = clienttranslate('Gain 2 Shillings and remove a Monk from the Travellers Deck or Discard to the Victims Pile.');
     $this->carriageMoves = 2;
-    $this->eventType = REGULAR_EVENT;
     $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 
-  public function resolveLightEffect($player, $successful, $ctx = null, $space = null)
+  public function performLightEffect($player, $successful, $ctx = null, $space = null)
   {
     $card = Cards::get('Traveller11_BishopOfHereford'); 
     $card->setLocation(TRAVELLERS_DECK);
@@ -41,7 +40,7 @@ class Event02_BishopOfHereford extends \AGestOfRobinHood\Models\EventCard
     ]));
   }
 
-  public function resolveDarkEffect($player, $successful, $ctx = null, $space = null)
+  public function performDarkEffect($player, $successful, $ctx = null, $space = null)
   {
     $player->incShillings(2);
 
@@ -66,6 +65,5 @@ class Event02_BishopOfHereford extends \AGestOfRobinHood\Models\EventCard
   {
     return true;
   }
-
 
 }

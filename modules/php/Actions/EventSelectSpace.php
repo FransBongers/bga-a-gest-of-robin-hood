@@ -47,7 +47,14 @@ class EventSelectSpace extends \AGestOfRobinHood\Actions\Plot
     $effect = $info['effect'];
     $player = self::getPlayer();
 
-    $isResolved = Cards::get($cardId)->resolveEffectAutomatically($player, $effect, $this->ctx);
+    $isResolved = false;
+    if ($effect === LIGHT) {
+      $isResolved = Cards::get($cardId)->resolveLightEffectAutomatically($player, $this->ctx);
+    } else if ($effect === DARK) {
+      $isResolved = Cards::get($cardId)->resolveDarkEffectAutomatically($player, $this->ctx);
+    }
+
+
 
     if ($isResolved) {
       $this->resolveAction(['automatic' => true]);
@@ -68,7 +75,12 @@ class EventSelectSpace extends \AGestOfRobinHood\Actions\Plot
     $cardId = $info['cardId'];
     $effect = $info['effect'];
 
-    $data = Cards::get($cardId)->getStateArgs($effect);
+    $data = [];
+    if ($effect === LIGHT) {
+      $data = Cards::get($cardId)->getLightStateArgs($effect);
+    } else if ($effect === DARK) {
+      $data = Cards::get($cardId)->getDarkStateArgs($effect);
+    }
 
     return $data;
   }
@@ -106,7 +118,7 @@ class EventSelectSpace extends \AGestOfRobinHood\Actions\Plot
     $effect = $info['effect'];
     $card = Cards::get($cardId);
 
-    $options = $card->getStateArgs($effect)['spaces'];
+    $options = $this->argsEventSelectSpace()['spaces'];
 
     $space = Utils::array_find($options, function ($option) use ($spaceId) {
       return $option->getId() === $spaceId;
@@ -116,7 +128,11 @@ class EventSelectSpace extends \AGestOfRobinHood\Actions\Plot
       throw new \feException("ERROR 074");
     }
 
-    $card->resolveEffect(self::getPlayer(), $effect, $space, $this->ctx);
+    if ($effect === LIGHT) {
+      $card->resolveLightEffect(self::getPlayer(), $this->ctx, $space);
+    } else if ($effect === DARK) {
+      $card->resolveDarkEffect(self::getPlayer(), $this->ctx, $space);
+    }
 
     $this->resolveAction($args);
   }

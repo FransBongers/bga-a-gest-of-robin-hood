@@ -2,7 +2,7 @@
 
 namespace AGestOfRobinHood\Cards\Events;
 
-class Event18_AllanADale extends \AGestOfRobinHood\Models\EventCard
+class Event18_AllanADale extends \AGestOfRobinHood\Cards\Events\RegularEvent
 {
   public function __construct($row)
   {
@@ -14,7 +14,6 @@ class Event18_AllanADale extends \AGestOfRobinHood\Models\EventCard
     $this->titleDark = clienttranslate('Noisy troublemaker');
     $this->textDark = clienttranslate('Perform a free Single Patrol, automatically Revealing all Merry Men in destination space if at least one Henchman is there.');
     $this->carriageMoves = 2;
-    $this->eventType = REGULAR_EVENT;
     $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 }

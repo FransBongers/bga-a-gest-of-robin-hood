@@ -12,7 +12,7 @@ use AGestOfRobinHood\Managers\Forces;
 use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\Spaces;
 
-class Event23_FriarTuck extends \AGestOfRobinHood\Models\EventCard
+class Event23_FriarTuck extends \AGestOfRobinHood\Cards\Events\RegularEvent
 {
   public function __construct($row)
   {
@@ -24,7 +24,6 @@ class Event23_FriarTuck extends \AGestOfRobinHood\Models\EventCard
     $this->titleDark = clienttranslate('Issues with alcohol');
     $this->textDark = clienttranslate('Reveal all Merry Men in one space where a Henchman is present.');
     $this->carriageMoves = 1;
-    $this->eventType = REGULAR_EVENT;
     $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 
@@ -45,7 +44,7 @@ class Event23_FriarTuck extends \AGestOfRobinHood\Models\EventCard
   // .##....##....##....##.....##....##....##......
   // ..######.....##....##.....##....##....########
 
-  public function resolveLightEffect($player, $successful, $ctx = null, $space = null)
+  public function performLightEffect($player, $successful, $ctx = null, $space = null)
   {
     // $ctx->insertAsBrother(new LeafNode([
     //   'action' => EVENT_SELECT_SPACE,
@@ -55,7 +54,7 @@ class Event23_FriarTuck extends \AGestOfRobinHood\Models\EventCard
     // ]));
   }
 
-  public function resolveDarkEffect($player, $successful, $ctx = null, $space = null)
+  public function performDarkEffect($player, $successful, $ctx = null, $space = null)
   {
     $ctx->insertAsBrother(new LeafNode([
       'action' => EVENT_SELECT_SPACE,
@@ -92,39 +91,25 @@ class Event23_FriarTuck extends \AGestOfRobinHood\Models\EventCard
   // .##....##....##....##.....##....##....##......
   // ..######.....##....##.....##....##....########
 
-  public function resolveEffectAutomatically($player, $effect, $ctx)
+  public function resolveDarkEffect($player, $ctx, $space)
   {
-    if ($effect === DARK) {
-      return $this->resolveDarkEffectAutomatically($player, $ctx);
-    }
-    return false;
-  }
-
-  public function resolveEffect($player, $effect, $space, $ctx)
-  {
-    if ($effect === DARK) {
-      $spaceId = $space->getId();
-      $hiddenMerryMen = Utils::filter(Forces::getInLocation($spaceId)->toArray(), function ($merryMan) use ($spaceId) {
-        return $merryMan->isHidden() && $merryMan->isMerryMan();
-      });
-      foreach($hiddenMerryMen as $merryMan) {
-        $merryMan->reveal($player);
-      }
+    $spaceId = $space->getId();
+    $hiddenMerryMen = Utils::filter(Forces::getInLocation($spaceId)->toArray(), function ($merryMan) use ($spaceId) {
+      return $merryMan->isHidden() && $merryMan->isMerryMan();
+    });
+    foreach ($hiddenMerryMen as $merryMan) {
+      $merryMan->reveal($player);
     }
   }
 
-  public function getStateArgs($effect)
+  public function getDarkStateArgs()
   {
-    if ($effect === LIGHT) {
-
-    } else if ($effect === DARK) {
-      return [
-        'spaces' => $this->getDarkOptions(),
-        'title' => clienttranslate('${you} must select a space'),
-        'confirmText' => clienttranslate('Reveal all Merry Men in ${spaceName}?'),
-        'titleOther' => clienttranslate('${actplayer} must select a space'),
-      ];
-    }
+    return [
+      'spaces' => $this->getDarkOptions(),
+      'title' => clienttranslate('${you} must select a space'),
+      'confirmText' => clienttranslate('Reveal all Merry Men in ${spaceName}?'),
+      'titleOther' => clienttranslate('${actplayer} must select a space'),
+    ];
   }
 
   // .##.....##.########.####.##.......####.########.##....##
@@ -135,11 +120,11 @@ class Event23_FriarTuck extends \AGestOfRobinHood\Models\EventCard
   // .##.....##....##.....##..##........##.....##.......##...
   // ..#######.....##....####.########.####....##.......##...
 
-  private function resolveDarkEffectAutomatically($player, $ctx)
+  public function resolveDarkEffectAutomatically($player, $ctx)
   {
     $options = $this->getDarkOptions();
     if (count($options) > 1) {
-      return false;  
+      return false;
     }
     $space = $options[0];
     $this->resolveEffect($player, DARK, $space, $ctx);

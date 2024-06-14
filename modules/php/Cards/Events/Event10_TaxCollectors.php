@@ -2,7 +2,7 @@
 
 namespace AGestOfRobinHood\Cards\Events;
 
-class Event10_TaxCollectors extends \AGestOfRobinHood\Models\EventCard
+class Event10_TaxCollectors extends \AGestOfRobinHood\Cards\Events\RegularEvent
 {
   public function __construct($row)
   {
@@ -14,7 +14,6 @@ class Event10_TaxCollectors extends \AGestOfRobinHood\Models\EventCard
     $this->titleDark = clienttranslate('Brutal enforcement');
     $this->textDark = clienttranslate('Confiscate in up to two Parishes, even if Revolting.');
     $this->carriageMoves = 1;
-    $this->eventType = REGULAR_EVENT;
     $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 }

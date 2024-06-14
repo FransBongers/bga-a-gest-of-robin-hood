@@ -150,9 +150,9 @@ class ChooseAction extends \AGestOfRobinHood\Models\AtomicAction
       case EVENT:
         $card = Cards::getTopOf(EVENTS_DISCARD);
         if ($player->isRobinHood()) {
-          $card->resolveLightEffect($player, true, $this->ctx);
+          $card->performLightEffect($player, true, $this->ctx);
         } else {
-          $card->resolveDarkEffect($player, true, $this->ctx);
+          $card->performDarkEffect($player, true, $this->ctx);
         }
         // $parent->pushChild(new LeafNode([
         //   'action' => SELECT_EVENT_EFFECT,

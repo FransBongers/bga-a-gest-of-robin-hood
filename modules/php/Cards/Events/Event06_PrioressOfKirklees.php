@@ -11,7 +11,7 @@ use AGestOfRobinHood\Managers\Forces;
 use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\Spaces;
 
-class Event06_PrioressOfKirklees extends \AGestOfRobinHood\Models\EventCard
+class Event06_PrioressOfKirklees extends \AGestOfRobinHood\Cards\Events\RegularEvent
 {
   public function __construct($row)
   {
@@ -23,7 +23,6 @@ class Event06_PrioressOfKirklees extends \AGestOfRobinHood\Models\EventCard
     $this->titleDark = clienttranslate('Weakens Robin with poison');
     $this->textDark = clienttranslate('Remove Robin Hood and any one Merry Man in the same space to Available.');
     $this->carriageMoves = 1;
-    $this->eventType = REGULAR_EVENT;
     $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 
@@ -44,7 +43,7 @@ class Event06_PrioressOfKirklees extends \AGestOfRobinHood\Models\EventCard
   // .##....##....##....##.....##....##....##......
   // ..######.....##....##.....##....##....########
 
-  public function resolveLightEffect($player, $successful, $ctx = null, $space = null)
+  public function performLightEffect($player, $successful, $ctx = null, $space = null)
   {
     $ctx->insertAsBrother(new LeafNode([
       'action' => EVENT_SELECT_SPACE,
@@ -54,7 +53,7 @@ class Event06_PrioressOfKirklees extends \AGestOfRobinHood\Models\EventCard
     ]));
   }
 
-  public function resolveDarkEffect($player, $successful, $ctx = null, $space = null)
+  public function performDarkEffect($player, $successful, $ctx = null, $space = null)
   {
     // $robinHood = Forces::get(ROBIN_HOOD);
 
@@ -93,17 +92,9 @@ class Event06_PrioressOfKirklees extends \AGestOfRobinHood\Models\EventCard
   // .##....##....##....##.....##....##....##......
   // ..######.....##....##.....##....##....########
 
-  public function resolveEffectAutomatically($player, $effect, $ctx)
+  public function resolveLightEffect($player, $ctx, $space)
   {
-    if ($effect === LIGHT) {
-      return $this->resolveLightEffectAutomatically($player, $ctx);
-    }
-    return false;
-  }
-
-  public function resolveEffect($player, $effect, $space, $ctx)
-  {
-    if ($effect === LIGHT && $space !== null) {
+    if ($space !== null) {
       $merryMen = Utils::filter($space->getForces(), function ($force) {
         return $force->isMerryMan() && !$force->isHidden();
       });
@@ -111,23 +102,19 @@ class Event06_PrioressOfKirklees extends \AGestOfRobinHood\Models\EventCard
         $merryMan->hide($player);
       }
     }
-    if ($effect === LIGHT) {
-      Players::moveRoyalFavour($player, 1, JUSTICE);
-    }
+
+    Players::moveRoyalFavour($player, 1, JUSTICE);
   }
 
-  public function getStateArgs($effect)
-  {
-    if ($effect === LIGHT) {
-      return [
-        'spaces' => $this->getLightOptions(),
-        'title' => clienttranslate('${you} must select a Parish'),
-        'confirmText' => clienttranslate('Flip all Merry Men in ${spaceName} to Hidden?'),
-        'titleOther' => clienttranslate('${actplayer} must select a Parish'),
-      ];
-    } else if ($effect === DARK) {
 
-    }
+  public function getLightStateArgs()
+  {
+    return [
+      'spaces' => $this->getLightOptions(),
+      'title' => clienttranslate('${you} must select a Parish'),
+      'confirmText' => clienttranslate('Flip all Merry Men in ${spaceName} to Hidden?'),
+      'titleOther' => clienttranslate('${actplayer} must select a Parish'),
+    ];
   }
 
   // .##.....##.########.####.##.......####.########.##....##
@@ -138,7 +125,7 @@ class Event06_PrioressOfKirklees extends \AGestOfRobinHood\Models\EventCard
   // .##.....##....##.....##..##........##.....##.......##...
   // ..#######.....##....####.########.####....##.......##...
 
-  private function resolveLightEffectAutomatically($player, $ctx)
+  public function resolveLightEffectAutomatically($player, $ctx)
   {
     $spaces = $this->getLightOptions();
     if (count($spaces) === 0) {

@@ -2,7 +2,7 @@
 
 namespace AGestOfRobinHood\Cards\Events;
 
-class Event25_WeaponsOfTheWeak extends \AGestOfRobinHood\Models\EventCard
+class Event25_WeaponsOfTheWeak extends \AGestOfRobinHood\Cards\Events\RegularEvent
 {
   public function __construct($row)
   {
@@ -14,7 +14,6 @@ class Event25_WeaponsOfTheWeak extends \AGestOfRobinHood\Models\EventCard
     $this->titleDark = clienttranslate('Peasants resigned to oppression');
     $this->textDark = clienttranslate('Set one Revolting Parish to Submissive.');
     $this->carriageMoves = 1;
-    $this->eventType = REGULAR_EVENT;
     $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 }

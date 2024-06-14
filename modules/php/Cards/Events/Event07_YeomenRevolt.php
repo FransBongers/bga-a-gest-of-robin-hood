@@ -11,7 +11,7 @@ use AGestOfRobinHood\Managers\Forces;
 use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\Spaces;
 
-class Event07_YeomenRevolt extends \AGestOfRobinHood\Models\EventCard
+class Event07_YeomenRevolt extends \AGestOfRobinHood\Cards\Events\RegularEvent
 {
   public function __construct($row)
   {
@@ -23,7 +23,6 @@ class Event07_YeomenRevolt extends \AGestOfRobinHood\Models\EventCard
     $this->titleDark = clienttranslate('Revolt suppressed');
     $this->textDark = clienttranslate('If there are more Submissive Parishes than Revolting Parishes, shift one step towards Order.');
     $this->carriageMoves = 2;
-    $this->eventType = REGULAR_EVENT;
     $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 
@@ -43,7 +42,7 @@ class Event07_YeomenRevolt extends \AGestOfRobinHood\Models\EventCard
   // .##....##....##....##.....##....##....##......
   // ..######.....##....##.....##....##....########
 
-  public function resolveLightEffect($player, $successful, $ctx = null, $space = null)
+  public function performLightEffect($player, $successful, $ctx = null, $space = null)
   {
     $ctx->insertAsBrother(new LeafNode([
       'action' => EVENT_SELECT_SPACE,
@@ -53,7 +52,7 @@ class Event07_YeomenRevolt extends \AGestOfRobinHood\Models\EventCard
     ]));
   }
 
-  public function resolveDarkEffect($player, $successful, $ctx = null, $space = null)
+  public function performDarkEffect($player, $successful, $ctx = null, $space = null)
   {
     $parishes = Spaces::get(PARISHES)->toArray();
     $submissiveCount = count(Utils::filter($parishes, function ($space) {
@@ -94,35 +93,23 @@ class Event07_YeomenRevolt extends \AGestOfRobinHood\Models\EventCard
   // .##....##....##....##.....##....##....##......
   // ..######.....##....##.....##....##....########
 
-  public function resolveEffectAutomatically($player, $effect, $ctx)
-  {
-    if ($effect === LIGHT) {
-      return $this->resolveLightEffectAutomatically($player, $ctx);
-    }
-    return false;
-  }
 
-  public function resolveEffect($player, $effect, $space, $ctx)
+  public function resolveLightEffect($player, $ctx, $space)
   {
-    if ($effect === LIGHT && $space !== null) {
+    if ($space !== null) {
       $space->revolt($player);
     }
-    if ($effect === LIGHT) {
-      Players::moveRoyalFavour($player, 1, JUSTICE);
-    }
+    Players::moveRoyalFavour($player, 1, JUSTICE);
   }
 
-  public function getStateArgs($effect)
+  public function getLightStateArgs()
   {
-    if ($effect === LIGHT) {
-      return [
-        'spaces' => $this->getLightOptions(),
-        'title' => clienttranslate('${you} must select a Parish to set to Revolting'),
-        'confirmText' => clienttranslate('Set ${spaceName} to Revolting?'),
-        'titleOther' => clienttranslate('${actplayer} must select a Parish'),
-      ];
-    } else if ($effect === DARK) {
-    }
+    return [
+      'spaces' => $this->getLightOptions(),
+      'title' => clienttranslate('${you} must select a Parish to set to Revolting'),
+      'confirmText' => clienttranslate('Set ${spaceName} to Revolting?'),
+      'titleOther' => clienttranslate('${actplayer} must select a Parish'),
+    ];
   }
 
   // .##.....##.########.####.##.......####.########.##....##
@@ -133,7 +120,7 @@ class Event07_YeomenRevolt extends \AGestOfRobinHood\Models\EventCard
   // .##.....##....##.....##..##........##.....##.......##...
   // ..#######.....##....####.########.####....##.......##...
 
-  private function resolveLightEffectAutomatically($player, $ctx)
+  public function resolveLightEffectAutomatically($player, $ctx)
   {
     $spaces = $this->getLightOptions();
     if (count($spaces) === 0) {

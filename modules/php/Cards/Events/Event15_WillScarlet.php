@@ -12,7 +12,7 @@ use AGestOfRobinHood\Managers\Forces;
 use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\Spaces;
 
-class Event15_WillScarlet extends \AGestOfRobinHood\Models\EventCard
+class Event15_WillScarlet extends \AGestOfRobinHood\Cards\Events\RegularEvent
 {
   public function __construct($row)
   {
@@ -24,7 +24,6 @@ class Event15_WillScarlet extends \AGestOfRobinHood\Models\EventCard
     $this->titleDark = clienttranslate('Robin\'s resentful kinsman');
     $this->textDark = clienttranslate('Reveal Robin Hood and perform a free Single Patrol.');
     $this->carriageMoves = 2;
-    $this->eventType = REGULAR_EVENT;
     $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 
@@ -45,7 +44,7 @@ class Event15_WillScarlet extends \AGestOfRobinHood\Models\EventCard
   // .##....##....##....##.....##....##....##......
   // ..######.....##....##.....##....##....########
 
-  public function resolveLightEffect($player, $successful, $ctx = null, $space = null)
+  public function performLightEffect($player, $successful, $ctx = null, $space = null)
   {
     $ctx->insertAsBrother(new LeafNode([
       'action' => EVENT_SELECT_SPACE,
@@ -55,7 +54,7 @@ class Event15_WillScarlet extends \AGestOfRobinHood\Models\EventCard
     ]));
   }
 
-  public function resolveDarkEffect($player, $successful, $ctx = null, $space = null)
+  public function performDarkEffect($player, $successful, $ctx = null, $space = null)
   {
     $robinHood = Forces::get(ROBIN_HOOD);
     $robinHood->eventRevealBySheriff($player);
@@ -98,32 +97,20 @@ class Event15_WillScarlet extends \AGestOfRobinHood\Models\EventCard
   // .##....##....##....##.....##....##....##......
   // ..######.....##....##.....##....##....########
 
-  public function resolveEffectAutomatically($player, $effect, $ctx)
+  public function resolveLightEffect($player, $ctx, $space)
   {
-    if ($effect === LIGHT) {
-      return $this->resolveLightEffectAutomatically($player, $ctx);
-    }
-    return false;
+
+    GameMap::placeCamp($player, $space);
   }
 
-  public function resolveEffect($player, $effect, $space, $ctx)
+  public function getLightStateArgs()
   {
-    if ($effect === LIGHT) {
-      GameMap::placeCamp($player, $space);
-    }
-  }
-
-  public function getStateArgs($effect)
-  {
-    if ($effect === LIGHT) {
-      return [
-        'spaces' => $this->getLightOptions(),
-        'title' => clienttranslate('${you} must select a Forest'),
-        'confirmText' => clienttranslate('Place a Camp in ${spaceName}?'),
-        'titleOther' => clienttranslate('${actplayer} must select a Forest'),
-      ];
-    } else if ($effect === DARK) {
-    }
+    return [
+      'spaces' => $this->getLightOptions(),
+      'title' => clienttranslate('${you} must select a Forest'),
+      'confirmText' => clienttranslate('Place a Camp in ${spaceName}?'),
+      'titleOther' => clienttranslate('${actplayer} must select a Forest'),
+    ];
   }
 
   // .##.....##.########.####.##.......####.########.##....##
@@ -134,7 +121,7 @@ class Event15_WillScarlet extends \AGestOfRobinHood\Models\EventCard
   // .##.....##....##.....##..##........##.....##.......##...
   // ..#######.....##....####.########.####....##.......##...
 
-  private function resolveLightEffectAutomatically($player, $ctx)
+  public function resolveLightEffectAutomatically($player, $ctx)
   {
     return false;
   }

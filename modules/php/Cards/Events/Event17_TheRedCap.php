@@ -2,7 +2,7 @@
 
 namespace AGestOfRobinHood\Cards\Events;
 
-class Event17_TheRedCap extends \AGestOfRobinHood\Models\EventCard
+class Event17_TheRedCap extends \AGestOfRobinHood\Cards\Events\RegularEvent
 {
   public function __construct($row)
   {
@@ -14,7 +14,6 @@ class Event17_TheRedCap extends \AGestOfRobinHood\Models\EventCard
     $this->titleDark = clienttranslate('Chief archer leads henchmen');
     $this->textDark = clienttranslate('Reveal Robin Hood and move up to two Henchmen to his space from any other space.');
     $this->carriageMoves = 1;
-    $this->eventType = REGULAR_EVENT;
     $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 }

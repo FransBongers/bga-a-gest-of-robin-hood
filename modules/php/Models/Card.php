@@ -93,11 +93,11 @@ class Card extends \AGestOfRobinHood\Helpers\DB_Model
     Notifications::putCardInVictimsPile($player, $this, $fromLocation);
   }
 
-  public function resolveDarkEffect($player, $successful, $ctx = null, $space = null)
+  public function performDarkEffect($player, $successful, $ctx = null, $space = null)
   {
   }
 
-  public function resolveLightEffect($player, $successful, $ctx = null, $space = null)
+  public function performLightEffect($player, $successful, $ctx = null, $space = null)
   {
   }
 

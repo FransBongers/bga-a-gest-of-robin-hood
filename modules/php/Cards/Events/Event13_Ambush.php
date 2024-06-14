@@ -7,7 +7,7 @@ use AGestOfRobinHood\Core\Notifications;
 use AGestOfRobinHood\Managers\Forces;
 use AGestOfRobinHood\Managers\Players;
 
-class Event13_Ambush extends \AGestOfRobinHood\Models\EventCard
+class Event13_Ambush extends \AGestOfRobinHood\Cards\Events\RegularEvent
 {
   public function __construct($row)
   {
@@ -19,11 +19,10 @@ class Event13_Ambush extends \AGestOfRobinHood\Models\EventCard
     $this->titleDark = clienttranslate('Easy to detect');
     $this->textDark = clienttranslate('Reveal all Merry Men in a Forest and shift one step towards Order.');
     $this->carriageMoves = 1;
-    $this->eventType = REGULAR_EVENT;
     $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 
-  public function resolveDarkEffect($player, $successful, $ctx = null, $space = null)
+  public function performDarkEffect($player, $successful, $ctx = null, $space = null)
   {
     $ctx->insertAsBrother(new LeafNode([
       'action' => EVENT_AMBUSH_DARK,

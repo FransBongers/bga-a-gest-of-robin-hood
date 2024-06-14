@@ -10,7 +10,7 @@ use AGestOfRobinHood\Managers\Cards;
 use AGestOfRobinHood\Managers\Forces;
 use AGestOfRobinHood\Managers\Spaces;
 
-class Event05_LittleJohn extends \AGestOfRobinHood\Models\EventCard
+class Event05_LittleJohn extends \AGestOfRobinHood\Cards\Events\RegularEvent
 {
   public function __construct($row)
   {
@@ -22,7 +22,6 @@ class Event05_LittleJohn extends \AGestOfRobinHood\Models\EventCard
     $this->titleDark = clienttranslate('Foolish bumbler');
     $this->textDark = clienttranslate('Set a Revolting Parish with a Revealed Merry Man to Submissive.');
     $this->carriageMoves = 1;
-    $this->eventType = REGULAR_EVENT;
     $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 
@@ -42,7 +41,7 @@ class Event05_LittleJohn extends \AGestOfRobinHood\Models\EventCard
   // .##....##....##....##.....##....##....##......
   // ..######.....##....##.....##....##....########
 
-  public function resolveLightEffect($player, $successful, $ctx = null, $space = null)
+  public function performLightEffect($player, $successful, $ctx = null, $space = null)
   {
     $robinHood = Forces::get(ROBIN_HOOD);
     $robinHood->reveal($player);
@@ -52,7 +51,7 @@ class Event05_LittleJohn extends \AGestOfRobinHood\Models\EventCard
     $player->incShillings(2);
   }
 
-  public function resolveDarkEffect($player, $successful, $ctx = null, $space = null)
+  public function performDarkEffect($player, $successful, $ctx = null, $space = null)
   {
     $ctx->insertAsBrother(new LeafNode([
       'action' => EVENT_SELECT_SPACE,
@@ -96,31 +95,20 @@ class Event05_LittleJohn extends \AGestOfRobinHood\Models\EventCard
   // .##....##....##....##.....##....##....##......
   // ..######.....##....##.....##....##....########
 
-  public function resolveEffectAutomatically($player, $effect, $ctx)
+
+  public function resolveDarkEffect($player, $ctx, $space)
   {
-    if ($effect === DARK) {
-      return $this->resolveDarkEffectAutomatically($player);
-    }
-    return false;
+    $space->setToSubmissive($player);
   }
 
-  public function resolveEffect($player, $effect, $space, $ctx)
+  public function getDarkStateArgs()
   {
-    if ($effect === DARK) {
-      $space->setToSubmissive($player);
-    }
-  }
-
-  public function getStateArgs($effect)
-  {
-    if ($effect === DARK) {
-      return [
-        'spaces' => $this->getDarkOptions(),
-        'title' => clienttranslate('${you} must select a Revolting Parish to set to Submissive'),
-        'confirmText' => clienttranslate('Set ${spaceName} to Submissive?'),
-        'titleOther' => clienttranslate('${actplayer} must select a Revolting Parish'),
-      ];
-    }
+    return [
+      'spaces' => $this->getDarkOptions(),
+      'title' => clienttranslate('${you} must select a Revolting Parish to set to Submissive'),
+      'confirmText' => clienttranslate('Set ${spaceName} to Submissive?'),
+      'titleOther' => clienttranslate('${actplayer} must select a Revolting Parish'),
+    ];
   }
 
   // .##.....##.########.####.##.......####.########.##....##
@@ -131,7 +119,7 @@ class Event05_LittleJohn extends \AGestOfRobinHood\Models\EventCard
   // .##.....##....##.....##..##........##.....##.......##...
   // ..#######.....##....####.########.####....##.......##...
 
-  private function resolveDarkEffectAutomatically($player)
+  public function resolveDarkEffectAutomatically($player, $ctx)
   {
     $spaces = $this->getDarkOptions();
     if (count($spaces) > 1) {

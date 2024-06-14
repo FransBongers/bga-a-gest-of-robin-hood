@@ -11,7 +11,7 @@ use AGestOfRobinHood\Managers\Forces;
 use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\Spaces;
 
-class Event09_SocialBandit extends \AGestOfRobinHood\Models\EventCard
+class Event09_SocialBandit extends \AGestOfRobinHood\Cards\Events\RegularEvent
 {
   public function __construct($row)
   {
@@ -23,7 +23,6 @@ class Event09_SocialBandit extends \AGestOfRobinHood\Models\EventCard
     $this->titleDark = clienttranslate('Out of touch outlaw');
     $this->textDark = clienttranslate('Reveal Robin Hood and set the space he is in to Submissive (if possible).');
     $this->carriageMoves = 2;
-    $this->eventType = REGULAR_EVENT;
     $this->setupLocation = REGULAR_EVENTS_POOL;
   }
 
@@ -43,7 +42,7 @@ class Event09_SocialBandit extends \AGestOfRobinHood\Models\EventCard
   // .##....##....##....##.....##....##....##......
   // ..######.....##....##.....##....##....########
 
-  public function resolveLightEffect($player, $successful, $ctx = null, $space = null)
+  public function performLightEffect($player, $successful, $ctx = null, $space = null)
   {
     $robinHood = Forces::get(ROBIN_HOOD);
     $robinHood->reveal($player);
@@ -53,7 +52,7 @@ class Event09_SocialBandit extends \AGestOfRobinHood\Models\EventCard
     $player->incShillings(2);
   }
 
-  public function resolveDarkEffect($player, $successful, $ctx = null, $space = null)
+  public function performDarkEffect($player, $successful, $ctx = null, $space = null)
   {
     $robinHood = Forces::get(ROBIN_HOOD);
     $robinHood->eventRevealBySheriff($player);
