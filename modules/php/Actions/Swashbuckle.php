@@ -67,7 +67,6 @@ class Swashbuckle extends \AGestOfRobinHood\Models\AtomicAction
   public function actSwashbuckle($args)
   {
     self::checkAction('actSwashbuckle');
-    Notifications::log('args', $args);
     $robinHoodSpaceId = $args['robinHoodSpaceId'];
     $merryManSpaceId = isset($args['merryManSpaceId']) ? $args['merryManSpaceId'] : null;
     $merryManId = isset($args['merryManId']) ? $args['merryManId'] : null;

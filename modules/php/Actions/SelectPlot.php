@@ -83,7 +83,7 @@ class SelectPlot extends \AGestOfRobinHood\Actions\Plot
     $plotId = isset($args['plotId']) ? $args['plotId'] : null;
     $extraOptionId = isset($args['extraOptionId']) ? $args['extraOptionId'] : null;
 
-    Notifications::log('actSelectPlot', $args);
+    // Notifications::log('actSelectPlot', $args);
     // $spaceIds = $args['spaceIds'];
 
     $stateArgs = $this->argsSelectPlot();

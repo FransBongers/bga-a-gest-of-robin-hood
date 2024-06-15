@@ -31,7 +31,7 @@ trait DebugTrait
     // Forces::get(ROBIN_HOOD)->setHidden(1);
     // Forces::get('merryMen_4')->setHidden(1);
     
-    Cards::get('Event23_FriarTuck')->insertOnTop(EVENTS_DECK);
+    Cards::get('Event10_TaxCollectors')->insertOnTop(EVENTS_DECK);
     // Globals::setOllertonHillAdjacency(true);
     // Cards::get('Traveller07_Monks')->setLocation(TRAVELLERS_DISCARD);
     // $this->debugPlaceForces(TALLAGE_CARRIAGE,TUXFORD,1);

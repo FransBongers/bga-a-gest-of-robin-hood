@@ -68,6 +68,7 @@ class NotificationManager {
       'passAction',
       'revealCarriage',
       'revealForce',
+      'robTakeTwoShillingsFromTheSheriff',
       'parishStatus',
       'payShillings',
       'placeCardInTravellersDeck',
@@ -432,9 +433,7 @@ class NotificationManager {
     this.getPlayer({ playerId }).counters.shillings.incValue(-amount);
   }
 
-  async notif_placeCardInTravellersDeck(notif: Notif<NotifPayShillingsArgs>) {
-
-  }
+  async notif_placeCardInTravellersDeck(notif: Notif<NotifPayShillingsArgs>) {}
 
   async notif_placeForce(notif: Notif<NotifPlaceForceArgs>) {
     const { force, spaceId, count } = notif.args;
@@ -490,7 +489,6 @@ class NotificationManager {
     const { spaceId, status } = notif.args;
     this.game.gameMap.setSpaceStatus({ spaceId, status });
   }
-
 
   async notif_redeploymentSheriff(notif: Notif<NotifRedeploymentSheriffArgs>) {
     const { forces } = notif.args;
@@ -613,8 +611,18 @@ class NotificationManager {
   }
 
   async notif_returnTravellersDiscardToMainDeck(
-    notif: Notif<NotifReturnTravellersDiscardToMainDeckrgs>
+    notif: Notif<NotifReturnTravellersDiscardToMainDeckArgs>
   ) {}
+
+  async notif_robTakeTwoShillingsFromTheSheriff(
+    notif: Notif<NotifRobTakeTwoShillingsFromTheSheriffArgs>
+  ) {
+    const { playerId, sheriffPlayerId, amount } = notif.args;
+    this.getPlayer({ playerId: sheriffPlayerId }).counters.shillings.incValue(
+      -amount
+    );
+    this.getPlayer({ playerId }).counters.shillings.incValue(amount);
+  }
 
   async notif_sneakMerryMen(notif: Notif<NotifSneakMerryMenArgs>) {
     const { moves, fromSpaceId: spaceId, toSpaceId } = notif.args;

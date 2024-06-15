@@ -178,7 +178,13 @@ interface NotifRevoltArgs extends NotifWithPlayerArgs {
   spaceId: string;
 }
 
-interface NotifReturnTravellersDiscardToMainDeckrgs {}
+interface NotifReturnTravellersDiscardToMainDeckArgs {}
+
+interface NotifRobTakeTwoShillingsFromTheSheriffArgs {
+  playerId: number;
+  sheriffPlayerId: number;
+  amount: number;
+}
 
 interface NotifSneakMerryMenArgs extends NotifWithPlayerArgs {
   moves: {

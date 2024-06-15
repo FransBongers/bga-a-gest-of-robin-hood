@@ -20,6 +20,7 @@ class AtomicActions
     EVENT_A_TALE_OF_TWO_LOVERS_LIGHT => 'EventATaleOfTwoLoversLight',
     EVENT_AMBUSH_DARK => 'EventAmbushDark',
     EVENT_GUY_OF_GISBORNE => 'EventGuyOfGisborne',
+    EVENT_SELECT_FORCES => 'EventSelectForces',
     EVENT_SELECT_SPACE => 'EventSelectSpace',
     FORTUNE_EVENT_DAY_OF_MARKET_ROBIN_HOOD => 'FortuneEventDayOfMarketRobinHood',
     FORTUNE_EVENT_DAY_OF_MARKET_SHERIFF => 'FortuneEventDayOfMarketSheriff',

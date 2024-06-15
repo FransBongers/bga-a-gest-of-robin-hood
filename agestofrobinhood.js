@@ -1754,6 +1754,7 @@ var AGestOfRobinHood = (function () {
             eventATaleOfTwoLoversLight: new EventATaleOfTwoLoversLightState(this),
             eventAmbushDark: new EventAmbushDarkState(this),
             eventGuyOfGisborne: new EventGuyOfGisborneState(this),
+            eventSelectForces: new EventSelectForcesState(this),
             eventSelectSpace: new EventSelectSpaceState(this),
             fortuneEventDayOfMarketRobinHood: new FortuneEventDayOfMarketRobinHoodState(this),
             fortuneEventDayOfMarketSheriff: new FortuneEventDayOfMarketSheriffState(this),
@@ -3468,6 +3469,7 @@ var NotificationManager = (function () {
             'passAction',
             'revealCarriage',
             'revealForce',
+            'robTakeTwoShillingsFromTheSheriff',
             'parishStatus',
             'payShillings',
             'placeCardInTravellersDeck',
@@ -3799,11 +3801,9 @@ var NotificationManager = (function () {
         });
     };
     NotificationManager.prototype.notif_placeCardInTravellersDeck = function (notif) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2];
-            });
-        });
+        return __awaiter(this, void 0, void 0, function () { return __generator(this, function (_a) {
+            return [2];
+        }); });
     };
     NotificationManager.prototype.notif_placeForce = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
@@ -4079,6 +4079,17 @@ var NotificationManager = (function () {
         return __awaiter(this, void 0, void 0, function () { return __generator(this, function (_a) {
             return [2];
         }); });
+    };
+    NotificationManager.prototype.notif_robTakeTwoShillingsFromTheSheriff = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, playerId, sheriffPlayerId, amount;
+            return __generator(this, function (_b) {
+                _a = notif.args, playerId = _a.playerId, sheriffPlayerId = _a.sheriffPlayerId, amount = _a.amount;
+                this.getPlayer({ playerId: sheriffPlayerId }).counters.shillings.incValue(-amount);
+                this.getPlayer({ playerId: playerId }).counters.shillings.incValue(amount);
+                return [2];
+            });
+        });
     };
     NotificationManager.prototype.notif_sneakMerryMen = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
@@ -5550,6 +5561,127 @@ var EventAmbushDarkState = (function () {
         this.game.addCancelButton();
     };
     return EventAmbushDarkState;
+}());
+var EventSelectForcesState = (function () {
+    function EventSelectForcesState(game) {
+        this.selectedForcesIds = [];
+        this.game = game;
+    }
+    EventSelectForcesState.prototype.onEnteringState = function (args) {
+        debug('Entering EventSelectForcesState');
+        this.args = args;
+        this.selectedForcesIds = [];
+        this.updateInterfaceInitialStep();
+    };
+    EventSelectForcesState.prototype.onLeavingState = function () {
+        debug('Leaving EventSelectForcesState');
+    };
+    EventSelectForcesState.prototype.setDescription = function (activePlayerId, args) {
+        if (args.titleOther) {
+            this.game.clientUpdatePageTitle({
+                text: _(args.titleOther),
+                args: {
+                    actplayer: '${actplayer}',
+                },
+                nonActivePlayers: true,
+            });
+        }
+    };
+    EventSelectForcesState.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.updatePageTitle();
+        this.args._private.forces.forEach(function (force) {
+            _this.game.setElementSelectable({
+                id: force.id,
+                callback: function () { return _this.handleForceClick({ force: force }); },
+            });
+        });
+        this.selectedForcesIds.forEach(function (id) {
+            return _this.game.setElementSelected({ id: id });
+        });
+        this.game.addPrimaryActionButton({
+            id: 'done_btn',
+            text: _('Done'),
+            callback: function () { return _this.updateInterfaceConfirm(); },
+            extraClasses: this.selectedForcesIds.length < this.args._private.min ? DISABLED : '',
+        });
+        if (this.selectedForcesIds.length > 0) {
+            this.game.addCancelButton();
+        }
+        else {
+            this.game.addPassButton({
+                optionalAction: this.args.optionalAction,
+            });
+            this.game.addUndoButtons(this.args);
+        }
+    };
+    EventSelectForcesState.prototype.updateInterfaceConfirm = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _(this.args.confirmText),
+            args: {
+                count: this.selectedForcesIds.length,
+            },
+        });
+        var callback = function () {
+            _this.game.clearPossible();
+            _this.game.takeAction({
+                action: 'actEventSelectForces',
+                args: {
+                    selectedForcesIds: _this.selectedForcesIds,
+                },
+            });
+        };
+        if (this.game.settings.get({
+            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+        }) === PREF_ENABLED) {
+            callback();
+        }
+        else {
+            this.game.addConfirmButton({
+                callback: callback,
+            });
+        }
+        this.game.addCancelButton();
+    };
+    EventSelectForcesState.prototype.updatePageTitle = function () {
+        this.game.clientUpdatePageTitle({
+            text: _(this.args.title),
+            args: {
+                you: '${you}',
+                count: this.args._private.max - this.selectedForcesIds.length,
+            },
+        });
+    };
+    EventSelectForcesState.prototype.updateDoneButtonDisabled = function () {
+        var button = document.getElementById('done_btn');
+        if (!button) {
+            return;
+        }
+        if (this.selectedForcesIds.length < this.args._private.min) {
+            button.classList.add(DISABLED);
+        }
+        else {
+            button.classList.remove(DISABLED);
+        }
+    };
+    EventSelectForcesState.prototype.handleForceClick = function (_a) {
+        var force = _a.force;
+        if (this.selectedForcesIds.includes(force.id)) {
+            this.selectedForcesIds = this.selectedForcesIds.filter(function (id) { return id !== force.id; });
+        }
+        else {
+            this.game.setElementSelected({ id: force.id });
+            this.selectedForcesIds.push(force.id);
+        }
+        if (this.selectedForcesIds.length === this.args._private.max) {
+            this.updateInterfaceConfirm();
+        }
+        this.updateInterfaceInitialStep();
+    };
+    return EventSelectForcesState;
 }());
 var EventSelectSpaceState = (function () {
     function EventSelectSpaceState(game) {

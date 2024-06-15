@@ -161,7 +161,7 @@ class MoveCarriage extends \AGestOfRobinHood\Models\AtomicAction
     $info = $this->ctx->getInfo();
     $numberOfSpaces = isset($info['numberOfSpaces']) ? $info['numberOfSpaces'] : 1;
 
-    Notifications::log('numberOfSpaces', $numberOfSpaces);
+    // Notifications::log('numberOfSpaces', $numberOfSpaces);
 
     foreach ($carriages as $carriage) {
       if (in_array($carriage->getId(), $alreadyMovedCarriageIds)) {
@@ -170,7 +170,7 @@ class MoveCarriage extends \AGestOfRobinHood\Models\AtomicAction
 
       $space = Spaces::get($carriage->getLocation());
       $nextSpace = $space->getNextSpaceAlongRoad();
-      Notifications::log('nextSpace', $nextSpace);
+      // Notifications::log('nextSpace', $nextSpace);
       $to = [$nextSpace];
       if ($numberOfSpaces === 2 && $nextSpace->getId() !== NOTTINGHAM) {
         $to[] = $nextSpace->getNextSpaceAlongRoad();

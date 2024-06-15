@@ -33,10 +33,13 @@ class Confiscate extends \AGestOfRobinHood\Models\AtomicAction
 
   public function argsConfiscate()
   {
+    $info = $this->ctx->getInfo();
+    $allowNotSubmissive = isset($info['allowNotSubmissive']) ? $info['allowNotSubmissive'] : false;
+
     $data = [
       '_private' => [
         $this->ctx->getPlayerId() => [
-          'spaces' => $this->getPossibleSpaces(),
+          'spaces' => $this->getOptions($allowNotSubmissive),
           'availableCarriageTypes' => $this->getAvailableCarriageTypes(),
         ]
       ]
@@ -74,7 +77,10 @@ class Confiscate extends \AGestOfRobinHood\Models\AtomicAction
     $spaceId = $args['spaceId'];
     $carriageType = $args['carriageType'];
 
-    $spaces = $this->getPossibleSpaces();
+    $info = $this->ctx->getInfo();
+    $allowNotSubmissive = isset($info['allowNotSubmissive']) ? $info['allowNotSubmissive'] : false;
+
+    $spaces = $this->getOptions($allowNotSubmissive);
     $space = Utils::array_find($spaces, function ($possibleSpace) use ($spaceId) {
       return $possibleSpace->getId() === $spaceId;
     });
@@ -95,13 +101,16 @@ class Confiscate extends \AGestOfRobinHood\Models\AtomicAction
     $player = self::getPlayer();
 
     Notifications::placeForce($player, $carriage, $space);
-    $space->revolt($player);
-
-    if (count(Engine::getResolvedActions([CONFISCATE])) === 0 && $this->canBePerformed($player)) {
+    if ($space->isSubmissive()) {
+      $space->revolt($player);
+    }
+    
+    if (count(Engine::getResolvedActions([CONFISCATE])) === 0 && $this->canBePerformed($player, $allowNotSubmissive)) {
       $this->ctx->insertAsBrother(new LeafNode([
         'action' => CONFISCATE,
         'playerId' => $player->getId(),
         'optional' => true,
+        'allowNotSubmissive' => $allowNotSubmissive,
       ]));
     }
 
@@ -121,13 +130,13 @@ class Confiscate extends \AGestOfRobinHood\Models\AtomicAction
     return clienttranslate('Confiscate');
   }
 
-  public function canBePerformed($player)
+  public function canBePerformed($player, $allowNotSubmissive = false)
   {
     if (count($this->getAvailableCarriageTypes()) === 0) {
       return false;
     }
 
-    return count($this->getPossibleSpaces()) > 0;
+    return count($this->getOptions($allowNotSubmissive)) > 0;
   }
 
   public function getAvailableCarriageTypes()
@@ -137,14 +146,14 @@ class Confiscate extends \AGestOfRobinHood\Models\AtomicAction
     }, Forces::getInLocation(CARRIAGE_SUPPLY)->toArray())));
   }
 
-  public function getPossibleSpaces()
+  public function getOptions($skipSubmissiveCheck = false)
   {
     $options = [];
 
     $spaces = Spaces::get(PARISHES);
 
     foreach ($spaces as $spaceId => $space) {
-      if (!$space->isSubmissive()) {
+      if (!$skipSubmissiveCheck && !$space->isSubmissive()) {
         continue;
       }
       $hasHenchmen = Utils::array_some($space->getForces(), function ($force) {

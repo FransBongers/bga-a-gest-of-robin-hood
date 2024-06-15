@@ -467,7 +467,7 @@ $machinestates = array(
         'args' => 'argsAtomicAction',
         'action' => 'stAtomicAction',
         'possibleactions' => ['actRoyalInspectionRedeploymentRobinHood', 'actPassOptionalAction', 'actRestart'],
-    ],    
+    ],
     ST_ROYAL_INSPECTION_HIDE_ALL_MERRY_MEN => [
         'name' => 'royalInspectionHideAllMerryMen',
         'description' => '',
@@ -605,5 +605,14 @@ $machinestates = array(
         'args' => 'argsAtomicAction',
         'action' => 'stAtomicAction',
         'possibleactions' => ['actEventSelectSpace', 'actPassOptionalAction', 'actRestart'],
+    ],
+    ST_EVENT_SELECT_FORCES => [
+        'name' => 'eventSelectForces',
+        'description' => clienttranslate('${actplayer} must select a single space'),
+        'descriptionmyturn' => clienttranslate('${you}'),
+        'type' => 'activeplayer',
+        'args' => 'argsAtomicAction',
+        'action' => 'stAtomicAction',
+        'possibleactions' => ['actEventSelectForces', 'actPassOptionalAction', 'actRestart'],
     ],
 );

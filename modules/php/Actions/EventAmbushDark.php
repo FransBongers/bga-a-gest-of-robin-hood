@@ -72,9 +72,6 @@ class EventAmbushDark extends \AGestOfRobinHood\Models\AtomicAction
 
     $options = $this->getOptions();
 
-    Notifications::log('options', $options);
-    Notifications::log('spaceId', $spaceId);
-
     if (!$options[$spaceId]) {
       throw new \feException("ERROR 057");
     }

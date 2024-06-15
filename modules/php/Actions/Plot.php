@@ -32,7 +32,7 @@ class Plot extends \AGestOfRobinHood\Models\AtomicAction
     $extraActionPlotsAndDeeds = $selectedAction === PLOTS_AND_DEEDS && $numberOfResolvedActions < 2;
     $extraActionFastCarriages = $selectedAction === EVENT && $action === ROB && $sourceIsSet && $info['source'] === 'Event22_FastCarriages' && $numberOfResolvedActions < 2;
     $extraActionWardenOfTheForest = $sourceIsSet && $info['source'] === 'Event08_WardenOfTheForest' && $action === HIRE && $numberOfResolvedActions < 1;
-    Notifications::log('extraActionWardenOfTheForest', $extraActionWardenOfTheForest);
+    // Notifications::log('extraActionWardenOfTheForest', $extraActionWardenOfTheForest);
     if ($extraActionPlotsAndDeeds || $extraActionFastCarriages || $extraActionWardenOfTheForest) {
       $this->ctx->insertAsBrother(new LeafNode($leafNode));
     }

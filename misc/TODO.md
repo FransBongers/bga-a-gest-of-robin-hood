@@ -3,11 +3,6 @@
 DARK
 
 
-# Event10_TaxCollectors
-
-LIGHT
-DARK
-
 # Event11_GreatEscape
 
 LIGHT

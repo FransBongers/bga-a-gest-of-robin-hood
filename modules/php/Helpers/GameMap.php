@@ -123,4 +123,59 @@ class GameMap extends \APP_DbObject
     Notifications::placeForce($player, $camp, $space);
     Players::moveRoyalFavour($player, 1, JUSTICE);
   }
+
+  private static function getPublicMoveType($type, $hidden)
+  {
+    if ($type === ROBIN_HOOD && $hidden) {
+      return MERRY_MEN;
+    } else if (in_array($type, CARRIAGE_TYPES)) {
+      return CARRIAGE;
+    } else {
+      return $type;
+    }
+  }
+
+  /**
+   * Creates data that can be used by notifs
+   * Input should be an array with
+   * [
+   *   'force' => $force,
+   *   'toSpaceId' => $spaceId,
+   *   'toHidden' => true,
+   * ]
+   */
+  public static function createMoves($input)
+  {
+    $forces = [];
+    $moves = [];
+
+    foreach ($input as $move) {
+      $force = $move['force'];
+      $toSpaceId = $move['toSpaceId'];
+      $toHidden = $move['toHidden'];
+      $currentLocation = $force->getLocation();
+      $fromHidden = $force->isHidden();
+
+      $force->setLocation($toSpaceId);
+      $force->setHidden($toHidden ? 1 : 0);
+
+      $moves[] = [
+        'from' => [
+          'type' => self::getPublicMoveType($force->getType(), $fromHidden),
+          'hidden' => $fromHidden,
+          'spaceId' => $currentLocation,
+        ],
+        'to' => [
+          'type' => self::getPublicMoveType($force->getType(), $toHidden),
+          'hidden' => $toHidden,
+          'spaceId' => $toSpaceId,
+        ]
+      ];
+      $forces[] = $force;
+    }
+    return [
+      'forces' => $forces,
+      'moves' => $moves,
+    ];
+  }
 }

@@ -95,8 +95,8 @@ class SelectTravellerCardOption extends \AGestOfRobinHood\Models\AtomicAction
     $space = Spaces::get($spaceId);
     $strength = $card->getStrength();
 
-    $dieColor = $space->isRevolting() || $space->isForest() ? 'green' : 'white';
-    $dieResult = $dieColor === 'green' ? GestDice::rollGreenDie() : GestDice::rollWhiteDie();
+    $dieColor = $space->isRevolting() || $space->isForest() ? GREEN : WHITE;
+    $dieResult = $dieColor === GREEN ? GestDice::rollGreenDie() : GestDice::rollWhiteDie();
 
     $henchmenInSpace = count(Utils::filter($space->getForces(), function ($force) {
       return $force->isHenchman();
@@ -109,8 +109,6 @@ class SelectTravellerCardOption extends \AGestOfRobinHood\Models\AtomicAction
     } else {
       Notifications::resolveRobEffect($player, $option === 'dark' ? $card->getTitleDark() : $card->getTitleLight());
     }
-
-
 
     if ($option === 'light') {
       $card->performLightEffect($player, $success, $this->ctx, $space);

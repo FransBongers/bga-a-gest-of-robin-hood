@@ -71,6 +71,7 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     eventATaleOfTwoLoversLight: EventATaleOfTwoLoversLightState;
     eventAmbushDark: EventAmbushDarkState;
     eventGuyOfGisborne: EventGuyOfGisborneState;
+    eventSelectForces: EventSelectForcesState;
     eventSelectSpace: EventSelectSpaceState;
     fortuneEventDayOfMarketRobinHood: FortuneEventDayOfMarketRobinHoodState;
     fortuneEventDayOfMarketSheriff: FortuneEventDayOfMarketSheriffState;
@@ -142,6 +143,7 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
       eventATaleOfTwoLoversLight: new EventATaleOfTwoLoversLightState(this),
       eventAmbushDark: new EventAmbushDarkState(this),
       eventGuyOfGisborne: new EventGuyOfGisborneState(this),
+      eventSelectForces: new EventSelectForcesState(this),
       eventSelectSpace: new EventSelectSpaceState(this),
       fortuneEventDayOfMarketRobinHood: new FortuneEventDayOfMarketRobinHoodState(this),
       fortuneEventDayOfMarketSheriff: new FortuneEventDayOfMarketSheriffState(this),

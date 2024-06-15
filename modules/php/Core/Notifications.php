@@ -756,6 +756,23 @@ class Notifications
     ]);
   }
 
+  public static function robTakeShillingsFromTheSheriff($player, $sheriffPlayer, $amount)
+  {
+    self::notifyAll('robTakeTwoShillingsFromTheSheriff', clienttranslate('${player_name} takes ${amount} Shillings from ${player_name2}'), [
+      'player' => $player,
+      'player_name2' => $sheriffPlayer->getName(),
+      'sheriffPlayerId' => $sheriffPlayer->getId(),
+      'amount' => $amount
+    ]);
+  }
+
+  public static function robTargetSheriffsTreasury($player)
+  {
+    self::message(clienttranslate('${player_name} robs the Sheriff\'s Treasury'), [
+      'player' => $player,
+    ]);
+  }
+
   public static function returnTravellersDiscardToMainDeck()
   {
     self::notifyAll("returnTravellersDiscardToMainDeck", clienttranslate('The Traveller deck discard pile is shuffled into the main deck'), []);
@@ -959,6 +976,28 @@ class Notifications
       'player' => $player,
       'moves' => $moves,
       'tkn_boldText_spaceName' => $space->getName(),
+      'i18n' => ['tkn_boldText_spaceName']
+    ]);
+  }
+
+  public static function taxCollectorsLight($player, $forces, $moves)
+  {
+    $text = clienttranslate('${player_name} moves ${count} Merry Men from adjacent spaces into ${tkn_boldText_spaceName}');
+    $spaceName = Spaces::get(NOTTINGHAM)->getName();
+
+    self::notify($player, 'moveMerryMenPrivate', $text, [
+      'player' => $player,
+      'forces' => $forces,
+      'tkn_boldText_spaceName' => $spaceName,
+      'i18n' => ['tkn_boldText_spaceName'],
+      'count' => count($forces),
+    ]);
+
+    self::notifyAll('moveMerryMenPublic', $text, [
+      'player' => $player,
+      'moves' => $moves,
+      'tkn_boldText_spaceName' => $spaceName,
+      'count' => count($forces),
       'i18n' => ['tkn_boldText_spaceName']
     ]);
   }

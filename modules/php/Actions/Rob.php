@@ -8,6 +8,7 @@ use AGestOfRobinHood\Core\Engine\LeafNode;
 use AGestOfRobinHood\Core\Globals;
 use AGestOfRobinHood\Core\Stats;
 use AGestOfRobinHood\Helpers\GameMap;
+use AGestOfRobinHood\Helpers\GestDice;
 use AGestOfRobinHood\Helpers\Locations;
 use AGestOfRobinHood\Helpers\Utils;
 use AGestOfRobinHood\Managers\Cards;
@@ -59,10 +60,12 @@ class Rob extends \AGestOfRobinHood\Actions\Plot
 
   public function argsRob()
   {
+    $info = $this->ctx->getInfo();
+    $inSpacesIds = isset($info['spaceIds']) ? $info['spaceIds'] : [];
     $data = [
       '_private' => [
         $this->ctx->getPlayerId() => [
-          'options' => $this->getOptions(),
+          'options' => $this->getOptions($inSpacesIds),
         ]
       ]
     ];
@@ -99,8 +102,10 @@ class Rob extends \AGestOfRobinHood\Actions\Plot
     $spaceId = $args['spaceId'];
     $target = $args['target'];
     $merryMenIds = $args['merryMenIds'];
+    $info = $this->ctx->getInfo();
+    $inSpacesIds = isset($info['spaceIds']) ? $info['spaceIds'] : [];
 
-    $options = $this->getOptions();
+    $options = $this->getOptions($inSpacesIds);
 
     if (!isset($options[$spaceId])) {
       throw new \feException("ERROR 026");
@@ -144,6 +149,7 @@ class Rob extends \AGestOfRobinHood\Actions\Plot
         $this->resolveTravellerTarget($player, $space, $merryMenIds);
         break;
       case 'treasury':
+        $this->resolveTreasuryTarget($player, $space, $merryMenIds);
         break;
       case HIDDEN_CARRIAGE:
       case TALLAGE_CARRIAGE:
@@ -180,6 +186,27 @@ class Rob extends \AGestOfRobinHood\Actions\Plot
     ]));
   }
 
+  private function resolveTreasuryTarget($player, $space, $merryMenIds)
+  {
+    $henchmenInSpace = count(Utils::filter($space->getForces(), function ($force) {
+      return $force->isHenchman();
+    }));
+    $dieResult = GestDice::rollWhiteDie();
+
+    $success = count($merryMenIds) + $dieResult > $henchmenInSpace;
+    Notifications::robTargetSheriffsTreasury($player);
+    Notifications::robResult($player, WHITE, $dieResult, $success);
+    if ($success) {
+
+      $sheriffPlayer = Players::getSheriffPlayer();
+      $amount = min(2, $sheriffPlayer->getShillings());
+      $sheriffPlayer->incShillings(-$amount, false);
+      $player->incShillings($amount, false);
+      Notifications::robTakeShillingsFromTheSheriff($player, $sheriffPlayer, $amount);
+      Players::moveRoyalFavour($player, 1, JUSTICE);
+    }
+  }
+
   public function canBePerformed($player, $availableShillings)
   {
     return count($this->getOptions()) > 0;
@@ -190,7 +217,7 @@ class Rob extends \AGestOfRobinHood\Actions\Plot
     return clienttranslate('Rob');
   }
 
-  public function getOptions()
+  public function getOptions($inSpaceIds = [])
   {
     $options = [];
     $spaces = Spaces::getAll();
@@ -205,6 +232,9 @@ class Rob extends \AGestOfRobinHood\Actions\Plot
 
     foreach ($spaces as $spaceId => $space) {
       if (in_array($spaceId, $alreadyRobbedSpaceIds)) {
+        continue;
+      }
+      if (count($inSpaceIds) > 0 && !in_array($spaceId, $inSpaceIds)) {
         continue;
       }
 

@@ -97,8 +97,6 @@ class RoyalInspectionRedeploymentRobinHood extends \AGestOfRobinHood\Models\Atom
     $requiredMoves = $args['requiredMoves'];
     $optionalMoves = $args['optionalMoves'];
 
-    Notifications::log('optionalMoves', $optionalMoves);
-
     $stateArgs = $this->getOptions();
 
     $forces = [];

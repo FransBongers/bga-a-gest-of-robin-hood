@@ -7,6 +7,7 @@ use AGestOfRobinHood\Core\Engine;
 use AGestOfRobinHood\Core\Engine\LeafNode;
 use AGestOfRobinHood\Core\Globals;
 use AGestOfRobinHood\Core\Stats;
+use AGestOfRobinHood\Helpers\GameMap;
 use AGestOfRobinHood\Helpers\Locations;
 use AGestOfRobinHood\Helpers\Utils;
 use AGestOfRobinHood\Managers\Cards;
@@ -16,11 +17,11 @@ use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\Spaces;
 
 
-class RemoveTraveller extends \AGestOfRobinHood\Actions\Plot
+class EventSelectForces extends \AGestOfRobinHood\Actions\Plot
 {
   public function getState()
   {
-    return ST_REMOVE_TRAVELLER;
+    return ST_EVENT_SELECT_FORCES;
   }
 
   // ..######..########....###....########.########
@@ -39,33 +40,23 @@ class RemoveTraveller extends \AGestOfRobinHood\Actions\Plot
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function stRemoveTraveller()
+  public function stEventSelectForces()
   {
-    $options = $this->getOptions();
+    $info = $this->ctx->getInfo();
+    $cardId = $info['cardId'];
+    $effect = $info['effect'];
+    $player = self::getPlayer();
 
-    if (count($options['cards']) === 0) {
-      $this->checkShuffle();
-      $this->resolveAction(['automatic' => true]);
-      return;
+    $isResolved = false;
+    if ($effect === LIGHT) {
+      $isResolved = Cards::get($cardId)->resolveLightEffectAutomatically($player, $this->ctx);
+    } else if ($effect === DARK) {
+      $isResolved = Cards::get($cardId)->resolveDarkEffectAutomatically($player, $this->ctx);
     }
 
-    $player = self::getPLayer();
-    $to = $options['to'];
-    if (count($options['from']) === 1 && count($to) === 1) {
-      $card = $options['cards'][0];
-
-      if ($to[0] === REMOVED_FROM_GAME) {
-        $card->removeFromGame($player);
-      }
-      if ($to[0] === TRAVELLERS_VICTIMS_PILE) {
-        $card->setLocation(TRAVELLERS_VICTIMS_PILE);
-        Notifications::putCardInVictimsPile(self::getPlayer(), $card);
-      }
-      $this->checkShuffle();
+    if ($isResolved) {
       $this->resolveAction(['automatic' => true]);
-      return;
     }
-    // $this->resolveAction(['automatic' => true]);
   }
 
   // ....###....########...######....######.
@@ -76,16 +67,27 @@ class RemoveTraveller extends \AGestOfRobinHood\Actions\Plot
   // .##.....##.##....##..##....##..##....##
   // .##.....##.##.....##..######....######.
 
-  public function argsRemoveTraveller()
+  public function argsEventSelectForces()
   {
-    $options = $this->getOptions();
+    $info = $this->ctx->getInfo();
+    $cardId = $info['cardId'];
+    $effect = $info['effect'];
 
-    $data = [
-      'from' => $options['from'],
-      'cardType' => $options['cardType'],
+    $data = [];
+    if ($effect === LIGHT) {
+      $data = Cards::get($cardId)->getLightStateArgs($effect);
+    } else if ($effect === DARK) {
+      $data = Cards::get($cardId)->getDarkStateArgs($effect);
+    }
+
+    return [
+      '_private' => [
+        $this->ctx->getPlayerId() => $data['_private']
+      ],
+      'title' => $data['title'],
+      'confirmText' => $data['confirmText'],
+      'titleOther' => $data['titleOther'],
     ];
-
-    return $data;
   }
 
   //  .########..##..........###....##....##.########.########.
@@ -104,40 +106,48 @@ class RemoveTraveller extends \AGestOfRobinHood\Actions\Plot
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function actPassRemoveTraveller()
+  public function actPassEventSelectForces()
   {
     $player = self::getPlayer();
     // Stats::incPassActionCount($player->getId(), 1);
     Engine::resolve(PASS);
   }
 
-  public function actRemoveTraveller($args)
+  public function actEventSelectForces($args)
   {
-    self::checkAction('actRemoveTraveller');
-    $from = $args['from'];
-    $toArg = isset($args['to']) ? $args['to'] : null;
+    self::checkAction('actEventSelectForces');
+    $selectedForcesIds = $args['selectedForcesIds'];
 
-    $options = $this->getOptions();
+    $info = $this->ctx->getInfo();
+    $cardId = $info['cardId'];
+    $effect = $info['effect'];
+    $card = Cards::get($cardId);
 
-    $card = Utils::array_find($options['cards'], function ($card) use ($from) {
-      return $card->getLocation() === $from;
-    });
-
-    if ($card === null) {
-      throw new \feException("ERROR 062");
+    $data = [];
+    if ($effect === LIGHT) {
+      $data = Cards::get($cardId)->getLightStateArgs($effect);
+    } else if ($effect === DARK) {
+      $data = Cards::get($cardId)->getDarkStateArgs($effect);
     }
 
-    if ($toArg === null && count($options['to']) > 1) {
-      throw new \feException("ERROR 063");
+    $options = $data['_private'];
+    $selectedForces = [];
+
+    foreach($selectedForcesIds as $forceId) {
+      $force = Utils::array_find($options['forces'], function ($force) use ($forceId) {
+        return $force->getId() === $forceId;
+      });
+      if ($force === null) {
+        throw new \feException("ERROR 075");
+      }
+      $selectedForces[] = $force;
     }
 
-    $player = self::getPlayer();
-    $to = $options['to'];
-    if ($to[0] === REMOVED_FROM_GAME) {
-      $card->removeFromGame($player);
+    if ($effect === LIGHT) {
+      $card->resolveLightEffect(self::getPlayer(), $this->ctx, $selectedForces);
+    } else if ($effect === DARK) {
+      $card->resolveDarkEffect(self::getPlayer(), $this->ctx, $selectedForces);
     }
-    // TODO: remove to victims pile
-    $this->checkShuffle();
 
     $this->resolveAction($args);
   }
@@ -150,47 +160,4 @@ class RemoveTraveller extends \AGestOfRobinHood\Actions\Plot
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
-  private function checkShuffle()
-  {
-    $info = $this->ctx->getInfo();
-    $shuffle = $info['shuffle'];
-    foreach ($shuffle as $cardLocation) {
-      Cards::shuffle($cardLocation);
-    }
-  }
-
-  private function getOptions()
-  {
-    $info = $this->ctx->getInfo();
-    $from = $info['from'];
-    $to = $info['to'];
-    $cardType = $info['cardType'];
-
-    $cards = [];
-    $locations = [];
-
-    foreach ($from as $fromLocation) {
-      $cardsInLocation = Utils::filter(Cards::getInLocation($fromLocation)->toArray(), function ($card) use ($cardType) {
-        if ($cardType === MONK) {
-          return in_array($card->getId(), MONK_IDS);
-        }
-        if ($cardType === KNIGHT) {
-          return in_array($card->getId(), KNIGHT_IDS);
-        }
-        return false;
-      });
-
-      if (count($cardsInLocation) > 0) {
-        $cards = array_merge($cards, $cardsInLocation);
-        $locations[] = $fromLocation;
-      }
-    }
-
-    return [
-      'cards' => $cards,
-      'from' => $locations,
-      'to' => $to,
-      'cardType' => $cardType,
-    ];
-  }
 }

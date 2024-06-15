@@ -79,6 +79,17 @@ interface OnEnteringEventLittleJohnStateArgs extends CommonArgs {
   spaces: GestSpace[];
 }
 
+interface OnEnteringEventSelectForcesStateArgs extends CommonArgs {
+  _private: {
+    forces: GestForce[];
+    min: number;
+    max: number;
+  };
+  confirmText: string;
+  title: string;
+  titleOther: string;
+}
+
 interface OnEnteringEventSelectSpaceStateArgs extends CommonArgs {
   spaces: GestSpace[];
   confirmText: string;
