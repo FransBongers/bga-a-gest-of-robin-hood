@@ -65,11 +65,19 @@ class Space extends \AGestOfRobinHood\Helpers\DB_Model
 
   public function getAdjacentSpacesIds()
   {
+    $adjacentSpaceIds = $this->adjacentSpaceIds;
     if (Globals::getOllertonHillAdjacency()) {
-      return array_merge($this->adjacentSpaceIds, $this->adjacentViaOllertonHillSpaceIds);
-    } else {
-      return $this->adjacentSpaceIds;
+      $adjacentSpaceIds = array_merge($adjacentSpaceIds, $this->adjacentViaOllertonHillSpaceIds);
     }
+    $bridgeLocation = Globals::getBridgeLocation();
+    if (isset(RIVER_BORDERS[$bridgeLocation]) && in_array($this->id, RIVER_BORDERS[$bridgeLocation])) {
+      $otherSpace = Utils::filter(RIVER_BORDERS[$bridgeLocation], function ($borderId) {
+        return $borderId !== $this->id;
+      });
+      $adjacentSpaceIds = array_merge($adjacentSpaceIds, $otherSpace);
+    }
+
+    return $adjacentSpaceIds;
   }
 
   public function getAdjacentSpaces()

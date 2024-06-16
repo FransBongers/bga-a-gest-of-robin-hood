@@ -123,6 +123,7 @@ interface AGestOfRobinHoodGamedatas extends Gamedatas {
   playerOrder: number[];
   players: Record<number, AGestOfRobinHoodPlayerData>;
   // Game specific
+  bridgeLocation: string;
   forces: Record<
     string,
     {

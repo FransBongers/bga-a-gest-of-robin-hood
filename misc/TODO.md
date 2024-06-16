@@ -1,12 +1,6 @@
-# Event11_GreatEscape
-
-LIGHT
-DARK
-
 # Event12_BoatsAndBridges
 
 LIGHT
-DARK
 
 # Event13_Ambush
 

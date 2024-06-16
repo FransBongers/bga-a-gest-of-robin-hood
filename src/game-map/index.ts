@@ -58,6 +58,13 @@ class GameMap {
       }
       node.remove();
     });
+    Object.keys(RIVER_BORDERS).forEach((borderId) => {
+      const node = document.getElementById(borderId);
+      if (!node) {
+        return;
+      }
+      node.removeAttribute('data-has-bridge');
+    });
   }
 
   updateInterface({ gamedatas }: { gamedatas: AGestOfRobinHoodGamedatas }) {
@@ -253,6 +260,9 @@ class GameMap {
         tplMarker({ id: data.id, extraClasses: 'gest_track_marker' })
       );
     });
+    if (gamedatas.bridgeLocation) {
+      this.placeBridge({ borderId: gamedatas.bridgeLocation });
+    }
   }
 
   // Setup functions
@@ -302,7 +312,6 @@ class GameMap {
     spaceId: string;
     count: number;
   }) {
-
     for (let i = 0; i < count; i++) {
       let stockId = `${type}_${spaceId}`;
       if (type === ROBIN_HOOD) {
@@ -377,7 +386,7 @@ class GameMap {
         exclude.some((excludedForce) => excludedForce.id === force.id)
       ) {
         return false;
-      } 
+      }
       return force.hidden === hidden && force.type === type;
     });
 
@@ -394,7 +403,7 @@ class GameMap {
     };
 
     const selected = this.getForcePublic(input);
-    
+
     selected.type = force.type;
     if (force.type === ROBIN_HOOD) {
       selected.type = MERRY_MEN;
@@ -441,7 +450,6 @@ class GameMap {
     const toStockId = this.getStockIdPrivate({ force });
     await this.forces[toStockId].addCard(force);
   }
-
 
   async removeFromGamePublic({
     type,
@@ -616,5 +624,13 @@ class GameMap {
       new BgaSlideAnimation({ element: markerNode }),
       toNode
     );
+  }
+
+  placeBridge({ borderId }: { borderId: string }) {
+    const node = document.getElementById(borderId);
+    if (!node) {
+      return;
+    }
+    node.setAttribute('data-has-bridge', 'true');
   }
 }

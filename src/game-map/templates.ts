@@ -112,5 +112,6 @@ const tplGameMap = ({
     ${tplTrack({ config: INITIATIVE_TRACK })}
     ${tplTrack({ config: UNIQUE_SPACES })}
     ${tplSpaces()}
+    ${tplTrack({ config: BRIDGE_LOCATIONS })}
   </div>`;
 };

@@ -25,15 +25,15 @@ trait DebugTrait
   {
     // $merryMan = Forces::getTopOf(MERRY_MEN_SUPPLY);
     
-    $merryMan = Forces::get(ROBIN_HOOD);
+    // $merryMan = Forces::get(ROBIN_HOOD);
     // $merryMan->setLocation(PRISON);
-    $merryMan->setHidden(0);
+    // $merryMan->setHidden(0);
     // Spaces::get(TUXFORD)->revolt(Players::get());
     // Forces::get(ROBIN_HOOD)->setLocation(PRISON);
     // Forces::get(ROBIN_HOOD)->setHidden(1);
     // Forces::get('merryMen_4')->setHidden(1);
     
-    Cards::get('Event06_PrioressOfKirklees')->insertOnTop(EVENTS_DISCARD);
+    // Cards::get('Event12_BoatsAndBridges')->insertOnTop(EVENTS_DISCARD);
     // Globals::setOllertonHillAdjacency(true);
     // Cards::get('Traveller07_Monks')->setLocation(TRAVELLERS_DISCARD);
     // $this->debugPlaceForces(TALLAGE_CARRIAGE,TUXFORD,1);
@@ -52,7 +52,7 @@ trait DebugTrait
 
     // $action = $node->getActionResolutionArgs()['action'];
 
-    // Notifications::log('card', Cards::get('Traveller04_NobleKnight')->getStaticData());
+    Notifications::log('bridge', Globals::getBridgeLocation());
   }
 
   public function debugDeck()

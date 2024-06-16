@@ -69,6 +69,10 @@ interface OnEnteringEventATaleOfTwoLoversLightStateArgs extends CommonArgs {
   >;
 }
 
+interface OnEnteringEventBoatsBridgesDarkStateArgs extends CommonArgs {
+  
+}
+
 interface OnEnteringEventGuyOfGisborneStateArgs extends CommonArgs {
   _private: {
     merryMen: GestForce[];

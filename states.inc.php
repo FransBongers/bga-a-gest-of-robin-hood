@@ -615,4 +615,22 @@ $machinestates = array(
         'action' => 'stAtomicAction',
         'possibleactions' => ['actEventSelectForces', 'actPassOptionalAction', 'actRestart'],
     ],
+    ST_EVENT_BOATS_BRIDGES_DARK => [
+        'name' => 'eventBoatsBridgesDark',
+        'description' => clienttranslate('${actplayer} may place the Bridge'),
+        'descriptionmyturn' => clienttranslate('${you}'),
+        'type' => 'activeplayer',
+        'args' => 'argsAtomicAction',
+        'action' => 'stAtomicAction',
+        'possibleactions' => ['actEventBoatsBridgesDark', 'actPassOptionalAction', 'actRestart'],
+    ],
+    ST_EVENT_BOATS_BRIDGES_LIGHT => [
+        'name' => 'eventBoatsBridgesDark',
+        'description' => clienttranslate('${actplayer} may move Merry Men'),
+        'descriptionmyturn' => clienttranslate('${you}'),
+        'type' => 'activeplayer',
+        'args' => 'argsAtomicAction',
+        'action' => 'stAtomicAction',
+        'possibleactions' => ['actEventBoatsBridgesDark', 'actPassOptionalAction', 'actRestart'],
+    ],
 );

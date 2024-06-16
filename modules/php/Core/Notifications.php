@@ -224,6 +224,19 @@ class Notifications
   // .##.....##.##..........##....##.....##.##.....##.##.....##.##....##
   // .##.....##.########....##....##.....##..#######..########...######.
 
+  public static function placeBridge($player, $borderId, $spaceIds)
+  {
+    $spaces = Spaces::get($spaceIds)->toArray();
+
+    self::notifyAll("placeBridge", clienttranslate('${player_name} places the Bridge on the River border between ${tkn_boldText_spaceName} and ${tkn_boldText_spaceName2}'), [
+      'player' => $player,
+      'tkn_boldText_spaceName' => $spaces[0]->getName(),
+      'tkn_boldText_spaceName2' => $spaces[1]->getName(),
+      'borderId' => $borderId,
+      'i18n' => ['tkn_boldText_spaceName', 'tkn_boldText_spaceName2']
+    ]);
+  }
+
   public static function captureMerryMen($player, $space, $capturedPieces)
   {
     self::notifyAll("captureMerryMen", clienttranslate('${player_name} Captures Merry Men in ${tkn_boldText_spaceName}'), [

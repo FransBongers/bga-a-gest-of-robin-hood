@@ -25,6 +25,10 @@ interface NotifClearTurnArgs extends NotifWithPlayerArgs {
   notifIds: string[];
 }
 
+interface NotifPlaceBridgeArgs {
+  borderId: string;
+}
+
 // type NotifSmallRefreshInterfaceArgs = Omit<
 //   AGestOfRobinHoodGamedatas,
 //   'staticData'

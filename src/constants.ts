@@ -75,6 +75,20 @@ const SPACES = [
   TUXFORD,
 ];
 
+const BLYTH_RETFORD_BORDER = 'Blyth_Retford_border';
+const BINGHAM_NEWARK_BORDER = 'Bingham_Newark_border';
+const BINGHAM_SOUTHWELL_FOREST_BORDER = 'Bingham_SouthwellForest_border';
+const BINGHAM_NOTTINGHAM_BORDER = 'Bingham_Nottingham_border';
+const NOTTINGHAM_REMSTON_BORDER = 'Nottingham_Remston_border';
+
+const RIVER_BORDERS = {
+  [BLYTH_RETFORD_BORDER]: [BLYTH, RETFORD],
+  [BINGHAM_NEWARK_BORDER]: [BINGHAM, NEWARK],
+  [BINGHAM_SOUTHWELL_FOREST_BORDER]: [BINGHAM, SOUTHWELL_FOREST],
+  [BINGHAM_NOTTINGHAM_BORDER]: [BINGHAM, NOTTINGHAM],
+  [NOTTINGHAM_REMSTON_BORDER]: [NOTTINGHAM, REMSTON],
+};
+
 const USED_CARRIAGES = 'usedCarriages';
 const PRISON = 'prison';
 

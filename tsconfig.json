@@ -66,6 +66,7 @@
     "src/states/Donate.ts",
     "src/states/EventATaleOfTwoLoversLight.ts",
     "src/states/EventGuyOfGisborne.ts",
+    "src/states/EventBoatsBridgesDark.ts",
     "src/states/EventAmbushDark.ts",
     "src/states/EventLittleJohn.ts",
     "src/states/EventSelectForces.ts",

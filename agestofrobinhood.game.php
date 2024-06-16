@@ -140,6 +140,7 @@ class agestofrobinhood extends Table
             'staticData' => [
                 'cards' => Cards::getStaticData()
             ],
+            'bridgeLocation' => Globals::getBridgeLocation(),
         ];
 
         if ($isRobinHood) {

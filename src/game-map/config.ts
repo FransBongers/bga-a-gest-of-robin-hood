@@ -31,7 +31,7 @@ const SPACES_CONFIG: Record<
       left: 805,
       width: 100,
       height: 50,
-    }
+    },
   },
   [BLYTH]: {
     [HENCHMEN]: {
@@ -57,7 +57,7 @@ const SPACES_CONFIG: Record<
       left: 772,
       width: 50,
       height: 100,
-    }
+    },
   },
   [MANSFIELD]: {
     [HENCHMEN]: {
@@ -83,7 +83,7 @@ const SPACES_CONFIG: Record<
       left: 253,
       width: 50,
       height: 100,
-    }
+    },
   },
   [NEWARK]: {
     [HENCHMEN]: {
@@ -109,7 +109,7 @@ const SPACES_CONFIG: Record<
       left: 1136,
       width: 100,
       height: 50,
-    }
+    },
   },
   [NOTTINGHAM]: {
     [HENCHMEN]: {
@@ -135,7 +135,7 @@ const SPACES_CONFIG: Record<
       left: 634,
       width: 50,
       height: 100,
-    }
+    },
   },
   [OLLERTON_HILL]: {
     // [HENCHMEN]: {
@@ -181,7 +181,7 @@ const SPACES_CONFIG: Record<
       left: 511,
       width: 100,
       height: 50,
-    }
+    },
   },
   [RETFORD]: {
     [HENCHMEN]: {
@@ -207,7 +207,7 @@ const SPACES_CONFIG: Record<
       left: 989,
       width: 50,
       height: 100,
-    }
+    },
   },
   [SHIRE_WOOD]: {
     [HENCHMEN]: {
@@ -233,7 +233,7 @@ const SPACES_CONFIG: Record<
       left: 467,
       width: 50,
       height: 50,
-    }
+    },
   },
   [SOUTHWELL_FOREST]: {
     [HENCHMEN]: {
@@ -259,7 +259,7 @@ const SPACES_CONFIG: Record<
       left: 771,
       width: 50,
       height: 50,
-    }
+    },
   },
   [TUXFORD]: {
     [HENCHMEN]: {
@@ -285,7 +285,7 @@ const SPACES_CONFIG: Record<
       left: 823,
       width: 50,
       height: 100,
-    }
+    },
   },
 };
 
@@ -506,5 +506,38 @@ const UNIQUE_SPACES: TrackConfig[] = [
     id: `${MERRY_MEN}_prison`,
     top: 165,
     left: 1182,
+  },
+];
+
+const BRIDGE_LOCATIONS: TrackConfig[] = [
+  {
+    id: BLYTH_RETFORD_BORDER,
+    top: 363,
+    left: 819,
+    extraClasses: 'gest_bridge_location',
+  },
+  {
+    id: BINGHAM_NEWARK_BORDER,
+    top: 1200,
+    left: 934,
+    extraClasses: 'gest_bridge_location',
+  },
+  {
+    id: BINGHAM_SOUTHWELL_FOREST_BORDER,
+    top: 1203,
+    left: 736,
+    extraClasses: 'gest_bridge_location',
+  },
+  {
+    id: BINGHAM_NOTTINGHAM_BORDER,
+    top: 1245,
+    left: 613,
+    extraClasses: 'gest_bridge_location',
+  },
+  {
+    id: NOTTINGHAM_REMSTON_BORDER,
+    top: 1264,
+    left: 537,
+    extraClasses: 'gest_bridge_location',
   },
 ];

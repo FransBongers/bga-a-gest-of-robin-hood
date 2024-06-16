@@ -22,7 +22,8 @@ class Globals extends \AGestOfRobinHood\Helpers\DB_Manager
     'firstPlayer' => 'int',
     // 'activePlayerId' => 'int',
     'test' => 'obj',
-    'ollertonHillAdjacency' => 'bool'
+    'ollertonHillAdjacency' => 'bool',
+    'bridgeLocation' => 'str',
   ];
 
   protected static $table = 'global_variables';
@@ -148,5 +149,6 @@ class Globals extends \AGestOfRobinHood\Helpers\DB_Manager
   {
     // Game options
     self::setOllertonHillAdjacency(false);
+    self::setBridgeLocation('');
   }
 }

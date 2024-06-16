@@ -19,6 +19,8 @@ class AtomicActions
     DISPERSE => 'Disperse',
     EVENT_A_TALE_OF_TWO_LOVERS_LIGHT => 'EventATaleOfTwoLoversLight',
     EVENT_AMBUSH_DARK => 'EventAmbushDark',
+    EVENT_BOATS_BRIDGES_DARK => 'EventBoatsBridgesDark',
+    EVENT_BOATS_BRIDGES_LIGHT => 'EventBoatsBridgesLight',
     EVENT_GUY_OF_GISBORNE => 'EventGuyOfGisborne',
     EVENT_SELECT_FORCES => 'EventSelectForces',
     EVENT_SELECT_SPACE => 'EventSelectSpace',

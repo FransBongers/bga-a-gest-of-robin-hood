@@ -1617,6 +1617,7 @@ var PlaceForcesState = (function () {
     }
     return PlaceForcesState;
 }());
+var _a;
 var MIN_PLAY_AREA_WIDTH = 1500;
 var MIN_NOTIFICATION_MS = 1200;
 var ENABLED = 'enabled';
@@ -1667,6 +1668,18 @@ var SPACES = [
     SOUTHWELL_FOREST,
     TUXFORD,
 ];
+var BLYTH_RETFORD_BORDER = 'Blyth_Retford_border';
+var BINGHAM_NEWARK_BORDER = 'Bingham_Newark_border';
+var BINGHAM_SOUTHWELL_FOREST_BORDER = 'Bingham_SouthwellForest_border';
+var BINGHAM_NOTTINGHAM_BORDER = 'Bingham_Nottingham_border';
+var NOTTINGHAM_REMSTON_BORDER = 'Nottingham_Remston_border';
+var RIVER_BORDERS = (_a = {},
+    _a[BLYTH_RETFORD_BORDER] = [BLYTH, RETFORD],
+    _a[BINGHAM_NEWARK_BORDER] = [BINGHAM, NEWARK],
+    _a[BINGHAM_SOUTHWELL_FOREST_BORDER] = [BINGHAM, SOUTHWELL_FOREST],
+    _a[BINGHAM_NOTTINGHAM_BORDER] = [BINGHAM, NOTTINGHAM],
+    _a[NOTTINGHAM_REMSTON_BORDER] = [NOTTINGHAM, REMSTON],
+    _a);
 var USED_CARRIAGES = 'usedCarriages';
 var PRISON = 'prison';
 var CAMP = 'Camp';
@@ -1753,6 +1766,7 @@ var AGestOfRobinHood = (function () {
             donate: new DonateState(this),
             eventATaleOfTwoLoversLight: new EventATaleOfTwoLoversLightState(this),
             eventAmbushDark: new EventAmbushDarkState(this),
+            eventBoatsBridgesDark: new EventBoatsBridgesDarkState(this),
             eventGuyOfGisborne: new EventGuyOfGisborneState(this),
             eventSelectForces: new EventSelectForcesState(this),
             eventSelectSpace: new EventSelectSpaceState(this),
@@ -2868,6 +2882,38 @@ var UNIQUE_SPACES = [
         left: 1182,
     },
 ];
+var BRIDGE_LOCATIONS = [
+    {
+        id: BLYTH_RETFORD_BORDER,
+        top: 363,
+        left: 819,
+        extraClasses: 'gest_bridge_location',
+    },
+    {
+        id: BINGHAM_NEWARK_BORDER,
+        top: 1200,
+        left: 934,
+        extraClasses: 'gest_bridge_location',
+    },
+    {
+        id: BINGHAM_SOUTHWELL_FOREST_BORDER,
+        top: 1203,
+        left: 736,
+        extraClasses: 'gest_bridge_location',
+    },
+    {
+        id: BINGHAM_NOTTINGHAM_BORDER,
+        top: 1245,
+        left: 613,
+        extraClasses: 'gest_bridge_location',
+    },
+    {
+        id: NOTTINGHAM_REMSTON_BORDER,
+        top: 1264,
+        left: 537,
+        extraClasses: 'gest_bridge_location',
+    },
+];
 var GameMap = (function () {
     function GameMap(game) {
         this.parishStatusMarkers = {};
@@ -2896,6 +2942,13 @@ var GameMap = (function () {
                 return;
             }
             node.remove();
+        });
+        Object.keys(RIVER_BORDERS).forEach(function (borderId) {
+            var node = document.getElementById(borderId);
+            if (!node) {
+                return;
+            }
+            node.removeAttribute('data-has-bridge');
         });
     };
     GameMap.prototype.updateInterface = function (_a) {
@@ -3048,6 +3101,9 @@ var GameMap = (function () {
             }
             location.insertAdjacentHTML('afterbegin', tplMarker({ id: data.id, extraClasses: 'gest_track_marker' }));
         });
+        if (gamedatas.bridgeLocation) {
+            this.placeBridge({ borderId: gamedatas.bridgeLocation });
+        }
     };
     GameMap.prototype.setupGameMap = function (_a) {
         var gamedatas = _a.gamedatas;
@@ -3271,6 +3327,14 @@ var GameMap = (function () {
             });
         });
     };
+    GameMap.prototype.placeBridge = function (_a) {
+        var borderId = _a.borderId;
+        var node = document.getElementById(borderId);
+        if (!node) {
+            return;
+        }
+        node.setAttribute('data-has-bridge', 'true');
+    };
     return GameMap;
 }());
 var getRevealedText = function (type) {
@@ -3330,7 +3394,7 @@ var tplSpaces = function () {
 };
 var tplGameMap = function (_a) {
     var gamedatas = _a.gamedatas;
-    return "\n  <div id=\"gest_game_map\">\n    ".concat(tplTrack({ config: JUSTICE_TRACK_CONFIG }), "\n    ").concat(tplTrack({ config: ORDER_TRACK }), "\n    ").concat(tplTrack({ config: PARISH_STATUS_BOXES }), "\n    ").concat(tplTrack({ config: ROYAL_INSPECTION_TRACK }), "\n    ").concat(tplTrack({ config: INITIATIVE_TRACK }), "\n    ").concat(tplTrack({ config: UNIQUE_SPACES }), "\n    ").concat(tplSpaces(), "\n  </div>");
+    return "\n  <div id=\"gest_game_map\">\n    ".concat(tplTrack({ config: JUSTICE_TRACK_CONFIG }), "\n    ").concat(tplTrack({ config: ORDER_TRACK }), "\n    ").concat(tplTrack({ config: PARISH_STATUS_BOXES }), "\n    ").concat(tplTrack({ config: ROYAL_INSPECTION_TRACK }), "\n    ").concat(tplTrack({ config: INITIATIVE_TRACK }), "\n    ").concat(tplTrack({ config: UNIQUE_SPACES }), "\n    ").concat(tplSpaces(), "\n    ").concat(tplTrack({ config: BRIDGE_LOCATIONS }), "\n  </div>");
 };
 var InfoPanel = (function () {
     function InfoPanel(game) {
@@ -3452,6 +3516,7 @@ var NotificationManager = (function () {
             'clearTurn',
             'refreshUI',
             'refreshForcesPrivate',
+            'placeBridge',
             'captureMerryMen',
             'chooseAction',
             'drawAndRevealCard',
@@ -3588,6 +3653,16 @@ var NotificationManager = (function () {
                     var spaceId = _a[0], forces = _a[1];
                     forces.forEach(function (force) { return _this.game.gameMap.addPrivateForce({ force: force }); });
                 });
+                return [2];
+            });
+        });
+    };
+    NotificationManager.prototype.notif_placeBridge = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var borderId;
+            return __generator(this, function (_a) {
+                borderId = notif.args.borderId;
+                this.game.gameMap.placeBridge({ borderId: borderId });
                 return [2];
             });
         });
@@ -5488,6 +5563,96 @@ var EventGuyOfGisborneState = (function () {
         this.game.addCancelButton();
     };
     return EventGuyOfGisborneState;
+}());
+var EventBoatsBridgesDarkState = (function () {
+    function EventBoatsBridgesDarkState(game) {
+        this.selectedBorderId = '';
+        this.game = game;
+    }
+    EventBoatsBridgesDarkState.prototype.onEnteringState = function (args) {
+        debug('Entering EventBoatsBridgesDarkState');
+        this.args = args;
+        this.selectedBorderId = '';
+        this.updateInterfaceInitialStep();
+    };
+    EventBoatsBridgesDarkState.prototype.onLeavingState = function () {
+        debug('Leaving EventBoatsBridgesDarkState');
+    };
+    EventBoatsBridgesDarkState.prototype.setDescription = function (activePlayerId) { };
+    EventBoatsBridgesDarkState.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} may select a River border to place the Bridge'),
+            args: {
+                you: '${you}',
+            },
+        });
+        Object.entries(RIVER_BORDERS).forEach(function (_a) {
+            var borderId = _a[0], spaceIds = _a[1];
+            return _this.game.setElementSelectable({
+                id: borderId,
+                callback: function () {
+                    _this.selectedBorderId = borderId;
+                    _this.updateInterfaceConfirm();
+                },
+            });
+        });
+        this.game.addPassButton({
+            optionalAction: this.args.optionalAction,
+        });
+        this.game.addUndoButtons(this.args);
+    };
+    EventBoatsBridgesDarkState.prototype.updateInterfaceConfirm = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.game.setElementSelected({ id: this.selectedBorderId });
+        var node = document.getElementById(this.selectedBorderId);
+        if (node) {
+            node.setAttribute('data-has-bridge', 'true');
+        }
+        var spaceIds = RIVER_BORDERS[this.selectedBorderId];
+        this.game.clientUpdatePageTitle({
+            text: _('Place the Bridge on the border between ${spaceName} and ${spaceName2}?  '),
+            args: {
+                spaceName: this.game.gamedatas.spaces[spaceIds[0]].name,
+                spaceName2: this.game.gamedatas.spaces[spaceIds[1]].name,
+            },
+        });
+        var callback = function () {
+            _this.game.clearPossible();
+            _this.game.takeAction({
+                action: 'actEventBoatsBridgesDark',
+                args: {
+                    borderId: _this.selectedBorderId,
+                },
+            });
+        };
+        if (this.game.settings.get({
+            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+        }) === PREF_ENABLED) {
+            callback();
+        }
+        else {
+            this.game.addConfirmButton({
+                callback: callback,
+            });
+        }
+        this.addCancelButton();
+    };
+    EventBoatsBridgesDarkState.prototype.addCancelButton = function () {
+        var _this = this;
+        this.game.addCancelButton({
+            callback: function () {
+                var node = document.getElementById(_this.selectedBorderId);
+                if (node) {
+                    node.removeAttribute('data-has-bridge');
+                }
+                _this.game.onCancel();
+            },
+        });
+    };
+    return EventBoatsBridgesDarkState;
 }());
 var EventAmbushDarkState = (function () {
     function EventAmbushDarkState(game) {

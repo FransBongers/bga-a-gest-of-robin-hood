@@ -25,6 +25,31 @@
   --gestForceScale: var(--leftColumnScale) * var(--mapSizeMultiplier);
 }
 
+.gest_bridge_location {
+  position: absolute;
+  height: calc(var(--gestMapScale) * 60px);
+  width: calc(var(--gestMapScale) * 60px);
+  // background-color: yellow;
+  // opacity: 0.5;
+}
+
+.gest_bridge_location.gest_selectable {
+  cursor: pointer;
+  box-shadow: 0px 0px 0px calc(var(--gestMapScale) * 4px)
+    base.$selectable-color !important;
+}
+
+.gest_bridge_location.gest_selected {
+  cursor: pointer;
+  box-shadow: 0px 0px 0px calc(var(--gestMapScale) * 4px) base.$selected-color !important;
+}
+
+.gest_bridge_location[data-has-bridge=true] {
+  border: 1px solid black;
+  border-radius: 5%;
+  background-color: burlywood;
+}
+
 .gest_marker_space {
   display: flex;
   align-items: center;
@@ -128,11 +153,10 @@
 .gest_forces {
   position: absolute;
   display: flex;
-  gap:  calc(var(--gestMapScale) * 8px);
+  gap: calc(var(--gestMapScale) * 8px);
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
   // background-color: yellow;
   // opacity: 0.5;
 }
-

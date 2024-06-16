@@ -70,6 +70,7 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     donate: DonateState;
     eventATaleOfTwoLoversLight: EventATaleOfTwoLoversLightState;
     eventAmbushDark: EventAmbushDarkState;
+    eventBoatsBridgesDark: EventBoatsBridgesDarkState;
     eventGuyOfGisborne: EventGuyOfGisborneState;
     eventSelectForces: EventSelectForcesState;
     eventSelectSpace: EventSelectSpaceState;
@@ -142,6 +143,7 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
       donate: new DonateState(this),
       eventATaleOfTwoLoversLight: new EventATaleOfTwoLoversLightState(this),
       eventAmbushDark: new EventAmbushDarkState(this),
+      eventBoatsBridgesDark: new EventBoatsBridgesDarkState(this),
       eventGuyOfGisborne: new EventGuyOfGisborneState(this),
       eventSelectForces: new EventSelectForcesState(this),
       eventSelectSpace: new EventSelectSpaceState(this),

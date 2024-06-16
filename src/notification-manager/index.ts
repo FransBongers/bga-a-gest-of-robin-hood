@@ -51,6 +51,7 @@ class NotificationManager {
       'refreshUI',
       'refreshForcesPrivate',
       // Game
+      'placeBridge',
       'captureMerryMen',
       'chooseAction',
       'drawAndRevealCard',
@@ -261,6 +262,11 @@ class NotificationManager {
     Object.entries(data).forEach(([spaceId, forces]) => {
       forces.forEach((force) => this.game.gameMap.addPrivateForce({ force }));
     });
+  }
+
+  async notif_placeBridge(notif: Notif<NotifPlaceBridgeArgs>) {
+    const { borderId } = notif.args;
+    this.game.gameMap.placeBridge({ borderId });
   }
 
   async notif_captureMerryMen(notif: Notif<NotifCaptureMerryMenArgs>) {
