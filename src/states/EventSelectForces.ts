@@ -1,7 +1,10 @@
 class EventSelectForcesState implements State {
   private game: AGestOfRobinHoodGame;
   private args: OnEnteringEventSelectForcesStateArgs;
-  private selectedForcesIds: string[] = [];
+  // private selectedForcesIds: string[] = [];
+  private selectedForces: GestForce[] = [];
+  private selectableForces: GestForce[] = [];
+  private showSelected: GestForce[] = [];
 
   constructor(game: AGestOfRobinHoodGame) {
     this.game = game;
@@ -10,7 +13,19 @@ class EventSelectForcesState implements State {
   onEnteringState(args: OnEnteringEventSelectForcesStateArgs) {
     debug('Entering EventSelectForcesState');
     this.args = args;
-    this.selectedForcesIds = [];
+    this.selectedForces = [];
+    this.selectableForces = [];
+    this.showSelected = [];
+
+    if (this.args._private.type === 'private') {
+      this.selectableForces = this.args._private.forces;
+      this.showSelected = this.args._private.showSelected || [];
+    } else if (this.args._private.type === 'public') {
+      this.getSelectablePublicForces({ forces: this.args._private.forces });
+      this.getShowSelectedPublicForces({
+        forces: this.args._private.showSelected || [],
+      });
+    }
     this.updateInterfaceInitialStep();
   }
 
@@ -61,14 +76,17 @@ class EventSelectForcesState implements State {
 
     this.updatePageTitle();
 
-    this.args._private.forces.forEach((force) => {
+    this.selectableForces.forEach((force) => {
       this.game.setElementSelectable({
         id: force.id,
         callback: () => this.handleForceClick({ force }),
       });
     });
-    this.selectedForcesIds.forEach((id) =>
-      this.game.setElementSelected({ id })
+    this.selectedForces.forEach((force) =>
+      this.game.setElementSelected({ id: force.id })
+    );
+    this.showSelected.forEach((force) =>
+      this.game.setElementSelected({ id: force.id })
     );
 
     this.game.addPrimaryActionButton({
@@ -76,14 +94,15 @@ class EventSelectForcesState implements State {
       text: _('Done'),
       callback: () => this.updateInterfaceConfirm(),
       extraClasses:
-        this.selectedForcesIds.length < this.args._private.min ? DISABLED : '',
+        this.selectedForces.length < this.args._private.min ? DISABLED : '',
     });
 
-    if (this.selectedForcesIds.length > 0) {
+    if (this.selectedForces.length > 0) {
       this.game.addCancelButton();
     } else {
       this.game.addPassButton({
         optionalAction: this.args.optionalAction,
+        text: this.args.passButtonText || undefined,
       });
       this.game.addUndoButtons(this.args);
     }
@@ -95,16 +114,23 @@ class EventSelectForcesState implements State {
     this.game.clientUpdatePageTitle({
       text: _(this.args.confirmText),
       args: {
-        count: this.selectedForcesIds.length,
+        count: this.selectedForces.length,
       },
     });
+
+    this.selectedForces.forEach(({ id }) =>
+      this.game.setElementSelected({ id })
+    );
+    this.showSelected.forEach((force) =>
+      this.game.setElementSelected({ id: force.id })
+    );
 
     const callback = () => {
       this.game.clearPossible();
       this.game.takeAction({
         action: 'actEventSelectForces',
         args: {
-          selectedForcesIds: this.selectedForcesIds,
+          selectedForces: this.getCallbackArgs(),
         },
       });
     };
@@ -132,25 +158,53 @@ class EventSelectForcesState implements State {
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
+  private getSelectablePublicForces({ forces }: { forces: GestPublicForce[] }) {
+    forces.forEach(({ type, hidden, spaceId }: GestPublicForce) => {
+      const force = this.game.gameMap.getForcePublic({
+        type,
+        hidden,
+        spaceId,
+        exclude: this.selectableForces,
+      });
+      this.selectableForces.push(force);
+    });
+  }
+
+  private getShowSelectedPublicForces({
+    forces,
+  }: {
+    forces: GestPublicForce[];
+  }) {
+    forces.forEach(({ type, hidden, spaceId }: GestPublicForce) => {
+      const force = this.game.gameMap.getForcePublic({
+        type,
+        hidden,
+        spaceId,
+        exclude: this.showSelected,
+      });
+      this.showSelected.push(force);
+    });
+  }
+
   private updatePageTitle() {
     this.game.clientUpdatePageTitle({
       text: _(this.args.title),
       args: {
         you: '${you}',
-        count: this.args._private.max - this.selectedForcesIds.length,
+        count: this.args._private.max - this.selectedForces.length,
       },
     });
   }
 
-  private updateDoneButtonDisabled() {
-    const button = document.getElementById('done_btn');
-    if (!button) {
-      return;
-    }
-    if (this.selectedForcesIds.length < this.args._private.min) {
-      button.classList.add(DISABLED);
+  private getCallbackArgs() {
+    if (this.args._private.type === 'private') {
+      return this.selectedForces.map(({ id }) => id);
     } else {
-      button.classList.remove(DISABLED);
+      return this.selectedForces.map(({ type, hidden, location }) => ({
+        type,
+        hidden,
+        spaceId: location,
+      }));
     }
   }
 
@@ -171,17 +225,18 @@ class EventSelectForcesState implements State {
   // .##.....##.##.....##.##....##.########..########.########..######.
 
   private handleForceClick({ force }: { force: GestForce }) {
-    if (this.selectedForcesIds.includes(force.id)) {
+    if (this.selectedForces.some(({ id }) => id === force.id)) {
       // this.game.removeSelectedFromElement({ id: force.id });
-      this.selectedForcesIds = this.selectedForcesIds.filter(
-        (id) => id !== force.id
+      this.selectedForces = this.selectedForces.filter(
+        ({ id }) => id !== force.id
       );
     } else {
-      this.game.setElementSelected({ id: force.id });
-      this.selectedForcesIds.push(force.id);
+      // this.game.setElementSelected({ id: force.id });
+      this.selectedForces.push(force);
     }
-    if (this.selectedForcesIds.length === this.args._private.max) {
+    if (this.selectedForces.length === this.args._private.max) {
       this.updateInterfaceConfirm();
+      return;
     }
     this.updateInterfaceInitialStep();
     // this.updatePageTitle();

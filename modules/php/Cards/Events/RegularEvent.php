@@ -79,6 +79,18 @@ class RegularEvent extends \AGestOfRobinHood\Models\EventCard
   {
   }
 
+  public function resolveDarkEffect($player, $ctx, $args)
+  {
+  }
+
+  public function resolveLightPass($player, $ctx)
+  {
+  }
+
+  public function resolveDarkPass($player, $ctx)
+  {
+  }
+
   public function getLightStateArgs()
   {
     return [];

@@ -124,7 +124,7 @@ class GameMap extends \APP_DbObject
     Players::moveRoyalFavour($player, 1, JUSTICE);
   }
 
-  private static function getPublicMoveType($type, $hidden)
+  public static function getPublicForceType($type, $hidden)
   {
     if ($type === ROBIN_HOOD && $hidden) {
       return MERRY_MEN;
@@ -161,12 +161,12 @@ class GameMap extends \APP_DbObject
 
       $moves[] = [
         'from' => [
-          'type' => self::getPublicMoveType($force->getType(), $fromHidden),
+          'type' => self::getPublicForceType($force->getType(), $fromHidden),
           'hidden' => $fromHidden,
           'spaceId' => $currentLocation,
         ],
         'to' => [
-          'type' => self::getPublicMoveType($force->getType(), $toHidden),
+          'type' => self::getPublicForceType($force->getType(), $toHidden),
           'hidden' => $toHidden,
           'spaceId' => $toSpaceId,
         ]
@@ -176,6 +176,15 @@ class GameMap extends \APP_DbObject
     return [
       'forces' => $forces,
       'moves' => $moves,
+    ];
+  }
+
+  public static function createPublicForce($force)
+  {
+    return [
+      'type' => self::getPublicForceType($force->getType(), $force->isHidden()),
+      'spaceId' => $force->getLocation(),
+      'hidden' => $force->isHidden(),
     ];
   }
 }

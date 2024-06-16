@@ -79,15 +79,34 @@ interface OnEnteringEventLittleJohnStateArgs extends CommonArgs {
   spaces: GestSpace[];
 }
 
+interface SelectForcesPrivate {
+  forces: GestForce[];
+  min: number;
+  max: number;
+  type: 'private';
+  showSelected?: GestForce[];
+}
+
+interface GestPublicForce {
+  type: string;
+  hidden: boolean;
+  spaceId: string;
+}
+
+interface SelectForcesPublic {
+  forces: GestPublicForce[];
+  min: number;
+  max: number;
+  type: 'public';
+  showSelected?: GestPublicForce[];
+}
+
 interface OnEnteringEventSelectForcesStateArgs extends CommonArgs {
-  _private: {
-    forces: GestForce[];
-    min: number;
-    max: number;
-  };
+  _private: SelectForcesPrivate | SelectForcesPublic;
   confirmText: string;
   title: string;
   titleOther: string;
+  passButtonText?: string | null;
 }
 
 interface OnEnteringEventSelectSpaceStateArgs extends CommonArgs {

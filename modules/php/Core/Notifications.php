@@ -565,6 +565,28 @@ class Notifications
     ]));
   }
 
+  public static function willStutelyDark($player, $forces, $moves)
+  {
+    $text = clienttranslate('${player_name} places ${count} Merry Men in Prison');
+    $robinHoodPlayer = Players::getRobinHoodPlayer();
+
+    self::notify($robinHoodPlayer, 'moveMerryMenPrivate', $text, [
+      'playerId' => $robinHoodPlayer->getId(),
+      'player_name' => $player->getName(),
+      'forces' => $forces,
+      'i18n' => ['tkn_boldText_spaceName'],
+      'count' => count($forces),
+    ]);
+
+    self::notifyAll('moveMerryMenPublic', $text, [
+      'playerId' => $robinHoodPlayer->getId(),
+      'player_name' => $player->getName(),
+      'moves' => $moves,
+      'count' => count($forces),
+      'i18n' => ['tkn_boldText_spaceName']
+    ]);
+  }
+
   public static function putCardInVictimsPile($player, $card, $fromLocation = null)
   {
     $text = clienttranslate('${player_name} puts ${tkn_cardName} in the Victims Pile');

@@ -104,6 +104,16 @@ class EventSelectSpace extends \AGestOfRobinHood\Actions\Plot
   public function actPassEventSelectSpace()
   {
     $player = self::getPlayer();
+    $info = $this->ctx->getInfo();
+    $cardId = $info['cardId'];
+    $effect = $info['effect'];
+    $card = Cards::get($cardId);
+
+    if ($effect === LIGHT) {
+      $card->resolveLightPass($player, $this->ctx);
+    } else if ($effect === DARK) {
+      $card->resolveDarkPass($player, $this->ctx);
+    }
     // Stats::incPassActionCount($player->getId(), 1);
     Engine::resolve(PASS);
   }

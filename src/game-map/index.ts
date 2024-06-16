@@ -377,8 +377,8 @@ class GameMap {
         exclude.some((excludedForce) => excludedForce.id === force.id)
       ) {
         return false;
-      }
-      return force.hidden === hidden;
+      } 
+      return force.hidden === hidden && force.type === type;
     });
 
     const selected = forces[Math.floor(Math.random() * forces.length)];

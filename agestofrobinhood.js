@@ -3118,7 +3118,7 @@ var GameMap = (function () {
                 exclude.some(function (excludedForce) { return excludedForce.id === force.id; })) {
                 return false;
             }
-            return force.hidden === hidden;
+            return force.hidden === hidden && force.type === type;
         });
         var selected = forces[Math.floor(Math.random() * forces.length)];
         return selected;
@@ -5564,13 +5564,27 @@ var EventAmbushDarkState = (function () {
 }());
 var EventSelectForcesState = (function () {
     function EventSelectForcesState(game) {
-        this.selectedForcesIds = [];
+        this.selectedForces = [];
+        this.selectableForces = [];
+        this.showSelected = [];
         this.game = game;
     }
     EventSelectForcesState.prototype.onEnteringState = function (args) {
         debug('Entering EventSelectForcesState');
         this.args = args;
-        this.selectedForcesIds = [];
+        this.selectedForces = [];
+        this.selectableForces = [];
+        this.showSelected = [];
+        if (this.args._private.type === 'private') {
+            this.selectableForces = this.args._private.forces;
+            this.showSelected = this.args._private.showSelected || [];
+        }
+        else if (this.args._private.type === 'public') {
+            this.getSelectablePublicForces({ forces: this.args._private.forces });
+            this.getShowSelectedPublicForces({
+                forces: this.args._private.showSelected || [],
+            });
+        }
         this.updateInterfaceInitialStep();
     };
     EventSelectForcesState.prototype.onLeavingState = function () {
@@ -5591,27 +5605,31 @@ var EventSelectForcesState = (function () {
         var _this = this;
         this.game.clearPossible();
         this.updatePageTitle();
-        this.args._private.forces.forEach(function (force) {
+        this.selectableForces.forEach(function (force) {
             _this.game.setElementSelectable({
                 id: force.id,
                 callback: function () { return _this.handleForceClick({ force: force }); },
             });
         });
-        this.selectedForcesIds.forEach(function (id) {
-            return _this.game.setElementSelected({ id: id });
+        this.selectedForces.forEach(function (force) {
+            return _this.game.setElementSelected({ id: force.id });
+        });
+        this.showSelected.forEach(function (force) {
+            return _this.game.setElementSelected({ id: force.id });
         });
         this.game.addPrimaryActionButton({
             id: 'done_btn',
             text: _('Done'),
             callback: function () { return _this.updateInterfaceConfirm(); },
-            extraClasses: this.selectedForcesIds.length < this.args._private.min ? DISABLED : '',
+            extraClasses: this.selectedForces.length < this.args._private.min ? DISABLED : '',
         });
-        if (this.selectedForcesIds.length > 0) {
+        if (this.selectedForces.length > 0) {
             this.game.addCancelButton();
         }
         else {
             this.game.addPassButton({
                 optionalAction: this.args.optionalAction,
+                text: this.args.passButtonText || undefined,
             });
             this.game.addUndoButtons(this.args);
         }
@@ -5622,15 +5640,22 @@ var EventSelectForcesState = (function () {
         this.game.clientUpdatePageTitle({
             text: _(this.args.confirmText),
             args: {
-                count: this.selectedForcesIds.length,
+                count: this.selectedForces.length,
             },
+        });
+        this.selectedForces.forEach(function (_a) {
+            var id = _a.id;
+            return _this.game.setElementSelected({ id: id });
+        });
+        this.showSelected.forEach(function (force) {
+            return _this.game.setElementSelected({ id: force.id });
         });
         var callback = function () {
             _this.game.clearPossible();
             _this.game.takeAction({
                 action: 'actEventSelectForces',
                 args: {
-                    selectedForcesIds: _this.selectedForcesIds,
+                    selectedForces: _this.getCallbackArgs(),
                 },
             });
         };
@@ -5646,38 +5671,78 @@ var EventSelectForcesState = (function () {
         }
         this.game.addCancelButton();
     };
+    EventSelectForcesState.prototype.getSelectablePublicForces = function (_a) {
+        var _this = this;
+        var forces = _a.forces;
+        forces.forEach(function (_a) {
+            var type = _a.type, hidden = _a.hidden, spaceId = _a.spaceId;
+            var force = _this.game.gameMap.getForcePublic({
+                type: type,
+                hidden: hidden,
+                spaceId: spaceId,
+                exclude: _this.selectableForces,
+            });
+            _this.selectableForces.push(force);
+        });
+    };
+    EventSelectForcesState.prototype.getShowSelectedPublicForces = function (_a) {
+        var _this = this;
+        var forces = _a.forces;
+        forces.forEach(function (_a) {
+            var type = _a.type, hidden = _a.hidden, spaceId = _a.spaceId;
+            var force = _this.game.gameMap.getForcePublic({
+                type: type,
+                hidden: hidden,
+                spaceId: spaceId,
+                exclude: _this.showSelected,
+            });
+            _this.showSelected.push(force);
+        });
+    };
     EventSelectForcesState.prototype.updatePageTitle = function () {
         this.game.clientUpdatePageTitle({
             text: _(this.args.title),
             args: {
                 you: '${you}',
-                count: this.args._private.max - this.selectedForcesIds.length,
+                count: this.args._private.max - this.selectedForces.length,
             },
         });
     };
-    EventSelectForcesState.prototype.updateDoneButtonDisabled = function () {
-        var button = document.getElementById('done_btn');
-        if (!button) {
-            return;
-        }
-        if (this.selectedForcesIds.length < this.args._private.min) {
-            button.classList.add(DISABLED);
+    EventSelectForcesState.prototype.getCallbackArgs = function () {
+        if (this.args._private.type === 'private') {
+            return this.selectedForces.map(function (_a) {
+                var id = _a.id;
+                return id;
+            });
         }
         else {
-            button.classList.remove(DISABLED);
+            return this.selectedForces.map(function (_a) {
+                var type = _a.type, hidden = _a.hidden, location = _a.location;
+                return ({
+                    type: type,
+                    hidden: hidden,
+                    spaceId: location,
+                });
+            });
         }
     };
     EventSelectForcesState.prototype.handleForceClick = function (_a) {
         var force = _a.force;
-        if (this.selectedForcesIds.includes(force.id)) {
-            this.selectedForcesIds = this.selectedForcesIds.filter(function (id) { return id !== force.id; });
+        if (this.selectedForces.some(function (_a) {
+            var id = _a.id;
+            return id === force.id;
+        })) {
+            this.selectedForces = this.selectedForces.filter(function (_a) {
+                var id = _a.id;
+                return id !== force.id;
+            });
         }
         else {
-            this.game.setElementSelected({ id: force.id });
-            this.selectedForcesIds.push(force.id);
+            this.selectedForces.push(force);
         }
-        if (this.selectedForcesIds.length === this.args._private.max) {
+        if (this.selectedForces.length === this.args._private.max) {
             this.updateInterfaceConfirm();
+            return;
         }
         this.updateInterfaceInitialStep();
     };

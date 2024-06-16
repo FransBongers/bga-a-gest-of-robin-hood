@@ -55,14 +55,13 @@ class Event06_PrioressOfKirklees extends \AGestOfRobinHood\Cards\Events\RegularE
 
   public function performDarkEffect($player, $successful, $ctx = null, $space = null)
   {
-    // $robinHood = Forces::get(ROBIN_HOOD);
-
-    // $ctx->insertAsBrother(new LeafNode([
-    //   'action' => EVENT_SELECT_SPACE,
-    //   'playerId' => $player->getId(),
-    //   'cardId' => $this->id,
-    //   'effect' => DARK,
-    // ]));
+    $ctx->insertAsBrother(new LeafNode([
+      'action' => EVENT_SELECT_FORCES,
+      'playerId' => $player->getId(),
+      'cardId' => $this->id,
+      'effect' => DARK,
+      'optional' => true,
+    ]));
   }
 
   public function canPerformLightEffect($player)
@@ -72,7 +71,8 @@ class Event06_PrioressOfKirklees extends \AGestOfRobinHood\Cards\Events\RegularE
 
   public function canPerformDarkEffect($player)
   {
-    return true;
+    $robinHood = Forces::get(ROBIN_HOOD);
+    return !$robinHood->isHidden() && in_array($robinHood->getLocation(), SPACES);
   }
 
 
@@ -117,6 +117,39 @@ class Event06_PrioressOfKirklees extends \AGestOfRobinHood\Cards\Events\RegularE
     ];
   }
 
+  public function getDarkStateArgs()
+  {
+    $forces = $this->getDarkOptions();
+    return [
+      '_private' => [
+        'forces' => $forces,
+        'min' => 1,
+        'max' => 1,
+        'type' => 'public',
+        'showSelected' => [Forces::get(ROBIN_HOOD)],
+      ],
+      'title' => clienttranslate('${you} may select one Merry Men to remove to Available'),
+      'confirmText' => clienttranslate('Remove Robin Hood and Merry Man to Available?'),
+      'titleOther' => clienttranslate('${actplayer} may remove one Merry Man'),
+      'passButtonText' => clienttranslate('Remove Robin Hood only'),
+    ];
+  }
+
+  public function resolveDarkEffect($player, $ctx, $forces)
+  {
+    $robinHood = Forces::get(ROBIN_HOOD);
+    $robinHood->returnToSupply($player);
+    foreach ($forces as $merryMan) {
+      $merryMan->returnToSupply($player);
+    }
+  }
+
+  public function resolveDarkPass($player, $ctx)
+  {
+    $robinHood = Forces::get(ROBIN_HOOD);
+    $robinHood->returnToSupply($player);
+  }
+
   // .##.....##.########.####.##.......####.########.##....##
   // .##.....##....##.....##..##........##.....##.....##..##.
   // .##.....##....##.....##..##........##.....##......####..
@@ -129,31 +162,34 @@ class Event06_PrioressOfKirklees extends \AGestOfRobinHood\Cards\Events\RegularE
   {
     $spaces = $this->getLightOptions();
     if (count($spaces) === 0) {
-      $this->resolveEffect($player, LIGHT, null, $ctx);
+      $this->resolveLightEffect($player, $ctx, null);
       return true;
     } else if (count($spaces) === 1) {
-      $this->resolveEffect($player, LIGHT, $spaces[0], $ctx);
+      $this->resolveLightEffect($player, $ctx, $spaces[0]);
       return true;
     }
     return false;
   }
 
-  // private function getDarkOptions()
-  // {
-  //   $forces = Forces::getAll()->toArray();
-  //   $parishes = Spaces::getMany(PARISHES)->toArray();
+  public function resolveDarkEffectAutomatically($player, $ctx)
+  {
+    $merryMen = $this->getDarkOptions();
+    if (count($merryMen) === 0) {
+      $this->resolveDarkEffect($player, $ctx, $merryMen);
+      return true;
+    }
+    return false;
+  }
 
-  //   $spaces = [];
-  //   foreach ($parishes as $parish) {
-  //     if ($parish->isRevolting() && Utils::array_some($forces, function ($force) use ($parish) {
-  //       return $force->getLocation() === $parish->getId() && $force->isMerryMan() && !$force->isHidden();
-  //     })) {
-  //       $spaces[] = $parish;
-  //     };
-  //   }
+  private function getDarkOptions()
+  {
+    $robinHood = Forces::get(ROBIN_HOOD);
+    $space = Spaces::get($robinHood->getLocation());
 
-  //   return $spaces;
-  // }
+    return Utils::filter($space->getForces(), function ($force) {
+      return $force->isMerryManNotRobinHood();
+    });
+  }
 
   private function getLightOptions()
   {

@@ -80,13 +80,28 @@ class EventSelectForces extends \AGestOfRobinHood\Actions\Plot
       $data = Cards::get($cardId)->getDarkStateArgs($effect);
     }
 
+    $input = $data['_private'];
+    if ($input['type'] === 'public') {
+      $input['forces'] = array_map(function ($force) {
+        return GameMap::createPublicForce($force);
+      }, $input['forces']);
+
+      if (isset($input['showSelected'])) {
+        $input['showSelected'] = array_map(function ($force) {
+          return GameMap::createPublicForce($force);
+        }, $input['showSelected']);
+      }
+    }
+
+
     return [
       '_private' => [
-        $this->ctx->getPlayerId() => $data['_private']
+        $this->ctx->getPlayerId() => $input,
       ],
       'title' => $data['title'],
       'confirmText' => $data['confirmText'],
       'titleOther' => $data['titleOther'],
+      'passButtonText' => isset($data['passButtonText']) ? $data['passButtonText'] : null,
     ];
   }
 
@@ -109,6 +124,16 @@ class EventSelectForces extends \AGestOfRobinHood\Actions\Plot
   public function actPassEventSelectForces()
   {
     $player = self::getPlayer();
+    $info = $this->ctx->getInfo();
+    $cardId = $info['cardId'];
+    $effect = $info['effect'];
+    $card = Cards::get($cardId);
+
+    if ($effect === LIGHT) {
+      $card->resolveLightPass($player, $this->ctx);
+    } else if ($effect === DARK) {
+      $card->resolveDarkPass($player, $this->ctx);
+    }
     // Stats::incPassActionCount($player->getId(), 1);
     Engine::resolve(PASS);
   }
@@ -116,7 +141,7 @@ class EventSelectForces extends \AGestOfRobinHood\Actions\Plot
   public function actEventSelectForces($args)
   {
     self::checkAction('actEventSelectForces');
-    $selectedForcesIds = $args['selectedForcesIds'];
+    $selectedForcesArgs = $args['selectedForces'];
 
     $info = $this->ctx->getInfo();
     $cardId = $info['cardId'];
@@ -125,22 +150,18 @@ class EventSelectForces extends \AGestOfRobinHood\Actions\Plot
 
     $data = [];
     if ($effect === LIGHT) {
-      $data = Cards::get($cardId)->getLightStateArgs($effect);
+      $data = $card->getLightStateArgs();
     } else if ($effect === DARK) {
-      $data = Cards::get($cardId)->getDarkStateArgs($effect);
+      $data = $card->getDarkStateArgs();
     }
 
     $options = $data['_private'];
     $selectedForces = [];
 
-    foreach($selectedForcesIds as $forceId) {
-      $force = Utils::array_find($options['forces'], function ($force) use ($forceId) {
-        return $force->getId() === $forceId;
-      });
-      if ($force === null) {
-        throw new \feException("ERROR 075");
-      }
-      $selectedForces[] = $force;
+    if ($options['type'] === 'private') {
+      $selectedForces = $this->getSelectedForcesPrivate($selectedForcesArgs, $options['forces']);
+    } else if ($options['type'] === 'public') {
+      $selectedForces = $this->getSelectedForcePublic($selectedForcesArgs, $options['forces']);
     }
 
     if ($effect === LIGHT) {
@@ -160,4 +181,42 @@ class EventSelectForces extends \AGestOfRobinHood\Actions\Plot
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
+  private function getSelectedForcePublic($selectedForces, $selectableForces)
+  {
+    $forces = [];
+
+    foreach ($selectedForces as $publicForce) {
+      $force = Utils::array_find($selectableForces, function ($selectableForce) use ($forces, $publicForce) {
+        $alreadySelected = Utils::array_some($forces, function ($pickedForce) use ($selectableForce) {
+          return $selectableForce->getId() === $pickedForce->getId();
+        });
+        if ($alreadySelected) {
+          return false;
+        }
+        $publicTypeMatches = GameMap::getPublicForceType($selectableForce->getType(), $selectableForce->isHidden()) === $publicForce['type'];
+        $hiddenMatches = $selectableForce->isHidden() === $publicForce['hidden'];
+        $locationMatches = $selectableForce->getLocation() === $publicForce['spaceId'];
+        return $publicTypeMatches && $hiddenMatches && $locationMatches;
+      });
+      if ($force === null) {
+        throw new \feException("ERROR 076");
+      }
+      $forces[] = $force;
+    }
+
+    return $forces;
+  }
+
+  private function getSelectedForcesPrivate($selectedForcesIds, $forces)
+  {
+    foreach ($selectedForcesIds as $forceId) {
+      $force = Utils::array_find($forces, function ($force) use ($forceId) {
+        return $force->getId() === $forceId;
+      });
+      if ($force === null) {
+        throw new \feException("ERROR 075");
+      }
+      $selectedForces[] = $force;
+    }
+  }
 }

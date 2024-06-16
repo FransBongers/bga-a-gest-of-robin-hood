@@ -24,14 +24,16 @@ trait DebugTrait
   function test()
   {
     // $merryMan = Forces::getTopOf(MERRY_MEN_SUPPLY);
+    
+    $merryMan = Forces::get(ROBIN_HOOD);
     // $merryMan->setLocation(PRISON);
-    // $merryMan->setHidden(0);
+    $merryMan->setHidden(0);
     // Spaces::get(TUXFORD)->revolt(Players::get());
     // Forces::get(ROBIN_HOOD)->setLocation(PRISON);
     // Forces::get(ROBIN_HOOD)->setHidden(1);
     // Forces::get('merryMen_4')->setHidden(1);
     
-    Cards::get('Event10_TaxCollectors')->insertOnTop(EVENTS_DECK);
+    Cards::get('Event06_PrioressOfKirklees')->insertOnTop(EVENTS_DISCARD);
     // Globals::setOllertonHillAdjacency(true);
     // Cards::get('Traveller07_Monks')->setLocation(TRAVELLERS_DISCARD);
     // $this->debugPlaceForces(TALLAGE_CARRIAGE,TUXFORD,1);

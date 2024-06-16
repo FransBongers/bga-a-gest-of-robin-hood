@@ -1,8 +1,3 @@
-# Event06_PrioressOfKirklees
-
-DARK
-
-
 # Event11_GreatEscape
 
 LIGHT
@@ -64,9 +59,7 @@ DARK
 # Event27_WillStutely
 
 LIGHT
-DARK
 
 # Event28_NottinghamFair
 
 LIGHT
-DARK

@@ -125,6 +125,7 @@ class Event10_TaxCollectors extends \AGestOfRobinHood\Cards\Events\RegularEvent
         'forces' => $this->getLightOptions(),
         'min' => 0,
         'max' => 4,
+        'type' => 'private',
       ],
       'title' => clienttranslate('${you} may select Merry Men to move into Nottingham (${count} remaining)'),
       'confirmText' => clienttranslate('Move Merry Men into Nottingham?'),
