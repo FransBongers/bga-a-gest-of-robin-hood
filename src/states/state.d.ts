@@ -54,8 +54,11 @@ interface OnEnteringDonateStateArgs extends CommonArgs {
   spaces: GestSpace[];
 }
 
-interface OnEnteringEventAmbushDarkStateArgs extends CommonArgs {
-  options: Record<string, GestSpace>;
+interface OnEnteringEventAmbushLightStateArgs extends CommonArgs {
+  _private: {
+    merryMen: GestForce[];
+    spaceIds: string[];
+  }
 }
 
 interface OnEnteringEventATaleOfTwoLoversLightStateArgs extends CommonArgs {
@@ -71,6 +74,13 @@ interface OnEnteringEventATaleOfTwoLoversLightStateArgs extends CommonArgs {
 
 interface OnEnteringEventBoatsBridgesDarkStateArgs extends CommonArgs {
   
+}
+
+interface OnEnteringEventBoatsBridgesLightStateArgs extends CommonArgs {
+  _private: Record<string, {
+    space: GestSpace;
+    merryMen: GestForce[];
+  }>
 }
 
 interface OnEnteringEventGuyOfGisborneStateArgs extends CommonArgs {

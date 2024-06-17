@@ -1,12 +1,3 @@
-# Event12_BoatsAndBridges
-
-LIGHT
-
-# Event13_Ambush
-
-LIGHT
-DARK ?
-
 # Event14_TemporaryTruce
 
 FORTUNE

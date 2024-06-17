@@ -516,14 +516,14 @@ $machinestates = array(
         'action' => 'stAtomicAction',
         'possibleactions' => ['actSelectEventEffect', 'actPassOptionalAction', 'actRestart'],
     ],
-    ST_EVENT_AMBUSH_DARK => [
-        'name' => 'eventAmbushDark',
-        'description' => clienttranslate('${actplayer} must execute either the unshaded or shaded effect on the current Event card'),
+    ST_EVENT_AMBUSH_LIGHT => [
+        'name' => 'eventAmbushLight',
+        'description' => clienttranslate('${actplayer} may move Merry Men to a space with a Carriage'),
         'descriptionmyturn' => clienttranslate('${you}'),
         'type' => 'activeplayer',
         'args' => 'argsAtomicAction',
         'action' => 'stAtomicAction',
-        'possibleactions' => ['actEventAmbushDark', 'actPassOptionalAction', 'actRestart'],
+        'possibleactions' => ['actEventAmbushLight', 'actPassOptionalAction', 'actRestart'],
     ],
     ST_REMOVE_TRAVELLER => [
         'name' => 'removeTraveller',
@@ -625,12 +625,12 @@ $machinestates = array(
         'possibleactions' => ['actEventBoatsBridgesDark', 'actPassOptionalAction', 'actRestart'],
     ],
     ST_EVENT_BOATS_BRIDGES_LIGHT => [
-        'name' => 'eventBoatsBridgesDark',
+        'name' => 'eventBoatsBridgesLight',
         'description' => clienttranslate('${actplayer} may move Merry Men'),
         'descriptionmyturn' => clienttranslate('${you}'),
         'type' => 'activeplayer',
         'args' => 'argsAtomicAction',
         'action' => 'stAtomicAction',
-        'possibleactions' => ['actEventBoatsBridgesDark', 'actPassOptionalAction', 'actRestart'],
+        'possibleactions' => ['actEventBoatsBridgesLight', 'actPassOptionalAction', 'actRestart'],
     ],
 );

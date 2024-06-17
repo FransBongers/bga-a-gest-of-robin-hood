@@ -118,7 +118,7 @@ class MoveCarriage extends \AGestOfRobinHood\Models\AtomicAction
       $player->incShillings($gains['shillings']);
       Players::moveRoyalFavour($player, $gains['royalFavour'], ORDER);
       $carriage->setLocation(Locations::usedCarriages());
-      Notifications::moveCarriageToUsedCarriages($player, $carriage, $toSpace);
+      Notifications::moveCarriageToUsedCarriages($player, $carriage);
     }
 
     $this->resolveAction($args);

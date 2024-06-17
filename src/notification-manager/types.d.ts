@@ -162,6 +162,11 @@ interface NotifRevealCarriageArgs extends NotifWithPlayerArgs {
   carriage: GestForce;
 }
 
+
+interface NotifHideForceArgs extends NotifWithPlayerArgs {
+  force: GestForce;
+}
+
 interface NotifRevealForceArgs extends NotifWithPlayerArgs {
   force: GestForce;
 }

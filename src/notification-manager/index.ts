@@ -320,7 +320,7 @@ class NotificationManager {
     this.getPlayer({ playerId }).counters.shillings.incValue(amount);
   }
 
-  async notif_hideForce(notif: Notif<NotifRevealForceArgs>) {
+  async notif_hideForce(notif: Notif<NotifHideForceArgs>) {
     const { force } = notif.args;
 
     if ([MERRY_MEN, CAMP, ROBIN_HOOD].includes(force.type)) {

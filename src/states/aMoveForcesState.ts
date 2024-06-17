@@ -4,6 +4,7 @@ class MoveForcesState {
 
   constructor(game: AGestOfRobinHoodGame) {
     this.game = game;
+    this.localMoves = {};
   }
 
   //  .##.....##.########.####.##.......####.########.##....##

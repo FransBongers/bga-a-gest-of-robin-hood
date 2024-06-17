@@ -427,8 +427,16 @@ class GameMap {
   }
 
   revealForcePublic({ force }: { force: GestForce }) {
+    let type = force.type;
+    if (
+      [TALLAGE_CARRIAGE, TRAP_CARRIAGE, TRIBUTE_CARRIAGE].includes(force.type)
+    ) {
+      type = CARRIAGE;
+    } else if (force.type === ROBIN_HOOD) {
+      type = MERRY_MEN;
+    }
     const selected = this.getForcePublic({
-      type: force.type,
+      type,
       spaceId: force.location,
       hidden: true,
     });

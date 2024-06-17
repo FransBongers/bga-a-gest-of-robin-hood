@@ -224,6 +224,25 @@ class Notifications
   // .##.....##.##..........##....##.....##.##.....##.##.....##.##....##
   // .##.....##.########....##....##.....##..#######..########...######.
 
+  public static function ambushLight($player, $forces, $moves, $space)
+  {
+    $text = clienttranslate('${player_name} moves Merry Men to ${tkn_boldText_toSpace}');
+
+    self::notify($player, 'moveMerryMenPrivate', $text, [
+      'player' => $player,
+      'forces' => $forces,
+      'tkn_boldText_toSpace' => $space->getName(),
+      'i18n' => ['tkn_boldText_toSpace'],
+    ]);
+
+    self::notifyAll('moveMerryMenPublic', $text, [
+      'player' => $player,
+      'moves' => $moves,
+      'tkn_boldText_toSpace' => $space->getName(),
+      'i18n' => ['tkn_boldText_toSpace'],
+    ]);
+  }
+
   public static function placeBridge($player, $borderId, $spaceIds)
   {
     $spaces = Spaces::get($spaceIds)->toArray();
@@ -285,6 +304,27 @@ class Notifications
       'player' => $player,
       'card' => $card,
       'tkn_cardName' => self::tknCardNameArg($card),
+    ]);
+  }
+
+  public static function eventBoatsBridgesLight($player, $forces, $moves, $fromSpace, $toSpace)
+  {
+    $text = clienttranslate('${player_name} moves Merry Men from ${tkn_boldText_fromSpace} to ${tkn_boldText_toSpace}');
+
+    self::notify($player, 'moveMerryMenPrivate', $text, [
+      'player' => $player,
+      'forces' => $forces,
+      'tkn_boldText_fromSpace' => $fromSpace->getName(),
+      'tkn_boldText_toSpace' => $toSpace->getName(),
+      'i18n' => ['tkn_boldText_fromSpace', 'tkn_boldText_toSpace'],
+    ]);
+
+    self::notifyAll('moveMerryMenPublic', $text, [
+      'player' => $player,
+      'moves' => $moves,
+      'tkn_boldText_fromSpace' => $fromSpace->getName(),
+      'tkn_boldText_toSpace' => $toSpace->getName(),
+      'i18n' => ['tkn_boldText_fromSpace', 'tkn_boldText_toSpace'],
     ]);
   }
 
@@ -402,21 +442,14 @@ class Notifications
     ]);
   }
 
-  public static function moveCarriageToUsedCarriages($player, $carriage, $nottingham)
+  public static function moveCarriageToUsedCarriages($player, $carriage, $fromSpaceId = NOTTINGHAM)
   {
-    // self::notifyAll('moveCarriagePublic', clienttranslate('${player_name} moves a Carriage to ${tkn_boldText_used}'), [
-    //   'player' => $player,
-    //   'tkn_boldText_used' => clienttranslate('Used Carriages'),
-    //   'carriage' => $carriage->jsonSerialize(),
-    //   'toSpaceId' => $carriage->getLocation(),
-    //   'fromSpaceId' => $fromSpaceId,
-    //   'i18n' => ['tkn_boldText_used'],
-    // ]);
     $text = clienttranslate('${player_name} moves a Carriage to ${tkn_boldText_to}');
+    $sheriffPlayer = Players::getSheriffPlayer();
 
-    self::notify($player, 'moveCarriagePrivate', $text, [
-      'player' => $player,
-      'tkn_boldText_from' => $nottingham->getName(),
+    self::notify($sheriffPlayer, 'moveCarriagePrivate', $text, [
+      'playerId' => $sheriffPlayer->getId(),
+      'player_name' => $player->getName(),
       'tkn_boldText_to' => clienttranslate('Used Carriages'),
       'carriage' => $carriage->jsonSerialize(),
       'toSpaceId' => $carriage->getLocation(),
@@ -424,15 +457,15 @@ class Notifications
     ]);
 
     self::notifyAll('moveCarriagePublic', $text, [
-      'player' => $player,
-      'tkn_boldText_from' => $nottingham->getName(),
+      'playerId' => $sheriffPlayer->getId(),
+      'player_name' => $player->getName(),
       'tkn_boldText_to' => clienttranslate('Used Carriages'),
       'carriage' => [
         'hidden' => false,
         'type' => $carriage->getType(),
       ],
       'toSpaceId' => $carriage->getLocation(),
-      'fromSpaceId' => NOTTINGHAM,
+      'fromSpaceId' => $fromSpaceId,
       'i18n' => ['tkn_boldText_from', 'tkn_boldText_to'],
     ]);
   }
@@ -798,6 +831,15 @@ class Notifications
       'player_name2' => $sheriffPlayer->getName(),
       'sheriffPlayerId' => $sheriffPlayer->getId(),
       'amount' => $amount
+    ]);
+  }
+
+  public static function robTargetCarriage($player, $space)
+  {
+    self::message(clienttranslate('${player_name} robs a Carriage in ${tkn_boldText_space}'), [
+      'player' => $player,
+      'tkn_boldText_space' => $space->getName(),
+      'i18n' => ['tkn_boldText_space'],
     ]);
   }
 

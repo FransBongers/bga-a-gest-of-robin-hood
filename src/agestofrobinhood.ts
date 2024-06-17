@@ -63,14 +63,15 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     confirmPartialTurn: ConfirmPartialTurnState;
     confirmTurn: ConfirmTurnState;
     // Game
-    capture: CaptureState,
+    capture: CaptureState;
     chooseAction: ChooseActionState;
     confiscate: ConfiscateState;
-    disperse: DisperseState
+    disperse: DisperseState;
     donate: DonateState;
     eventATaleOfTwoLoversLight: EventATaleOfTwoLoversLightState;
-    eventAmbushDark: EventAmbushDarkState;
+    eventAmbushLight: EventAmbushLightState;
     eventBoatsBridgesDark: EventBoatsBridgesDarkState;
+    eventBoatsBridgesLight: EventBoatsBridgesLightState;
     eventGuyOfGisborne: EventGuyOfGisborneState;
     eventSelectForces: EventSelectForcesState;
     eventSelectSpace: EventSelectSpaceState;
@@ -142,13 +143,17 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
       disperse: new DisperseState(this),
       donate: new DonateState(this),
       eventATaleOfTwoLoversLight: new EventATaleOfTwoLoversLightState(this),
-      eventAmbushDark: new EventAmbushDarkState(this),
+      eventAmbushLight: new EventAmbushLightState(this),
       eventBoatsBridgesDark: new EventBoatsBridgesDarkState(this),
+      eventBoatsBridgesLight: new EventBoatsBridgesLightState(this),
       eventGuyOfGisborne: new EventGuyOfGisborneState(this),
       eventSelectForces: new EventSelectForcesState(this),
       eventSelectSpace: new EventSelectSpaceState(this),
-      fortuneEventDayOfMarketRobinHood: new FortuneEventDayOfMarketRobinHoodState(this),
-      fortuneEventDayOfMarketSheriff: new FortuneEventDayOfMarketSheriffState(this),
+      fortuneEventDayOfMarketRobinHood:
+        new FortuneEventDayOfMarketRobinHoodState(this),
+      fortuneEventDayOfMarketSheriff: new FortuneEventDayOfMarketSheriffState(
+        this
+      ),
       fortuneEventQueenEleanor: new FortuneEventQueenEleanorState(this),
       hire: new HireState(this),
       moveCarriage: new MoveCarriageState(this),
@@ -160,10 +165,15 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
       removeCamp: new RemoveCampState(this),
       removeTraveller: new RemoveTravellerState(this),
       rob: new RobState(this),
-      royalInspectionPlaceRobinHood: new RoyalInspectionPlaceRobinHoodState(this),
-      royalInspectionRedeploymentRobinHood: new RoyalInspectionRedeploymentRobinHoodState(this),
-      royalInspectionRedeploymentSheriff: new RoyalInspectionRedeploymentSheriffState(this),
-      royalInspectionReturnMerryMenFromPrison: new RoyalInspectionReturnMerryMenFromPrisonState(this),
+      royalInspectionPlaceRobinHood: new RoyalInspectionPlaceRobinHoodState(
+        this
+      ),
+      royalInspectionRedeploymentRobinHood:
+        new RoyalInspectionRedeploymentRobinHoodState(this),
+      royalInspectionRedeploymentSheriff:
+        new RoyalInspectionRedeploymentSheriffState(this),
+      royalInspectionReturnMerryMenFromPrison:
+        new RoyalInspectionReturnMerryMenFromPrisonState(this),
       royalInspectionSwapRobinHood: new RoyalInspectionSwapRobinHoodState(this),
       selectDeed: new SelectDeedState(this),
       selectEventEffect: new SelectEventEffectState(this),
@@ -652,9 +662,8 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     }
     node.classList.remove(GEST_SELECTED);
   }
-  Ì
+  Ì;
   getStaticCardData({ cardId }: { cardId: string }): GestCardStaticData {
-    
     return this.gamedatas.staticData.cards[cardId.split('_')[0]];
   }
 

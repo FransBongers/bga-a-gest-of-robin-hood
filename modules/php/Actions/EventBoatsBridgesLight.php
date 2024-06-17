@@ -58,6 +58,9 @@ class EventBoatsBridgesLight extends \AGestOfRobinHood\Actions\Plot
   {
 
     $data = [
+      '_private' => [
+        $this->ctx->getPlayerId() => $this->getOptions(),
+      ]
     ];
 
     return $data;
@@ -89,7 +92,44 @@ class EventBoatsBridgesLight extends \AGestOfRobinHood\Actions\Plot
   public function actEventBoatsBridgesLight($args)
   {
     self::checkAction('actEventBoatsBridgesLight');
+    $merryMenIds = $args['merryMenIds'];
+    $fromSpaceId = $args['fromSpaceId'];
+    $toSpaceId = $args['toSpaceId'];
 
+    $options = $this->getOptions();
+
+    if (!isset($options[$fromSpaceId])) {
+      throw new \feException("ERROR 078");
+    }
+
+    $possibleToSpacesIds = Utils::filter(SPACES, function ($spaceId) use ($fromSpaceId) {
+      return !in_array($spaceId, [$fromSpaceId, SHIRE_WOOD, OLLERTON_HILL]);
+    });
+
+    if (!in_array($toSpaceId, $possibleToSpacesIds)) {
+      throw new \feException("ERROR 079");
+    }
+
+    $option = $options[$fromSpaceId];
+
+    $moveInput = [];
+
+    foreach ($merryMenIds as $merryManId) {
+      $merryMan = Utils::array_find($option['merryMen'], function ($force) use ($merryManId) {
+        return $merryManId === $force->getId();
+      });
+      if ($merryMan === null) {
+        throw new \feException("ERROR 080");
+      }
+      $moveInput[] = [
+        'force' => $merryMan,
+        'toSpaceId' => $toSpaceId,
+        'toHidden' => true,
+      ];
+    }
+
+    $moveOutput = GameMap::createMoves($moveInput);
+    Notifications::eventBoatsBridgesLight(self::getPlayer(), $moveOutput['forces'], $moveOutput['moves'], $option['space'], Spaces::get($toSpaceId));
 
     $this->resolveAction($args);
   }
@@ -104,6 +144,24 @@ class EventBoatsBridgesLight extends \AGestOfRobinHood\Actions\Plot
 
   public function getOptions()
   {
+    $spaces = Spaces::get(SPACES);
+    $forces = Forces::getAll()->toArray();
+    $options = [];
 
+    foreach ($spaces as $spaceId => $space) {
+      if ($spaceId === SHIRE_WOOD) {
+        continue;
+      }
+      $merryMenInSpace = Utils::filter($forces, function ($force) use ($spaceId) {
+        return $force->isMerryMan() && $force->getLocation() === $spaceId;
+      });
+      if (count($merryMenInSpace) > 0) {
+        $options[$spaceId] = [
+          'space' => $space,
+          'merryMen' => $merryMenInSpace,
+        ];
+      }
+    }
+    return $options;
   }
 }

@@ -155,6 +155,7 @@ class Rob extends \AGestOfRobinHood\Actions\Plot
       case TALLAGE_CARRIAGE:
       case TRIBUTE_CARRIAGE:
       case TRAP_CARRIAGE:
+        $this->resolveCarriageTarget($player, $space, $merryMenIds, $target);
         break;
     };
 
@@ -168,6 +169,75 @@ class Rob extends \AGestOfRobinHood\Actions\Plot
   //  .##.....##....##.....##..##........##.....##.......##...
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
+
+  private function resolveCarriageTarget($player, $space, $merryMenIds, $target)
+  {
+    $forces = $space->getForces();
+    shuffle($forces);
+    $carriage = Utils::array_find($forces, function ($force) use ($target) {
+      if (!$force->isCarriage()) {
+        return false;
+      }
+      // TODO: randomize pickes carriage with bga_rand ?
+      if ($target === HIDDEN_CARRIAGE && $force->isHidden()) {
+        return true;
+      } else if (in_array($target, CARRIAGE_TYPES) && !$force->isHidden()) {
+        return true;
+      }
+      return false;
+    });
+    if ($carriage === null) {
+      throw new \feException("ERROR 083");
+    }
+    $defenseValue = $carriage->getType() === TRAP_CARRIAGE ? 2 : 0;
+    $henchmenInSpace = count(Utils::filter($forces, function ($force) {
+      return $force->isHenchman();
+    }));
+    $defenseValue += $henchmenInSpace;
+    Notifications::robTargetCarriage($player, $space);
+    if ($carriage->isHidden()) {
+      $carriage->reveal($player);
+    }
+    $dieColor = $space->isRevolting() || $space->isForest() ? GREEN : WHITE;
+    $dieResult =  $dieColor === GREEN ? GestDice::rollGreenDie() : GestDice::rollWhiteDie();
+    $success = $dieResult + count($merryMenIds) > $defenseValue;
+    Notifications::robResult($player, $dieColor, $dieResult, $success);
+
+    if ($success) {
+      switch ($carriage->getType()) {
+        case TALLAGE_CARRIAGE:
+          $player->incShillings(5);
+          break;
+        case TRIBUTE_CARRIAGE:
+          $player->incShillings(2);
+          Players::moveRoyalFavour($player, 1, JUSTICE);
+          break;
+        case TRAP_CARRIAGE:
+          $player->incShillings(2);
+          break;
+      }
+      $carriage->setLocation(Locations::usedCarriages());
+      Notifications::moveCarriageToUsedCarriages($player, $carriage, $space->getId());
+    } else if (!$success && $carriage->getType() === TRAP_CARRIAGE) {
+      $merryMen = Forces::getMany($merryMenIds)->toArray();
+      $capturedPieces = [];
+      $spaceId = $space->getId();
+      foreach ($merryMen as $merryMan) {
+        $merryMan->setLocation(PRISON);
+        $capturedPieces[] = [
+          'force' => $merryMan,
+          'type' => $merryMan->getType(),
+          'hidden' => false,
+          'spaceId' => $spaceId,
+        ];
+      }
+
+      Notifications::captureMerryMen($player, $space, $capturedPieces);
+      if (in_array(ROBIN_HOOD, $merryMenIds)) {
+        Players::moveRoyalFavour($player, 1, ORDER);
+      }
+    }
+  }
 
   private function resolveTravellerTarget($player, $space, $merryMenIds)
   {

@@ -18,7 +18,7 @@ class AtomicActions
     CONFISCATE => 'Confiscate',
     DISPERSE => 'Disperse',
     EVENT_A_TALE_OF_TWO_LOVERS_LIGHT => 'EventATaleOfTwoLoversLight',
-    EVENT_AMBUSH_DARK => 'EventAmbushDark',
+    EVENT_AMBUSH_LIGHT => 'EventAmbushLight',
     EVENT_BOATS_BRIDGES_DARK => 'EventBoatsBridgesDark',
     EVENT_BOATS_BRIDGES_LIGHT => 'EventBoatsBridgesLight',
     EVENT_GUY_OF_GISBORNE => 'EventGuyOfGisborne',
