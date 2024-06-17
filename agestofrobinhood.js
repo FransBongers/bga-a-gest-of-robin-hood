@@ -1769,6 +1769,7 @@ var AGestOfRobinHood = (function () {
             eventBoatsBridgesDark: new EventBoatsBridgesDarkState(this),
             eventBoatsBridgesLight: new EventBoatsBridgesLightState(this),
             eventGuyOfGisborne: new EventGuyOfGisborneState(this),
+            eventNottinghamFairLight: new EventNottinghamFairLightState(this),
             eventSelectForces: new EventSelectForcesState(this),
             eventSelectSpace: new EventSelectSpaceState(this),
             fortuneEventDayOfMarketRobinHood: new FortuneEventDayOfMarketRobinHoodState(this),
@@ -5917,6 +5918,166 @@ var EventAmbushLightState = (function () {
         this.updateInterfaceSelectMerryMen();
     };
     return EventAmbushLightState;
+}());
+var EventNottinghamFairLightState = (function () {
+    function EventNottinghamFairLightState(game) {
+        this.selectedForces = [];
+        this.selectableForces = [];
+        this.showSelected = [];
+        this.placeRobinHood = false;
+        this.game = game;
+    }
+    EventNottinghamFairLightState.prototype.onEnteringState = function (args) {
+        debug('Entering EventNottinghamFairLightState');
+        this.args = args;
+        this.selectedForces = [];
+        this.selectableForces = [];
+        this.showSelected = [];
+        this.placeRobinHood = false;
+        this.selectableForces = this.args._private.forces;
+        this.showSelected = this.args._private.showSelected || [];
+        this.updateInterfaceInitialStep();
+    };
+    EventNottinghamFairLightState.prototype.onLeavingState = function () {
+        debug('Leaving EventNottinghamFairLightState');
+    };
+    EventNottinghamFairLightState.prototype.setDescription = function (activePlayerId, args) { };
+    EventNottinghamFairLightState.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        if (this.selectedForces.length === this.args._private.max) {
+            this.updateInterfacePlaceRobinHood();
+            return;
+        }
+        this.game.clearPossible();
+        this.updatePageTitle();
+        this.selectableForces.forEach(function (force) {
+            _this.game.setElementSelectable({
+                id: force.id,
+                callback: function () { return _this.handleForceClick({ force: force }); },
+            });
+        });
+        this.selectedForces.forEach(function (force) {
+            return _this.game.setElementSelected({ id: force.id });
+        });
+        this.showSelected.forEach(function (force) {
+            return _this.game.setElementSelected({ id: force.id });
+        });
+        this.game.addPrimaryActionButton({
+            id: 'done_btn',
+            text: _('Done'),
+            callback: function () { return _this.updateInterfacePlaceRobinHood(); },
+            extraClasses: this.selectedForces.length < this.args._private.min ? DISABLED : '',
+        });
+        if (this.selectedForces.length > 0) {
+            this.game.addCancelButton();
+        }
+        else {
+            this.game.addPassButton({
+                optionalAction: this.args.optionalAction,
+            });
+            this.game.addUndoButtons(this.args);
+        }
+    };
+    EventNottinghamFairLightState.prototype.updateInterfacePlaceRobinHood = function () {
+        var _this = this;
+        if (!this.args._private.robinHoodInSupply) {
+            this.updateInterfaceConfirm();
+            return;
+        }
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('Place Robin Hood?'),
+            args: {},
+        });
+        this.selectedForces.forEach(function (_a) {
+            var id = _a.id;
+            return _this.game.setElementSelected({ id: id });
+        });
+        this.game.addPrimaryActionButton({
+            id: 'yes_btn',
+            text: _('Yes'),
+            callback: function () {
+                _this.placeRobinHood = true;
+                _this.updateInterfaceConfirm();
+            },
+        });
+        this.game.addPrimaryActionButton({
+            id: 'no_btn',
+            text: _('No'),
+            callback: function () { return _this.updateInterfaceConfirm(); },
+        });
+        this.game.addCancelButton();
+    };
+    EventNottinghamFairLightState.prototype.updateInterfaceConfirm = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('Replace Henchmen with Merry Men?'),
+            args: {
+                count: this.selectedForces.length,
+            },
+        });
+        this.selectedForces.forEach(function (_a) {
+            var id = _a.id;
+            return _this.game.setElementSelected({ id: id });
+        });
+        this.showSelected.forEach(function (force) {
+            return _this.game.setElementSelected({ id: force.id });
+        });
+        var callback = function () {
+            _this.game.clearPossible();
+            _this.game.takeAction({
+                action: 'actEventNottinghamFairLight',
+                args: {
+                    henchmenIds: _this.getCallbackArgs(),
+                    placeRobinHood: _this.placeRobinHood,
+                },
+            });
+        };
+        if (this.game.settings.get({
+            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+        }) === PREF_ENABLED) {
+            callback();
+        }
+        else {
+            this.game.addConfirmButton({
+                callback: callback,
+            });
+        }
+        this.game.addCancelButton();
+    };
+    EventNottinghamFairLightState.prototype.updatePageTitle = function () {
+        this.game.clientUpdatePageTitle({
+            text: _('${you} may select Henchmen to replace with Merry Men (${count} remaining)'),
+            args: {
+                you: '${you}',
+                count: this.args._private.max - this.selectedForces.length,
+            },
+        });
+    };
+    EventNottinghamFairLightState.prototype.getCallbackArgs = function () {
+        return this.selectedForces.map(function (_a) {
+            var id = _a.id;
+            return id;
+        });
+    };
+    EventNottinghamFairLightState.prototype.handleForceClick = function (_a) {
+        var force = _a.force;
+        if (this.selectedForces.some(function (_a) {
+            var id = _a.id;
+            return id === force.id;
+        })) {
+            this.selectedForces = this.selectedForces.filter(function (_a) {
+                var id = _a.id;
+                return id !== force.id;
+            });
+        }
+        else {
+            this.selectedForces.push(force);
+        }
+        this.updateInterfaceInitialStep();
+    };
+    return EventNottinghamFairLightState;
 }());
 var EventSelectForcesState = (function () {
     function EventSelectForcesState(game) {

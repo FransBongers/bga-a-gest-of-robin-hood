@@ -22,10 +22,6 @@ DARK
 LIGHT
 DARK
 
-# Event23_FriarTuck
-
-LIGHT
-
 # Event24_MaidMarian
 
 LIGHT
@@ -42,9 +38,5 @@ LIGHT
 DARK
 
 # Event27_WillStutely
-
-LIGHT
-
-# Event28_NottinghamFair
 
 LIGHT

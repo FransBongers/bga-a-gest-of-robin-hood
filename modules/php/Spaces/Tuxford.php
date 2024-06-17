@@ -13,6 +13,7 @@ class Tuxford extends \AGestOfRobinHood\Models\Space
       BLYTH,
       NEWARK,
       RETFORD,
+      SOUTHWELL_FOREST,
       TUXFORD,
     ];
     $this->adjacentViaOllertonHillSpaceIds = [

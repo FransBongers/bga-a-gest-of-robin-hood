@@ -633,4 +633,13 @@ $machinestates = array(
         'action' => 'stAtomicAction',
         'possibleactions' => ['actEventBoatsBridgesLight', 'actPassOptionalAction', 'actRestart'],
     ],
+    ST_EVENT_NOTTINGHAM_FAIR_LIGHT => [
+        'name' => 'eventNottinghamFairLight',
+        'description' => clienttranslate('${actplayer} may replace up to 2 Henchmen in Nottingham'),
+        'descriptionmyturn' => clienttranslate('${you}'),
+        'type' => 'activeplayer',
+        'args' => 'argsAtomicAction',
+        'action' => 'stAtomicAction',
+        'possibleactions' => ['actEventNottinghamFairLight', 'actPassOptionalAction', 'actRestart'],
+    ],
 );

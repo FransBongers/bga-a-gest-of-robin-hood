@@ -47,11 +47,10 @@ class Event28_NottinghamFair extends \AGestOfRobinHood\Cards\Events\RegularEvent
   public function performLightEffect($player, $successful, $ctx = null, $space = null)
   {
     $ctx->insertAsBrother(new LeafNode([
-      'action' => EVENT_SELECT_FORCES,
+      'action' => EVENT_NOTTINGHAM_FAIR_LIGHT,
       'playerId' => $player->getId(),
       'cardId' => $this->id,
       'effect' => LIGHT,
-      // 'optional' => true,
     ]));
   }
 
@@ -68,7 +67,7 @@ class Event28_NottinghamFair extends \AGestOfRobinHood\Cards\Events\RegularEvent
 
   public function canPerformLightEffect($player)
   {
-    return count($this->getLightOptions()) > 0;
+    return count(AtomicActions::get(EVENT_NOTTINGHAM_FAIR_LIGHT)->getOptions()) > 0;
   }
 
   public function canPerformDarkEffect($player)
@@ -93,15 +92,6 @@ class Event28_NottinghamFair extends \AGestOfRobinHood\Cards\Events\RegularEvent
   // .##....##....##....##.....##....##....##......
   // ..######.....##....##.....##....##....########
 
-  public function resolveLightEffect($player, $ctx, $forces)
-  {
-    foreach($forces as $force) {
-      $force->returnToSupply($player);
-    }
-    // TODO: allow placement of Robin Hood?
-    GameMap::placeMerryMan($player, Spaces::get(NOTTINGHAM), false);
-  }
-
   public function resolveDarkEffect($player, $ctx, $forces)
   {
     foreach($forces as $force) {
@@ -109,21 +99,21 @@ class Event28_NottinghamFair extends \AGestOfRobinHood\Cards\Events\RegularEvent
     }
   }
 
-  public function getLightStateArgs()
-  {
-    $forces = $this->getDarkOptions();
-    return [
-      '_private' => [
-        'forces' => $forces,
-        'min' => 1,
-        'max' => min(2, count($forces)),
-        'type' => 'private'
-      ],
-      'title' => clienttranslate('${you} may select Henchmen to replace (${count} remaining)'),
-      'confirmText' => clienttranslate('Replace Henchmen with Merry Men?'),
-      'titleOther' => clienttranslate('${actplayer} may replace Henchmen with Merry Men'),
-    ];
-  }
+  // public function getLightStateArgs()
+  // {
+  //   $forces = $this->getDarkOptions();
+  //   return [
+  //     '_private' => [
+  //       'forces' => $forces,
+  //       'min' => 1,
+  //       'max' => min(2, count($forces)),
+  //       'type' => 'private'
+  //     ],
+  //     'title' => clienttranslate('${you} may select Henchmen to replace (${count} remaining)'),
+  //     'confirmText' => clienttranslate('Replace Henchmen with Merry Men?'),
+  //     'titleOther' => clienttranslate('${actplayer} may replace Henchmen with Merry Men'),
+  //   ];
+  // }
 
   public function getDarkStateArgs()
   {
@@ -148,19 +138,6 @@ class Event28_NottinghamFair extends \AGestOfRobinHood\Cards\Events\RegularEvent
   // .##.....##....##.....##..##........##.....##.......##...
   // .##.....##....##.....##..##........##.....##.......##...
   // ..#######.....##....####.########.####....##.......##...
-
-  public function resolveLightEffectAutomatically($player, $ctx)
-  {
-    return false;
-  }
-
-  private function getLightOptions()
-  {
-    $henchmen = Forces::getOfType(HENCHMEN);
-    return Utils::filter($henchmen, function ($henchman) {
-      return $henchman->getLocation() === NOTTINGHAM;
-    });
-  }
 
   private function getDarkOptions()
   {

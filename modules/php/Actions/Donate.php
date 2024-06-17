@@ -32,7 +32,13 @@ class Donate extends \AGestOfRobinHood\Models\AtomicAction
 
   public function argsDonate()
   {
-    $possible = $this->getPossibleSpaces();
+    $info = $this->ctx->getInfo();
+
+    $ignoreOutnumberHenchmen = isset($info['ignoreOutnumberHenchmen']) ?
+      $info['ignoreOutnumberHenchmen'] :
+      false;
+
+    $possible = $this->getPossibleSpaces($ignoreOutnumberHenchmen);
     $data = [
       'spaces' => $possible,
     ];
@@ -80,15 +86,31 @@ class Donate extends \AGestOfRobinHood\Models\AtomicAction
     }
 
     $player = self::getPlayer();
+    $info = $this->ctx->getInfo();
 
-    $player->payShillings(2);
+    $cost = isset($info['cost']) ? $info['cost'] : 2;
+    $player->payShillings($cost);
+
     $space->revolt($player);
 
-    if (count(Engine::getResolvedActions([DONATE])) === 0 && $this->canBePerformed($player)) {
+    $maxSpaces = isset($info['maxSpaces']) ? $info['maxSpaces'] : 2;
+
+    if (
+      count(Engine::getResolvedActions([DONATE])) <= $maxSpaces - 2 &&
+      count($this->getPossibleSpaces()) > 0 &&
+      $player->getShillings() >= $cost
+    ) {
+      $ignoreOutnumberHenchmen = isset($info['ignoreOutnumberHenchmen']) ?
+        $info['ignoreOutnumberHenchmen'] :
+        false;
+
       $this->ctx->insertAsBrother(new LeafNode([
         'action' => DONATE,
         'playerId' => $player->getId(),
         'optional' => true,
+        'cost' => $cost,
+        'maxSpaces' => $maxSpaces,
+        'ignoreOutnumberHenchmen' => $ignoreOutnumberHenchmen
       ]));
     }
 
@@ -117,9 +139,9 @@ class Donate extends \AGestOfRobinHood\Models\AtomicAction
     return count($this->getPossibleSpaces()) > 0;
   }
 
-  public function getPossibleSpaces()
+  public function getPossibleSpaces($ignoreOutnumberHenchmen = false)
   {
-    return Utils::filter(Spaces::get(PARISHES)->toArray(), function ($space) {
+    return Utils::filter(Spaces::get(PARISHES)->toArray(), function ($space) use ($ignoreOutnumberHenchmen) {
       if (!$space->isSubmissive()) {
         return false;
       }
@@ -130,7 +152,7 @@ class Donate extends \AGestOfRobinHood\Models\AtomicAction
       $numberOfHenchmen = count(Utils::filter($forces, function ($force) {
         return $force->isHenchman();
       }));
-      return $numberOfMerryMen > 0 && $numberOfMerryMen >= $numberOfHenchmen;
+      return $numberOfMerryMen > 0 && ($ignoreOutnumberHenchmen || $numberOfMerryMen >= $numberOfHenchmen);
     });
   }
 }

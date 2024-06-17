@@ -22,6 +22,7 @@ class AtomicActions
     EVENT_BOATS_BRIDGES_DARK => 'EventBoatsBridgesDark',
     EVENT_BOATS_BRIDGES_LIGHT => 'EventBoatsBridgesLight',
     EVENT_GUY_OF_GISBORNE => 'EventGuyOfGisborne',
+    EVENT_NOTTINGHAM_FAIR_LIGHT => 'EventNottinghamFairLight',
     EVENT_SELECT_FORCES => 'EventSelectForces',
     EVENT_SELECT_SPACE => 'EventSelectSpace',
     FORTUNE_EVENT_DAY_OF_MARKET_ROBIN_HOOD => 'FortuneEventDayOfMarketRobinHood',

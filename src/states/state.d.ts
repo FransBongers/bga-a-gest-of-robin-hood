@@ -58,7 +58,7 @@ interface OnEnteringEventAmbushLightStateArgs extends CommonArgs {
   _private: {
     merryMen: GestForce[];
     spaceIds: string[];
-  }
+  };
 }
 
 interface OnEnteringEventATaleOfTwoLoversLightStateArgs extends CommonArgs {
@@ -72,15 +72,16 @@ interface OnEnteringEventATaleOfTwoLoversLightStateArgs extends CommonArgs {
   >;
 }
 
-interface OnEnteringEventBoatsBridgesDarkStateArgs extends CommonArgs {
-  
-}
+interface OnEnteringEventBoatsBridgesDarkStateArgs extends CommonArgs {}
 
 interface OnEnteringEventBoatsBridgesLightStateArgs extends CommonArgs {
-  _private: Record<string, {
-    space: GestSpace;
-    merryMen: GestForce[];
-  }>
+  _private: Record<
+    string,
+    {
+      space: GestSpace;
+      merryMen: GestForce[];
+    }
+  >;
 }
 
 interface OnEnteringEventGuyOfGisborneStateArgs extends CommonArgs {
@@ -113,6 +114,10 @@ interface SelectForcesPublic {
   max: number;
   type: 'public';
   showSelected?: GestPublicForce[];
+}
+
+interface OnEnteringEventNottinghamFairLightStateArgs extends CommonArgs {
+  _private: SelectForcesPrivate & { robinHoodInSupply: boolean };
 }
 
 interface OnEnteringEventSelectForcesStateArgs extends CommonArgs {

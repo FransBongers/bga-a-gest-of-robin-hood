@@ -46,12 +46,14 @@ class Event23_FriarTuck extends \AGestOfRobinHood\Cards\Events\RegularEvent
 
   public function performLightEffect($player, $successful, $ctx = null, $space = null)
   {
-    // $ctx->insertAsBrother(new LeafNode([
-    //   'action' => EVENT_SELECT_SPACE,
-    //   'playerId' => $player->getId(),
-    //   'cardId' => $this->id,
-    //   'effect' => LIGHT,
-    // ]));
+    $ctx->insertAsBrother(new LeafNode([
+      'action' => DONATE,
+      'playerId' => $player->getId(),
+      'source' => $this->id,
+      'cost' => 1,
+      'maxSpaces' => 3,
+      'ignoreOutnumberHenchmen' => true,
+    ]));
   }
 
   public function performDarkEffect($player, $successful, $ctx = null, $space = null)
@@ -66,7 +68,7 @@ class Event23_FriarTuck extends \AGestOfRobinHood\Cards\Events\RegularEvent
 
   public function canPerformLightEffect($player)
   {
-    return true;
+    return $player->getShillings() > 0 && count(AtomicActions::get(DONATE)->getPossibleSpaces(true)) > 0;
   }
 
   public function canPerformDarkEffect($player)

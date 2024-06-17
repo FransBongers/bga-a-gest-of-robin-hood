@@ -87,11 +87,11 @@ class GameMap extends \APP_DbObject
     return $result;
   }
 
-  public static function placeMerryMan($player, $space, $placeRobinHood)
+  public static function placeMerryMan($player, $space, $placeRobinHood, $count = 1)
   {
     $merryMenToPlace = [];
     $robinHood = null;
-    $originalNumber = 1;
+    $originalNumber = $count;
     $numberToPlace = $originalNumber;
     $spaceId = $space->getId();
 

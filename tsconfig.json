@@ -69,6 +69,7 @@
     "src/states/EventBoatsBridgesDark.ts",
     "src/states/EventBoatsBridgesLight.ts",
     "src/states/EventAmbushLight.ts",
+    "src/states/EventNottinghamFairLight.ts",
     "src/states/EventSelectForces.ts",
     "src/states/EventSelectSpace.ts",
     "src/states/FortuneEventDayOfMarketRobinHood.ts",
