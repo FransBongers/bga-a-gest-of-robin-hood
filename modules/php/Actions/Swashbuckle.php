@@ -32,9 +32,12 @@ class Swashbuckle extends \AGestOfRobinHood\Models\AtomicAction
 
   public function argsSwashbuckle()
   {
+    $info = $this->ctx->getInfo();
+    $mayUseAnyMerryMen = isset($info['source']) && $info['source'] === 'Event24_MaidMarian';
+
     $data = [
       '_private' => [
-        self::getPlayer()->getId() => $this->getOptions(),
+        self::getPlayer()->getId() => $this->getOptions($mayUseAnyMerryMen),
       ]
     ];
 
@@ -67,11 +70,22 @@ class Swashbuckle extends \AGestOfRobinHood\Models\AtomicAction
   public function actSwashbuckle($args)
   {
     self::checkAction('actSwashbuckle');
+    $robinHoodId = $args['robinHoodId']; // This can actually be a Merry Man with Maid Marian event
     $robinHoodSpaceId = $args['robinHoodSpaceId'];
     $merryManSpaceId = isset($args['merryManSpaceId']) ? $args['merryManSpaceId'] : null;
     $merryManId = isset($args['merryManId']) ? $args['merryManId'] : null;
 
-    $options = $this->getOptions();
+    $info = $this->ctx->getInfo();
+    $mayUseAnyMerryMen = isset($info['source']) && $info['source'] === 'Event24_MaidMarian';
+    $availableOptions = $this->getOptions($mayUseAnyMerryMen);
+
+    $options = Utils::array_find($availableOptions, function ($availableOption) use ($robinHoodId) {
+      return $availableOption['merryMan']->getId() === $robinHoodId;
+    });
+
+    if ($options === null) {
+      throw new \feException("ERROR 094");
+    }
 
     $robinHoodSpace = Utils::array_find($options['spaces'], function ($space) use ($robinHoodSpaceId) {
       return $space->getId() === $robinHoodSpaceId;
@@ -89,7 +103,7 @@ class Swashbuckle extends \AGestOfRobinHood\Models\AtomicAction
       throw new \feException("ERROR 037");
     }
 
-    $merryMan = $merryManId === null ? null :  Utils::array_find($options['merryMen'], function ($merryMan) use ($merryManId) {
+    $merryMan = $merryManId === null ? null :  Utils::array_find($options['merryMenInSpace'], function ($merryMan) use ($merryManId) {
       return $merryMan->getId() === $merryManId;
     });
 
@@ -99,13 +113,13 @@ class Swashbuckle extends \AGestOfRobinHood\Models\AtomicAction
 
     $player = self::getPlayer();
 
-    $robinHood = Forces::get(ROBIN_HOOD);
+    $robinHood = Forces::get($robinHoodId);
     $robinHoodFromLocation = $robinHood->getLocation();
 
 
     $moves = [];
 
-    if ($options['robinHoodInPrison']) {
+    if ($options['fromPrison']) {
       $robinHood->setLocation($robinHoodSpaceId);
       $moves[] = [
         'force' => $robinHood,
@@ -146,17 +160,14 @@ class Swashbuckle extends \AGestOfRobinHood\Models\AtomicAction
           ],
           'to' => [
             'hidden' => true,
-            'spaceId' => $force->isRobinHood() ? $robinHoodSpaceId : $merryManSpaceId,
-            'space' => $force->isRobinHood() ? $robinHoodSpace : $merryManSpace,
+            'spaceId' => $force->getId() === $robinHood->getId() ? $robinHoodSpaceId : $merryManSpaceId,
+            'space' => $force->getId() === $robinHood->getId() ? $robinHoodSpace : $merryManSpace,
           ]
         ];
       }
 
       Notifications::swashbuckleMoves($player, $moves, $fromSpace);
     }
-
-
-
 
     $this->resolveAction($args);
   }
@@ -174,30 +185,70 @@ class Swashbuckle extends \AGestOfRobinHood\Models\AtomicAction
     return clienttranslate('Swashbuckle');
   }
 
-  public function canBePerformed($player)
+  public function canBePerformed($player, $mayUseAnyMerryMen = false)
   {
-    return Forces::get(ROBIN_HOOD)->getLocation() !== ROBIN_HOOD_SUPPLY;
+    // return Forces::get(ROBIN_HOOD)->getLocation() !== ROBIN_HOOD_SUPPLY;
+    return count($this->getOptions($mayUseAnyMerryMen)) > 0;
   }
 
 
-  public function getOptions()
+  public function getOptions($mayUseAnyMerryMen = false)
   {
-    $robinHoodLocation = Forces::get(ROBIN_HOOD)->getLocation();
-    if ($robinHoodLocation === PRISON) {
-      $nottingham = Spaces::get(NOTTINGHAM);
-      return [
-        'spaces' => array_merge([$nottingham], $nottingham->getAdjacentSpaces()),
-        'robinHoodInPrison' => true,
-        'merryMen' => [],
-      ];
+    $options = [];
+
+    $merryMenThatCanPerform = [];
+    if ($mayUseAnyMerryMen) {
+      $merryMenThatCanPerform = Utils::filter(Forces::getOfType(MERRY_MEN), function ($force) {
+        return $force->getLocation() !== MERRY_MEN_SUPPLY;
+      });
     }
-    $currentSpace = Spaces::get($robinHoodLocation);
-    return [
-      'spaces' => $currentSpace->getAdjacentSpaces(),
-      'robinHoodInPrison' => false,
-      'merryMen' => Utils::filter($currentSpace->getForces(), function ($force) {
-        return $force->isMerryManNotRobinHood();
-      }),
-    ];
+    $robinHood = Forces::get(ROBIN_HOOD);
+    if ($robinHood->getLocation() !== ROBIN_HOOD_SUPPLY) {
+      $merryMenThatCanPerform[] = $robinHood;
+    }
+
+    foreach ($merryMenThatCanPerform as $merryMan) {
+      $location = $merryMan->getLocation();
+      
+      if ($location === PRISON) {
+        $nottingham = Spaces::get(NOTTINGHAM);
+        $options[] = [
+          'merryMan' => $merryMan,
+          'spaces' => array_merge([$nottingham], $nottingham->getAdjacentSpaces()),
+          'fromPrison' => true,
+          'merryMenInSpace' => [],
+        ];
+      } else {
+        $merryManSpace = Spaces::get($location);
+        $options[] = [
+          'merryMan' => $merryMan,
+          'spaces' => $merryManSpace->getAdjacentSpaces(),
+          'fromPrison' => false,
+          'merryMenInSpace' => Utils::filter($merryManSpace->getForces(), function ($force) use ($merryMan) {
+            return $force->isMerryMan() && $force->getId() !== $merryMan->getId();
+          }),
+        ];
+      }
+    }
+
+    // $robinHoodLocation = Forces::get(ROBIN_HOOD)->getLocation();
+    // if ($robinHoodLocation === PRISON) {
+    //   $nottingham = Spaces::get(NOTTINGHAM);
+    //   return [
+    //     'spaces' => array_merge([$nottingham], $nottingham->getAdjacentSpaces()),
+    //     'robinHoodInPrison' => true,
+    //     'merryMen' => [],
+    //   ];
+    // }
+    // $currentSpace = Spaces::get($robinHoodLocation);
+    // return [
+    //   'spaces' => $currentSpace->getAdjacentSpaces(),
+    //   'robinHoodInPrison' => false,
+    //   'merryMen' => Utils::filter($currentSpace->getForces(), function ($force) {
+    //     return $force->isMerryManNotRobinHood();
+    //   }),
+    // ];
+
+    return $options;
   }
 }

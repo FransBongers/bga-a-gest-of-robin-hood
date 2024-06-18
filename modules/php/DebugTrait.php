@@ -21,20 +21,22 @@ trait DebugTrait
 
   function test()
   {
+    // Players::getRobinHoodPlayer()->incShillings(10);
     // $merryMan = Forces::getTopOf(MERRY_MEN_SUPPLY);
-    // Spaces::get(BINGHAM)->setStatus(REVOLTING);
+    // Spaces::get(BLYTH)->setStatus(SUBMISSIVE);
     // $merryMan = Forces::get(ROBIN_HOOD);
     // $merryMan->setLocation(PRISON);
     // $merryMan->setHidden(0);
     // Spaces::get(TUXFORD)->revolt(Players::get());
     // Forces::get(ROBIN_HOOD)->setLocation(PRISON);
-    // Forces::get(ROBIN_HOOD)->setHidden(1);
-    // Forces::get('merryMen_7')->setLocation(NEWARK);
+    // Forces::get('merryMen_5')->setHidden(0);
+    // Forces::get('henchmen_11')->setLocation(MANSFIELD);
     // Forces::get(ROBIN_HOOD)->setLocation(ROBIN_HOOD_SUPPLY);
     // Forces::get('merryMen_1')->setLocation(MANSFIELD);
     // Forces::get('merryMen_4')->setHidden(1);
-    
-    Cards::get('Event26_Corruption')->insertOnTop(EVENTS_DECK);
+    // Cards::get('Traveller07_Monks')->insertOnTop(TRAVELLERS_VICTIMS_PILE);
+    // Cards::get('Traveller02_RichMerchant')->insertOnTop(TRAVELLERS_VICTIMS_PILE);
+    Cards::get('Event24_MaidMarian')->insertOnTop(EVENTS_DECK);
     // Globals::setOllertonHillAdjacency(true);
     // Cards::get('Traveller07_Monks')->setLocation(TRAVELLERS_DISCARD);
     // $this->debugPlaceForces(TALLAGE_CARRIAGE,TUXFORD,1);

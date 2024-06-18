@@ -82,11 +82,19 @@ class SelectDeed extends \AGestOfRobinHood\Models\AtomicAction
     }
 
     Notifications::performDeed($player, AtomicActions::get($deedId)->getName());
+    $info = $this->ctx->getInfo();
+    $source = isset($info['source']) ? $info['source'] : null;
 
-    $this->ctx->getParent()->pushChild(new LeafNode([
+    $node = [
       'action' => $deedId,
       'playerId' => $player->getId(),
-    ]));
+    ];
+
+    if ($source !== null) {
+      $node['source'] = $source;
+    }
+
+    $this->ctx->getParent()->pushChild(new LeafNode($node));
 
     $this->resolveAction($args);
   }
@@ -104,11 +112,22 @@ class SelectDeed extends \AGestOfRobinHood\Models\AtomicAction
     $side = $player->getSide();
     $deeds = $side === ROBIN_HOOD ? [DONATE, INSPIRE, SWASHBUCKLE, TURNCOAT] : [RIDE, CONFISCATE, DISPERSE];
 
+    $info = $this->ctx->getInfo();
+    $allowedDeeds = isset($info['allowedDeeds']) ? $info['allowedDeeds'] : null;
+
+    if ($allowedDeeds !== null) {
+      $deeds = Utils::filter($deeds, function ($deed) use ($allowedDeeds) {
+        return in_array($deed, $allowedDeeds);
+      });
+    }
+
+    $mayUseAnyMerryMen = isset($info['source']) && $info['source'] === 'Event24_MaidMarian';
+
     $options = [];
 
     foreach ($deeds as $deed) {
       $action = AtomicActions::get($deed);
-      $canBePerformed = $action->canBePerformed($player);
+      $canBePerformed = $action->canBePerformed($player, $mayUseAnyMerryMen);
       if (!$canBePerformed) {
         continue;
       }

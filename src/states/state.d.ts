@@ -90,6 +90,19 @@ interface OnEnteringEventGuyOfGisborneStateArgs extends CommonArgs {
   };
 }
 
+interface MainMarianOption {
+  space: GestSpace;
+  hasMerryMen: boolean;
+  adjacentSpacesIds: string[];
+}
+
+interface OnEnteringEventMaidMarianDarkStateArgs extends CommonArgs {
+  _private: {
+    carriages: GestForce[];
+    spaces: MainMarianOption[]
+  }
+}
+
 interface OnEnteringEventLittleJohnStateArgs extends CommonArgs {
   spaces: GestSpace[];
 }
@@ -120,6 +133,14 @@ interface SelectForcesPublic {
 
 interface OnEnteringEventReplaceHenchmenStateArgs extends CommonArgs {
   _private: SelectForcesPrivate & { robinHoodInSupply: boolean };
+}
+
+interface OnEnteringEventRoyalPardonLightStateArgs extends CommonArgs {
+  _private: {
+    forces: GestForce[];
+    spaces: GestSpace[];
+    count: number;
+  };
 }
 
 interface OnEnteringEventSelectForcesStateArgs extends CommonArgs {
@@ -170,6 +191,14 @@ interface OnEnteringHireStateArgs extends CommonArgs {
   >;
 }
 
+interface OnEnteringInspireStateArgs extends CommonArgs {
+  _private: {
+    merryMan: GestForce;
+    space: GestSpace;
+    isSubmissive: boolean;
+  }[];
+}
+
 interface MoveCarriageOption {
   canBringHenchman: boolean;
   carriage: GestForce;
@@ -197,6 +226,7 @@ interface OnEnteringPlaceHenchmenStateArgs extends CommonArgs {
   henchmen: GestForce[];
   maxNumber: number;
   spaces: Record<string, GestSpace>;
+  conditions: string[];
 }
 
 interface OnEnteringPlaceMerryManInSpaceStateArgs extends CommonArgs {
@@ -284,6 +314,7 @@ interface OnEnteringRoyalInspectionRedeploymentRobinHoodStateArgs
     merryMenMustMove: Record<string, RedeploymentOptionRH>;
     merryMenMayMove: Record<string, RedeploymentOptionRH>;
   };
+  source?: string;
 }
 
 interface OnEnteringRoyalInspectionRedeploymentSheriffStateArgs
@@ -291,6 +322,7 @@ interface OnEnteringRoyalInspectionRedeploymentSheriffStateArgs
   spaces: GestSpace[];
   henchmenMustMove: Record<string, RedeploymentOption>;
   henchmenMayMove: Record<string, RedeploymentOption>;
+  source?: string;
 }
 
 interface OnEnteringRoyalInspectionReturnMerryMenFromPrisonStateArgs
@@ -344,12 +376,15 @@ interface OnEnteringSneakStateArgs extends CommonArgs {
   };
 }
 
+interface SwashbuckleOption {
+  merryMan: GestForce;
+  merryMenInSpace: GestForce[];
+  fromPrison: boolean;
+  spaces: GestSpace[];
+}
+
 interface OnEnteringSwashbuckleStateArgs extends CommonArgs {
-  _private: {
-    merryMen: GestForce[];
-    robinHoodInPrison: boolean;
-    spaces: GestSpace[];
-  };
+  _private: SwashbuckleOption[];
 }
 
 interface OnEnteringTurncoatStateArgs extends CommonArgs {

@@ -497,7 +497,7 @@ class NotificationManager {
   }
 
   async notif_redeploymentSheriff(notif: Notif<NotifRedeploymentSheriffArgs>) {
-    const { forces } = notif.args;
+    const { forces, isTemporaryTruce } = notif.args;
 
     const promises = [];
     // TODO: check if already in destination for sheriff player?
@@ -508,7 +508,9 @@ class NotificationManager {
     });
 
     await Promise.all(promises);
-    this.game.gameMap.forces[`${CARRIAGE}_${USED_CARRIAGES}`].removeAll();
+    if (!isTemporaryTruce) {
+      this.game.gameMap.forces[`${CARRIAGE}_${USED_CARRIAGES}`].removeAll();
+    }
   }
 
   async notif_removeCardFromGame(notif: Notif<NotifRemoveCardFromGameArgs>) {}

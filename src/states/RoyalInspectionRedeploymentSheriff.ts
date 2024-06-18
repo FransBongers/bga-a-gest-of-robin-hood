@@ -27,7 +27,17 @@ class RoyalInspectionRedeploymentSheriffState implements State {
     debug('Leaving RoyalInspectionRedeploymentSheriffState');
   }
 
-  setDescription(activePlayerId: number) {}
+  setDescription(activePlayerId: number, args: OnEnteringRoyalInspectionRedeploymentSheriffStateArgs) {
+    if (args.source === 'Event14_TemporaryTruce') {
+      this.game.clientUpdatePageTitle({
+        text: _('${actplayer} may move all Henchmen to Submissive spaces'),
+        args: {
+          actplayer: '${actplayer}',
+        },
+        nonActivePlayers: true,
+      });
+    }
+  }
 
   //  .####.##....##.########.########.########..########....###.....######..########
   //  ..##..###...##....##....##.......##.....##.##.........##.##...##....##.##......
@@ -67,7 +77,8 @@ class RoyalInspectionRedeploymentSheriffState implements State {
       }
     );
 
-    if (!Object.values(this.requiredMoves).some((dest) => dest !== null)) {
+    console.log('required', this.requiredMoves,Object.values(this.requiredMoves));
+    if (Object.values(this.requiredMoves).some((dest) => dest !== null)) {
       this.addCancelButton();
     } else {
       this.game.addPassButton({
@@ -124,6 +135,7 @@ class RoyalInspectionRedeploymentSheriffState implements State {
       Object.keys(this.args.henchmenMayMove).length
     ) {
       this.updateInterfaceConfirm();
+      return;
     }
 
     this.game.clientUpdatePageTitle({

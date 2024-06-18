@@ -136,9 +136,10 @@ class Hire extends \AGestOfRobinHood\Actions\Plot
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
-  public function canBePerformed($player, $availableShillings)
+
+  public function canBePerformed($player, $availableShillings, $cost = null)
   {
-    if ($availableShillings < 2) {
+    if (($cost === null && $availableShillings < 2) || ($cost !== null && $availableShillings < $cost)) {
       return false;
     }
 

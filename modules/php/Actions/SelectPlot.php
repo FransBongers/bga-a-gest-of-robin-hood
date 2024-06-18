@@ -106,11 +106,19 @@ class SelectPlot extends \AGestOfRobinHood\Actions\Plot
       Notifications::selectedPlot(self::getPlayer(), $options[$plotId]);
       $parent = $this->ctx->getParent();
 
-      $this->ctx->insertAsBrother(new LeafNode([
+      $info = $this->ctx->getInfo();
+      $cost = isset($info['cost']) ? $info['cost'] : null;
+
+      $node = [
         'action' => $plotId,
         'playerId' => $this->ctx->getPlayerId(),
         // 'optional' => true,
-      ]));
+      ];
+      if ($cost !== null) {
+        $node['cost'] = $cost;
+      }
+
+      $this->ctx->insertAsBrother(new LeafNode($node));
 
 
       if ($this->getSelectedAction() === PLOTS_AND_DEEDS) {
@@ -171,13 +179,15 @@ class SelectPlot extends \AGestOfRobinHood\Actions\Plot
   {
     $side = $player->getSide();
     $plots = $side === ROBIN_HOOD ? [RECRUIT, ROB, SNEAK] : [HIRE, PATROL, CAPTURE];
+    $info = $this->ctx->getInfo();
+    $cost = isset($info['cost']) ? $info['cost'] : null;
 
     $options = [];
     $availableShillings = $player->getShillings();
 
     foreach ($plots as $plot) {
       $action = AtomicActions::get($plot);
-      $canBePerformed = $action->canBePerformed($player, $availableShillings);
+      $canBePerformed = $action->canBePerformed($player, $availableShillings, $cost);
       if (!$canBePerformed) {
         continue;
       }
@@ -187,57 +197,57 @@ class SelectPlot extends \AGestOfRobinHood\Actions\Plot
     return $options;
   }
 
-  public function getRobinHoodOptions($player, $numberOfSpaces)
-  {
-    $availableShillings = $player->getShillings();
+  // public function getRobinHoodOptions($player, $numberOfSpaces)
+  // {
+  //   $availableShillings = $player->getShillings();
 
-    $recruitOptions = AtomicActions::get(RECRUIT)->getOptions();
-    $robOptions = AtomicActions::get(ROB)->getOptions();
-    $sneakOptions = AtomicActions::get(RECRUIT)->getOptions();
+  //   $recruitOptions = AtomicActions::get(RECRUIT)->getOptions();
+  //   $robOptions = AtomicActions::get(ROB)->getOptions();
+  //   $sneakOptions = AtomicActions::get(RECRUIT)->getOptions();
 
-    return [
-      RECRUIT => [
-        'spaces' => $recruitOptions,
-        'numberOfSpaces' => min($availableShillings, $numberOfSpaces, count($recruitOptions)),
-        'plotName' => clienttranslate('Recruit'),
-      ],
-      ROB => [
-        'spaces' => $robOptions,
-        'numberOfSpaces' => min($numberOfSpaces, count($robOptions)),
-        'plotName' => clienttranslate('Rob'),
-      ],
-      SNEAK => [
-        'spaces' => $sneakOptions,
-        'numberOfSpaces' => min($availableShillings, $numberOfSpaces, count($sneakOptions)),
-        'plotName' => clienttranslate('Sneak'),
-      ],
-    ];
-  }
+  //   return [
+  //     RECRUIT => [
+  //       'spaces' => $recruitOptions,
+  //       'numberOfSpaces' => min($availableShillings, $numberOfSpaces, count($recruitOptions)),
+  //       'plotName' => clienttranslate('Recruit'),
+  //     ],
+  //     ROB => [
+  //       'spaces' => $robOptions,
+  //       'numberOfSpaces' => min($numberOfSpaces, count($robOptions)),
+  //       'plotName' => clienttranslate('Rob'),
+  //     ],
+  //     SNEAK => [
+  //       'spaces' => $sneakOptions,
+  //       'numberOfSpaces' => min($availableShillings, $numberOfSpaces, count($sneakOptions)),
+  //       'plotName' => clienttranslate('Sneak'),
+  //     ],
+  //   ];
+  // }
 
-  public function getSheriffOptions($player, $numberOfSpaces)
-  {
-    $availableShillings = $player->getShillings();
+  // public function getSheriffOptions($player, $numberOfSpaces)
+  // {
+  //   $availableShillings = $player->getShillings();
 
-    $hireOptions = AtomicActions::get(HIRE)->getOptions();
-    $patrolOptions = AtomicActions::get(PATROL)->getOptions();
-    $captureOptions = AtomicActions::get(CAPTURE)->getOptions();
+  //   $hireOptions = AtomicActions::get(HIRE)->getOptions();
+  //   $patrolOptions = AtomicActions::get(PATROL)->getOptions();
+  //   $captureOptions = AtomicActions::get(CAPTURE)->getOptions();
 
-    return [
-      HIRE => [
-        'spaces' => $hireOptions,
-        'numberOfSpaces' => min(floor($availableShillings / 2), $numberOfSpaces, count($hireOptions)),
-        'plotName' => clienttranslate('Hire'),
-      ],
-      PATROL => [
-        'spaces' => $patrolOptions,
-        'numberOfSpaces' => min(floor($availableShillings / 2), $numberOfSpaces, count($patrolOptions)),
-        'plotName' => clienttranslate('Patrol'),
-      ],
-      CAPTURE => [
-        'spaces' => $captureOptions,
-        'numberOfSpaces' => min($numberOfSpaces, count($captureOptions)),
-        'plotName' => clienttranslate('Capture'),
-      ],
-    ];
-  }
+  //   return [
+  //     HIRE => [
+  //       'spaces' => $hireOptions,
+  //       'numberOfSpaces' => min(floor($availableShillings / 2), $numberOfSpaces, count($hireOptions)),
+  //       'plotName' => clienttranslate('Hire'),
+  //     ],
+  //     PATROL => [
+  //       'spaces' => $patrolOptions,
+  //       'numberOfSpaces' => min(floor($availableShillings / 2), $numberOfSpaces, count($patrolOptions)),
+  //       'plotName' => clienttranslate('Patrol'),
+  //     ],
+  //     CAPTURE => [
+  //       'spaces' => $captureOptions,
+  //       'numberOfSpaces' => min($numberOfSpaces, count($captureOptions)),
+  //       'plotName' => clienttranslate('Capture'),
+  //     ],
+  //   ];
+  // }
 }

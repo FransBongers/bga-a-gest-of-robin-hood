@@ -42,11 +42,13 @@ class RoyalInspectionRedeploymentSheriff extends \AGestOfRobinHood\Models\Atomic
 
   public function stRoyalInspectionRedeploymentSheriff()
   {
+    $info = $this->ctx->getInfo();
+    if (isset($info['source']) && $info['source'] === 'Event14_TemporaryTruce') {
+      return;
+    }
     $riMarker = Markers::get(ROYAL_INSPECTION_MARKER);
     $riMarker->setLocation(Locations::royalInspectionTrack(REDEPLOYMENT));
     Notifications::moveRoyalInspectionMarker($riMarker);
-
-    // $this->resolveAction(['automatic' => true]);
   }
 
 
@@ -60,9 +62,13 @@ class RoyalInspectionRedeploymentSheriff extends \AGestOfRobinHood\Models\Atomic
 
   public function argsRoyalInspectionRedeploymentSheriff()
   {
-    // $data = [];
+    $info = $this->ctx->getInfo();
 
-    return $this->getOptions();
+    $data = $this->getOptions();
+    if (isset($info['source'])) {
+      $data['source'] = 'Event14_TemporaryTruce';
+    }
+    return $data;
   }
 
   //  .########..##..........###....##....##.########.########.
@@ -117,10 +123,21 @@ class RoyalInspectionRedeploymentSheriff extends \AGestOfRobinHood\Models\Atomic
       $forces[] = $henchman;
     }
 
-    $usedCarriages = Forces::getInLocation(USED_CARRIAGES)->toArray();
-    Forces::moveAllInLocation(USED_CARRIAGES,CARRIAGE_SUPPLY);
+    $info = $this->ctx->getInfo();
+    $isTemporaryTruce = isset($info['source']) && $info['source'] === 'Event14_TemporaryTruce';
 
-    Notifications::redeploymentSheriff(self::getPlayer(), $forces, $usedCarriages);
+    if (!$isTemporaryTruce) {
+      $usedCarriages = Forces::getInLocation(USED_CARRIAGES)->toArray();
+      Forces::moveAllInLocation(USED_CARRIAGES, CARRIAGE_SUPPLY);
+    }
+
+    $player = self::getPlayer();
+    if ($isTemporaryTruce) {
+      Notifications::temporaryTruceSheriff($player, $forces);
+      Players::moveRoyalFavour($player, 1, ORDER);
+    } else {
+      Notifications::redeploymentSheriff($player, $forces, $usedCarriages);
+    }
 
     $this->resolveAction($args);
   }
@@ -135,6 +152,9 @@ class RoyalInspectionRedeploymentSheriff extends \AGestOfRobinHood\Models\Atomic
 
   public function getOptions()
   {
+    $info = $this->ctx->getInfo();
+    $isTemporaryTruce = isset($info['source']) && $info['source'] === 'Event14_TemporaryTruce';
+
     $henchmenMustMove = [];
     $henchmenMayMove = [];
 
@@ -161,7 +181,7 @@ class RoyalInspectionRedeploymentSheriff extends \AGestOfRobinHood\Models\Atomic
           'henchman' => $henchman,
           'spaceIds' => $submissiveSpaceIds,
         ];
-      } else {
+      } else if (!$isTemporaryTruce) {
         $henchmenMayMove[$henchman->getId()] = [
           'henchman' => $henchman,
           'spaceIds' => [NOTTINGHAM],

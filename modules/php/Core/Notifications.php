@@ -461,8 +461,8 @@ class Notifications
       'player_name' => $player->getName(),
       'tkn_boldText_to' => clienttranslate('Used Carriages'),
       'carriage' => [
-        'hidden' => false,
-        'type' => $carriage->getType(),
+        'hidden' => $carriage->isHidden(),
+        'type' => $carriage->isHidden() ? $carriage->getPublicType() : $carriage->getType(),
       ],
       'toSpaceId' => $carriage->getLocation(),
       'fromSpaceId' => $fromSpaceId,
@@ -609,6 +609,76 @@ class Notifications
       'player' => $player,
       'merryMenCounts' => $merryMenCounts,
     ]));
+  }
+
+  public static function robinsHornLight($player,  $forces, $moves, $space)
+  {
+    $text = clienttranslate('${player_name} moves ${count} Merry Men to ${tkn_boldText_spaceName}');
+
+    self::notify($player, 'moveMerryMenPrivate', $text, [
+      'playerId' => $player->getId(),
+      'player_name' => $player->getName(),
+      'forces' => $forces,
+      'count' => count($forces),
+      'tkn_boldText_spaceName' => $space->getName(),
+      'i18n' => ['tkn_boldText_spaceName']
+    ]);
+
+    self::notifyAll('moveMerryMenPublic', $text, [
+      'playerId' => $player->getId(),
+      'player_name' => $player->getName(),
+      'moves' => $moves,
+      'count' => count($forces),
+      'tkn_boldText_spaceName' => $space->getName(),
+      'i18n' => ['tkn_boldText_spaceName']
+    ]);
+  }
+
+  public static function royalPardonLight($player,  $forces, $moves, $space)
+  {
+    $text = clienttranslate('${player_name} moves ${count} Merry Men from Prison to ${tkn_boldText_spaceName}');
+
+    self::notify($player, 'moveMerryMenPrivate', $text, [
+      'playerId' => $player->getId(),
+      'player_name' => $player->getName(),
+      'forces' => $forces,
+      'count' => count($forces),
+      'tkn_boldText_spaceName' => $space->getName(),
+      'i18n' => ['tkn_boldText_spaceName']
+    ]);
+
+    self::notifyAll('moveMerryMenPublic', $text, [
+      'playerId' => $player->getId(),
+      'player_name' => $player->getName(),
+      'moves' => $moves,
+      'count' => count($forces),
+      'tkn_boldText_spaceName' => $space->getName(),
+      'i18n' => ['tkn_boldText_spaceName']
+    ]);
+  }
+
+  public static function maidMarianDark($player, $forces, $moves, $fromSpace, $toSpace)
+  {
+    $text = clienttranslate('${player_name} moves Merry Men from ${tkn_boldText_spaceFrom} to ${tkn_boldText_spaceTo}');
+    $robinHoodPlayer = Players::getRobinHoodPlayer();
+
+    self::notify($robinHoodPlayer, 'moveMerryMenPrivate', $text, [
+      'playerId' => $robinHoodPlayer->getId(),
+      'player_name' => $player->getName(),
+      'forces' => $forces,
+      'tkn_boldText_spaceFrom' => $fromSpace->getName(),
+      'tkn_boldText_spaceTo' => $toSpace->getName(),
+      'i18n' => ['tkn_boldText_spaceFrom', 'tkn_boldText_spaceTo']
+    ]);
+
+    self::notifyAll('moveMerryMenPublic', $text, [
+      'playerId' => $robinHoodPlayer->getId(),
+      'player_name' => $player->getName(),
+      'moves' => $moves,
+      'tkn_boldText_spaceFrom' => $fromSpace->getName(),
+      'tkn_boldText_spaceTo' => $toSpace->getName(),
+      'i18n' => ['tkn_boldText_spaceFrom', 'tkn_boldText_spaceTo']
+    ]);
   }
 
   public static function willStutelyDark($player, $forces, $moves)
@@ -836,13 +906,23 @@ class Notifications
       'player' => $player,
       'forces' => $forces,
       'numberOfCarriages' => count($carriages),
+      'isTemporaryTruce' => false,
     ]);
   }
 
-  public static function redeploymentRobinHood($player, $forces, $moves)
+  public static function temporaryTruceSheriff($player, $forces)
   {
-    $text = clienttranslate('${player_name} redeploys their Merry Men');
+    self::notifyAll("redeploymentSheriff", clienttranslate('${player_name} moves all Henchmen to Submissive spaces'), [
+      'player' => $player,
+      'forces' => $forces,
+      'isTemporaryTruce' => true,
+    ]);
+  }
 
+
+  public static function redeploymentRobinHood($player, $forces, $moves, $isTemporaryTruce)
+  {
+    $text = $isTemporaryTruce ? clienttranslate('${player_name} moves all Merry Men to Camps or Forests') :  clienttranslate('${player_name} redeploys their Merry Men');
 
     self::notify($player, 'moveMerryMenPrivate', $text, [
       'player' => $player,

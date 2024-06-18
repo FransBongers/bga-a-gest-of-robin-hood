@@ -114,7 +114,7 @@ class Ride extends \AGestOfRobinHood\Models\AtomicAction
     return clienttranslate('Ride');
   }
 
-  public function canBePerformed($player)
+  public function canBePerformed($player, $mayUseAnyMerryMen = false)
   {
     return count($this->getHenchmenInNottingham()) > 0;
   }

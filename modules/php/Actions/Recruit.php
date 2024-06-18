@@ -181,7 +181,13 @@ class Recruit extends \AGestOfRobinHood\Actions\Plot
       throw new \feException("ERROR 011");
     }
 
-    $player->payShillings(1);
+    $info = $this->ctx->getInfo();
+    $cost = isset($info['cost']) ? $info['cost'] : 1;
+
+    if ($cost > 0) {
+      $player->payShillings($cost);
+    }
+    
     $space = $option['space'];
 
     switch ($recruitOption) {
@@ -210,9 +216,9 @@ class Recruit extends \AGestOfRobinHood\Actions\Plot
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
-  public function canBePerformed($player, $availableShillings)
+  public function canBePerformed($player, $availableShillings, $cost = null)
   {
-    if ($availableShillings === 0) {
+    if (($cost === null && $availableShillings === 0) || ($cost !== null && $availableShillings < $cost)) {
       return false;
     }
 

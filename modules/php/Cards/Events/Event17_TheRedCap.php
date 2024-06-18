@@ -46,22 +46,35 @@ class Event17_TheRedCap extends \AGestOfRobinHood\Cards\Events\RegularEvent
 
   public function performLightEffect($player, $successful, $ctx = null, $space = null)
   {
-    $ctx->insertAsBrother(new LeafNode([
-      'action' => EVENT_SELECT_SPACE,
-      'playerId' => $player->getId(),
-      'cardId' => $this->id,
-      'effect' => LIGHT,
-    ]));
+    $robinHood = Forces::get(ROBIN_HOOD);
+    $robinHood->reveal($player);
+
+    if (count($this->getLightOptions()) > 0) {
+      $ctx->insertAsBrother(new LeafNode([
+        'action' => EVENT_SELECT_SPACE,
+        'playerId' => $player->getId(),
+        'cardId' => $this->id,
+        'effect' => LIGHT,
+      ]));
+    } else {
+      $this->resolveLightEffect($player, $ctx, null);
+    }
   }
 
   public function performDarkEffect($player, $successful, $ctx = null, $space = null)
   {
-    $ctx->insertAsBrother(new LeafNode([
-      'action' => EVENT_SELECT_FORCES,
-      'playerId' => $player->getId(),
-      'cardId' => $this->id,
-      'effect' => DARK,
-    ]));
+    $robinHood = Forces::get(ROBIN_HOOD);
+    $robinHood->eventRevealBySheriff($player);
+
+    if (in_array($robinHood->getLocation(), SPACES) && count($this->getDarkOptions()) > 0) {
+      $ctx->insertAsBrother(new LeafNode([
+        'action' => EVENT_SELECT_FORCES,
+        'playerId' => $player->getId(),
+        'cardId' => $this->id,
+        'effect' => DARK,
+        'optional' => true,
+      ]));
+    }
   }
 
   public function canPerformLightEffect($player)
@@ -70,12 +83,12 @@ class Event17_TheRedCap extends \AGestOfRobinHood\Cards\Events\RegularEvent
     if (!$robinHood->isHidden() || in_array($robinHood->getLocation(), [PRISON, ROBIN_HOOD_SUPPLY])) {
       return false;
     }
-    return count($this->getDarkOptions()) > 0;
+    return true;
   }
 
   public function canPerformDarkEffect($player)
   {
-    return count($this->getDarkOptions()) > 0;
+    return true;
   }
 
 
@@ -95,30 +108,73 @@ class Event17_TheRedCap extends \AGestOfRobinHood\Cards\Events\RegularEvent
   // .##....##....##....##.....##....##....##......
   // ..######.....##....##.....##....##....########
 
-  public function resolveDarkEffect($player, $ctx, $space)
+  public function resolveLightEffectAutomatically($player, $ctx)
   {
-    // $spaceId = $space->getId();
-    // $forces = Forces::getInLocation($spaceId)->toArray();
+    $spaces = $this->getLightOptions();
+    if (count($spaces) === 1) {
+      $this->resolveLightEffect($player, $ctx, $spaces[0]);
+      return true;
+    }
+    return false;
+  }
 
-    // foreach ($forces as $force) {
-    //   if ($force->isMerryMan() && $force->isHidden()) {
-    //     $force->reveal($player);
-    //   }
-    // }
+  public function resolveLightEffect($player, $ctx, $space)
+  {
+    if ($space !== null) {
+      $space->revolt($player);
+    }
+    Players::moveRoyalFavour($player, 1, JUSTICE);
+  }
 
-    // Players::moveRoyalFavour($player, 1, ORDER);
+  public function resolveDarkEffect($player, $ctx, $forces)
+  {
+    $robinHood = Forces::get(ROBIN_HOOD);
+
+    $toSpaceId = $robinHood->getLocation();
+    $toSpace = Spaces::get($toSpaceId);
+
+    $moves = [];
+
+    foreach ($forces as $force) {
+      $fromSpaceId = $force->getLocation();
+      $force->setLocation($toSpaceId);
+      if (isset($moves[$fromSpaceId])) {
+        $moves[$fromSpaceId][] = $force;
+      } else {
+        $moves[$fromSpaceId] = [$force];
+      }
+    }
+
+    foreach ($moves as $fromSpaceId => $forces) {
+      Notifications::moveForces($player, Spaces::get($fromSpaceId), $toSpace, $forces);
+    }
+  }
+
+  public function getLightStateArgs()
+  {
+    return [
+      'spaces' => $this->getLightOptions(),
+      'title' => clienttranslate('${you} must select a Parish'),
+      'confirmText' => clienttranslate('Set ${spaceName} to Revolting?'),
+      'titleOther' => clienttranslate('${actplayer} must select a Parish'),
+    ];
   }
 
   public function getDarkStateArgs()
   {
-    // return [
-    //   'spaces' => $this->getLightOptions(),
-    //   'title' => clienttranslate('${you} must select a Forest'),
-    //   'confirmText' => clienttranslate('Reveal all Merry Men in in ${spaceName}?'),
-    //   'titleOther' => clienttranslate('${actplayer} must select a Forest'),
-    // ];
+    $forces = $this->getDarkOptions();
+    return [
+      '_private' => [
+        'forces' => $forces,
+        'min' => 1,
+        'max' => min(2, count($forces)),
+        'type' => 'private',
+      ],
+      'title' => clienttranslate('${you} may select Henchmen to move (${count} remaining)'),
+      'confirmText' => clienttranslate('Move Henchmen to Robin Hood\'s space?'),
+      'titleOther' => clienttranslate('${actplayer} may move Henchmen to Robin Hood\'s space'),
+    ];
   }
-
   // .##.....##.########.####.##.......####.########.##....##
   // .##.....##....##.....##..##........##.....##.....##..##.
   // .##.....##....##.....##..##........##.....##......####..
@@ -130,17 +186,19 @@ class Event17_TheRedCap extends \AGestOfRobinHood\Cards\Events\RegularEvent
 
   private function getLightOptions()
   {
-    // return Spaces::get([SOUTHWELL_FOREST, SHIRE_WOOD])->toArray();
+    $robinHood = Forces::get(ROBIN_HOOD);
+    $adjacentSpaces = Spaces::get($robinHood->getLocation())->getAdjacentSpaces();
+    return Utils::filter($adjacentSpaces, function ($space) {
+      return $space->isSubmissive() && in_array($space->getId(), PARISHES);
+    });
   }
 
   private function getDarkOptions()
   {
-    $options = [];
-    // foreach ([SHIRE_WOOD, SOUTHWELL_FOREST] as $spaceId) {
-    //   $options[$spaceId] = Utils::array_some(Forces::getInLocation($spaceId)->toArray(), function ($force) {
-    //     return $force->isMerryMan() && $force->isHidden();
-    //   });
-    // }
-    return $options;
+    $henchmen = Forces::getOfType(HENCHMEN);
+
+    return Utils::filter($henchmen, function ($henchman) {
+      return in_array($henchman->getLocation(), SPACES);
+    });
   }
 }

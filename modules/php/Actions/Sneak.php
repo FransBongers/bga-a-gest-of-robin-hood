@@ -218,9 +218,9 @@ class Sneak extends \AGestOfRobinHood\Actions\Plot
     }
   }
 
-  public function canBePerformed($player, $availableShillings)
+  public function canBePerformed($player, $availableShillings, $cost = null)
   {
-    if ($availableShillings === 0) {
+    if (($cost === null && $availableShillings === 0) || ($cost !== null && $availableShillings < $cost)) {
       return false;
     }
 

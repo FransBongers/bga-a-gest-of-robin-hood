@@ -277,7 +277,7 @@ class Rob extends \AGestOfRobinHood\Actions\Plot
     }
   }
 
-  public function canBePerformed($player, $availableShillings)
+  public function canBePerformed($player, $availableShillings, $cost = null)
   {
     return count($this->getOptions()) > 0;
   }

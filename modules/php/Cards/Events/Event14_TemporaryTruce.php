@@ -2,6 +2,15 @@
 
 namespace AGestOfRobinHood\Cards\Events;
 
+use AGestOfRobinHood\Core\Engine\LeafNode;
+use AGestOfRobinHood\Core\Notifications;
+use AGestOfRobinHood\Helpers\GameMap;
+use AGestOfRobinHood\Helpers\Utils;
+use AGestOfRobinHood\Managers\Cards;
+use AGestOfRobinHood\Managers\AtomicActions;
+use AGestOfRobinHood\Managers\Players;
+use AGestOfRobinHood\Managers\Spaces;
+
 class Event14_TemporaryTruce extends \AGestOfRobinHood\Models\EventCard
 {
   public function __construct($row)
@@ -15,4 +24,28 @@ class Event14_TemporaryTruce extends \AGestOfRobinHood\Models\EventCard
     $this->eventType = FORTUNE_EVENT;
     $this->setupLocation = FORTUNE_EVENTS_POOL;
   }
+
+  public function getFlow()
+  {
+    $nodes = [
+      'children' => [
+        [
+          'action' => ROYAL_INSPECTION_REDEPLOYMENT_SHERIFF,
+          'playerId' => Players::getSheriffPlayerId(),
+          'source' => $this->id,
+          'optional' => true,
+        ],
+        [
+          'action' => ROYAL_INSPECTION_REDEPLOYMENT_ROBIN_HOOD,
+          'playerId' => Players::getRobinHoodPlayerId(),
+          'source' => $this->id,
+          'optional' => true,
+        ],
+      ],
+    ];
+
+    return $nodes;
+  }
+
+
 }

@@ -118,6 +118,7 @@ class Patrol extends \AGestOfRobinHood\Actions\Plot
     $numberOfHenchmen = count(Utils::filter($forcesInSpace, function ($force) {
       return $force->isHenchman();
     }));
+    $originalNumber = $numberOfHenchmen;
     $hiddenMerryMen = Utils::filter($forcesInSpace, function ($force) {
       return $force->isMerryMan() && $force->isHidden();
     });
@@ -128,6 +129,9 @@ class Patrol extends \AGestOfRobinHood\Actions\Plot
     // Notifications::
 
     $numberOfMerryMenToReveal = min(count($hiddenMerryMen), $numberOfHenchmen);
+    if (isset($info['source']) && $info['source'] === 'Event18_AllanADale' && $originalNumber > 0) {
+      $numberOfMerryMenToReveal = count($hiddenMerryMen);
+    }
 
     for ($i = 0; $i < $numberOfMerryMenToReveal; $i++) {
       $index = bga_rand(0, count($hiddenMerryMen) - 1);
@@ -151,9 +155,9 @@ class Patrol extends \AGestOfRobinHood\Actions\Plot
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
-  public function canBePerformed($player, $availableShillings)
+  public function canBePerformed($player, $availableShillings, $cost = null)
   {
-    if ($availableShillings < 2) {
+    if (($cost === null && $availableShillings < 2) || ($cost !== null && $availableShillings < $cost)) {
       return false;
     }
 

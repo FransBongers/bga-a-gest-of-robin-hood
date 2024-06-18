@@ -152,6 +152,7 @@ interface NotifPutCardInVictimsPileArgs {
 
 interface NotifRedeploymentSheriffArgs {
   forces: GestForce[];
+  isTemporaryTruce: boolean;
 }
 
 interface NotifRemoveCardFromGameArgs {

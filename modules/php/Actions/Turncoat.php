@@ -140,7 +140,7 @@ class Turncoat extends \AGestOfRobinHood\Models\AtomicAction
     return clienttranslate('Turncoat');
   }
 
-  public function canBePerformed($player)
+  public function canBePerformed($player, $mayUseAnyMerryMen = false)
   {
     if ($player->getShillings() === 0) {
       return false;

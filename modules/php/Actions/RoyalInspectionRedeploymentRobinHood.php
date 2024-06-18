@@ -58,11 +58,16 @@ class RoyalInspectionRedeploymentRobinHood extends \AGestOfRobinHood\Models\Atom
 
   public function argsRoyalInspectionRedeploymentRobinHood()
   {
+    $info = $this->ctx->getInfo();
+
     $data = [
       '_private' => [
         $this->ctx->getPlayerId() => $this->getOptions(),
       ]
     ];
+    if (isset($info['source'])) {
+      $data['source'] = 'Event14_TemporaryTruce';
+    }
 
     return $data;
   }
@@ -102,17 +107,6 @@ class RoyalInspectionRedeploymentRobinHood extends \AGestOfRobinHood\Models\Atom
     $forces = [];
     $moves = [];
 
-    // $moves[] = [
-    //   'force' => $robinHood,
-    //   'from' => [
-    //     'hidden' => false,
-    //     'spaceId' => PRISON,
-    //   ],
-    //   'to' => [
-    //     'hidden' => false,
-    //     'spaceId' => $robinHoodSpaceId,
-    //   ]
-    // ];
 
     foreach ($stateArgs['merryMenMustMove'] as $merryManId => $option) {
       $merryMan = $option['merryMan'];
@@ -137,14 +131,7 @@ class RoyalInspectionRedeploymentRobinHood extends \AGestOfRobinHood\Models\Atom
       ];
     }
 
-    // foreach ($optionalMoves as $henchmanId) {
-    //   if (!isset($stateArgs['henchmenMayMove'][$henchmanId])) {
-    //     throw new \feException("ERROR 049");
-    //   }
-    //   $henchman = $stateArgs['henchmenMayMove'][$henchmanId]['henchman'];
-    //   $henchman->setLocation(NOTTINGHAM);
-    //   $forces[] = $henchman;
-    // }
+
     foreach ($optionalMoves as $merryManId => $destinationId) {
       if ($destinationId === null) {
         continue;
@@ -175,7 +162,19 @@ class RoyalInspectionRedeploymentRobinHood extends \AGestOfRobinHood\Models\Atom
       ];
     }
 
-    Notifications::redeploymentRobinHood(self::getPlayer(), $forces, $moves);
+    $info = $this->ctx->getInfo();
+    $isTemporaryTruce = isset($info['source']) && $info['source'] === 'Event14_TemporaryTruce';
+    $player = self::getPlayer();
+
+    Notifications::redeploymentRobinHood($player, $forces, $moves, $isTemporaryTruce);
+    if ($isTemporaryTruce) {
+      Players::moveRoyalFavour($player, 1, JUSTICE);
+      $this->ctx->insertAsBrother(new LeafNode([
+        'action' => ROYAL_INSPECTION_HIDE_ALL_MERRY_MEN,
+        'playerId' => $player->getId(),
+      ]));
+    }
+
 
     $this->resolveAction($args);
   }
@@ -192,17 +191,20 @@ class RoyalInspectionRedeploymentRobinHood extends \AGestOfRobinHood\Models\Atom
   {
     $merryMenMustMove = [];
     $merryMenMayMove = [];
+    $info = $this->ctx->getInfo();
+    $isTemporaryTruce = isset($info['source']) && $info['source'] === 'Event14_TemporaryTruce';
 
     $spaces = Spaces::getAll();
-    $spacesArray = $spaces->toArray();
 
     $merryMen = Forces::getOfType(MERRY_MEN);
     $merryMen[] = Forces::get(ROBIN_HOOD);
     $camps = Forces::getOfType(CAMP);
 
+    $parishes = Spaces::get(PARISHES)->toArray();
     $parishesWithACampIds = array_map(function ($parish) {
       return $parish->getId();
-    }, Utils::filter($spacesArray, function ($parish) use ($camps) {
+    }, Utils::filter($parishes, function ($parish) use ($camps) {
+
       return Utils::array_some($camps, function ($camp) use ($parish) {
         return $camp->getLocation() === $parish->getId();
       });
@@ -221,7 +223,7 @@ class RoyalInspectionRedeploymentRobinHood extends \AGestOfRobinHood\Models\Atom
           'merryMan' => $merryMan,
           'spaceIds' => $destinations,
         ];
-      } else {
+      } else if (!$isTemporaryTruce) {
         $merryMenMayMove[$merryMan->getId()] = [
           'merryMan' => $merryMan,
           'spaceIds' => Utils::filter($destinations, function ($dest) use ($spaceId) {

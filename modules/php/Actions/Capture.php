@@ -57,8 +57,10 @@ class Capture extends \AGestOfRobinHood\Actions\Plot
 
   public function argsCapture()
   {
+    $info = $this->ctx->getInfo();
+    $inSpacesIds = isset($info['spaceIds']) ? $info['spaceIds'] : [];
     $data = [
-      'spaces' => $this->getOptions(),
+      'spaces' => $this->getOptions($inSpacesIds),
     ];
 
     return $data;
@@ -92,9 +94,11 @@ class Capture extends \AGestOfRobinHood\Actions\Plot
     self::checkAction('actCapture');
 
     $spaceId = $args['spaceId'];
+    $info = $this->ctx->getInfo();
+    $inSpacesIds = isset($info['spaceIds']) ? $info['spaceIds'] : [];
 
     $player = self::getPlayer();
-    $this->resolveCapture($player, $spaceId);
+    $this->resolveCapture($player, $spaceId, $inSpacesIds);
     
 
     $this->insertPlotAction($player);
@@ -110,10 +114,10 @@ class Capture extends \AGestOfRobinHood\Actions\Plot
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
-  public function resolveCapture($player, $spaceId)
+  public function resolveCapture($player, $spaceId, $inSpacesIds = [])
   {
 
-    $options = $this->getOptions();
+    $options = $this->getOptions($inSpacesIds);
 
     $space = Utils::array_find($options, function ($optionSpace) use ($spaceId) {
       return $optionSpace->getId() === $spaceId;
@@ -193,7 +197,7 @@ class Capture extends \AGestOfRobinHood\Actions\Plot
   }
 
 
-  public function canBePerformed($player, $availableShillings)
+  public function canBePerformed($player, $availableShillings, $cost = null)
   {
     return count($this->getOptions()) > 0;
   }
@@ -203,7 +207,7 @@ class Capture extends \AGestOfRobinHood\Actions\Plot
     return clienttranslate('Capture');
   }
 
-  public function getOptions()
+  public function getOptions($inSpaceIds = [])
   {
     $alreadyCapturedSpaceIds = [];
     $nodes = Engine::getResolvedActions([CAPTURE]);
@@ -212,8 +216,12 @@ class Capture extends \AGestOfRobinHood\Actions\Plot
       $alreadyCapturedSpaceIds[] = $resArgs['spaceId'];
     }
 
-    $spaces = Utils::filter(Spaces::getAll()->toArray(), function ($space) use ($alreadyCapturedSpaceIds) {
-      if ($space->getId() === OLLERTON_HILL || in_array($space->getId(), $alreadyCapturedSpaceIds)) {
+    $spaces = Utils::filter(Spaces::getAll()->toArray(), function ($space) use ($alreadyCapturedSpaceIds, $inSpaceIds) {
+      $spaceId = $space->getId();
+      if ($spaceId === OLLERTON_HILL || in_array($spaceId, $alreadyCapturedSpaceIds)) {
+        return false;
+      }
+      if (count($inSpaceIds) > 0 && !in_array($spaceId, $inSpaceIds)) {
         return false;
       }
 

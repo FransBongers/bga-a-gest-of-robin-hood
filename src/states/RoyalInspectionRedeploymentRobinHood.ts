@@ -33,7 +33,17 @@ class RoyalInspectionRedeploymentRobinHoodState implements State {
     debug('Leaving RoyalInspectionRedeploymentRobinHoodState');
   }
 
-  setDescription(activePlayerId: number) {}
+  setDescription(activePlayerId: number, args: OnEnteringRoyalInspectionRedeploymentRobinHoodStateArgs) {
+    if (args.source === 'Event14_TemporaryTruce') {
+      this.game.clientUpdatePageTitle({
+        text: _('${actplayer} may move all Merry Men to Camps or Forests'),
+        args: {
+          actplayer: '${actplayer}',
+        },
+        nonActivePlayers: true,
+      });
+    }
+  }
 
   //  .####.##....##.########.########.########..########....###.....######..########
   //  ..##..###...##....##....##.......##.....##.##.........##.##...##....##.##......
@@ -73,7 +83,7 @@ class RoyalInspectionRedeploymentRobinHoodState implements State {
       }
     );
 
-    if (!Object.values(this.requiredMoves).some((dest) => dest !== null)) {
+    if (Object.values(this.requiredMoves).some((dest) => dest !== null)) {
       this.addCancelButton();
     } else {
       this.game.addPassButton({

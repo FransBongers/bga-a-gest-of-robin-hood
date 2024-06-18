@@ -111,9 +111,9 @@ class SelectTravellerCardOption extends \AGestOfRobinHood\Models\AtomicAction
     }
 
     if ($option === 'light') {
-      $card->performLightEffect($player, $success, $this->ctx, $space);
+      $card->resolveLightEffect($player, $success, $this->ctx, $space);
     } else if ($option === 'dark') {
-      $card->performDarkEffect($player, $success, $this->ctx, $space);
+      $card->resolveDarkEffect($player, $success, $this->ctx, $space);
     }
 
     $this->resolveAction($args, true);

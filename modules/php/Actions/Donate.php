@@ -130,7 +130,7 @@ class Donate extends \AGestOfRobinHood\Models\AtomicAction
     return clienttranslate('Donate');
   }
 
-  public function canBePerformed($player)
+  public function canBePerformed($player, $mayUseAnyMerryMen = false)
   {
     if ($player->getShillings() < 2) {
       return false;

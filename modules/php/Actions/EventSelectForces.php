@@ -158,6 +158,10 @@ class EventSelectForces extends \AGestOfRobinHood\Actions\Plot
     $options = $data['_private'];
     $selectedForces = [];
 
+    if ($options['max'] !== null && count($selectedForcesArgs) > $options['max']) {
+      throw new \feException("ERROR 090");
+    }
+
     if ($options['type'] === 'private') {
       $selectedForces = $this->getSelectedForcesPrivate($selectedForcesArgs, $options['forces']);
     } else if ($options['type'] === 'public') {
@@ -209,6 +213,7 @@ class EventSelectForces extends \AGestOfRobinHood\Actions\Plot
 
   private function getSelectedForcesPrivate($selectedForcesIds, $forces)
   {
+    $selectedForces = [];
     foreach ($selectedForcesIds as $forceId) {
       $force = Utils::array_find($forces, function ($force) use ($forceId) {
         return $force->getId() === $forceId;
@@ -218,5 +223,6 @@ class EventSelectForces extends \AGestOfRobinHood\Actions\Plot
       }
       $selectedForces[] = $force;
     }
+    return $selectedForces;
   }
 }

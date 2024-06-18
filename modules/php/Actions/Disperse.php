@@ -169,7 +169,7 @@ class Disperse extends \AGestOfRobinHood\Models\AtomicAction
     return clienttranslate('Disperse');
   }
 
-  public function canBePerformed($player)
+  public function canBePerformed($player, $mayUseAnyMerryMen = false)
   {
     if ($player->getShillings() < 3) {
       return false;

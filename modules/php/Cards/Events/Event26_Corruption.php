@@ -91,15 +91,6 @@ class Event26_Corruption extends \AGestOfRobinHood\Cards\Events\RegularEvent
   // .##....##....##....##.....##....##....##......
   // ..######.....##....##.....##....##....########
 
-  // public function resolveLightEffect($player, $ctx, $forces)
-  // {
-  //   $player->payShillings(1);
-  //   foreach($forces as $force) {
-  //     $force->returnToSupply($player);
-  //   }
-  //   GameMap::placeMerryMan()
-  // }
-
   public function resolveDarkEffect($player, $ctx, $forces)
   {
     $player->payShillings(2);
@@ -110,21 +101,6 @@ class Event26_Corruption extends \AGestOfRobinHood\Cards\Events\RegularEvent
     GameMap::placeHenchmen($player, Spaces::get($spaceId), count($forces));
   }
 
-  // public function getLightStateArgs()
-  // {
-  //   $forces = $this->getLightOptions();
-  //   return [
-  //     '_private' => [
-  //       'forces' => $forces,
-  //       'min' => 1,
-  //       'max' => 1,
-  //       'type' => 'private'
-  //     ],
-  //     'title' => clienttranslate('${you} must select a Henchman to replace'),
-  //     'confirmText' => clienttranslate('Replace Henchman with a Merry Man?'),
-  //     'titleOther' => clienttranslate('${actplayer} may replace 1 Henchman with a Merry Man'),
-  //   ];
-  // }
 
   public function getDarkStateArgs()
   {

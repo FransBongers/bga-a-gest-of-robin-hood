@@ -41,16 +41,15 @@ class Inspire extends \AGestOfRobinHood\Models\AtomicAction
 
   public function stInspire()
   {
-    $player = self::getPlayer();
-    $robinHood = Forces::get(ROBIN_HOOD);
-    $robinHood->reveal($player);
+    $info = $this->ctx->getInfo();
+    $mayUseAnyMerryMen = isset($info['source']) && $info['source'] === 'Event24_MaidMarian';
+    $options = $this->getOptions($mayUseAnyMerryMen);
 
-    $space = $robinHood->getSpace();
-    if ($space->getStatus() === REVOLTING) {
-      Players::moveRoyalFavour($player, 1, JUSTICE);
-    } else if ($space->getStatus() === SUBMISSIVE) {
-      $space->revolt($player);
+    if (count($options) > 1) {
+      return;
     }
+
+    $this->resolveInspire($options[0]['merryMan'], $options[0]['space']);
 
     $this->resolveAction(['automatic' => true]);
   }
@@ -65,7 +64,15 @@ class Inspire extends \AGestOfRobinHood\Models\AtomicAction
 
   public function argsInspire()
   {
-    $data = [];
+    $info = $this->ctx->getInfo();
+    $mayUseAnyMerryMen = isset($info['source']) && $info['source'] === 'Event24_MaidMarian';
+    $options = $this->getOptions($mayUseAnyMerryMen);
+
+    $data = [
+      '_private' => [
+        $this->ctx->getPlayerId() => $options,
+      ]
+    ];
 
     return $data;
   }
@@ -96,6 +103,20 @@ class Inspire extends \AGestOfRobinHood\Models\AtomicAction
   public function actInspire($args)
   {
     self::checkAction('actInspire');
+    $merryMenId = $args['merryMenId'];
+
+    $info = $this->ctx->getInfo();
+    $mayUseAnyMerryMen = isset($info['source']) && $info['source'] === 'Event24_MaidMarian';
+    $options = $this->getOptions($mayUseAnyMerryMen);
+
+    $option = Utils::array_find($options, function ($availableOption) use ($merryMenId) {
+      return $availableOption['merryMan']->getId() === $merryMenId;
+    });
+    if ($option === null) {
+      throw new \feException("ERROR 093");
+    }
+
+    $this->resolveInspire($option['merryMan'], $option['space']);
 
     $this->resolveAction($args);
   }
@@ -108,23 +129,60 @@ class Inspire extends \AGestOfRobinHood\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
+  private function resolveInspire($force, $space)
+  {
+    $player = self::getPlayer();
+
+    $force->reveal($player);
+
+    if ($space->getStatus() === REVOLTING) {
+      Players::moveRoyalFavour($player, 1, JUSTICE);
+    } else if ($space->getStatus() === SUBMISSIVE) {
+      $space->revolt($player);
+    }
+  }
+
   public function getName()
   {
     return clienttranslate('Inspire');
   }
 
-  public function canBePerformed($player)
+  public function canBePerformed($player, $mayUseAnyMerryMen = false)
   {
-    $robinHood = Forces::get(ROBIN_HOOD);
-    if (!$robinHood->IsHidden()) {
-      return false;
-    }
-    if (!in_array($robinHood->getLocation(), PARISHES)) {
-      return false;
-    }
-    $space = Spaces::get($robinHood->getLocation());
-
-    return $space->isSubmissive() || $space->isRevolting();
+    return count($this->getOptions($mayUseAnyMerryMen)) > 0;
   }
 
+
+  public function getOptions($mayUseAnyMerryMen = false)
+  {
+    $options = [];
+
+    $merryMenThatCanPerform = [];
+    if ($mayUseAnyMerryMen) {
+      $merryMenThatCanPerform = Utils::filter(Forces::getOfType(MERRY_MEN), function ($force) {
+        return $force->isHidden() && in_array($force->getLocation(), PARISHES);
+      });
+    }
+    $robinHood = Forces::get(ROBIN_HOOD);
+    if ($robinHood->isHidden() && in_array($robinHood->getLocation(), PARISHES)) {
+      $merryMenThatCanPerform[] = $robinHood;
+    }
+
+    $spaces = Spaces::get(PARISHES);
+
+    foreach ($merryMenThatCanPerform as $merryMan) {
+      $spaceId = $merryMan->getLocation();
+      $space = $spaces[$spaceId];
+      if (!($space->isSubmissive() || $space->isRevolting())) {
+        continue;
+      }
+      $options[] = [
+        'merryMan' => $merryMan,
+        'space' => $space,
+        'isSubmissive' => $space->isSubmissive(),
+      ];
+    }
+
+    return $options;
+  }
 }
