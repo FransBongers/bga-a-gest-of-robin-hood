@@ -620,7 +620,6 @@ class Notifications
       'playerId' => $robinHoodPlayer->getId(),
       'player_name' => $player->getName(),
       'forces' => $forces,
-      'i18n' => ['tkn_boldText_spaceName'],
       'count' => count($forces),
     ]);
 
@@ -629,7 +628,27 @@ class Notifications
       'player_name' => $player->getName(),
       'moves' => $moves,
       'count' => count($forces),
-      'i18n' => ['tkn_boldText_spaceName']
+    ]);
+  }
+
+  public static function willStutelyLight($player, $forces, $moves, $parish)
+  {
+    $text = clienttranslate('${player_name} moves a Merry Man to ${tkn_boldText_spaceName}');
+
+    self::notify($player, 'moveMerryMenPrivate', $text, [
+      'playerId' => $player->getId(),
+      'player_name' => $player->getName(),
+      'forces' => $forces,
+      'i18n' => ['tkn_boldText_spaceName'],
+      'tkn_boldText_spaceName' => $parish->getName(),
+    ]);
+
+    self::notifyAll('moveMerryMenPublic', $text, [
+      'playerId' => $player->getId(),
+      'player_name' => $player->getName(),
+      'moves' => $moves,
+      'i18n' => ['tkn_boldText_spaceName'],
+      'tkn_boldText_spaceName' => $parish->getName(),
     ]);
   }
 
@@ -735,13 +754,24 @@ class Notifications
     ]);
   }
 
+  public static function returnHenchmanSupply($player, $force, $space)
+  {
+    self::notifyAll('returnToSupplyPrivate', clienttranslate('${player_name} returns ${tkn_boldText_forceName} from ${tkn_boldText_spaceName} to Available Forces'), [
+      'player' => $player,
+      'force' => $force,
+      'spaceId' => $space->getId(),
+      'tkn_boldText_forceName' => $force->getName(),
+      'tkn_boldText_spaceName' => $space->getName(),
+      'i18n' => ['tkn_boldText_forceName', 'tkn_boldText_spaceName']
+    ]);
+  }
+
   public static function returnToSupply($player, $force, $space, $isHidden, $fromPrison = false)
   {
     $actingPlayer = ($force->isMerryMan() || $force->isCamp()) && !$player->isRobinHood() ? Players::getRobinHoodPlayer() : $player;
 
     self::notify($actingPlayer, 'returnToSupplyPrivate', clienttranslate('${player_name} returns ${tkn_boldText_forceName} from ${tkn_boldText_spaceName} to Available Forces'), [
       'player' => $actingPlayer,
-      'you' => '${you}',
       'force' => $force,
       'spaceId' => $fromPrison ? PRISON : $space->getId(),
       'tkn_boldText_forceName' => $force->getName(),
@@ -768,6 +798,17 @@ class Notifications
       'player' => $player,
       'tkn_boldText_effectName' => $effect === 'dark' ? $card->getTitleDark() : $card->getTitleLight(),
       'i18n' => ['tkn_boldText_effectName']
+    ]);
+  }
+
+  public static function removeSubmissiveMarker($player, $space)
+  {
+    self::notifyAll("parishStatus", clienttranslate('${player_name} removes the Submissive marker from ${tkn_boldText_parishName} from the game'), [
+      'player' => $player,
+      'tkn_boldText_parishName' => $space->getName(),
+      'spaceId' => $space->getId(),
+      'status' => PASSIVE,
+      'i18n' => ['tkn_boldText_parishName']
     ]);
   }
 

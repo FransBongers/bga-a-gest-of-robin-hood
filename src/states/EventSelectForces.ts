@@ -5,6 +5,7 @@ class EventSelectForcesState implements State {
   private selectedForces: GestForce[] = [];
   private selectableForces: GestForce[] = [];
   private showSelected: GestForce[] = [];
+  private fromSpaceId: string | null;
 
   constructor(game: AGestOfRobinHoodGame) {
     this.game = game;
@@ -16,6 +17,7 @@ class EventSelectForcesState implements State {
     this.selectedForces = [];
     this.selectableForces = [];
     this.showSelected = [];
+    this.fromSpaceId = null;
 
     if (this.args._private.type === 'private') {
       this.selectableForces = this.args._private.forces;
@@ -65,18 +67,25 @@ class EventSelectForcesState implements State {
   // ..######.....##....########.##.........######.
 
   private updateInterfaceInitialStep() {
-    this.game.clearPossible();
+    if (this.selectedForces.length === this.args._private.max) {
+      this.updateInterfaceConfirm();
+      return;
+    }
+    const selectable = this.selectableForces.filter((force) =>
+      this.fromSpaceId === null ? true : force.location === this.fromSpaceId
+    );
+    // All forces have been selected. May be the case when force need to be selected
+    // from a single space.
+    if (selectable.length === this.selectedForces.length) {
+      this.updateInterfaceConfirm();
+      return;
+    }
 
-    // this.game.clientUpdatePageTitle({
-    //   text: _(this.args.title),
-    //   args: {
-    //     you: '${you}',
-    //   },
-    // });
+    this.game.clearPossible();
 
     this.updatePageTitle();
 
-    this.selectableForces.forEach((force) => {
+    selectable.forEach((force) => {
       this.game.setElementSelectable({
         id: force.id,
         callback: () => this.handleForceClick({ force }),
@@ -208,6 +217,17 @@ class EventSelectForcesState implements State {
     }
   }
 
+  private checkFromSpaceId() {
+    if (!(this.args._private.conditions || []).includes(ONE_SPACE)) {
+      return;
+    }
+    if (this.selectedForces.length > 0) {
+      this.fromSpaceId = this.selectedForces[0].location;
+    } else if (this.selectedForces.length === 0) {
+      this.fromSpaceId = null;
+    }
+  }
+
   //  ..######..##.......####..######..##....##
   //  .##....##.##........##..##....##.##...##.
   //  .##.......##........##..##.......##..##..
@@ -234,10 +254,11 @@ class EventSelectForcesState implements State {
       // this.game.setElementSelected({ id: force.id });
       this.selectedForces.push(force);
     }
-    if (this.selectedForces.length === this.args._private.max) {
-      this.updateInterfaceConfirm();
-      return;
-    }
+    // if (this.selectedForces.length === this.args._private.max) {
+    //   this.updateInterfaceConfirm();
+    //   return;
+    // }
+    this.checkFromSpaceId();
     this.updateInterfaceInitialStep();
     // this.updatePageTitle();
     // this.updateDoneButtonDisabled();

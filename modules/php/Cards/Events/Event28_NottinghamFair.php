@@ -47,10 +47,9 @@ class Event28_NottinghamFair extends \AGestOfRobinHood\Cards\Events\RegularEvent
   public function performLightEffect($player, $successful, $ctx = null, $space = null)
   {
     $ctx->insertAsBrother(new LeafNode([
-      'action' => EVENT_NOTTINGHAM_FAIR_LIGHT,
+      'action' => EVENT_REPLACE_HENCHMEN,
       'playerId' => $player->getId(),
       'cardId' => $this->id,
-      'effect' => LIGHT,
     ]));
   }
 
@@ -67,7 +66,7 @@ class Event28_NottinghamFair extends \AGestOfRobinHood\Cards\Events\RegularEvent
 
   public function canPerformLightEffect($player)
   {
-    return count(AtomicActions::get(EVENT_NOTTINGHAM_FAIR_LIGHT)->getOptions()) > 0;
+    return count(AtomicActions::get(EVENT_REPLACE_HENCHMEN)->getOptions($this->id)) > 0;
   }
 
   public function canPerformDarkEffect($player)

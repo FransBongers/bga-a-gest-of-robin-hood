@@ -16,11 +16,11 @@ use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\Spaces;
 use AGestOfRobinHood\Spaces\Nottingham;
 
-class EventNottinghamFairLight extends \AGestOfRobinHood\Models\AtomicAction
+class EventReplaceHenchmen extends \AGestOfRobinHood\Models\AtomicAction
 {
   public function getState()
   {
-    return ST_EVENT_NOTTINGHAM_FAIR_LIGHT;
+    return ST_EVENT_REPLACE_HENCHMEN;
   }
 
   // ....###....########...######....######.
@@ -31,17 +31,20 @@ class EventNottinghamFairLight extends \AGestOfRobinHood\Models\AtomicAction
   // .##.....##.##....##..##....##..##....##
   // .##.....##.##.....##..######....######.
 
-  public function argsEventNottinghamFairLight()
+  public function argsEventReplaceHenchmen()
   {
-    $henchmen = $this->getOptions();
+    $info = $this->ctx->getInfo();
+    $cardId = $info['cardId'];
+    $henchmen = $this->getOptions($cardId);
     $data = [
       '_private' => [
         $this->ctx->getPlayerId() => [
           'forces' => $henchmen,
           'min' => 1,
-          'max' => min(count($henchmen), 2),
+          'max' => min(count($henchmen), $cardId === 'Event28_NottinghamFair' ? 2 : 1),
           'type' => 'private',
           'robinHoodInSupply' => Forces::get(ROBIN_HOOD)->getLocation() === ROBIN_HOOD_SUPPLY,
+          'cardId' => $cardId,
         ],
       ]
     ];
@@ -65,7 +68,7 @@ class EventNottinghamFairLight extends \AGestOfRobinHood\Models\AtomicAction
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function actPassEventNottinghamFairLight()
+  public function actPassEventReplaceHenchmen()
   {
     $player = self::getPlayer();
     // Stats::incPassActionCount($player->getId(), 1);
@@ -73,16 +76,18 @@ class EventNottinghamFairLight extends \AGestOfRobinHood\Models\AtomicAction
   }
 
   // public function actPlayerAction($cardId, $strength)
-  public function actEventNottinghamFairLight($args)
+  public function actEventReplaceHenchmen($args)
   {
-    self::checkAction('actEventNottinghamFairLight');
+    self::checkAction('actEventReplaceHenchmen');
     $henchmenIds = $args['henchmenIds'];
     $placeRobinHood = $args['placeRobinHood'];
 
-    $options = $this->getOptions();
+    $info = $this->ctx->getInfo();
+    $cardId = $info['cardId'];
+    $options = $this->getOptions($cardId);
 
     $henchmen = [];
-    foreach($henchmenIds as $henchmanId) {
+    foreach ($henchmenIds as $henchmanId) {
       $henchman = Utils::array_find($options, function ($force) use ($henchmanId) {
         return $force->getId() === $henchmanId;
       });
@@ -91,17 +96,23 @@ class EventNottinghamFairLight extends \AGestOfRobinHood\Models\AtomicAction
       }
       $henchmen[] = $henchman;
     }
+
     $player = self::getPlayer();
-    foreach($henchmen as $force) {
+    $cost = isset($info['cost']) ? $info['cost'] : 0;
+    if ($cost > 0) {
+      $player->payShillings($cost);
+    }
+
+    $location = $cardId === 'Event28_NottinghamFair' ? NOTTINGHAM : $henchmen[0]->getLocation();
+    foreach ($henchmen as $force) {
       $force->returnToSupply($player);
     }
 
     if ($placeRobinHood && Forces::get(ROBIN_HOOD)->getLocation() !== ROBIN_HOOD_SUPPLY) {
       throw new \feException("ERROR 085");
     }
-
-    // // TODO: allow placement of Robin Hood?
-    GameMap::placeMerryMan($player, Spaces::get(NOTTINGHAM), $placeRobinHood, count($henchmen));
+    
+    GameMap::placeMerryMan($player, Spaces::get($location), $placeRobinHood, count($henchmen));
 
     $this->resolveAction($args);
   }
@@ -114,11 +125,18 @@ class EventNottinghamFairLight extends \AGestOfRobinHood\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
-  public function getOptions()
+  public function getOptions($cardId)
   {
     $henchmen = Forces::getOfType(HENCHMEN);
-    return Utils::filter($henchmen, function ($henchman) {
-      return $henchman->getLocation() === NOTTINGHAM;
-    });
+    if ($cardId === 'Event28_NottinghamFair') {
+      return Utils::filter($henchmen, function ($henchman) {
+        return $henchman->getLocation() === NOTTINGHAM;
+      });
+    } else if ($cardId === 'Event26_Corruption') {
+      return Utils::filter($henchmen, function ($henchman) {
+        return in_array($henchman->getLocation(), SPACES);
+      });
+    }
+    return [];
   }
 }

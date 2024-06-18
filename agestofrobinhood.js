@@ -1715,6 +1715,7 @@ var REMOVED_FROM_GAME = 'removedFromGame';
 var GAIN_TWO_SHILLINGS = 'gainTwoShillings';
 var LIGHT = 'light';
 var DARK = 'dark';
+var ONE_SPACE = 'oneSpace';
 var MONK = 'monk';
 var MONK_IDS = [
     'Traveller06_Monks',
@@ -1769,9 +1770,10 @@ var AGestOfRobinHood = (function () {
             eventBoatsBridgesDark: new EventBoatsBridgesDarkState(this),
             eventBoatsBridgesLight: new EventBoatsBridgesLightState(this),
             eventGuyOfGisborne: new EventGuyOfGisborneState(this),
-            eventNottinghamFairLight: new EventNottinghamFairLightState(this),
+            eventReplaceHenchmen: new EventReplaceHenchmenState(this),
             eventSelectForces: new EventSelectForcesState(this),
             eventSelectSpace: new EventSelectSpaceState(this),
+            eventWillStutelyLight: new EventWillStutelyLightState(this),
             fortuneEventDayOfMarketRobinHood: new FortuneEventDayOfMarketRobinHoodState(this),
             fortuneEventDayOfMarketSheriff: new FortuneEventDayOfMarketSheriffState(this),
             fortuneEventQueenEleanor: new FortuneEventQueenEleanorState(this),
@@ -3079,7 +3081,7 @@ var GameMap = (function () {
         var gamedatas = _a.gamedatas;
         PARISHES.forEach(function (parishId) {
             var spaceData = gamedatas.spaces[parishId];
-            if (!spaceData) {
+            if (!spaceData || spaceData.status === PASSIVE) {
                 return;
             }
             _this.parishStatusMarkers[parishId].addCard({
@@ -3312,8 +3314,13 @@ var GameMap = (function () {
         var markers = this.parishStatusMarkers[spaceId].getCards();
         if (markers.length > 0) {
             var marker = markers[0];
-            markers[0].side = status === SUBMISSIVE ? 'front' : 'back';
-            this.game.markerManager.updateCardInformations(marker);
+            if (status === PASSIVE) {
+                this.game.markerManager.removeCard(marker);
+            }
+            else {
+                markers[0].side = status === SUBMISSIVE ? 'front' : 'back';
+                this.game.markerManager.updateCardInformations(marker);
+            }
         }
     };
     GameMap.prototype.moveMarker = function (_a) {
@@ -5919,16 +5926,16 @@ var EventAmbushLightState = (function () {
     };
     return EventAmbushLightState;
 }());
-var EventNottinghamFairLightState = (function () {
-    function EventNottinghamFairLightState(game) {
+var EventReplaceHenchmenState = (function () {
+    function EventReplaceHenchmenState(game) {
         this.selectedForces = [];
         this.selectableForces = [];
         this.showSelected = [];
         this.placeRobinHood = false;
         this.game = game;
     }
-    EventNottinghamFairLightState.prototype.onEnteringState = function (args) {
-        debug('Entering EventNottinghamFairLightState');
+    EventReplaceHenchmenState.prototype.onEnteringState = function (args) {
+        debug('Entering EventReplaceHenchmenState');
         this.args = args;
         this.selectedForces = [];
         this.selectableForces = [];
@@ -5938,11 +5945,11 @@ var EventNottinghamFairLightState = (function () {
         this.showSelected = this.args._private.showSelected || [];
         this.updateInterfaceInitialStep();
     };
-    EventNottinghamFairLightState.prototype.onLeavingState = function () {
-        debug('Leaving EventNottinghamFairLightState');
+    EventReplaceHenchmenState.prototype.onLeavingState = function () {
+        debug('Leaving EventReplaceHenchmenState');
     };
-    EventNottinghamFairLightState.prototype.setDescription = function (activePlayerId, args) { };
-    EventNottinghamFairLightState.prototype.updateInterfaceInitialStep = function () {
+    EventReplaceHenchmenState.prototype.setDescription = function (activePlayerId, args) { };
+    EventReplaceHenchmenState.prototype.updateInterfaceInitialStep = function () {
         var _this = this;
         if (this.selectedForces.length === this.args._private.max) {
             this.updateInterfacePlaceRobinHood();
@@ -5978,7 +5985,7 @@ var EventNottinghamFairLightState = (function () {
             this.game.addUndoButtons(this.args);
         }
     };
-    EventNottinghamFairLightState.prototype.updateInterfacePlaceRobinHood = function () {
+    EventReplaceHenchmenState.prototype.updateInterfacePlaceRobinHood = function () {
         var _this = this;
         if (!this.args._private.robinHoodInSupply) {
             this.updateInterfaceConfirm();
@@ -6008,7 +6015,7 @@ var EventNottinghamFairLightState = (function () {
         });
         this.game.addCancelButton();
     };
-    EventNottinghamFairLightState.prototype.updateInterfaceConfirm = function () {
+    EventReplaceHenchmenState.prototype.updateInterfaceConfirm = function () {
         var _this = this;
         this.game.clearPossible();
         this.game.clientUpdatePageTitle({
@@ -6027,7 +6034,7 @@ var EventNottinghamFairLightState = (function () {
         var callback = function () {
             _this.game.clearPossible();
             _this.game.takeAction({
-                action: 'actEventNottinghamFairLight',
+                action: 'actEventReplaceHenchmen',
                 args: {
                     henchmenIds: _this.getCallbackArgs(),
                     placeRobinHood: _this.placeRobinHood,
@@ -6046,7 +6053,7 @@ var EventNottinghamFairLightState = (function () {
         }
         this.game.addCancelButton();
     };
-    EventNottinghamFairLightState.prototype.updatePageTitle = function () {
+    EventReplaceHenchmenState.prototype.updatePageTitle = function () {
         this.game.clientUpdatePageTitle({
             text: _('${you} may select Henchmen to replace with Merry Men (${count} remaining)'),
             args: {
@@ -6055,13 +6062,13 @@ var EventNottinghamFairLightState = (function () {
             },
         });
     };
-    EventNottinghamFairLightState.prototype.getCallbackArgs = function () {
+    EventReplaceHenchmenState.prototype.getCallbackArgs = function () {
         return this.selectedForces.map(function (_a) {
             var id = _a.id;
             return id;
         });
     };
-    EventNottinghamFairLightState.prototype.handleForceClick = function (_a) {
+    EventReplaceHenchmenState.prototype.handleForceClick = function (_a) {
         var force = _a.force;
         if (this.selectedForces.some(function (_a) {
             var id = _a.id;
@@ -6077,7 +6084,7 @@ var EventNottinghamFairLightState = (function () {
         }
         this.updateInterfaceInitialStep();
     };
-    return EventNottinghamFairLightState;
+    return EventReplaceHenchmenState;
 }());
 var EventSelectForcesState = (function () {
     function EventSelectForcesState(game) {
@@ -6092,6 +6099,7 @@ var EventSelectForcesState = (function () {
         this.selectedForces = [];
         this.selectableForces = [];
         this.showSelected = [];
+        this.fromSpaceId = null;
         if (this.args._private.type === 'private') {
             this.selectableForces = this.args._private.forces;
             this.showSelected = this.args._private.showSelected || [];
@@ -6120,9 +6128,20 @@ var EventSelectForcesState = (function () {
     };
     EventSelectForcesState.prototype.updateInterfaceInitialStep = function () {
         var _this = this;
+        if (this.selectedForces.length === this.args._private.max) {
+            this.updateInterfaceConfirm();
+            return;
+        }
+        var selectable = this.selectableForces.filter(function (force) {
+            return _this.fromSpaceId === null ? true : force.location === _this.fromSpaceId;
+        });
+        if (selectable.length === this.selectedForces.length) {
+            this.updateInterfaceConfirm();
+            return;
+        }
         this.game.clearPossible();
         this.updatePageTitle();
-        this.selectableForces.forEach(function (force) {
+        selectable.forEach(function (force) {
             _this.game.setElementSelectable({
                 id: force.id,
                 callback: function () { return _this.handleForceClick({ force: force }); },
@@ -6243,6 +6262,17 @@ var EventSelectForcesState = (function () {
             });
         }
     };
+    EventSelectForcesState.prototype.checkFromSpaceId = function () {
+        if (!(this.args._private.conditions || []).includes(ONE_SPACE)) {
+            return;
+        }
+        if (this.selectedForces.length > 0) {
+            this.fromSpaceId = this.selectedForces[0].location;
+        }
+        else if (this.selectedForces.length === 0) {
+            this.fromSpaceId = null;
+        }
+    };
     EventSelectForcesState.prototype.handleForceClick = function (_a) {
         var force = _a.force;
         if (this.selectedForces.some(function (_a) {
@@ -6257,10 +6287,7 @@ var EventSelectForcesState = (function () {
         else {
             this.selectedForces.push(force);
         }
-        if (this.selectedForces.length === this.args._private.max) {
-            this.updateInterfaceConfirm();
-            return;
-        }
+        this.checkFromSpaceId();
         this.updateInterfaceInitialStep();
     };
     return EventSelectForcesState;
@@ -6341,6 +6368,104 @@ var EventSelectSpaceState = (function () {
         this.game.addCancelButton();
     };
     return EventSelectSpaceState;
+}());
+var EventWillStutelyLightState = (function () {
+    function EventWillStutelyLightState(game) {
+        this.game = game;
+    }
+    EventWillStutelyLightState.prototype.onEnteringState = function (args) {
+        debug('Entering EventWillStutelyLightState');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    EventWillStutelyLightState.prototype.onLeavingState = function () {
+        debug('Leaving EventWillStutelyLightState');
+    };
+    EventWillStutelyLightState.prototype.setDescription = function (activePlayerId, args) { };
+    EventWillStutelyLightState.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must select a Merry Man to move'),
+            args: {
+                you: '${you}',
+            },
+        });
+        Object.entries(this.args._private).forEach(function (_a) {
+            var merryManId = _a[0], _b = _a[1], merryMan = _b.merryMan, adjacentParishIds = _b.adjacentParishIds;
+            _this.game.setElementSelectable({
+                id: merryManId,
+                callback: function () {
+                    return _this.updateInterfaceSelectAdjacentParish({
+                        merryMan: merryMan,
+                        adjacentParishIds: adjacentParishIds,
+                    });
+                },
+            });
+        });
+        this.game.addPassButton({
+            optionalAction: this.args.optionalAction,
+        });
+        this.game.addUndoButtons(this.args);
+    };
+    EventWillStutelyLightState.prototype.updateInterfaceSelectAdjacentParish = function (_a) {
+        var _this = this;
+        var adjacentParishIds = _a.adjacentParishIds, merryMan = _a.merryMan;
+        if (adjacentParishIds.length === 1) {
+            this.updateInterfaceConfirm({ merryMan: merryMan, parishId: adjacentParishIds[0] });
+            return;
+        }
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('${you} must select a Parish to move your Merry Man to'),
+            args: {
+                you: '${you}',
+            },
+        });
+        this.game.setElementSelected({ id: merryMan.id });
+        adjacentParishIds.forEach(function (parishId) {
+            _this.game.addPrimaryActionButton({
+                id: "".concat(parishId, "_btn"),
+                text: _(_this.game.gamedatas.spaces[parishId].name),
+                callback: function () { return _this.updateInterfaceConfirm({ merryMan: merryMan, parishId: parishId }); },
+            });
+        });
+        this.game.addCancelButton();
+    };
+    EventWillStutelyLightState.prototype.updateInterfaceConfirm = function (_a) {
+        var _this = this;
+        var merryMan = _a.merryMan, parishId = _a.parishId;
+        this.game.clearPossible();
+        this.game.clientUpdatePageTitle({
+            text: _('Move your Merry Man to ${spaceName}?'),
+            args: {
+                spaceName: _(this.game.gamedatas.spaces[parishId].name),
+            },
+        });
+        this.game.setElementSelected({ id: merryMan.id });
+        var callback = function () {
+            _this.game.clearPossible();
+            _this.game.takeAction({
+                action: 'actEventWillStutelyLight',
+                args: {
+                    merryManId: merryMan.id,
+                    parishId: parishId,
+                },
+            });
+        };
+        if (this.game.settings.get({
+            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+        }) === PREF_ENABLED) {
+            callback();
+        }
+        else {
+            this.game.addConfirmButton({
+                callback: callback,
+            });
+        }
+        this.game.addCancelButton();
+    };
+    return EventWillStutelyLightState;
 }());
 var FortuneEventDayOfMarketRobinHoodState = (function () {
     function FortuneEventDayOfMarketRobinHoodState(game) {

@@ -134,7 +134,11 @@ class Force extends \AGestOfRobinHood\Helpers\DB_Model
     if ($this->type !== HENCHMEN) {
       $this->setHidden(1);
     }
-    Notifications::returnToSupply($player, $this, $space, $isHidden, $fromPrison);
+    if ($this->isHenchman()) {
+      Notifications::returnHenchmanSupply($player, $this, $space);
+    } else {
+      Notifications::returnToSupply($player, $this, $space, $isHidden, $fromPrison);
+    }
     if ($this->type === CAMP) {
       Players::moveRoyalFavour($player, 1, ORDER);
     }

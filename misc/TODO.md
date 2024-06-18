@@ -27,16 +27,6 @@ DARK
 LIGHT
 DARK
 
-# Event25_WeaponsOfTheWeak
 
-LIGHT
-DARK
-
-# Event26_Corruption
-
-LIGHT
-DARK
-
-# Event27_WillStutely
-
-LIGHT
+# TODO
+- Separate auto resolve / player interaction for events in separate states?

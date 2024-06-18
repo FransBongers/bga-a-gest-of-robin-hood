@@ -100,6 +100,7 @@ interface SelectForcesPrivate {
   max: number;
   type: 'private';
   showSelected?: GestForce[];
+  conditions?: string[];
 }
 
 interface GestPublicForce {
@@ -114,9 +115,10 @@ interface SelectForcesPublic {
   max: number;
   type: 'public';
   showSelected?: GestPublicForce[];
+  conditions?: string[];
 }
 
-interface OnEnteringEventNottinghamFairLightStateArgs extends CommonArgs {
+interface OnEnteringEventReplaceHenchmenStateArgs extends CommonArgs {
   _private: SelectForcesPrivate & { robinHoodInSupply: boolean };
 }
 
@@ -133,6 +135,13 @@ interface OnEnteringEventSelectSpaceStateArgs extends CommonArgs {
   confirmText: string;
   title: string;
   titleOther: string;
+}
+
+interface OnEnteringEventWillStutelyLightStateArgs extends CommonArgs {
+  _private: {
+    merryMan: GestForce;
+    adjacentParishIds: string[];
+  }[];
 }
 
 interface OnEnteringFortuneEventDayOfMarketRobinHoodStateArgs

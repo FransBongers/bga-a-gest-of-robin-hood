@@ -152,6 +152,8 @@ const GAIN_TWO_SHILLINGS = 'gainTwoShillings';
 const LIGHT = 'light';
 const DARK = 'dark';
 
+const ONE_SPACE = 'oneSpace';
+
 const MONK = 'monk';
 
 const MONK_IDS = [

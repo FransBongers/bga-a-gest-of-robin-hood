@@ -87,6 +87,23 @@ class GameMap extends \APP_DbObject
     return $result;
   }
 
+  public static function placeHenchmen($player, $space, $number)
+  {
+    $spaceId = $space->getId();
+    $henchmen = [];
+    for ($i = 0; $i < $number; $i++) {
+      $henchman = Forces::getTopOf(HENCHMEN_SUPPLY);
+      if ($henchman === null) {
+        continue;
+      }
+      $henchman->setLocation($spaceId);
+      $henchmen[] = $henchman;
+    }
+
+    Notifications::placeHenchmen($player, $henchmen, $space);
+  }
+
+
   public static function placeMerryMan($player, $space, $placeRobinHood, $count = 1)
   {
     $merryMenToPlace = [];

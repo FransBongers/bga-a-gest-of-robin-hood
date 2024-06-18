@@ -232,7 +232,7 @@ class GameMap {
   }) {
     PARISHES.forEach((parishId) => {
       const spaceData = gamedatas.spaces[parishId];
-      if (!spaceData) {
+      if (!spaceData || spaceData.status === PASSIVE) {
         return;
       }
       this.parishStatusMarkers[parishId].addCard({
@@ -516,8 +516,12 @@ class GameMap {
     const markers = this.parishStatusMarkers[spaceId].getCards();
     if (markers.length > 0) {
       const marker = markers[0];
-      markers[0].side = status === SUBMISSIVE ? 'front' : 'back';
-      this.game.markerManager.updateCardInformations(marker);
+      if (status === PASSIVE) {
+        this.game.markerManager.removeCard(marker);
+      } else {
+        markers[0].side = status === SUBMISSIVE ? 'front' : 'back';
+        this.game.markerManager.updateCardInformations(marker);
+      }
     }
   }
 

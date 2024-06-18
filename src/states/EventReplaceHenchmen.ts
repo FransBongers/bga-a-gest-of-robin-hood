@@ -1,6 +1,6 @@
-class EventNottinghamFairLightState implements State {
+class EventReplaceHenchmenState implements State {
   private game: AGestOfRobinHoodGame;
-  private args: OnEnteringEventNottinghamFairLightStateArgs;
+  private args: OnEnteringEventReplaceHenchmenStateArgs;
   // private selectedForcesIds: string[] = [];
   private selectedForces: GestForce[] = [];
   private selectableForces: GestForce[] = [];
@@ -11,8 +11,8 @@ class EventNottinghamFairLightState implements State {
     this.game = game;
   }
 
-  onEnteringState(args: OnEnteringEventNottinghamFairLightStateArgs) {
-    debug('Entering EventNottinghamFairLightState');
+  onEnteringState(args: OnEnteringEventReplaceHenchmenStateArgs) {
+    debug('Entering EventReplaceHenchmenState');
     this.args = args;
     this.selectedForces = [];
     this.selectableForces = [];
@@ -25,12 +25,12 @@ class EventNottinghamFairLightState implements State {
   }
 
   onLeavingState() {
-    debug('Leaving EventNottinghamFairLightState');
+    debug('Leaving EventReplaceHenchmenState');
   }
 
   setDescription(
     activePlayerId: number,
-    args: OnEnteringEventNottinghamFairLightStateArgs
+    args: OnEnteringEventReplaceHenchmenStateArgs
   ) {}
 
   //  .####.##....##.########.########.########..########....###.....######..########
@@ -141,7 +141,7 @@ class EventNottinghamFairLightState implements State {
     const callback = () => {
       this.game.clearPossible();
       this.game.takeAction({
-        action: 'actEventNottinghamFairLight',
+        action: 'actEventReplaceHenchmen',
         args: {
           henchmenIds: this.getCallbackArgs(),
           placeRobinHood: this.placeRobinHood,

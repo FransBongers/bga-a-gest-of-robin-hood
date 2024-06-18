@@ -46,12 +46,11 @@ class Event27_WillStutely extends \AGestOfRobinHood\Cards\Events\RegularEvent
 
   public function performLightEffect($player, $successful, $ctx = null, $space = null)
   {
-    // $ctx->insertAsBrother(new LeafNode([
-    //   'action' => EVENT_SELECT_FORCES,
-    //   'playerId' => $player->getId(),
-    //   'cardId' => $this->id,
-    //   'effect' => LIGHT,
-    // ]));
+    $ctx->insertAsBrother(new LeafNode([
+      'action' => EVENT_WILL_STUTELY_LIGHT,
+      'playerId' => $player->getId(),
+      'cardId' => $this->id,
+    ]));
   }
 
   public function performDarkEffect($player, $successful, $ctx = null, $space = null)
@@ -66,7 +65,7 @@ class Event27_WillStutely extends \AGestOfRobinHood\Cards\Events\RegularEvent
 
   public function canPerformLightEffect($player)
   {
-    return false;
+    return count(AtomicActions::get(EVENT_WILL_STUTELY_LIGHT)->getOptions()) > 0;
   }
 
   public function canPerformDarkEffect($player)
@@ -127,11 +126,6 @@ class Event27_WillStutely extends \AGestOfRobinHood\Cards\Events\RegularEvent
   // .##.....##....##.....##..##........##.....##.......##...
   // .##.....##....##.....##..##........##.....##.......##...
   // ..#######.....##....####.########.####....##.......##...
-
-  public function resolveLightEffectAutomatically($player, $ctx)
-  {
-    return false;
-  }
 
   private function getDarkOptions()
   {

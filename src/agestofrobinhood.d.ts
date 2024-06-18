@@ -113,7 +113,7 @@ interface GestMarker {
 interface GestSpace {
   id: string;
   location: string;
-  status: 'submissive' | 'revolting';
+  status: 'submissive' | 'revolting' | 'passive';
   name: string;
 }
 

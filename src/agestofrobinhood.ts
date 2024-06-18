@@ -73,9 +73,10 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     eventBoatsBridgesDark: EventBoatsBridgesDarkState;
     eventBoatsBridgesLight: EventBoatsBridgesLightState;
     eventGuyOfGisborne: EventGuyOfGisborneState;
-    eventNottinghamFairLight: EventNottinghamFairLightState;
+    eventReplaceHenchmen: EventReplaceHenchmenState;
     eventSelectForces: EventSelectForcesState;
     eventSelectSpace: EventSelectSpaceState;
+    eventWillStutelyLight: EventWillStutelyLightState;
     fortuneEventDayOfMarketRobinHood: FortuneEventDayOfMarketRobinHoodState;
     fortuneEventDayOfMarketSheriff: FortuneEventDayOfMarketSheriffState;
     fortuneEventQueenEleanor: FortuneEventQueenEleanorState;
@@ -148,9 +149,10 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
       eventBoatsBridgesDark: new EventBoatsBridgesDarkState(this),
       eventBoatsBridgesLight: new EventBoatsBridgesLightState(this),
       eventGuyOfGisborne: new EventGuyOfGisborneState(this),
-      eventNottinghamFairLight: new EventNottinghamFairLightState(this),
+      eventReplaceHenchmen: new EventReplaceHenchmenState(this),
       eventSelectForces: new EventSelectForcesState(this),
       eventSelectSpace: new EventSelectSpaceState(this),
+      eventWillStutelyLight: new EventWillStutelyLightState(this),
       fortuneEventDayOfMarketRobinHood:
         new FortuneEventDayOfMarketRobinHoodState(this),
       fortuneEventDayOfMarketSheriff: new FortuneEventDayOfMarketSheriffState(
