@@ -3,6 +3,9 @@
 namespace AGestOfRobinHood\Cards\Travellers;
 
 use AGestOfRobinHood\Core\Engine\LeafNode;
+use AGestOfRobinHood\Core\Notifications;
+use AGestOfRobinHood\Helpers\GameMap;
+use AGestOfRobinHood\Managers\Forces;
 use AGestOfRobinHood\Managers\Players;
 
 class Traveller_NobleKnight extends \AGestOfRobinHood\Models\TravellerCard
@@ -19,14 +22,14 @@ class Traveller_NobleKnight extends \AGestOfRobinHood\Models\TravellerCard
     $this->setupLocation = TRAVELLERS_DECK;
   }
 
-  public function resolveLightEffect($player, $successful, $ctx = null, $space = null)
+  public function performLightEffect($player, $successful, $ctx = null, $space = null, $merryMenIds = null)
   {
     if ($successful) {
       $player->incShillings(3);
     }
   }
 
-  public function resolveDarkEffect($player, $successful, $ctx = null, $space = null)
+  public function performDarkEffect($player, $successful, $ctx = null, $space = null, $merryMenIds = [])
   {
     if ($successful) {
       $player->incShillings(5);
@@ -37,7 +40,18 @@ class Traveller_NobleKnight extends \AGestOfRobinHood\Models\TravellerCard
       ]));
     } else {
       //  TODO: capture merry men
-
+      $merryMen = Forces::getMany($merryMenIds)->toArray();
+      $notifInput = GameMap::createMoves(array_map(function ($merryMan) {
+        return [
+          'force' => $merryMan,
+          'toSpaceId' => PRISON,
+          'toHidden' => false,
+        ];
+      }, $merryMen));
+      Notifications::robCaptureRobbingMerryMen($player, $notifInput['forces'], $notifInput['moves']);
+      if (in_array(ROBIN_HOOD, $merryMenIds)) {
+        Players::moveRoyalFavour($player, 1, ORDER);
+      }
     }
   }
 }

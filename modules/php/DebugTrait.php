@@ -28,7 +28,8 @@ trait DebugTrait
     // $merryMan->setLocation(PRISON);
     // $merryMan->setHidden(0);
     // Spaces::get(TUXFORD)->revolt(Players::get());
-    // Forces::get(ROBIN_HOOD)->setLocation(PRISON);
+    // Forces::get(ROBIN_HOOD)->setLocation(RETFORD);
+    // Spaces::get(RETFORD)->setStatus(REVOLTING);
     // Forces::get('merryMen_5')->setHidden(0);
     // Forces::get('henchmen_11')->setLocation(MANSFIELD);
     // Forces::get(ROBIN_HOOD)->setLocation(ROBIN_HOOD_SUPPLY);
@@ -36,7 +37,7 @@ trait DebugTrait
     // Forces::get('merryMen_4')->setHidden(1);
     // Cards::get('Traveller07_Monks')->insertOnTop(TRAVELLERS_VICTIMS_PILE);
     // Cards::get('Traveller02_RichMerchant')->insertOnTop(TRAVELLERS_VICTIMS_PILE);
-    Cards::get('Event24_MaidMarian')->insertOnTop(EVENTS_DECK);
+    Cards::get('Traveller12_GuyOfGisborne')->insertOnTop(TRAVELLERS_DECK);
     // Globals::setOllertonHillAdjacency(true);
     // Cards::get('Traveller07_Monks')->setLocation(TRAVELLERS_DISCARD);
     // $this->debugPlaceForces(TALLAGE_CARRIAGE,TUXFORD,1);

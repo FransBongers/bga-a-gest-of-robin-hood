@@ -2,6 +2,11 @@
 
 namespace AGestOfRobinHood\Cards\Travellers;
 
+use AGestOfRobinHood\Core\Engine\LeafNode;
+use AGestOfRobinHood\Core\Notifications;
+use AGestOfRobinHood\Managers\Forces;
+use AGestOfRobinHood\Managers\Players;
+
 class Traveller11_BishopOfHereford extends \AGestOfRobinHood\Models\TravellerCard
 {
   public function __construct($row)
@@ -15,5 +20,30 @@ class Traveller11_BishopOfHereford extends \AGestOfRobinHood\Models\TravellerCar
     $this->textDark = clienttranslate('If successful, gain 6 Shillings and put the card in the Victims Pile. If failed, the Sheriff gains 3 Shillings and sets the space to Submissive (if possible), then put the card in the discard pile.');
     $this->strength = 1;
     $this->setupLocation = TRAVELLERS_POOL;
+  }
+
+  public function performLightEffect($player, $successful, $ctx = null, $space = null, $merryMenIds = null)
+  {
+    if ($successful) {
+      $player->incShillings(3);
+    }
+  }
+
+  public function performDarkEffect($player, $successful, $ctx = null, $space = null, $merryMenIds = null)
+  {
+    if ($successful) {
+      $player->incShillings(6);
+      $ctx->insertAsBrother(new LeafNode([
+        'action' => PUT_CARD_IN_VICTIMS_PILE,
+        'playerId' => $player->getId(),
+        'cardId' => $this->getId(),
+      ]));
+    } else {
+      $sheriff = Players::getSheriffPlayer();
+      $sheriff->incShillings(3);
+      if ($space !== null && $space->isParish() && $space->isRevolting()) {
+        $space->setToSubmissive($sheriff);
+      }
+    }
   }
 }

@@ -3,7 +3,14 @@
 namespace AGestOfRobinHood\Cards\Travellers;
 
 use AGestOfRobinHood\Core\Engine\LeafNode;
+use AGestOfRobinHood\Core\Notifications;
+use AGestOfRobinHood\Helpers\GameMap;
+use AGestOfRobinHood\Helpers\Utils;
+use AGestOfRobinHood\Managers\AtomicActions;
+use AGestOfRobinHood\Managers\Cards;
+use AGestOfRobinHood\Managers\Forces;
 use AGestOfRobinHood\Managers\Players;
+use AGestOfRobinHood\Managers\Spaces;
 
 class Traveller09_ThePotter extends \AGestOfRobinHood\Models\TravellerCard
 {
@@ -20,14 +27,119 @@ class Traveller09_ThePotter extends \AGestOfRobinHood\Models\TravellerCard
     $this->setupLocation = TRAVELLERS_DECK;
   }
 
-  public function resolveLightEffect($player, $successful, $ctx = null, $space = null)
+  // ..######..##.....##..#######...#######...######..########
+  // .##....##.##.....##.##.....##.##.....##.##....##.##......
+  // .##.......##.....##.##.....##.##.....##.##.......##......
+  // .##.......#########.##.....##.##.....##..######..######..
+  // .##.......##.....##.##.....##.##.....##.......##.##......
+  // .##....##.##.....##.##.....##.##.....##.##....##.##......
+  // ..######..##.....##..#######...#######...######..########
+
+  // ..######..########....###....########.########
+  // .##....##....##......##.##......##....##......
+  // .##..........##.....##...##.....##....##......
+  // ..######.....##....##.....##....##....######..
+  // .......##....##....#########....##....##......
+  // .##....##....##....##.....##....##....##......
+  // ..######.....##....##.....##....##....########
+
+  public function performLightEffect($player, $successful, $ctx = null, $space = null, $merryMenIds = null)
   {
     if ($successful) {
       $player->incShillings(3);
     }
   }
 
-  public function resolveDarkEffect($player, $successful, $ctx = null, $space = null)
+  public function performDarkEffect($player, $successful, $ctx = null, $space = null, $merryMenIds = null)
   {
+    if ($successful) {
+      $ctx->insertAsBrother(new LeafNode([
+        'action' => EVENT_SELECT_SPACE,
+        'playerId' => $player->getId(),
+        'cardId' => $this->id,
+        'effect' => DARK,
+      ]));
+    } else {
+      $robinHood = Forces::get(ROBIN_HOOD);
+      if ($robinHood->getLocation() !== PRISON) {
+        $data = GameMap::createMoves([
+          [
+            'force' => $robinHood,
+            'toSpaceId' => PRISON,
+            'toHidden' => false,
+          ]
+        ]);
+        Notifications::robThePotterDarkFail($player, $data['forces'], $data['moves']);
+      } else {
+        // Send message that RH is already in Prison?
+      }
+      Players::moveRoyalFavour(Players::getSheriffPlayer(), 1, ORDER);
+    }
+  }
+
+
+  // .########..########..######...#######..##.......##.....##.########
+  // .##.....##.##.......##....##.##.....##.##.......##.....##.##......
+  // .##.....##.##.......##.......##.....##.##.......##.....##.##......
+  // .########..######....######..##.....##.##.......##.....##.######..
+  // .##...##...##.............##.##.....##.##........##...##..##......
+  // .##....##..##.......##....##.##.....##.##.........##.##...##......
+  // .##.....##.########..######...#######..########....###....########
+
+  // ..######..########....###....########.########
+  // .##....##....##......##.##......##....##......
+  // .##..........##.....##...##.....##....##......
+  // ..######.....##....##.....##....##....######..
+  // .......##....##....#########....##....##......
+  // .##....##....##....##.....##....##....##......
+  // ..######.....##....##.....##....##....########
+
+  public function resolveDarkEffectAutomatically($player, $ctx)
+  {
+    return false;
+  }
+
+  public function resolveDarkEffect($player, $ctx, $space)
+  {
+    $robinHood = Forces::get(ROBIN_HOOD);
+    $data = GameMap::createMoves([
+      [
+        'force' => $robinHood,
+        'toSpaceId' => $space->getId(),
+        'toHidden' => false,
+      ]
+    ]);
+    Notifications::robThePotterDarkSuccess($player, $data['forces'], $data['moves'], $space);
+    AtomicActions::get(ROB)->takeShillingsFromTheSheriff($player);
+    $ctx->insertAsBrother(new LeafNode([
+      'action' => PUT_CARD_IN_VICTIMS_PILE,
+      'playerId' => $player->getId(),
+      'cardId' => $this->getId(),
+    ]));
+  }
+
+
+
+  public function getDarkStateArgs()
+  {
+    return [
+      'spaces' => $this->getDarkOptions(),
+      'title' => clienttranslate('${you} must select a space to place Robin Hood'),
+      'confirmText' => clienttranslate('Place Robin Hood in ${spaceName}?'),
+      'titleOther' => clienttranslate('${actplayer} must select a space to place Robin Hood'),
+    ];
+  }
+
+  // .##.....##.########.####.##.......####.########.##....##
+  // .##.....##....##.....##..##........##.....##.....##..##.
+  // .##.....##....##.....##..##........##.....##......####..
+  // .##.....##....##.....##..##........##.....##.......##...
+  // .##.....##....##.....##..##........##.....##.......##...
+  // .##.....##....##.....##..##........##.....##.......##...
+  // ..#######.....##....####.########.####....##.......##...
+
+  private function getDarkOptions()
+  {
+    return Spaces::get(NOTTINGHAM)->getAdjacentSpaces();
   }
 }

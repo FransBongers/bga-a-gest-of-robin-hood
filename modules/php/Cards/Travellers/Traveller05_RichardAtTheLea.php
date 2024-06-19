@@ -22,7 +22,7 @@ class Traveller05_RichardAtTheLea extends \AGestOfRobinHood\Models\TravellerCard
     $this->setupLocation = TRAVELLERS_DECK;
   }
 
-  public function resolveDarkEffect($player, $successful, $ctx = null, $space = null)
+  public function performDarkEffect($player, $successful, $ctx = null, $space = null, $merryMenIds = null)
   {
     $player->payShillings(3);
     $retford = Spaces::get(RETFORD);
@@ -38,7 +38,7 @@ class Traveller05_RichardAtTheLea extends \AGestOfRobinHood\Models\TravellerCard
     $this->removeFromGame($player);
   }
 
-  public function resolveLightEffect($player, $successful, $ctx = null, $space = null)
+  public function performLightEffect($player, $successful, $ctx = null, $space = null, $merryMenIds = null)
   {
     if ($successful) {
       $player->incShillings(2);

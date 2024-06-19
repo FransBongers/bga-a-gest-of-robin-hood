@@ -634,6 +634,62 @@ class Notifications
     ]);
   }
 
+  public static function robCaptureRobbingMerryMen($player, $forces, $moves)
+  {
+    $text = clienttranslate('The Robbing Merry Men are captured');
+
+    self::notify($player, 'moveMerryMenPrivate', $text, [
+      'playerId' => $player->getId(),
+      'player_name' => $player->getName(),
+      'forces' => $forces,
+    ]);
+
+    self::notifyAll('moveMerryMenPublic', $text, [
+      'playerId' => $player->getId(),
+      'player_name' => $player->getName(),
+      'moves' => $moves,
+    ]);
+  }
+
+  public static function robThePotterDarkSuccess($player, $forces, $moves, $space)
+  {
+    $text = clienttranslate('${player_name} places Robin Hood in ${tkn_boldText_spaceName}');
+
+    self::notify($player, 'moveMerryMenPrivate', $text, [
+      'playerId' => $player->getId(),
+      'player_name' => $player->getName(),
+      'forces' => $forces,
+      'tkn_boldText_spaceName' => $space->getName(),
+      'i18n' => ['tkn_boldText_spaceName'],
+    ]);
+
+    self::notifyAll('moveMerryMenPublic', $text, [
+      'playerId' => $player->getId(),
+      'player_name' => $player->getName(),
+      'moves' => $moves,
+      'tkn_boldText_spaceName' => $space->getName(),
+      'i18n' => ['tkn_boldText_spaceName'],
+    ]);
+  }
+
+  public static function robThePotterDarkFail($player, $forces, $moves)
+  {
+    $text = clienttranslate('${player_name} Captures Robin Hood');
+
+    $sheriff = Players::getSheriffPlayer();
+    self::notify($player, 'moveMerryMenPrivate', $text, [
+      'playerId' => $player->getId(),
+      'player_name' => $sheriff->getName(),
+      'forces' => $forces,
+    ]);
+
+    self::notifyAll('moveMerryMenPublic', $text, [
+      'playerId' => $player->getId(),
+      'player_name' => $sheriff->getName(),
+      'moves' => $moves,
+    ]);
+  }
+
   public static function royalPardonLight($player,  $forces, $moves, $space)
   {
     $text = clienttranslate('${player_name} moves ${count} Merry Men from Prison to ${tkn_boldText_spaceName}');

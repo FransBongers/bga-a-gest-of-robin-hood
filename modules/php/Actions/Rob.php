@@ -267,14 +267,17 @@ class Rob extends \AGestOfRobinHood\Actions\Plot
     Notifications::robTargetSheriffsTreasury($player);
     Notifications::robResult($player, WHITE, $dieResult, $success);
     if ($success) {
-
-      $sheriffPlayer = Players::getSheriffPlayer();
-      $amount = min(2, $sheriffPlayer->getShillings());
-      $sheriffPlayer->incShillings(-$amount, false);
-      $player->incShillings($amount, false);
-      Notifications::robTakeShillingsFromTheSheriff($player, $sheriffPlayer, $amount);
-      Players::moveRoyalFavour($player, 1, JUSTICE);
+      $this->takeShillingsFromTheSheriff($player);
     }
+  }
+
+  public function takeShillingsFromTheSheriff($player) {
+    $sheriffPlayer = Players::getSheriffPlayer();
+    $amount = min(2, $sheriffPlayer->getShillings());
+    $sheriffPlayer->incShillings(-$amount, false);
+    $player->incShillings($amount, false);
+    Notifications::robTakeShillingsFromTheSheriff($player, $sheriffPlayer, $amount);
+    Players::moveRoyalFavour($player, 1, JUSTICE);
   }
 
   public function canBePerformed($player, $availableShillings, $cost = null)

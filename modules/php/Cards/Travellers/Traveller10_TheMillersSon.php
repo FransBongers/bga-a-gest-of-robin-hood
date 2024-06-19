@@ -22,7 +22,7 @@ class Traveller10_TheMillersSon extends \AGestOfRobinHood\Models\TravellerCard
     $this->setupLocation = TRAVELLERS_DECK;
   }
 
-  public function resolveDarkEffect($player, $successful, $ctx = null, $space = null)
+  public function performDarkEffect($player, $successful, $ctx = null, $space = null, $merryMenIds = null)
   {
     if ($successful) {
       $player->incShillings(1);
@@ -45,7 +45,7 @@ class Traveller10_TheMillersSon extends \AGestOfRobinHood\Models\TravellerCard
     }
   }
 
-  public function resolveLightEffect($player, $successful, $ctx = null, $space = null)
+  public function performLightEffect($player, $successful, $ctx = null, $space = null, $merryMenIds = null)
   {
     if ($successful) {
       $player->incShillings(2);
