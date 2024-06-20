@@ -99,6 +99,7 @@ interface NotifMoveCarriagePublicArgs extends NotifWithPlayerArgs {
 
 interface NotifMoveRoyalFavourMarkerArgs extends NotifWithPlayerArgs {
   marker: GestMarker;
+  scores: Record<string, number>;
 }
 
 interface NotifMoveRoyalInspectionMarkerArgs extends NotifWithPlayerArgs {

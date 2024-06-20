@@ -54,6 +54,8 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
   private _selectableNodes = []; // TODO: use to keep track of selectable classed?
 
   // Game specific
+  public cardArea: CardArea;
+  public cardManager: GestCardManager;
   public forceManager: ForceManager;
   public gameMap: GameMap;
   public markerManager: MarkerManager;
@@ -207,11 +209,12 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
           : 2100 - (this.settings.get({ id: PREF_ANIMATION_SPEED }) as number),
     });
 
+    this.cardManager = new GestCardManager(this);
     this.forceManager = new ForceManager(this);
     this.markerManager = new MarkerManager(this);
 
     this.gameMap = new GameMap(this);
-
+    this.cardArea = new CardArea(this);
     if (this.notificationManager != undefined) {
       this.notificationManager.destroy();
     }

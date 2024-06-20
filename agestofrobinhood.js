@@ -1629,6 +1629,7 @@ var PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY = 'confirmEndOfTurnPlayerSwi
 var PREF_SHOW_ANIMATIONS = 'showAnimations';
 var PREF_ANIMATION_SPEED = 'animationSpeed';
 var PREF_CARD_INFO_IN_TOOLTIP = 'cardInfoInTooltip';
+var PREF_CARD_SIZE = 'cardSize';
 var PREF_CARD_SIZE_IN_LOG = 'cardSizeInLog';
 var PREF_DISABLED = 'disabled';
 var PREF_ENABLED = 'enabled';
@@ -1813,9 +1814,11 @@ var AGestOfRobinHood = (function () {
                 ? 0
                 : 2100 - this.settings.get({ id: PREF_ANIMATION_SPEED }),
         });
+        this.cardManager = new GestCardManager(this);
         this.forceManager = new ForceManager(this);
         this.markerManager = new MarkerManager(this);
         this.gameMap = new GameMap(this);
+        this.cardArea = new CardArea(this);
         if (this.notificationManager != undefined) {
             this.notificationManager.destroy();
         }
@@ -2355,6 +2358,108 @@ var capitalizeFirstLetter = function (string) {
 var lowerCaseFirstLetter = function (string) {
     return string.charAt(0).toLowerCase() + string.slice(1);
 };
+var CardArea = (function () {
+    function CardArea(game) {
+        this.game = game;
+        var gamedatas = game.gamedatas;
+        this.setupCardArea({ gamedatas: gamedatas });
+    }
+    CardArea.prototype.clearInterface = function () { };
+    CardArea.prototype.updateInterface = function (_a) {
+        var gamedatas = _a.gamedatas;
+    };
+    CardArea.prototype.setupStocks = function (_a) {
+        var gamedatas = _a.gamedatas;
+        this.stocks = {
+            eventsDeck: new ManualPositionStock(this.game.cardManager, document.getElementById('gest_events_deck'), {}, this.game.cardManager.updateDisplay),
+            eventsDiscard: new ManualPositionStock(this.game.cardManager, document.getElementById('gest_events_discard'), {}, this.game.cardManager.updateDisplay),
+            travellersDeck: new ManualPositionStock(this.game.cardManager, document.getElementById('gest_travellers_deck'), {}, this.game.cardManager.updateDisplay),
+            travellersDiscard: new ManualPositionStock(this.game.cardManager, document.getElementById('gest_travellers_discard'), {}, this.game.cardManager.updateDisplay),
+            travellersVictimsPile: new ManualPositionStock(this.game.cardManager, document.getElementById('gest_travellers_vicitimsPile'), {}, this.game.cardManager.updateDisplay),
+        };
+        this.updateCards({ gamedatas: gamedatas });
+    };
+    CardArea.prototype.updateCards = function (_a) {
+        var gamedatas = _a.gamedatas;
+        if (gamedatas.cards.eventsDiscard) {
+            this.stocks.eventsDiscard.addCard(gamedatas.cards.eventsDiscard);
+        }
+        if (gamedatas.cards.travellersDiscard) {
+            this.stocks.travellersDiscard.addCard(gamedatas.cards.travellersDiscard);
+        }
+        if (gamedatas.cards.travellersVictimsPile) {
+            this.stocks.travellersVictimsPile.addCard(gamedatas.cards.travellersVictimsPile);
+        }
+    };
+    CardArea.prototype.setupCardArea = function (_a) {
+        var gamedatas = _a.gamedatas;
+        document
+            .getElementById('play_area_container')
+            .insertAdjacentHTML('beforeend', tplCardArea());
+        var cardScale = this.game.settings.get({
+            id: PREF_CARD_SIZE,
+        });
+        var node = document.getElementById('gest_card_area');
+        if (node) {
+            node.style.setProperty('--gestCardSizeScale', "".concat(Number(cardScale) / 100));
+        }
+        this.setupStocks({ gamedatas: gamedatas });
+    };
+    return CardArea;
+}());
+var tplCardArea = function () { return "\n  <div id=\"gest_card_area\">\n    <div class=\"gest_card_row\">\n      <div id=\"gest_events_deck\" class=\"gest_card_stock gest_card_side\" data-card-id=\"EventBack\" style=\"box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.5);\"></div>\n      <div id=\"gest_events_discard\" class=\"gest_card_stock\"></div>\n    </div>\n    <div class=\"gest_card_row\">\n      <div id=\"gest_travellers_deck\" class=\"gest_card_stock gest_card_side\" data-card-id=\"TravellerBack\" style=\" box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.5);\"></div>\n      <div id=\"gest_travellers_discard\" class=\"gest_card_stock\"></div>\n      <div id=\"gest_travellers_vicitimsPile\" class=\"gest_card_stock\"></div>\n    </div>\n  </div>\n"; };
+var GestCardManager = (function (_super) {
+    __extends(GestCardManager, _super);
+    function GestCardManager(game) {
+        var _this = _super.call(this, game, {
+            getId: function (card) { return card.id.split('_')[0]; },
+            setupDiv: function (card, div) { return _this.setupDiv(card, div); },
+            setupFrontDiv: function (card, div) { return _this.setupFrontDiv(card, div); },
+            setupBackDiv: function (card, div) { return _this.setupBackDiv(card, div); },
+            isCardVisible: function (card) { return _this.isCardVisible(card); },
+            animationManager: game.animationManager,
+        }) || this;
+        _this.game = game;
+        return _this;
+    }
+    GestCardManager.prototype.clearInterface = function () { };
+    GestCardManager.prototype.setupDiv = function (card, div) {
+        div.style.height = 'calc(var(--gestCardScale) * 355px)';
+        div.style.width = 'calc(var(--gestCardScale) * 206px)';
+        div.style.position = 'relative';
+        div.classList.add('gest_card');
+    };
+    GestCardManager.prototype.setupFrontDiv = function (card, div) {
+        div.classList.add('gest_card_side');
+        div.style.height = 'calc(var(--gestCardScale) * 355px)';
+        div.style.width = 'calc(var(--gestCardScale) * 206px)';
+        div.setAttribute('data-card-id', card.id.split('_')[0]);
+    };
+    GestCardManager.prototype.setupBackDiv = function (card, div) {
+        div.classList.add('gest_card_side');
+        div.style.height = 'calc(var(--gestCardScale) * 355px)';
+        div.style.width = 'calc(var(--gestCardScale) * 206px)';
+        var cardId = card.id.split('_')[0];
+        div.setAttribute('data-card-id', this.game.gamedatas.staticData.cards[cardId].type === 'eventCard'
+            ? 'EventBack'
+            : 'TravellerBack');
+    };
+    GestCardManager.prototype.isCardVisible = function (card) {
+        if (card.location.startsWith('eventsDeck') ||
+            card.location.startsWith('travellersDeck')) {
+            return false;
+        }
+        return true;
+    };
+    GestCardManager.prototype.updateDisplay = function (element, cards, lastCard, stock) {
+        var node = stock.getCardElement(lastCard);
+        console.log('updateElement', cards);
+        node.style.top = '0px';
+        node.style.left = '0px';
+        node.style.position = 'absolute';
+    };
+    return GestCardManager;
+}(CardManager));
 var ForceManager = (function (_super) {
     __extends(ForceManager, _super);
     function ForceManager(game) {
@@ -3740,14 +3845,44 @@ var NotificationManager = (function () {
         });
     };
     NotificationManager.prototype.notif_drawAndRevealCard = function (notif) {
-        return __awaiter(this, void 0, void 0, function () { return __generator(this, function (_a) {
-            return [2];
-        }); });
+        return __awaiter(this, void 0, void 0, function () {
+            var card;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        card = notif.args.card;
+                        card.location = EVENTS_DECK;
+                        return [4, this.game.cardArea.stocks.eventsDeck.addCard(card)];
+                    case 1:
+                        _a.sent();
+                        card.location = EVENTS_DISCARD;
+                        return [4, this.game.cardArea.stocks.eventsDiscard.addCard(card)];
+                    case 2:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
     };
     NotificationManager.prototype.notif_drawAndRevealTravellerCard = function (notif) {
-        return __awaiter(this, void 0, void 0, function () { return __generator(this, function (_a) {
-            return [2];
-        }); });
+        return __awaiter(this, void 0, void 0, function () {
+            var card;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        card = notif.args.card;
+                        card.location = TRAVELLERS_DECK;
+                        return [4, this.game.cardArea.stocks.travellersDeck.addCard(card)];
+                    case 1:
+                        _a.sent();
+                        card.location = TRAVELLERS_DISCARD;
+                        return [4, this.game.cardArea.stocks.travellersDiscard.addCard(card)];
+                    case 2:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
     };
     NotificationManager.prototype.notif_gainShillings = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
@@ -3850,17 +3985,25 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_moveRoyalFavourMarker = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var marker;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var _a, marker, scores;
+            var _this = this;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
-                        marker = notif.args.marker;
+                        _a = notif.args, marker = _a.marker, scores = _a.scores;
+                        Object.entries(scores).forEach(function (_a) {
+                            var _b;
+                            var playerId = _a[0], score = _a[1];
+                            if ((_b = _this.game.framework().scoreCtrl) === null || _b === void 0 ? void 0 : _b[playerId]) {
+                                _this.game.framework().scoreCtrl[playerId].setValue(Number(score));
+                            }
+                        });
                         return [4, this.game.gameMap.moveMarker({
                                 id: marker.id,
                                 location: marker.location,
                             })];
                     case 1:
-                        _a.sent();
+                        _b.sent();
                         return [2];
                 }
             });
@@ -3972,9 +4115,19 @@ var NotificationManager = (function () {
         });
     };
     NotificationManager.prototype.notif_putCardInVictimsPile = function (notif) {
-        return __awaiter(this, void 0, void 0, function () { return __generator(this, function (_a) {
-            return [2];
-        }); });
+        return __awaiter(this, void 0, void 0, function () {
+            var card;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        card = notif.args.card;
+                        return [4, this.game.cardArea.stocks.travellersVictimsPile.addCard(card)];
+                    case 1:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
     };
     NotificationManager.prototype.notif_parishStatus = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
@@ -4010,9 +4163,19 @@ var NotificationManager = (function () {
         });
     };
     NotificationManager.prototype.notif_removeCardFromGame = function (notif) {
-        return __awaiter(this, void 0, void 0, function () { return __generator(this, function (_a) {
-            return [2];
-        }); });
+        return __awaiter(this, void 0, void 0, function () {
+            var card;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        card = notif.args.card;
+                        return [4, this.game.cardManager.removeCard(card)];
+                    case 1:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
     };
     NotificationManager.prototype.notif_removeForceFromGamePublic = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
@@ -4451,6 +4614,21 @@ var getSettingsConfig = function () {
                     },
                     type: 'slider',
                 },
+                _a[PREF_CARD_SIZE] = {
+                    id: PREF_CARD_SIZE,
+                    onChangeInSetup: false,
+                    label: _("Size of cards"),
+                    defaultValue: 100,
+                    sliderConfig: {
+                        step: 5,
+                        padding: 0,
+                        range: {
+                            min: 50,
+                            max: 250,
+                        },
+                    },
+                    type: "slider",
+                },
                 _a[PREF_CARD_SIZE_IN_LOG] = {
                     id: PREF_CARD_SIZE_IN_LOG,
                     onChangeInSetup: true,
@@ -4682,6 +4860,12 @@ var Settings = (function () {
     };
     Settings.prototype.onChangeSingleColumnMapSizeSetting = function (value) {
         this.game.updateLayout();
+    };
+    Settings.prototype.onChangeCardSizeSetting = function (value) {
+        var node = document.getElementById("gest_card_area");
+        if (node) {
+            node.style.setProperty("--gestCardSizeScale", "".concat(Number(value) / 100));
+        }
     };
     Settings.prototype.onChangeCardSizeInLogSetting = function (value) {
         var ROOT = document.documentElement;

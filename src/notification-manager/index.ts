@@ -309,11 +309,23 @@ class NotificationManager {
     );
   }
 
-  async notif_drawAndRevealCard(notif: Notif<NotifDrawAndRevealCardArgs>) {}
+  async notif_drawAndRevealCard(notif: Notif<NotifDrawAndRevealCardArgs>) {
+    const { card } = notif.args;
+    card.location = EVENTS_DECK;
+    await this.game.cardArea.stocks.eventsDeck.addCard(card);
+    card.location = EVENTS_DISCARD;
+    await this.game.cardArea.stocks.eventsDiscard.addCard(card);
+  }
 
   async notif_drawAndRevealTravellerCard(
     notif: Notif<NotifDrawAndRevealTravellerCardArgs>
-  ) {}
+  ) {
+    const { card } = notif.args;
+    card.location = TRAVELLERS_DECK;
+    await this.game.cardArea.stocks.travellersDeck.addCard(card);
+    card.location = TRAVELLERS_DISCARD;
+    await this.game.cardArea.stocks.travellersDiscard.addCard(card);
+  }
 
   async notif_gainShillings(notif: Notif<NotifGainShillingsArgs>) {
     const { amount, playerId } = notif.args;
@@ -417,7 +429,13 @@ class NotificationManager {
   async notif_moveRoyalFavourMarker(
     notif: Notif<NotifMoveRoyalFavourMarkerArgs>
   ) {
-    const { marker } = notif.args;
+    const { marker, scores } = notif.args;
+
+    Object.entries(scores).forEach(([playerId, score]) => {
+      if (this.game.framework().scoreCtrl?.[playerId]) {
+        this.game.framework().scoreCtrl[playerId].setValue(Number(score));
+      }
+    });
     await this.game.gameMap.moveMarker({
       id: marker.id,
       location: marker.location,
@@ -489,7 +507,11 @@ class NotificationManager {
 
   async notif_putCardInVictimsPile(
     notif: Notif<NotifPutCardInVictimsPileArgs>
-  ) {}
+  ) {
+    const { card } = notif.args;
+
+    await this.game.cardArea.stocks.travellersVictimsPile.addCard(card);
+  }
 
   async notif_parishStatus(notif: Notif<NotifParishStatusArgs>) {
     const { spaceId, status } = notif.args;
@@ -513,7 +535,10 @@ class NotificationManager {
     }
   }
 
-  async notif_removeCardFromGame(notif: Notif<NotifRemoveCardFromGameArgs>) {}
+  async notif_removeCardFromGame(notif: Notif<NotifRemoveCardFromGameArgs>) {
+    const {card} = notif.args;
+    await this.game.cardManager.removeCard(card);
+  }
 
   async notif_removeForceFromGamePublic(notif: Notif<NotifReturnToSupplyArgs>) {
     const { force, spaceId } = notif.args;

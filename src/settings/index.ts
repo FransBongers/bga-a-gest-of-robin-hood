@@ -233,6 +233,16 @@ class Settings {
     this.game.updateLayout();
   }
 
+  public onChangeCardSizeSetting(value: number) {
+    const node = document.getElementById("gest_card_area");
+    if (node) {
+      node.style.setProperty(
+        "--gestCardSizeScale",
+        `${Number(value) / 100}`
+      );
+    }
+  }
+
   public onChangeCardSizeInLogSetting(value: number) {
     // console.log("onChangeCardSizeInLogSetting", value);
     const ROOT = document.documentElement;

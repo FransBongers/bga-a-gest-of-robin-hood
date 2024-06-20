@@ -51,6 +51,406 @@
  * agestofrobinhood stylesheet
  *
  */
+.gest_card_side {
+  box-sizing: border-box;
+  width: calc(var(--btCardScale) * 206px);
+  height: calc(var(--btCardScale) * 355px);
+  background-repeat: no-repeat;
+  border: calc(var(--gestCardScale) * 1px) black solid;
+  border-radius: calc(var(--gestCardScale) * 5px);
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: high-quality;
+}
+
+.gest_card_side[data-card-id=Event01] {
+  background-image: url("img/event_cards1.jpg");
+  background-size: 600% 300%;
+  background-position-x: 0%;
+  background-position-y: 0%;
+}
+
+.gest_card_side[data-card-id=Event02] {
+  background-image: url("img/event_cards1.jpg");
+  background-size: 600% 300%;
+  background-position-x: 20%;
+  background-position-y: 0%;
+}
+
+.gest_card_side[data-card-id=Event03] {
+  background-image: url("img/event_cards1.jpg");
+  background-size: 600% 300%;
+  background-position-x: 40%;
+  background-position-y: 0%;
+}
+
+.gest_card_side[data-card-id=Event04] {
+  background-image: url("img/event_cards1.jpg");
+  background-size: 600% 300%;
+  background-position-x: 60%;
+  background-position-y: 0%;
+}
+
+.gest_card_side[data-card-id=Event05] {
+  background-image: url("img/event_cards1.jpg");
+  background-size: 600% 300%;
+  background-position-x: 80%;
+  background-position-y: 0%;
+}
+
+.gest_card_side[data-card-id=Event06] {
+  background-image: url("img/event_cards1.jpg");
+  background-size: 600% 300%;
+  background-position-x: 100%;
+  background-position-y: 0%;
+}
+
+.gest_card_side[data-card-id=Event07] {
+  background-image: url("img/event_cards1.jpg");
+  background-size: 600% 300%;
+  background-position-x: 0%;
+  background-position-y: 50%;
+}
+
+.gest_card_side[data-card-id=Event08] {
+  background-image: url("img/event_cards1.jpg");
+  background-size: 600% 300%;
+  background-position-x: 20%;
+  background-position-y: 50%;
+}
+
+.gest_card_side[data-card-id=Event09] {
+  background-image: url("img/event_cards1.jpg");
+  background-size: 600% 300%;
+  background-position-x: 40%;
+  background-position-y: 50%;
+}
+
+.gest_card_side[data-card-id=Event10] {
+  background-image: url("img/event_cards1.jpg");
+  background-size: 600% 300%;
+  background-position-x: 60%;
+  background-position-y: 50%;
+}
+
+.gest_card_side[data-card-id=Event11] {
+  background-image: url("img/event_cards1.jpg");
+  background-size: 600% 300%;
+  background-position-x: 80%;
+  background-position-y: 50%;
+}
+
+.gest_card_side[data-card-id=Event12] {
+  background-image: url("img/event_cards1.jpg");
+  background-size: 600% 300%;
+  background-position-x: 100%;
+  background-position-y: 50%;
+}
+
+.gest_card_side[data-card-id=Event13] {
+  background-image: url("img/event_cards1.jpg");
+  background-size: 600% 300%;
+  background-position-x: 0%;
+  background-position-y: 100%;
+}
+
+.gest_card_side[data-card-id=Event14] {
+  background-image: url("img/event_cards1.jpg");
+  background-size: 600% 300%;
+  background-position-x: 20%;
+  background-position-y: 100%;
+}
+
+.gest_card_side[data-card-id=Event15] {
+  background-image: url("img/event_cards1.jpg");
+  background-size: 600% 300%;
+  background-position-x: 40%;
+  background-position-y: 100%;
+}
+
+.gest_card_side[data-card-id=Event16] {
+  background-image: url("img/event_cards1.jpg");
+  background-size: 600% 300%;
+  background-position-x: 60%;
+  background-position-y: 100%;
+}
+
+.gest_card_side[data-card-id=Event17] {
+  background-image: url("img/event_cards1.jpg");
+  background-size: 600% 300%;
+  background-position-x: 80%;
+  background-position-y: 100%;
+}
+
+.gest_card_side[data-card-id=Event18] {
+  background-image: url("img/event_cards1.jpg");
+  background-size: 600% 300%;
+  background-position-x: 100%;
+  background-position-y: 100%;
+}
+
+.gest_card_side[data-card-id=Event19] {
+  background-image: url("img/event_cards2.jpg");
+  background-size: 600% 300%;
+  background-position-x: 0%;
+  background-position-y: 0%;
+}
+
+.gest_card_side[data-card-id=Event20] {
+  background-image: url("img/event_cards2.jpg");
+  background-size: 600% 300%;
+  background-position-x: 20%;
+  background-position-y: 0%;
+}
+
+.gest_card_side[data-card-id=Event21] {
+  background-image: url("img/event_cards2.jpg");
+  background-size: 600% 300%;
+  background-position-x: 40%;
+  background-position-y: 0%;
+}
+
+.gest_card_side[data-card-id=Event22] {
+  background-image: url("img/event_cards2.jpg");
+  background-size: 600% 300%;
+  background-position-x: 60%;
+  background-position-y: 0%;
+}
+
+.gest_card_side[data-card-id=Event23] {
+  background-image: url("img/event_cards2.jpg");
+  background-size: 600% 300%;
+  background-position-x: 80%;
+  background-position-y: 0%;
+}
+
+.gest_card_side[data-card-id=Event24] {
+  background-image: url("img/event_cards2.jpg");
+  background-size: 600% 300%;
+  background-position-x: 100%;
+  background-position-y: 0%;
+}
+
+.gest_card_side[data-card-id=Event25] {
+  background-image: url("img/event_cards2.jpg");
+  background-size: 600% 300%;
+  background-position-x: 0%;
+  background-position-y: 50%;
+}
+
+.gest_card_side[data-card-id=Event26] {
+  background-image: url("img/event_cards2.jpg");
+  background-size: 600% 300%;
+  background-position-x: 20%;
+  background-position-y: 50%;
+}
+
+.gest_card_side[data-card-id=Event27] {
+  background-image: url("img/event_cards2.jpg");
+  background-size: 600% 300%;
+  background-position-x: 40%;
+  background-position-y: 50%;
+}
+
+.gest_card_side[data-card-id=Event28] {
+  background-image: url("img/event_cards2.jpg");
+  background-size: 600% 300%;
+  background-position-x: 60%;
+  background-position-y: 50%;
+}
+
+.gest_card_side[data-card-id=Event29] {
+  background-image: url("img/event_cards2.jpg");
+  background-size: 600% 300%;
+  background-position-x: 80%;
+  background-position-y: 50%;
+}
+
+.gest_card_side[data-card-id=Event30] {
+  background-image: url("img/event_cards2.jpg");
+  background-size: 600% 300%;
+  background-position-x: 100%;
+  background-position-y: 50%;
+}
+
+.gest_card_side[data-card-id=Event31] {
+  background-image: url("img/event_cards2.jpg");
+  background-size: 600% 300%;
+  background-position-x: 0%;
+  background-position-y: 100%;
+}
+
+.gest_card_side[data-card-id=Event32] {
+  background-image: url("img/event_cards2.jpg");
+  background-size: 600% 300%;
+  background-position-x: 20%;
+  background-position-y: 100%;
+}
+
+.gest_card_side[data-card-id=EventBack] {
+  background-image: url("img/event_cards2.jpg");
+  background-size: 600% 300%;
+  background-position-x: 40%;
+  background-position-y: 100%;
+}
+
+.gest_card_side[data-card-id=Traveller01] {
+  background-image: url("img/traveller_cards.jpg");
+  background-size: 600% 300%;
+  background-position-x: 0%;
+  background-position-y: 0%;
+}
+
+.gest_card_side[data-card-id=Traveller02] {
+  background-image: url("img/traveller_cards.jpg");
+  background-size: 600% 300%;
+  background-position-x: 20%;
+  background-position-y: 0%;
+}
+
+.gest_card_side[data-card-id=Traveller03] {
+  background-image: url("img/traveller_cards.jpg");
+  background-size: 600% 300%;
+  background-position-x: 40%;
+  background-position-y: 0%;
+}
+
+.gest_card_side[data-card-id=Traveller04] {
+  background-image: url("img/traveller_cards.jpg");
+  background-size: 600% 300%;
+  background-position-x: 60%;
+  background-position-y: 0%;
+}
+
+.gest_card_side[data-card-id=Traveller05] {
+  background-image: url("img/traveller_cards.jpg");
+  background-size: 600% 300%;
+  background-position-x: 80%;
+  background-position-y: 0%;
+}
+
+.gest_card_side[data-card-id=Traveller06] {
+  background-image: url("img/traveller_cards.jpg");
+  background-size: 600% 300%;
+  background-position-x: 100%;
+  background-position-y: 0%;
+}
+
+.gest_card_side[data-card-id=Traveller07] {
+  background-image: url("img/traveller_cards.jpg");
+  background-size: 600% 300%;
+  background-position-x: 0%;
+  background-position-y: 50%;
+}
+
+.gest_card_side[data-card-id=Traveller08] {
+  background-image: url("img/traveller_cards.jpg");
+  background-size: 600% 300%;
+  background-position-x: 20%;
+  background-position-y: 50%;
+}
+
+.gest_card_side[data-card-id=Traveller09] {
+  background-image: url("img/traveller_cards.jpg");
+  background-size: 600% 300%;
+  background-position-x: 40%;
+  background-position-y: 50%;
+}
+
+.gest_card_side[data-card-id=Traveller10] {
+  background-image: url("img/traveller_cards.jpg");
+  background-size: 600% 300%;
+  background-position-x: 60%;
+  background-position-y: 50%;
+}
+
+.gest_card_side[data-card-id=Traveller11] {
+  background-image: url("img/traveller_cards.jpg");
+  background-size: 600% 300%;
+  background-position-x: 80%;
+  background-position-y: 50%;
+}
+
+.gest_card_side[data-card-id=Traveller12] {
+  background-image: url("img/traveller_cards.jpg");
+  background-size: 600% 300%;
+  background-position-x: 100%;
+  background-position-y: 50%;
+}
+
+.gest_card_side[data-card-id=TravellerBack] {
+  background-image: url("img/traveller_cards.jpg");
+  background-size: 600% 300%;
+  background-position-x: 0%;
+  background-position-y: 100%;
+}
+
+.gest_card_side[data-card-id=""] {
+  background-image: url("img/traveller_cards.jpg");
+  background-size: 600% 300%;
+  background-position-x: 20%;
+  background-position-y: 100%;
+}
+
+.gest_card_side[data-card-id=""] {
+  background-image: url("img/traveller_cards.jpg");
+  background-size: 600% 300%;
+  background-position-x: 40%;
+  background-position-y: 100%;
+}
+
+.gest_card_side[data-card-id=""] {
+  background-image: url("img/traveller_cards.jpg");
+  background-size: 600% 300%;
+  background-position-x: 60%;
+  background-position-y: 100%;
+}
+
+.gest_card_side[data-card-id=""] {
+  background-image: url("img/traveller_cards.jpg");
+  background-size: 600% 300%;
+  background-position-x: 80%;
+  background-position-y: 100%;
+}
+
+.gest_card_side[data-card-id=""] {
+  background-image: url("img/traveller_cards.jpg");
+  background-size: 600% 300%;
+  background-position-x: 100%;
+  background-position-y: 100%;
+}
+
+#gest_card_area {
+  --gestCardScale: var(--rightColumnScale) * var(--gestCardSizeScale);
+}
+#gest_card_area .gest_card_row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+#gest_card_area .gest_card_row .gest_card_stock {
+  box-sizing: border-box;
+  position: relative;
+  height: calc(var(--gestCardScale) * 355px);
+  width: calc(var(--gestCardScale) * 206px);
+  border-radius: calc(var(--gestCardScale) * 5px);
+}
+
+/**
+ *------
+ * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
+ * A Gest of Robin Hood implementation : © Frans Bongers <fjmbongers@gmail.com>
+ *
+ * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
+ * See http://en.boardgamearena.com/#!doc/Studio for more information.
+ * -----
+ *
+ * agestofrobinhood.css
+ *
+ * agestofrobinhood stylesheet
+ *
+ */
 .gest_force {
   box-sizing: border-box;
   height: calc(var(--gestForceScale) * 40px);

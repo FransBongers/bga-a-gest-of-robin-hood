@@ -470,7 +470,7 @@ class Notifications
     ]);
   }
 
-  public static function moveRoyalFavourMarker($player, $marker, $steps, $direction, $royalInspection = false)
+  public static function moveRoyalFavourMarker($player, $marker, $steps, $direction, $royalInspection = false, $scores)
   {
     $text = $steps === 1 ?
       clienttranslate('${player_name} moves Royal Favour ${numberOfSteps} step towards ${tkn_boldText_direction}') :
@@ -487,6 +487,7 @@ class Notifications
       'tkn_boldText_direction' => $direction === ORDER ? clienttranslate('Order') : clienttranslate('Justice'),
       'marker' => $marker,
       'numberOfSteps' => $steps,
+      'scores' => $scores,
       'i18n' => ['tkn_boldText_direction']
     ]);
   }

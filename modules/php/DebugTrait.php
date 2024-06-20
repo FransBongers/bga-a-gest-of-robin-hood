@@ -19,8 +19,9 @@ use AGestOfRobinHood\Helpers\Utils;
 trait DebugTrait
 {
 
-  function test()
+  function debug_test()
   {
+    Notifications::log('players', Players::getPlayersPerFaction());
     // Players::getRobinHoodPlayer()->incShillings(10);
     // $merryMan = Forces::getTopOf(MERRY_MEN_SUPPLY);
     // Spaces::get(BLYTH)->setStatus(SUBMISSIVE);
@@ -37,7 +38,7 @@ trait DebugTrait
     // Forces::get('merryMen_4')->setHidden(1);
     // Cards::get('Traveller07_Monks')->insertOnTop(TRAVELLERS_VICTIMS_PILE);
     // Cards::get('Traveller02_RichMerchant')->insertOnTop(TRAVELLERS_VICTIMS_PILE);
-    Cards::get('Traveller12_GuyOfGisborne')->insertOnTop(TRAVELLERS_DECK);
+    // Cards::get('Traveller12_GuyOfGisborne')->insertOnTop(TRAVELLERS_DECK);
     // Globals::setOllertonHillAdjacency(true);
     // Cards::get('Traveller07_Monks')->setLocation(TRAVELLERS_DISCARD);
     // $this->debugPlaceForces(TALLAGE_CARRIAGE,TUXFORD,1);
@@ -59,7 +60,7 @@ trait DebugTrait
     Notifications::log('spaces', AtomicActions::get(DONATE)->getPossibleSpaces(true));
   }
 
-  public function debugDeck()
+  public function debug_Deck()
   {
     Notifications::log('deck', Cards::getInLocationOrdered(EVENTS_DECK)->toArray());
   }
@@ -115,12 +116,12 @@ trait DebugTrait
     return $result;
   }
 
-  function ed()
+  function debug_ed()
   {
     $this->engineDisplay();
   }
 
-  function engineDisplay()
+  function debug_engineDisplay()
   {
     Notifications::log('engine', Globals::getEngine());
   }

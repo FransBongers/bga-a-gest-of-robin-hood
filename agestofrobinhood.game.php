@@ -134,6 +134,7 @@ class agestofrobinhood extends Table
             'canceledNotifIds' => Log::getCanceledNotifIds(),
             'playerOrder' => Players::getPlayerOrder(),
             'players' => Players::getUiData($pId),
+            'cards' => Cards::getUiData(),
             'markers' => Markers::getAll(),
             'spaces' => Spaces::getAll(),
             'forces' => $forces['public'],

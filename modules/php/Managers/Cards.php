@@ -157,6 +157,14 @@ class Cards extends \AGestOfRobinHood\Helpers\Pieces
     self::createEventsDeck();
   }
 
+  public static function getUiData() {
+    return [
+      EVENTS_DISCARD => self::getTopOf(EVENTS_DISCARD),
+      TRAVELLERS_DISCARD => self::getTopOf(TRAVELLERS_DISCARD),
+      TRAVELLERS_VICTIMS_PILE => self::getTopOf(TRAVELLERS_VICTIMS_PILE),
+    ];
+  }
+
   // ..######......###....##.....##.########
   // .##....##....##.##...###...###.##......
   // .##.........##...##..####.####.##......

@@ -50,6 +50,8 @@ class Players extends \AGestOfRobinHood\Helpers\DB_Manager
     // Game::get()->reattributeColorsBasedOnPreferences($players, $gameInfos['player_colors']);
     Game::get()->reloadPlayersBasicInfos();
     PlayersExtra::setupNewGame();
+
+    self::getSheriffPlayer()->setScore(1);
   }
 
   public static function getActiveId()
@@ -222,6 +224,20 @@ class Players extends \AGestOfRobinHood\Helpers\DB_Manager
   // .##.....##.##..........##....##.....##.##.....##.##.....##.##....##
   // .##.....##.########....##....##.....##..#######..########...######.
 
+  public static function getPlayersPerFaction()
+  {
+    $players = self::getAll()->toArray();
+
+    return [
+      ROBIN_HOOD => Utils::array_find($players, function ($player) {
+        return $player->isRobinHood();
+      }),
+      SHERIFF => Utils::array_find($players, function ($player) {
+        return $player->isSheriff();
+      }),
+    ];
+  }
+
   public static function getRobinHoodPlayer()
   {
     return self::get(self::getPlayerIdForSide(ROBIN_HOOD));
@@ -306,7 +322,20 @@ class Players extends \AGestOfRobinHood\Helpers\DB_Manager
 
     $rfMarker->setLocation($newLocation);
 
-    Notifications::moveRoyalFavourMarker($player, $rfMarker, $steps, $direction, $royalInspection);
+    $players = self::getPlayersPerFaction();
+
+    $scores = [
+      ROBIN_HOOD => Utils::startsWith($newLocation, JUSTICE) ? $newValue : 0,
+      SHERIFF => Utils::startsWith($newLocation, ORDER) ? $newValue : 0,
+    ];
+
+    $players[ROBIN_HOOD]->setScore($scores[ROBIN_HOOD]);
+    $players[SHERIFF]->setScore($scores[SHERIFF]);
+
+    Notifications::moveRoyalFavourMarker($player, $rfMarker, $steps, $direction, $royalInspection, [
+      $players[ROBIN_HOOD]->getId() => $scores[ROBIN_HOOD],
+      $players[SHERIFF]->getId() => $scores[SHERIFF],
+    ]);
 
 
     // $otherPlayer = Players::getOther($player->getId());

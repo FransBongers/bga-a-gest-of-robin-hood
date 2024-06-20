@@ -15,7 +15,8 @@
 
 @use 'sass:math';
 @use 'base';
-//  @use "card-managers/cards";
+@use 'card-manager/cards';
+@use 'card-area/cardArea';
 @use 'force-manager/forces';
 @use 'game-map/gamemap';
 @use 'info-panel/infoPanel';
@@ -24,11 +25,11 @@
 @use 'marker-manager/markers';
 @use 'nouislider';
 @use 'player-manager/playerPanels';
-@use "tooltip-manager/tooltip";
+@use 'tooltip-manager/tooltip';
 @import '../node_modules/bga-cards/bga-cards';
 
 html {
-  background-image: url("img/background.jpg");
+  background-image: url('img/background.jpg');
   // background: url('') rgb(192, 192, 192);
   background-attachment: fixed; // no scroll
   background-position: center; // where to fix picture from

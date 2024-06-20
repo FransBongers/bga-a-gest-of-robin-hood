@@ -24,6 +24,7 @@ const PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY =
 const PREF_SHOW_ANIMATIONS = 'showAnimations';
 const PREF_ANIMATION_SPEED = 'animationSpeed';
 const PREF_CARD_INFO_IN_TOOLTIP = 'cardInfoInTooltip';
+const PREF_CARD_SIZE = 'cardSize';
 const PREF_CARD_SIZE_IN_LOG = 'cardSizeInLog';
 const PREF_DISABLED = 'disabled';
 const PREF_ENABLED = 'enabled';

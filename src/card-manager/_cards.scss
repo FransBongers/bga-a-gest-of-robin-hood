@@ -1,0 +1,96 @@
+@use 'sass:math';
+@use 'sass:map';
+@use '../base';
+
+.gest_card_side {
+  box-sizing: border-box;
+  width: calc(var(--btCardScale) * 206px);
+  height: calc(var(--btCardScale) * 355px);
+  background-repeat: no-repeat;
+  border: calc(var(--gestCardScale) * 1px) black solid;
+  border-radius: calc(var(--gestCardScale) * 5px);
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: high-quality;
+}
+
+$event-cards1: (
+  1: 'Event01',
+  2: 'Event02',
+  3: 'Event03',
+  4: 'Event04',
+  5: 'Event05',
+  6: 'Event06',
+  7: 'Event07',
+  8: 'Event08',
+  9: 'Event09',
+  10: 'Event10',
+  11: 'Event11',
+  12: 'Event12',
+  13: 'Event13',
+  14: 'Event14',
+  15: 'Event15',
+  16: 'Event16',
+  17: 'Event17',
+  18: 'Event18',
+);
+
+@for $i from 1 through 18 {
+  .gest_card_side[data-card-id='#{map.get($event-cards1,$i)}'] {
+    background-image: url('img/event_cards1.jpg');
+    background-size: 600% 300%;
+    background-position-x: math.div((($i - 1) % 6 * 100%), 5);
+    background-position-y: math.div(math.floor(calc(($i - 1) / 6)) * 100%, 2);
+  }
+}
+
+$event-cards2: (
+  1: 'Event19',
+  2: 'Event20',
+  3: 'Event21',
+  4: 'Event22',
+  5: 'Event23',
+  6: 'Event24',
+  7: 'Event25',
+  8: 'Event26',
+  9: 'Event27',
+  10: 'Event28',
+  11: 'Event29',
+  12: 'Event30',
+  13: 'Event31',
+  14: 'Event32',
+  15: 'EventBack',
+);
+
+@for $i from 1 through 15 {
+  .gest_card_side[data-card-id='#{map.get($event-cards2,$i)}'] {
+    background-image: url('img/event_cards2.jpg');
+    background-size: 600% 300%;
+    background-position-x: math.div((($i - 1) % 6 * 100%), 5);
+    background-position-y: math.div(math.floor(calc(($i - 1) / 6)) * 100%, 2);
+  }
+}
+
+$traveller-cards1: (
+  1: 'Traveller01',
+  2: 'Traveller02',
+  3: 'Traveller03',
+  4: 'Traveller04',
+  5: 'Traveller05',
+  6: 'Traveller06',
+  7: 'Traveller07',
+  8: 'Traveller08',
+  9: 'Traveller09',
+  10: 'Traveller10',
+  11: 'Traveller11',
+  12: 'Traveller12',
+  13: 'TravellerBack',
+);
+
+@for $i from 1 through 18 {
+  .gest_card_side[data-card-id='#{map.get($traveller-cards1,$i)}'] {
+    background-image: url('img/traveller_cards.jpg');
+    background-size: 600% 300%;
+    background-position-x: math.div((($i - 1) % 6 * 100%), 5);
+    background-position-y: math.div(math.floor(calc(($i - 1) / 6)) * 100%, 2);
+  }
+}

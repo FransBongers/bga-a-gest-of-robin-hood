@@ -100,6 +100,21 @@ const getSettingsConfig = (): Record<string, PlayerPreferenceTab> => ({
         },
         type: 'slider',
       },
+      [PREF_CARD_SIZE]: {
+        id: PREF_CARD_SIZE,
+        onChangeInSetup: false,
+        label: _("Size of cards"),
+        defaultValue: 100,
+        sliderConfig: {
+          step: 5,
+          padding: 0,
+          range: {
+            min: 50,
+            max: 250,
+          },
+        },
+        type: "slider",
+      },
       [PREF_CARD_SIZE_IN_LOG]: {
         id: PREF_CARD_SIZE_IN_LOG,
         onChangeInSetup: true,
