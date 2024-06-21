@@ -1,8 +1,8 @@
 class SetupRobinHoodState implements State {
   private game: AGestOfRobinHoodGame;
   private args: OnEnteringSetupRobinHoodArgs;
-  private robinHoodLocation: string | null = null;
-  private merryMenLocations: string[] = [];
+  private robinHood: GestForce | null = null;
+  private merryMen: GestForce[] = [];
 
   constructor(game: AGestOfRobinHoodGame) {
     this.game = game;
@@ -11,8 +11,8 @@ class SetupRobinHoodState implements State {
   onEnteringState(args: OnEnteringSetupRobinHoodArgs) {
     debug('Entering SetupRobinHoodState');
     this.args = args;
-    this.robinHoodLocation = null;
-    this.merryMenLocations = [];
+    this.robinHood = null;
+    this.merryMen = [];
     this.updateInterfaceInitialStep();
   }
 
@@ -68,7 +68,7 @@ class SetupRobinHoodState implements State {
 
     this.addSpaceButtons();
 
-    this.game.addCancelButton();
+    this.addCancelButton();
   }
 
   private updateInterfaceConfirm() {
@@ -84,8 +84,11 @@ class SetupRobinHoodState implements State {
       this.game.takeAction({
         action: 'actSetupRobinHood',
         args: {
-          robinHood: this.robinHoodLocation,
-          merryMen: this.merryMenLocations,
+          robinHood: this.robinHood.location,
+          merryMen: this.merryMen.map((force) => ({
+            id: force.id,
+            location: force.location,
+          })),
         },
       });
     };
@@ -102,7 +105,7 @@ class SetupRobinHoodState implements State {
       });
     }
 
-    this.game.addCancelButton();
+    this.addCancelButton();
   }
 
   //  .##.....##.########.####.##.......####.########.##....##
@@ -112,6 +115,20 @@ class SetupRobinHoodState implements State {
   //  .##.....##....##.....##..##........##.....##.......##...
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
+
+  addCancelButton() {
+    this.game.addCancelButton({
+      callback: () => {
+        if (this.robinHood) {
+          this.game.forceManager.removeCard(this.robinHood);
+        }
+        this.merryMen.forEach((merryMan) =>
+          this.game.forceManager.removeCard(merryMan)
+        );
+        this.game.onCancel();
+      },
+    });
+  }
 
   addSpaceButtons() {
     [SHIRE_WOOD, SOUTHWELL_FOREST, REMSTON].forEach((spaceId) => {
@@ -140,13 +157,24 @@ class SetupRobinHoodState implements State {
   // .##.....##.##.....##.##....##.########..########.########..######.
 
   handleButtonClick(spaceId: string) {
-    if (this.robinHoodLocation === null) {
-      this.robinHoodLocation = spaceId;
+    if (this.robinHood === null) {
+      const robinHood = this.args._private.robinHood;
+      robinHood.location = spaceId;
+      this.game.gameMap.forces[`${MERRY_MEN}_${spaceId}`].addCard(robinHood);
+      this.robinHood = robinHood;
     } else {
-      this.merryMenLocations.push(spaceId);
+      const merryMan = this.args._private.merryMen.find(
+        (force) =>
+          !this.merryMen.some(
+            (placedMerryMan) => placedMerryMan.id === force.id
+          )
+      );
+      merryMan.location = spaceId;
+      this.game.gameMap.forces[`${MERRY_MEN}_${spaceId}`].addCard(merryMan);
+      this.merryMen.push(merryMan);
     }
 
-    if (this.merryMenLocations.length >= 3) {
+    if (this.merryMen.length >= 3) {
       this.updateInterfaceConfirm();
     } else {
       this.updateInterfacePlaceMerryMen();

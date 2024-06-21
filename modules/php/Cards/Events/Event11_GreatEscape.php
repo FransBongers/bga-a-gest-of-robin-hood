@@ -93,11 +93,25 @@ class Event11_GreatEscape extends \AGestOfRobinHood\Cards\Events\RegularEvent
 
   public function resolveLightEffect($player, $ctx, $space)
   {
-    if ($space !== null) {
-      $space->revolt($player);
+    $merryMen = Forces::getInLocation(PRISON)->toArray();
+    $robinHood = Forces::get(ROBIN_HOOD);
+    if ($robinHood->getLocation() !== PRISON) {
+      $merryMen[] = $robinHood;
     }
+    // TODO: check if we can resolve this in the move notif handler
+    $revealRobinHood = $robinHood->getLocation() === $space->getId() && $robinHood->isHidden();
+    $notifData = GameMap::createMoves(array_map(function ($merryMan) use ($space) {
+      return [
+        'force' => $merryMan,
+        'toSpaceId' => $space->getId(),
+        'toHidden' => false,
+      ];
+    }, $merryMen));
 
-    Players::moveRoyalFavour($player, 1, JUSTICE);
+    Notifications::greatEscapeLight($player, $notifData['forces'], $notifData['moves'], $space);
+    if ($revealRobinHood) {
+      $robinHood->reveal($player);
+    }
   }
 
   public function resolveDarkEffect($player, $ctx, $space)

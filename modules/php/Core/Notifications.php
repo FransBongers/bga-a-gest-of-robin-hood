@@ -609,6 +609,7 @@ class Notifications
     self::notifyAll("placeMerryMen", $textPublic, array_merge($publicTextArgs, [
       'player' => $player,
       'merryMenCounts' => $merryMenCounts,
+      'preserve' => ['playerId'],
     ]));
   }
 
@@ -630,6 +631,27 @@ class Notifications
       'player_name' => $player->getName(),
       'moves' => $moves,
       'count' => count($forces),
+      'tkn_boldText_spaceName' => $space->getName(),
+      'i18n' => ['tkn_boldText_spaceName']
+    ]);
+  }
+
+  public static function greatEscapeLight($player, $forces, $moves, $space)
+  {
+    $text = clienttranslate('${player_name} places Robin Hood and all Merry Men from Prison in ${tkn_boldText_spaceName}');
+
+    self::notify($player, 'moveMerryMenPrivate', $text, [
+      'playerId' => $player->getId(),
+      'player_name' => $player->getName(),
+      'forces' => $forces,
+      'tkn_boldText_spaceName' => $space->getName(),
+      'i18n' => ['tkn_boldText_spaceName']
+    ]);
+
+    self::notifyAll('moveMerryMenPublic', $text, [
+      'playerId' => $player->getId(),
+      'player_name' => $player->getName(),
+      'moves' => $moves,
       'tkn_boldText_spaceName' => $space->getName(),
       'i18n' => ['tkn_boldText_spaceName']
     ]);

@@ -9667,15 +9667,15 @@ var SelectTravellerCardOptionState = (function () {
 }());
 var SetupRobinHoodState = (function () {
     function SetupRobinHoodState(game) {
-        this.robinHoodLocation = null;
-        this.merryMenLocations = [];
+        this.robinHood = null;
+        this.merryMen = [];
         this.game = game;
     }
     SetupRobinHoodState.prototype.onEnteringState = function (args) {
         debug('Entering SetupRobinHoodState');
         this.args = args;
-        this.robinHoodLocation = null;
-        this.merryMenLocations = [];
+        this.robinHood = null;
+        this.merryMen = [];
         this.updateInterfaceInitialStep();
     };
     SetupRobinHoodState.prototype.onLeavingState = function () {
@@ -9705,7 +9705,7 @@ var SetupRobinHoodState = (function () {
             },
         });
         this.addSpaceButtons();
-        this.game.addCancelButton();
+        this.addCancelButton();
     };
     SetupRobinHoodState.prototype.updateInterfaceConfirm = function () {
         var _this = this;
@@ -9719,8 +9719,11 @@ var SetupRobinHoodState = (function () {
             _this.game.takeAction({
                 action: 'actSetupRobinHood',
                 args: {
-                    robinHood: _this.robinHoodLocation,
-                    merryMen: _this.merryMenLocations,
+                    robinHood: _this.robinHood.location,
+                    merryMen: _this.merryMen.map(function (force) { return ({
+                        id: force.id,
+                        location: force.location,
+                    }); }),
                 },
             });
         };
@@ -9734,7 +9737,21 @@ var SetupRobinHoodState = (function () {
                 callback: callback,
             });
         }
-        this.game.addCancelButton();
+        this.addCancelButton();
+    };
+    SetupRobinHoodState.prototype.addCancelButton = function () {
+        var _this = this;
+        this.game.addCancelButton({
+            callback: function () {
+                if (_this.robinHood) {
+                    _this.game.forceManager.removeCard(_this.robinHood);
+                }
+                _this.merryMen.forEach(function (merryMan) {
+                    return _this.game.forceManager.removeCard(merryMan);
+                });
+                _this.game.onCancel();
+            },
+        });
     };
     SetupRobinHoodState.prototype.addSpaceButtons = function () {
         var _this = this;
@@ -9747,13 +9764,22 @@ var SetupRobinHoodState = (function () {
         });
     };
     SetupRobinHoodState.prototype.handleButtonClick = function (spaceId) {
-        if (this.robinHoodLocation === null) {
-            this.robinHoodLocation = spaceId;
+        var _this = this;
+        if (this.robinHood === null) {
+            var robinHood = this.args._private.robinHood;
+            robinHood.location = spaceId;
+            this.game.gameMap.forces["".concat(MERRY_MEN, "_").concat(spaceId)].addCard(robinHood);
+            this.robinHood = robinHood;
         }
         else {
-            this.merryMenLocations.push(spaceId);
+            var merryMan = this.args._private.merryMen.find(function (force) {
+                return !_this.merryMen.some(function (placedMerryMan) { return placedMerryMan.id === force.id; });
+            });
+            merryMan.location = spaceId;
+            this.game.gameMap.forces["".concat(MERRY_MEN, "_").concat(spaceId)].addCard(merryMan);
+            this.merryMen.push(merryMan);
         }
-        if (this.merryMenLocations.length >= 3) {
+        if (this.merryMen.length >= 3) {
             this.updateInterfaceConfirm();
         }
         else {

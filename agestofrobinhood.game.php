@@ -101,7 +101,8 @@ class agestofrobinhood extends Table
     protected function setupNewGame($players, $options = array())
     {
         Globals::setupNewGame($players, $options);
-        Preferences::setupNewGame($players, $options);
+        // TODO: fix preferences to work with json files and enable again
+        // Preferences::setupNewGame($players, $options);
         Players::setupNewGame($players, $options);
         Stats::checkExistence();
         Globals::setTest($options);

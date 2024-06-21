@@ -21,7 +21,7 @@ trait DebugTrait
 
   function debug_test()
   {
-    Notifications::log('players', Players::getPlayersPerFaction());
+    // Notifications::log('players', Players::getPlayersPerFaction());
     // Players::getRobinHoodPlayer()->incShillings(10);
     // $merryMan = Forces::getTopOf(MERRY_MEN_SUPPLY);
     // Spaces::get(BLYTH)->setStatus(SUBMISSIVE);
@@ -32,11 +32,16 @@ trait DebugTrait
     // Forces::get(ROBIN_HOOD)->setLocation(RETFORD);
     // Spaces::get(RETFORD)->setStatus(REVOLTING);
     // Forces::get('merryMen_5')->setHidden(0);
+    // Forces::get('merryMen_5')->setLocation(PRISON);
+    // Forces::get('merryMen_8')->setHidden(0);
+    // Forces::get('merryMen_8')->setLocation(PRISON);
+    // Forces::get('merryMen_3')->setHidden(0);
+    // Forces::get('merryMen_3')->setLocation(PRISON);
     // Forces::get('henchmen_11')->setLocation(MANSFIELD);
     // Forces::get(ROBIN_HOOD)->setLocation(ROBIN_HOOD_SUPPLY);
     // Forces::get('merryMen_1')->setLocation(MANSFIELD);
     // Forces::get('merryMen_4')->setHidden(1);
-    // Cards::get('Traveller07_Monks')->insertOnTop(TRAVELLERS_VICTIMS_PILE);
+    Cards::get('Event11_GreatEscape')->insertOnTop(EVENTS_DECK);
     // Cards::get('Traveller02_RichMerchant')->insertOnTop(TRAVELLERS_VICTIMS_PILE);
     // Cards::get('Traveller12_GuyOfGisborne')->insertOnTop(TRAVELLERS_DECK);
     // Globals::setOllertonHillAdjacency(true);
@@ -116,10 +121,10 @@ trait DebugTrait
     return $result;
   }
 
-  function debug_ed()
-  {
-    $this->engineDisplay();
-  }
+  // function debug_ed()
+  // {
+  //   $this->debug_engineDisplay();
+  // }
 
   function debug_engineDisplay()
   {

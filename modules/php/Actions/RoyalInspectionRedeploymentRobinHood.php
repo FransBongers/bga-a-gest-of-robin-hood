@@ -218,7 +218,7 @@ class RoyalInspectionRedeploymentRobinHood extends \AGestOfRobinHood\Models\Atom
         continue;
       }
       $space = $spaces[$spaceId];
-      if ($space->isParish() && $space->isSubmissive() && !in_array($spaceId, $parishesWithACampIds)) {
+      if ($space->isParish() && ($isTemporaryTruce || $space->isSubmissive()) && !in_array($spaceId, $parishesWithACampIds)) {
         $merryMenMustMove[$merryMan->getId()] = [
           'merryMan' => $merryMan,
           'spaceIds' => $destinations,

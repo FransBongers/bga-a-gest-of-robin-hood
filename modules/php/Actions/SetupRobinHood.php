@@ -34,6 +34,9 @@ class SetupRobinHood extends \AGestOfRobinHood\Models\AtomicAction
   {
 
     $data = [
+      '_private' => [
+        $this->ctx->getPlayerId() => $this->getOptions(),
+      ]
     ];
 
     // args['_private'][specificPid]=
@@ -69,27 +72,33 @@ class SetupRobinHood extends \AGestOfRobinHood\Models\AtomicAction
   {
     self::checkAction('actSetupRobinHood');
 
-    $robinHoodLocation = $args['robinHood'];
-    $merryMenLocations = $args['merryMen'];
+    $robinHoodArgs = $args['robinHood'];
+    $merryMenArgs = $args['merryMen'];
 
     $allowesSpaces = [SHIRE_WOOD, SOUTHWELL_FOREST, REMSTON];
-    if (!in_array($robinHoodLocation, $allowesSpaces)) {
+    if (!in_array($robinHoodArgs, $allowesSpaces)) {
       throw new \feException("ERROR 001");
     }
 
-    foreach($merryMenLocations as $spaceId) {
-      if (!in_array($spaceId, $allowesSpaces)) {
+    $options = $this->getOptions();
+    $robinHood = $options['robinHood'];
+    $robinHood->setLocation($robinHoodArgs);
+
+    $merryMen = [];
+
+    foreach ($merryMenArgs as $data) {
+      if (!in_array($data['location'], $allowesSpaces)) {
         throw new \feException("ERROR 002");
       }
-    }
 
-    $robinHood = Forces::get(ROBIN_HOOD);
-    $robinHood->setLocation($robinHoodLocation);
-    $merryMen = [];
-    
-    foreach($merryMenLocations as $spaceId) {
-      $merryMan = Forces::getTopOf(MERRY_MEN_SUPPLY);
-      $merryMan->setLocation($spaceId);
+      $merryManId = $data['id'];
+      $merryMan = Utils::array_find($options['merryMen'], function ($force) use ($merryManId) {
+        return $force->getId() === $merryManId;
+      });
+      if ($merryMan === null) {
+        throw new \feException("ERROR 099");
+      }
+      $merryMan->setLocation($data['location']);
       $merryMen[] = $merryMan;
     }
 
@@ -106,5 +115,11 @@ class SetupRobinHood extends \AGestOfRobinHood\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
-
+  private function getOptions()
+  {
+    return [
+      'robinHood' => Forces::get(ROBIN_HOOD),
+      'merryMen' => Forces::getTopOf(MERRY_MEN_SUPPLY, 3)->toArray(),
+    ];
+  }
 }

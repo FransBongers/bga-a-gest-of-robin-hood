@@ -362,7 +362,12 @@ interface OnEnteringSelectTravellerCardOptionStateArgs extends CommonArgs {
   card: GestCard;
 }
 
-interface OnEnteringSetupRobinHoodArgs extends CommonArgs {}
+interface OnEnteringSetupRobinHoodArgs extends CommonArgs {
+  _private: {
+    robinHood: GestForce;
+    merryMen: GestForce[];
+  }
+}
 
 interface SneakOption {
   adjacentSpaces: GestSpace[];

@@ -1597,4 +1597,9 @@ html {
   position: relative !important;
 }
 
+/* Hide player is now online, player is now offline messages */
+.notif_playerstatus {
+  display: none !important;
+}
+
 /*# sourceMappingURL=agestofrobinhood.css.map */
