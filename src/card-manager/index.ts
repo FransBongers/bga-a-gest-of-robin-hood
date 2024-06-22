@@ -59,7 +59,10 @@ class GestCardManager extends CardManager<GestCard> {
     stock: ManualPositionStock<GestCard>
   ) {
     const node = stock.getCardElement(lastCard);
-    console.log('updateElement', cards)
+    if (!node) {
+      return;
+    }
+    console.log('updateElement', cards);
     node.style.top = '0px';
     node.style.left = '0px';
     node.style.position = 'absolute';

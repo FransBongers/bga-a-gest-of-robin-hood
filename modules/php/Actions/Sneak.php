@@ -92,10 +92,11 @@ class Sneak extends \AGestOfRobinHood\Actions\Plot
         throw new \feException("ERROR 014");
       }
 
-      $revealMerryMen = count(Utils::filter($toSpace->getForces(), function ($force) {
+      $revealMerryMen = $toSpace->isSubmissive() && count(Utils::filter($toSpace->getForces(), function ($force) {
         return $force->isHenchman();
       })) + count($argMoves[$toSpaceId]) > 3;
 
+      $merryMen = [];
       foreach ($merryMenIds as $merryManId) {
         $merryMan = Utils::array_find($option['merryMen'], function ($force) use ($merryManId) {
           return $force->getId() === $merryManId;
@@ -103,81 +104,40 @@ class Sneak extends \AGestOfRobinHood\Actions\Plot
         if ($merryMan === null) {
           throw new \feException("ERROR 015");
         }
-        $currentLocation = $merryMan->getLocation();
-        $startsHidden = $merryMan->isHidden();
-        $merryMan->setLocation($toSpaceId);
-        $forces[] = $merryMan;
-        $moves[] = [
-          'from' => [
-            'type' => $this->getMerryMenTypeForMove($merryMan->getType(), $startsHidden),
-            'hidden' => $merryMan->isHidden(),
-            'spaceId' => $currentLocation,
-          ],
-          'to' => [
-            'type' => $this->getMerryMenTypeForMove($merryMan->getType(), !$revealMerryMen),
-            'hidden' => !$revealMerryMen,
-            'spaceId' => $toSpaceId,
-          ]
-        ];
+        $merryMen[] = $merryMan;
+
+
+        // $currentLocation = $merryMan->getLocation();
+        // $startsHidden = $merryMan->isHidden();
+        // $merryMan->setLocation($toSpaceId);
+        // $forces[] = $merryMan;
+        // $moves[] = [
+        //   'from' => [
+        //     'type' => $this->getMerryMenTypeForMove($merryMan->getType(), $startsHidden),
+        //     'hidden' => $merryMan->isHidden(),
+        //     'spaceId' => $currentLocation,
+        //   ],
+        //   'to' => [
+        //     'type' => $this->getMerryMenTypeForMove($merryMan->getType(), !$revealMerryMen),
+        //     'hidden' => !$revealMerryMen,
+        //     'spaceId' => $toSpaceId,
+        //   ]
+        // ];
+        // *   'force' => $force,
+        // *   'toSpaceId' => $spaceId,
+        // *   'toHidden' => true,
+
       }
+      $notifData = GameMap::createMoves(array_map(function ($merryMan) use ($toSpaceId, $revealMerryMen) {
+        return [
+          'force' => $merryMan,
+          'toSpaceId' => $toSpaceId,
+          'toHidden' => !$revealMerryMen,
+        ];
+      }, $merryMen));
+      $forces = array_merge($forces, $notifData['forces']);
+      $moves = array_merge($moves, $notifData['moves']);
     }
-    // Utils::filter($option['merryMen'], function ($merryMan) use ($moves) {
-    //   return isset($merryMan->getId(), $merryMenIds);
-    // });
-
-    // if (count($merryMenIds) !== count($merryMen)) {
-    //   throw new \feException("ERROR 014");
-    // }
-
-    // $toSpace = Utils::array_find($option['adjacentSpaces'], function ($space) use ($toSpaceId) {
-    //   return $space->getId() === $toSpaceId;
-    // });
-
-    // if ($toSpace === null) {
-    //   throw new \feException("ERROR 015");
-    // }
-
-    // $forcesInSpace = Utils::filter($toSpace->getForces(), function ($force) {
-    //   return $force->isMerryMan() || $force->isHenchman();
-    // });
-    // $revealMerryMen = $toSpace->isSubmissive() && count($forcesInSpace) + count($merryMenIds) > 3;
-
-    // $moves = [
-    //   'reveal' => 0,
-    //   'hide' => 0,
-    //   'noChange' => [
-    //     'hidden' => 0,
-    //     'revealed' => 0,
-    //   ],
-    //   'robinHood' => null,
-    // ];
-
-    // foreach ($merryMen as $merryMan) {
-    //   $merryMan->setLocation($toSpaceId);
-    //   $isHidden = $merryMan->isHidden();
-    //   $isRobinHood = $merryMan->isRobinHood();
-    //   if ($revealMerryMen && $isHidden) {
-    //     $merryMan->setHidden(0);
-    //     if ($isRobinHood) {
-    //       $moves['robinHood'] = 'reveal';
-    //     } else {
-    //       $moves['reveal']++;
-    //     }
-    //   } else if (($revealMerryMen && !$isHidden) || (!$revealMerryMen && $isHidden)) {
-    //     if ($isRobinHood && !$isHidden) {
-    //       $moves['robinHood'] = 'noChange';
-    //     } else {
-    //       $moves['noChange'][$isHidden ? 'hidden' : 'revealed']++;
-    //     }
-    //   } else if (!$revealMerryMen && !$isHidden) {
-    //     $merryMan->setHidden(1);
-    //     if ($isRobinHood) {
-    //       $moves['robinHood'] = 'hide';
-    //     } else {
-    //       $moves['hide']++;
-    //     }
-    //   }
-    // }
 
     $movedMerryMenIds = array_map(function ($force) {
       return $force->getId();
@@ -268,5 +228,4 @@ class Sneak extends \AGestOfRobinHood\Actions\Plot
 
     return $options;
   }
-
 }

@@ -118,56 +118,64 @@ class Swashbuckle extends \AGestOfRobinHood\Models\AtomicAction
 
 
     $moves = [];
+    $forces = [];
 
     if ($options['fromPrison']) {
-      $robinHood->setLocation($robinHoodSpaceId);
-      $moves[] = [
+      $notifData = GameMap::createMoves([[
         'force' => $robinHood,
-        'from' => [
-          'hidden' => false,
-          'spaceId' => PRISON,
-        ],
-        'to' => [
-          'hidden' => false,
-          'spaceId' => $robinHoodSpaceId,
-        ]
-      ];
+        'toSpaceId' => $robinHoodSpaceId,
+        'toHidden' => false,
+      ]]);
+      $moves = $notifData['moves'];
+      $forces = $notifData['forces'];
     } else {
+      $createMovesInput = [];
       if (!$robinHood->isHidden()) {
         $robinHood->hide($player);
       }
-      $robinHood->setLocation($robinHoodSpaceId);
-      $forcesToMove = [$robinHood];
+      $createMovesInput[] = [
+        'force' => $robinHood,
+        'toSpaceId' => $robinHoodSpaceId,
+        'toHidden' => true,
+      ];
+
       if ($merryMan !== null) {
         if (!$merryMan->isHidden()) {
           $merryMan->hide($player);
         }
-        $merryMan->setLocation($merryManSpaceId);
-        $forcesToMove[] = $merryMan;
-      }
-
-      shuffle($forcesToMove);
-
-      $fromSpace = Spaces::get($robinHoodFromLocation);
-
-      foreach ($forcesToMove as $force) {
-        $moves[] = [
-          'force' => $force,
-          'from' => [
-            'hidden' => true,
-            'spaceId' => $robinHoodFromLocation,
-            'space' => $fromSpace,
-          ],
-          'to' => [
-            'hidden' => true,
-            'spaceId' => $force->getId() === $robinHood->getId() ? $robinHoodSpaceId : $merryManSpaceId,
-            'space' => $force->getId() === $robinHood->getId() ? $robinHoodSpace : $merryManSpace,
-          ]
+        $createMovesInput[] = [
+          'force' => $merryMan,
+          'toSpaceId' => $merryManSpaceId,
+          'toHidden' => true,
         ];
       }
 
-      Notifications::swashbuckleMoves($player, $moves, $fromSpace);
+      shuffle($createMovesInput);
+
+      $notifData = GameMap::createMoves($createMovesInput);
+      $moves = $notifData['moves'];
+      $forces = $notifData['forces'];
+
+      //     foreach ($forcesToMove as $force) {
+      //   $moves[] = [
+      //     'force' => $force,
+      //     'from' => [
+      //       'hidden' => true,
+      //       'spaceId' => $robinHoodFromLocation,
+      //       'space' => $fromSpace,
+      //     ],
+      //     'to' => [
+      //       'hidden' => true,
+      //       'spaceId' => $force->getId() === $robinHood->getId() ? $robinHoodSpaceId : $merryManSpaceId,
+      //       'space' => $force->getId() === $robinHood->getId() ? $robinHoodSpace : $merryManSpace,
+      //     ]
+      //   ];
+      // }
+
+
     }
+    $fromSpace = $robinHoodFromLocation === PRISON ? PRISON : Spaces::get($robinHoodFromLocation);
+    Notifications::swashbuckleMoves($player, $forces, $moves, $fromSpace);
 
     $this->resolveAction($args);
   }
@@ -209,7 +217,7 @@ class Swashbuckle extends \AGestOfRobinHood\Models\AtomicAction
 
     foreach ($merryMenThatCanPerform as $merryMan) {
       $location = $merryMan->getLocation();
-      
+
       if ($location === PRISON) {
         $nottingham = Spaces::get(NOTTINGHAM);
         $options[] = [

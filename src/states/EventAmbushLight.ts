@@ -43,6 +43,7 @@ class EventAmbushLightState implements State {
     this.game.clearPossible();
     if (this.args._private.spaceIds.length === 1) {
       this.selectedSpaceId = this.args._private.spaceIds[0];
+      this.updateInterfaceSelectMerryMen();
       return;
     }
 

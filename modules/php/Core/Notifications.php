@@ -240,6 +240,7 @@ class Notifications
       'moves' => $moves,
       'tkn_boldText_toSpace' => $space->getName(),
       'i18n' => ['tkn_boldText_toSpace'],
+      'preserve' => ['playerId'],
     ]);
   }
 
@@ -325,6 +326,7 @@ class Notifications
       'tkn_boldText_fromSpace' => $fromSpace->getName(),
       'tkn_boldText_toSpace' => $toSpace->getName(),
       'i18n' => ['tkn_boldText_fromSpace', 'tkn_boldText_toSpace'],
+      'preserve' => ['playerId'],
     ]);
   }
 
@@ -381,6 +383,7 @@ class Notifications
       'toSpaceId' => $toSpace->getId(),
       'fromSpaceId' => $fromSpace->getId(),
       'i18n' => ['tkn_boldText_from', 'tkn_boldText_to'],
+      'preserve' => ['playerId']
     ]);
   }
 
@@ -467,6 +470,7 @@ class Notifications
       'toSpaceId' => $carriage->getLocation(),
       'fromSpaceId' => $fromSpaceId,
       'i18n' => ['tkn_boldText_from', 'tkn_boldText_to'],
+      'preserve' => ['playerId']
     ]);
   }
 
@@ -563,7 +567,8 @@ class Notifications
       'tkn_boldText_forceName' => $force->getPublicName(),
       'tkn_boldText_spaceName' => $space->getName(),
       'count' => 1,
-      'i18n' => ['tkn_boldText_forceName', 'tkn_boldText_spaceName']
+      'i18n' => ['tkn_boldText_forceName', 'tkn_boldText_spaceName'],
+      'preserve' => ['playerId'],
     ]);
   }
 
@@ -632,7 +637,8 @@ class Notifications
       'moves' => $moves,
       'count' => count($forces),
       'tkn_boldText_spaceName' => $space->getName(),
-      'i18n' => ['tkn_boldText_spaceName']
+      'i18n' => ['tkn_boldText_spaceName'],
+      'preserve' => ['playerId']
     ]);
   }
 
@@ -653,7 +659,8 @@ class Notifications
       'player_name' => $player->getName(),
       'moves' => $moves,
       'tkn_boldText_spaceName' => $space->getName(),
-      'i18n' => ['tkn_boldText_spaceName']
+      'i18n' => ['tkn_boldText_spaceName'],
+      'preserve' => ['playerId'],
     ]);
   }
 
@@ -671,6 +678,7 @@ class Notifications
       'playerId' => $player->getId(),
       'player_name' => $player->getName(),
       'moves' => $moves,
+      'preserve' => ['playerId'],
     ]);
   }
 
@@ -692,6 +700,7 @@ class Notifications
       'moves' => $moves,
       'tkn_boldText_spaceName' => $space->getName(),
       'i18n' => ['tkn_boldText_spaceName'],
+      'preserve' => ['playerId'],
     ]);
   }
 
@@ -732,7 +741,8 @@ class Notifications
       'moves' => $moves,
       'count' => count($forces),
       'tkn_boldText_spaceName' => $space->getName(),
-      'i18n' => ['tkn_boldText_spaceName']
+      'i18n' => ['tkn_boldText_spaceName'],
+      'preserve' => ['playerId'],
     ]);
   }
 
@@ -756,7 +766,8 @@ class Notifications
       'moves' => $moves,
       'tkn_boldText_spaceFrom' => $fromSpace->getName(),
       'tkn_boldText_spaceTo' => $toSpace->getName(),
-      'i18n' => ['tkn_boldText_spaceFrom', 'tkn_boldText_spaceTo']
+      'i18n' => ['tkn_boldText_spaceFrom', 'tkn_boldText_spaceTo'],
+      'preserve' => ['playerId']
     ]);
   }
 
@@ -777,6 +788,7 @@ class Notifications
       'player_name' => $player->getName(),
       'moves' => $moves,
       'count' => count($forces),
+      'preserve' => ['playerId']
     ]);
   }
 
@@ -798,6 +810,7 @@ class Notifications
       'moves' => $moves,
       'i18n' => ['tkn_boldText_spaceName'],
       'tkn_boldText_spaceName' => $parish->getName(),
+      'preserve' => ['playerId']
     ]);
   }
 
@@ -899,7 +912,8 @@ class Notifications
       'spaceId' => $fromPrison ? PRISON : $space->getId(),
       'tkn_boldText_forceName' => $force->getPublicName(),
       'tkn_boldText_spaceName' => $fromPrison ? clienttranslate('Prison') : $space->getName(),
-      'i18n' => ['tkn_boldText_forceName', 'tkn_boldText_spaceName']
+      'i18n' => ['tkn_boldText_forceName', 'tkn_boldText_spaceName'],
+      'preserve' => ['playerId'],
     ]);
   }
 
@@ -937,7 +951,8 @@ class Notifications
       'spaceId' => $fromPrison ? PRISON : $space->getId(),
       'tkn_boldText_forceName' => $force->getPublicName(),
       'tkn_boldText_spaceName' => $fromPrison ? clienttranslate('Prison') : $space->getName(),
-      'i18n' => ['tkn_boldText_forceName', 'tkn_boldText_spaceName']
+      'i18n' => ['tkn_boldText_forceName', 'tkn_boldText_spaceName'],
+      'preserve' => ['playerId']
     ]);
   }
 
@@ -1012,6 +1027,7 @@ class Notifications
     self::notifyAll('moveMerryMenPublic', $text, [
       'player' => $player,
       'moves' => $moves,
+      'preserve' => ['playerId']
     ]);
   }
 
@@ -1165,7 +1181,8 @@ class Notifications
       'moves' => $moves,
       'count' => count($moves),
       'tkn_boldText_fromSpace' => $fromSpace->getName(),
-      'i18n' => ['tkn_boldText_fromSpace']
+      'i18n' => ['tkn_boldText_fromSpace'],
+      'preserve' => ['playerId']
     ]);
   }
 
@@ -1195,33 +1212,30 @@ class Notifications
   //   ]);
   // }
 
-  public static function swashbuckleMoves($player, $moves, $fromSpace)
+  public static function swashbuckleMoves($player, $forces, $moves, $fromSpace)
   {
     $text = count($moves) === 1 ?
       clienttranslate('${player_name} moves ${count} Merry Man from ${tkn_boldText_fromSpace} to ${tkn_boldText_toSpace1}') :
       clienttranslate('${player_name} moves ${count} Merry Men from ${tkn_boldText_fromSpace} to ${tkn_boldText_toSpace1} and ${tkn_boldText_toSpace2}');
 
-    self::notify($player, 'moveMerryMenPrivate', $text, [
-      'player' => $player,
+    $textArgs = [
       'count' => count($moves),
-      'forces' => array_map(function ($move) {
-        return $move['force'];
-      }, $moves),
-      'tkn_boldText_fromSpace' => $fromSpace->getName(),
-      'tkn_boldText_toSpace1' => $moves[0]['to']['space']->getName(),
-      'tkn_boldText_toSpace2' => count($moves) === 2 ? $moves[1]['to']['space']->getName() : '',
+      'tkn_boldText_fromSpace' => $fromSpace === PRISON ? clienttranslate('Prison') : $fromSpace->getName(),
+      'tkn_boldText_toSpace1' => Spaces::get($moves[0]['to']['spaceId'])->getName(),
+      'tkn_boldText_toSpace2' => count($moves) === 2 ? Spaces::get($moves[1]['to']['spaceId'])->getName() : '',
       'i18n' => ['tkn_boldText_fromSpace', 'tkn_boldText_toSpace1', 'tkn_boldText_toSpace2']
-    ]);
+    ];
 
-    self::notifyAll('moveMerryMenPublic', $text, [
+    self::notify($player, 'moveMerryMenPrivate', $text, array_merge([
       'player' => $player,
-      'moves' => self::mapMerryMenMoves($moves),
-      'tkn_boldText_fromSpace' => $fromSpace->getName(),
-      'tkn_boldText_toSpace1' => $moves[0]['to']['space']->getName(),
-      'tkn_boldText_toSpace2' => count($moves) === 2 ? $moves[1]['to']['space']->getName() : '',
-      'i18n' => ['tkn_boldText_fromSpace', 'tkn_boldText_toSpace1', 'tkn_boldText_toSpace2'],
-      'count' => count($moves),
-    ]);
+      'forces' => $forces,
+    ], $textArgs));
+
+    self::notifyAll('moveMerryMenPublic', $text, array_merge([
+      'player' => $player,
+      'moves' => $moves,
+      'preserve' => ['playerId']
+    ], $textArgs));
   }
 
   public static function swapRobinHood($player, $forces)
@@ -1253,7 +1267,8 @@ class Notifications
       'player' => $player,
       'moves' => $moves,
       'tkn_boldText_spaceName' => $space->getName(),
-      'i18n' => ['tkn_boldText_spaceName']
+      'i18n' => ['tkn_boldText_spaceName'],
+      'preserve' => ['playerId']
     ]);
   }
 
@@ -1275,7 +1290,8 @@ class Notifications
       'moves' => $moves,
       'tkn_boldText_spaceName' => $spaceName,
       'count' => count($forces),
-      'i18n' => ['tkn_boldText_spaceName']
+      'i18n' => ['tkn_boldText_spaceName'],
+      'preserve' => ['playerId']
     ]);
   }
 

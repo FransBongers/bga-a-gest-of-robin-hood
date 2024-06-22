@@ -24,9 +24,17 @@
 }
 
 .gest_marker_side[data-type="parishStatusMarker"][data-side="front"] {
-  background-color: blue;
+  background-image: url('img/tokens.png');
+  background-size: 400% 100%;
+  background-position-x: 100%;
+  border-radius: 20%;
+  // border: none;
 }
 
 .gest_marker_side[data-type="parishStatusMarker"][data-side="back"] {
-  background-color: red;
+  background-image: url('img/tokens.png');
+  background-size: 400% 100%;
+  background-position-x: math.div(1, 3) * 100%;
+  border-radius: 20%;
+  // border: none;
 }

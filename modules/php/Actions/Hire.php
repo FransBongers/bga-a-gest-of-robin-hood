@@ -58,8 +58,12 @@ class Hire extends \AGestOfRobinHood\Actions\Plot
 
   public function argsHire()
   {
+    $info = $this->ctx->getInfo();
+
+    $source = isset($info['source']) ? $info['source'] : null;
+
     $data = [
-      'options' => $this->getOptions(),
+      'options' => $this->getOptions($source),
     ];
 
     return $data;
@@ -95,9 +99,10 @@ class Hire extends \AGestOfRobinHood\Actions\Plot
     $spaceId = $args['spaceId'];
     $count = $args['count'];
 
+    $info = $this->ctx->getInfo();
+    $source = isset($info['source']) ? $info['source'] : null;
 
-
-    $options = $this->getOptions();
+    $options = $this->getOptions($source);
 
     if (!isset($options[$spaceId])) {
       throw new \feException("ERROR 016");
@@ -165,10 +170,12 @@ class Hire extends \AGestOfRobinHood\Actions\Plot
     return $result;
   }
 
-  public function getOptions()
+  public function getOptions($source = null)
   {
     $availableHenchmen = count(Forces::getInLocation(HENCHMEN_SUPPLY));
     $options = [];
+
+    $isWardenOfTheForestEffect = $source === 'Event08_WardenOfTheForest';
 
     $alreadyHiredSpaceIds = [];
     $nodes = Engine::getResolvedActions([HIRE]);
@@ -182,7 +189,7 @@ class Hire extends \AGestOfRobinHood\Actions\Plot
         continue;
       }
 
-      if ($space->isSubmissive() && $availableHenchmen > 0) {
+      if (!$isWardenOfTheForestEffect && $space->isSubmissive() && $availableHenchmen > 0) {
         $options[$spaceId] = [
           'action' => 'place',
           'space' => $space,

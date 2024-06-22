@@ -236,9 +236,9 @@ class SwashbuckleState implements State {
           );
 
     if (fromPrison && robinHood.type === ROBIN_HOOD) {
-      text = _('Place Robin Hood Revealed in ${spaceName}?');
+      text = _('Place Robin Hood Revealed in ${robinHoodspaceName}?');
     } else if (fromPrison) {
-      text = _('Place your Merry Man Revealed in ${spaceName}?');
+      text = _('Place your Merry Man Revealed in ${robinHoodspaceName}?');
     } else if (!merryManId && robinHood.type === ROBIN_HOOD) {
       text = _('Move Robin Hood to ${robinHoodspaceName}?');
     } else if (!merryManId) {

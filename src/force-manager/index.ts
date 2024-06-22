@@ -14,6 +14,7 @@ class ForceManager extends CardManager<GestForce> {
 
   setupDiv(force: GestForce, div: HTMLElement) {
     div.classList.add('gest_force');
+    div.setAttribute('data-type', force.type);
   }
 
   setupFrontDiv(force: GestForce, div: HTMLElement) {
@@ -21,20 +22,21 @@ class ForceManager extends CardManager<GestForce> {
 
     // div.setAttribute('data-side', 'front');
     div.setAttribute('data-type', force.type);
+    div.setAttribute('data-revealed', 'true');
 
     if ([TALLAGE_CARRIAGE, TRIBUTE_CARRIAGE, TRAP_CARRIAGE].includes(force.type)) {
-      div.replaceChildren(force.type.substring(0, 3))
+      // div.replaceChildren(force.type.substring(0, 3))
     }
     if (force.type === ROBIN_HOOD && !force.hidden) {
-      div.replaceChildren('RH')
+      // div.replaceChildren('RH')
     }
 
     if (force.type === CAMP) {
-      div.replaceChildren('C')
+      // div.replaceChildren('C')
     }
 
     if (force.type === MERRY_MEN) {
-      div.replaceChildren('M')
+      // div.replaceChildren('M')
     }
   }
 
@@ -42,18 +44,20 @@ class ForceManager extends CardManager<GestForce> {
     div.classList.add('gest_force_side');
     // div.setAttribute('data-side', 'back');
     div.setAttribute('data-type', force.type);
+    div.setAttribute('data-revealed', 'false');
+
     if (force.id.startsWith('fake')) {
       return;
     }
     if (force.type === ROBIN_HOOD) {
       div.insertAdjacentHTML('beforeend', '<div>*</div>');
     }
-    if ([TALLAGE_CARRIAGE, TRIBUTE_CARRIAGE, TRAP_CARRIAGE].includes(force.type)) {
-      div.insertAdjacentHTML(
-        'afterbegin',
-        `<span>*${force.type.substring(0, 3)}</span>`
-      );
-    }
+    // if ([TALLAGE_CARRIAGE, TRIBUTE_CARRIAGE, TRAP_CARRIAGE].includes(force.type)) {
+    //   div.insertAdjacentHTML(
+    //     'afterbegin',
+    //     `<span>*${force.type.substring(0, 3)}</span>`
+    //   );
+    // }
   }
 
   isCardVisible(force: GestForce) {

@@ -86,7 +86,7 @@ class NotificationManager {
       'returnTravellersDiscardToMainDeck',
       'returnToSupply',
       'returnToSupplyPrivate',
-      'sneakMerryMen',
+      'sneakMerryMen', // Can be deleted?
       'sneakMerryMenPrivate',
     ];
 
@@ -536,7 +536,7 @@ class NotificationManager {
   }
 
   async notif_removeCardFromGame(notif: Notif<NotifRemoveCardFromGameArgs>) {
-    const {card} = notif.args;
+    const { card } = notif.args;
     await this.game.cardManager.removeCard(card);
   }
 
@@ -605,9 +605,17 @@ class NotificationManager {
   async notif_moveMerryMenPrivate(notif: Notif<NotifMoveMerryMenPrivateArgs>) {
     const { forces } = notif.args;
 
-    const promises = forces.map((force) =>
-      this.game.gameMap.forces[`${MERRY_MEN}_${force.location}`].addCard(force)
-    );
+    const promises = forces.map((force) => {
+      const stock = this.game.gameMap.forces[`${MERRY_MEN}_${force.location}`];
+      const merryMan = stock
+        .getCards()
+        .find((stockForce) => stockForce.id === force.id);
+      if (!merryMan) {
+        return stock.addCard(force);
+      } else {
+        return this.game.forceManager.updateCardInformations(force);
+      }
+    });
 
     await Promise.all(promises);
   }
@@ -627,11 +635,14 @@ class NotificationManager {
       });
       selectedForce.type = move.to.type;
       selectedForce.hidden = move.to.hidden;
-      promises.push(
-        this.game.gameMap.forces[`${MERRY_MEN}_${move.to.spaceId}`].addCard(
-          selectedForce
-        )
-      );
+      const stock = this.game.gameMap.forces[`${MERRY_MEN}_${move.to.spaceId}`];
+      if (move.from.spaceId === move.to.spaceId) {
+        promises.push(
+          this.game.forceManager.updateCardInformations(selectedForce)
+        );
+      } else {
+        promises.push(stock.addCard(selectedForce));
+      }
       selectedForces.push(selectedForce);
     });
 
@@ -645,7 +656,13 @@ class NotificationManager {
 
   async notif_returnTravellersDiscardToMainDeck(
     notif: Notif<NotifReturnTravellersDiscardToMainDeckArgs>
-  ) {}
+  ) {
+    let cards = this.game.cardArea.stocks.travellersDiscard.getCards();
+    cards = cards.map((card) => ({ ...card, location: TRAVELLERS_DECK }));
+    await this.game.cardArea.stocks.travellersDeck.addCards(cards);
+    // TODO: replace with animation
+    this.game.cardArea.stocks.travellersDeck.removeAll();
+  }
 
   async notif_robTakeTwoShillingsFromTheSheriff(
     notif: Notif<NotifRobTakeTwoShillingsFromTheSheriffArgs>

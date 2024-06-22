@@ -21,6 +21,8 @@ trait DebugTrait
 
   function debug_test()
   {
+    // Players::getRobinHoodPlayer()->incShillings(3);
+    // $this->debugPlaceForces(MERRY_MEN,NEWARK,1);
     // Notifications::log('players', Players::getPlayersPerFaction());
     // Players::getRobinHoodPlayer()->incShillings(10);
     // $merryMan = Forces::getTopOf(MERRY_MEN_SUPPLY);
@@ -28,22 +30,25 @@ trait DebugTrait
     // $merryMan = Forces::get(ROBIN_HOOD);
     // $merryMan->setLocation(PRISON);
     // $merryMan->setHidden(0);
-    // Spaces::get(TUXFORD)->revolt(Players::get());
+    // Spaces::get(BLYTH)->revolt(Players::get());
     // Forces::get(ROBIN_HOOD)->setLocation(RETFORD);
     // Spaces::get(RETFORD)->setStatus(REVOLTING);
-    // Forces::get('merryMen_5')->setHidden(0);
-    // Forces::get('merryMen_5')->setLocation(PRISON);
-    // Forces::get('merryMen_8')->setHidden(0);
+    // Forces::get('henchmen_10')->setHidden(0);
+    Forces::get('henchmen_11')->setLocation(TUXFORD);
+    Forces::get('henchmen_4')->setLocation(RETFORD);
+    Forces::get('henchmen_2')->setLocation(BLYTH);
+    
+    // Forces::get('merryMen_6')->setHidden(0);
     // Forces::get('merryMen_8')->setLocation(PRISON);
-    // Forces::get('merryMen_3')->setHidden(0);
-    // Forces::get('merryMen_3')->setLocation(PRISON);
+    // Forces::get(ROBIN_HOOD)->setHidden(0);
+    // Forces::get(ROBIN_HOOD)->setLocation(SHIRE_WOOD);
     // Forces::get('henchmen_11')->setLocation(MANSFIELD);
     // Forces::get(ROBIN_HOOD)->setLocation(ROBIN_HOOD_SUPPLY);
     // Forces::get('merryMen_1')->setLocation(MANSFIELD);
     // Forces::get('merryMen_4')->setHidden(1);
-    Cards::get('Event11_GreatEscape')->insertOnTop(EVENTS_DECK);
+    Cards::get('Event08_WardenOfTheForest')->insertOnTop(EVENTS_DECK);
     // Cards::get('Traveller02_RichMerchant')->insertOnTop(TRAVELLERS_VICTIMS_PILE);
-    // Cards::get('Traveller12_GuyOfGisborne')->insertOnTop(TRAVELLERS_DECK);
+    // Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_DECK);
     // Globals::setOllertonHillAdjacency(true);
     // Cards::get('Traveller07_Monks')->setLocation(TRAVELLERS_DISCARD);
     // $this->debugPlaceForces(TALLAGE_CARRIAGE,TUXFORD,1);
@@ -62,7 +67,7 @@ trait DebugTrait
 
     // $action = $node->getActionResolutionArgs()['action'];
 
-    Notifications::log('spaces', AtomicActions::get(DONATE)->getPossibleSpaces(true));
+    // Notifications::log('spaces', AtomicActions::get(DONATE)->getPossibleSpaces(true));
   }
 
   public function debug_Deck()
@@ -70,7 +75,7 @@ trait DebugTrait
     Notifications::log('deck', Cards::getInLocationOrdered(EVENTS_DECK)->toArray());
   }
 
-  public function debugPlaceForces($type, $spaceId, $number)
+  public function debugPlaceForces($type, $spaceId, $number = 1)
   {
     $supplyMap = [
       HENCHMEN => HENCHMEN_SUPPLY,

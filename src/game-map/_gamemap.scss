@@ -45,9 +45,11 @@
 }
 
 .gest_bridge_location[data-has-bridge=true] {
-  border: 1px solid black;
+  background-image: url('img/tokens.png');
+  background-size: 400% 100%;
+  // border: 1px solid black;
   border-radius: 5%;
-  background-color: burlywood;
+  // background-color: burlywood;
 }
 
 .gest_marker_space {
@@ -133,7 +135,12 @@
 }
 
 #royalInspectionMarker {
-  background-color: #ffd700;
+  background-image: url('img/tokens.png');
+  background-size: 400% 100%;
+  // background-color: #ffd700;
+  background-position-x: math.div(2, 3) * 100%;
+  border-radius: 0%;
+  border: none;
   height: calc(var(--gestMapScale) * 50px);
   width: calc(var(--gestMapScale) * 50px);
 }

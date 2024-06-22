@@ -99,8 +99,8 @@ interface MainMarianOption {
 interface OnEnteringEventMaidMarianDarkStateArgs extends CommonArgs {
   _private: {
     carriages: GestForce[];
-    spaces: MainMarianOption[]
-  }
+    spaces: MainMarianOption[];
+  };
 }
 
 interface OnEnteringEventLittleJohnStateArgs extends CommonArgs {
@@ -360,13 +360,15 @@ interface OnEnteringSelectPlotStateArgs extends CommonArgs {
 
 interface OnEnteringSelectTravellerCardOptionStateArgs extends CommonArgs {
   card: GestCard;
+  darkOptionAvailable: boolean;
+  lightOptionAvailable: boolean;
 }
 
 interface OnEnteringSetupRobinHoodArgs extends CommonArgs {
   _private: {
     robinHood: GestForce;
     merryMen: GestForce[];
-  }
+  };
 }
 
 interface SneakOption {

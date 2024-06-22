@@ -82,7 +82,7 @@ class Space extends \AGestOfRobinHood\Helpers\DB_Model
 
   public function getAdjacentSpaces()
   {
-    return Spaces::get($this->getAdjacentSpacesIds())->toArray();
+    return Spaces::getMany($this->getAdjacentSpacesIds())->toArray();
   }
 
   public function getSingleForce($type)

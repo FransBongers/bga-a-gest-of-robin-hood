@@ -2453,6 +2453,9 @@ var GestCardManager = (function (_super) {
     };
     GestCardManager.prototype.updateDisplay = function (element, cards, lastCard, stock) {
         var node = stock.getCardElement(lastCard);
+        if (!node) {
+            return;
+        }
         console.log('updateElement', cards);
         node.style.top = '0px';
         node.style.left = '0px';
@@ -2477,34 +2480,30 @@ var ForceManager = (function (_super) {
     ForceManager.prototype.clearInterface = function () { };
     ForceManager.prototype.setupDiv = function (force, div) {
         div.classList.add('gest_force');
+        div.setAttribute('data-type', force.type);
     };
     ForceManager.prototype.setupFrontDiv = function (force, div) {
         div.classList.add('gest_force_side');
         div.setAttribute('data-type', force.type);
+        div.setAttribute('data-revealed', 'true');
         if ([TALLAGE_CARRIAGE, TRIBUTE_CARRIAGE, TRAP_CARRIAGE].includes(force.type)) {
-            div.replaceChildren(force.type.substring(0, 3));
         }
         if (force.type === ROBIN_HOOD && !force.hidden) {
-            div.replaceChildren('RH');
         }
         if (force.type === CAMP) {
-            div.replaceChildren('C');
         }
         if (force.type === MERRY_MEN) {
-            div.replaceChildren('M');
         }
     };
     ForceManager.prototype.setupBackDiv = function (force, div) {
         div.classList.add('gest_force_side');
         div.setAttribute('data-type', force.type);
+        div.setAttribute('data-revealed', 'false');
         if (force.id.startsWith('fake')) {
             return;
         }
         if (force.type === ROBIN_HOOD) {
             div.insertAdjacentHTML('beforeend', '<div>*</div>');
-        }
-        if ([TALLAGE_CARRIAGE, TRIBUTE_CARRIAGE, TRAP_CARRIAGE].includes(force.type)) {
-            div.insertAdjacentHTML('afterbegin', "<span>*".concat(force.type.substring(0, 3), "</span>"));
         }
     };
     ForceManager.prototype.isCardVisible = function (force) {
@@ -4294,7 +4293,16 @@ var NotificationManager = (function () {
                     case 0:
                         forces = notif.args.forces;
                         promises = forces.map(function (force) {
-                            return _this.game.gameMap.forces["".concat(MERRY_MEN, "_").concat(force.location)].addCard(force);
+                            var stock = _this.game.gameMap.forces["".concat(MERRY_MEN, "_").concat(force.location)];
+                            var merryMan = stock
+                                .getCards()
+                                .find(function (stockForce) { return stockForce.id === force.id; });
+                            if (!merryMan) {
+                                return stock.addCard(force);
+                            }
+                            else {
+                                return _this.game.forceManager.updateCardInformations(force);
+                            }
                         });
                         return [4, Promise.all(promises)];
                     case 1:
@@ -4323,7 +4331,13 @@ var NotificationManager = (function () {
                             });
                             selectedForce.type = move.to.type;
                             selectedForce.hidden = move.to.hidden;
-                            promises.push(_this.game.gameMap.forces["".concat(MERRY_MEN, "_").concat(move.to.spaceId)].addCard(selectedForce));
+                            var stock = _this.game.gameMap.forces["".concat(MERRY_MEN, "_").concat(move.to.spaceId)];
+                            if (move.from.spaceId === move.to.spaceId) {
+                                promises.push(_this.game.forceManager.updateCardInformations(selectedForce));
+                            }
+                            else {
+                                promises.push(stock.addCard(selectedForce));
+                            }
                             selectedForces.push(selectedForce);
                         });
                         return [4, Promise.all(promises)];
@@ -4335,9 +4349,21 @@ var NotificationManager = (function () {
         });
     };
     NotificationManager.prototype.notif_returnTravellersDiscardToMainDeck = function (notif) {
-        return __awaiter(this, void 0, void 0, function () { return __generator(this, function (_a) {
-            return [2];
-        }); });
+        return __awaiter(this, void 0, void 0, function () {
+            var cards;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        cards = this.game.cardArea.stocks.travellersDiscard.getCards();
+                        cards = cards.map(function (card) { return (__assign(__assign({}, card), { location: TRAVELLERS_DECK })); });
+                        return [4, this.game.cardArea.stocks.travellersDeck.addCards(cards)];
+                    case 1:
+                        _a.sent();
+                        this.game.cardArea.stocks.travellersDeck.removeAll();
+                        return [2];
+                }
+            });
+        });
     };
     NotificationManager.prototype.notif_robTakeTwoShillingsFromTheSheriff = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
@@ -6020,6 +6046,7 @@ var EventAmbushLightState = (function () {
         this.game.clearPossible();
         if (this.args._private.spaceIds.length === 1) {
             this.selectedSpaceId = this.args._private.spaceIds[0];
+            this.updateInterfaceSelectMerryMen();
             return;
         }
         this.game.clientUpdatePageTitle({
@@ -9648,14 +9675,14 @@ var SelectTravellerCardOptionState = (function () {
     };
     SelectTravellerCardOptionState.prototype.addOptionButtons = function () {
         var _this = this;
-        if (this.staticData.titleLight) {
+        if (this.staticData.titleLight && this.args.lightOptionAvailable) {
             this.game.addPrimaryActionButton({
                 id: "light_option_btn",
                 text: _(this.staticData.titleLight),
                 callback: function () { return _this.updateInterfaceConfirm({ option: 'light' }); },
             });
         }
-        if (this.staticData.titleDark) {
+        if (this.staticData.titleDark && this.args.darkOptionAvailable) {
             this.game.addPrimaryActionButton({
                 id: "darkt_option_btn",
                 text: _(this.staticData.titleDark),
@@ -10099,10 +10126,10 @@ var SwashbuckleState = (function () {
             ? _('Move Robin Hood to ${robinHoodspaceName} and the Merry Man to ${merryManSpaceName}?')
             : _('Move one Merry Man to ${robinHoodspaceName} and your other Merry Man to ${merryManSpaceName}?');
         if (fromPrison && robinHood.type === ROBIN_HOOD) {
-            text = _('Place Robin Hood Revealed in ${spaceName}?');
+            text = _('Place Robin Hood Revealed in ${robinHoodspaceName}?');
         }
         else if (fromPrison) {
-            text = _('Place your Merry Man Revealed in ${spaceName}?');
+            text = _('Place your Merry Man Revealed in ${robinHoodspaceName}?');
         }
         else if (!merryManId && robinHood.type === ROBIN_HOOD) {
             text = _('Move Robin Hood to ${robinHoodspaceName}?');

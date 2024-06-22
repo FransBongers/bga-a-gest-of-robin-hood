@@ -78,13 +78,21 @@ class SelectTravellerCardOption extends \AGestOfRobinHood\Models\AtomicAction
 
     $option = $args['option'];
 
-    if (!in_array($option, ['dark', 'light'])) {
+    if (!in_array($option, [DARK, LIGHT])) {
       throw new \feException("ERROR 031");
     }
 
-    $card = Cards::getTopOf(TRAVELLERS_DISCARD);
+    $stateArgs = $this->argsSelectTravellerCardOption();
 
+    $card = $stateArgs['card'];
     $player = self::getPlayer();
+
+    if ($option === DARK && !$card->canPerformDarkEffect($player)) {
+      throw new \feException("ERROR 100");
+    }
+    if ($option === LIGHT && !$card->canPerformLightEffect($player)) {
+      throw new \feException("ERROR 101");
+    }
 
     Notifications::selectedTravellerOption($player, $card, $option);
 
@@ -93,20 +101,23 @@ class SelectTravellerCardOption extends \AGestOfRobinHood\Models\AtomicAction
     $merryMenIds = $info['merryMenIds'];
 
     $space = Spaces::get($spaceId);
-    $strength = $card->getStrength();
 
-    $dieColor = $space->isRevolting() || $space->isForest() ? GREEN : WHITE;
-    $dieResult = $dieColor === GREEN ? GestDice::rollGreenDie() : GestDice::rollWhiteDie();
-
-    $henchmenInSpace = count(Utils::filter($space->getForces(), function ($force) {
-      return $force->isHenchman();
-    }));
-
-    $success = count($merryMenIds) + $dieResult > $henchmenInSpace + $strength;
+    $success = false;
 
     if ($card->requiresRoll($option)) {
+      $strength = $card->getStrength();
+
+      $dieColor = $space->isRevolting() || $space->isForest() ? GREEN : WHITE;
+      $dieResult = $dieColor === GREEN ? GestDice::rollGreenDie() : GestDice::rollWhiteDie();
+
+      $henchmenInSpace = count(Utils::filter($space->getForces(), function ($force) {
+        return $force->isHenchman();
+      }));
+
+      $success = count($merryMenIds) + $dieResult > $henchmenInSpace + $strength;
       Notifications::robResult($player, $dieColor, $dieResult, $success);
     } else {
+      $success = true;
       Notifications::resolveRobEffect($player, $option === 'dark' ? $card->getTitleDark() : $card->getTitleLight());
     }
 

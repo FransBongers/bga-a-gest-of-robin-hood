@@ -35,7 +35,7 @@ class Event08_WardenOfTheForest extends \AGestOfRobinHood\Models\EventCard
     $hire = AtomicActions::get(HIRE);
     $sheriff = Players::getSheriffPlayer();
 
-    if ($hire->canBePerformed($sheriff, $sheriff->getShillings())) {
+    if ($sheriff->getShillings() >=2 && $hire->getOptions($this->id) > 0) {
       $nodes['children'][] = [
         'action' => HIRE,
         'playerId' => $sheriff->getId(),

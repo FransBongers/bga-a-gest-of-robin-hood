@@ -98,8 +98,8 @@ class Event11_GreatEscape extends \AGestOfRobinHood\Cards\Events\RegularEvent
     if ($robinHood->getLocation() !== PRISON) {
       $merryMen[] = $robinHood;
     }
-    // TODO: check if we can resolve this in the move notif handler
-    $revealRobinHood = $robinHood->getLocation() === $space->getId() && $robinHood->isHidden();
+    // // TODO: check if we can resolve this in the move notif handler
+    // $revealRobinHood = $robinHood->getLocation() === $space->getId() && $robinHood->isHidden();
     $notifData = GameMap::createMoves(array_map(function ($merryMan) use ($space) {
       return [
         'force' => $merryMan,
@@ -109,9 +109,9 @@ class Event11_GreatEscape extends \AGestOfRobinHood\Cards\Events\RegularEvent
     }, $merryMen));
 
     Notifications::greatEscapeLight($player, $notifData['forces'], $notifData['moves'], $space);
-    if ($revealRobinHood) {
-      $robinHood->reveal($player);
-    }
+    // if ($revealRobinHood) {
+    //   $robinHood->reveal($player);
+    // }
   }
 
   public function resolveDarkEffect($player, $ctx, $space)

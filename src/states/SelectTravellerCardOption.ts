@@ -103,14 +103,14 @@ class SelectTravellerCardOptionState implements State {
   //  ..#######.....##....####.########.####....##.......##...
 
   private addOptionButtons() {
-    if (this.staticData.titleLight) {
+    if (this.staticData.titleLight && this.args.lightOptionAvailable) {
       this.game.addPrimaryActionButton({
         id: `light_option_btn`,
         text: _(this.staticData.titleLight),
         callback: () => this.updateInterfaceConfirm({ option: 'light' }),
       });
     }
-    if (this.staticData.titleDark) {
+    if (this.staticData.titleDark && this.args.darkOptionAvailable) {
       this.game.addPrimaryActionButton({
         id: `darkt_option_btn`,
         text: _(this.staticData.titleDark),
