@@ -135,6 +135,7 @@ class agestofrobinhood extends Table
             'canceledNotifIds' => Log::getCanceledNotifIds(),
             'playerOrder' => Players::getPlayerOrder(),
             'players' => Players::getUiData($pId),
+            'ballad' => Cards::getBalladAndEvent(),
             'cards' => Cards::getUiData(),
             'markers' => Markers::getAll(),
             'spaces' => Spaces::getAll(),
@@ -158,8 +159,9 @@ class agestofrobinhood extends Table
     function getGameProgression()
     {
         // TODO: compute and return the game progression
-
-        return 0;
+        $deckCount = Cards::countInLocation(EVENTS_DECK);
+        $progression = round((1 - ($deckCount / 24)) * 100);
+        return $progression;
     }
 
 

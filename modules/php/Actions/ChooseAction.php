@@ -91,7 +91,7 @@ class ChooseAction extends \AGestOfRobinHood\Models\AtomicAction
       throw new \feException("ERROR 003");
     }
 
-    if ($action === EVENT && !$stateArgs['canResolveEvent']) {
+    if ($action === EVENT && !$stateArgs['canResolveEvent'] && !$pass) {
       throw new \feException("ERROR 058");
     }
 

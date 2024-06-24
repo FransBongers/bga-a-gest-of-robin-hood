@@ -66,6 +66,7 @@ interface AGestOfRobinHoodGame extends Game {
   updateLogTooltips: () => void;
   animationManager: AnimationManager;
   gameMap: GameMap;
+  infoPanel: InfoPanel;
   cardArea: CardArea;
   cardManager: GestCardManager;
   forceManager: ForceManager;
@@ -125,6 +126,10 @@ interface AGestOfRobinHoodGamedatas extends Gamedatas {
   playerOrder: number[];
   players: Record<number, AGestOfRobinHoodPlayerData>;
   // Game specific
+  ballad: {
+    balladNumber: number;
+    eventNumber: number;
+  };
   bridgeLocation: string;
   cards: {
     eventsDiscard: GestCard | null;

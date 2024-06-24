@@ -642,6 +642,38 @@ class Notifications
     ]);
   }
 
+  public static function startOfRound($data)
+  {
+    $balladNumber = $data['balladNumber'];
+    $eventNumber = $data['eventNumber'];
+
+    $balladNumberMap = [
+      0 => clienttranslate('Setup'),
+      1 => clienttranslate('1st Ballad'),
+      2 => clienttranslate('2nd Ballad'),
+      3 => clienttranslate('3rd Ballad'),
+    ];
+    $eventNumberMap = [
+      0 => clienttranslate('Royal Inspection Round'),
+      1 => clienttranslate('1st Event'),
+      2 => clienttranslate('2nd Event'),
+      3 => clienttranslate('3rd Event'),
+      4 => clienttranslate('4th Event'),
+      5 => clienttranslate('5th Event'),
+      6 => clienttranslate('6th Event'),
+      7 => clienttranslate('7th Event'),
+      8 => clienttranslate('Royal Inspection Round'),
+    ];
+
+    self::notifyAll('startOfRound', clienttranslate('${balladNumberText}, ${eventNumberText}'), [
+      'balladNumberText' => $balladNumberMap[$balladNumber],
+      'eventNumberText' => $eventNumberMap[$eventNumber],
+      'balladNumber' => $balladNumber,
+      'eventNumber' => $eventNumber,
+      'i18n' => ['balladNumberText', 'eventNumberText'],
+    ]);
+  }
+
   public static function greatEscapeLight($player, $forces, $moves, $space)
   {
     $text = clienttranslate('${player_name} places Robin Hood and all Merry Men from Prison in ${tkn_boldText_spaceName}');

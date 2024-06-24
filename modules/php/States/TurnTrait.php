@@ -45,6 +45,7 @@ trait TurnTrait
 
   function stStartOfRound()
   {
+    Notifications::startOfRound(Cards::getBalladAndEvent(true));
     $card = Cards::drawAndRevealCard();
 
     $node = [

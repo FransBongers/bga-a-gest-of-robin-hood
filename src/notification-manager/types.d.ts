@@ -236,3 +236,8 @@ interface MerryManMovePublic {
 interface NotifMoveMerryMenPublicArgs extends NotifWithPlayerArgs {
   moves: MerryManMovePublic[];
 }
+
+interface NotifStartOfRoundArgs {
+  balladNumber: number;
+  eventNumber: number;
+}

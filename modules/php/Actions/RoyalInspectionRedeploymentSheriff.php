@@ -129,6 +129,9 @@ class RoyalInspectionRedeploymentSheriff extends \AGestOfRobinHood\Models\Atomic
     if (!$isTemporaryTruce) {
       $usedCarriages = Forces::getInLocation(USED_CARRIAGES)->toArray();
       Forces::moveAllInLocation(USED_CARRIAGES, CARRIAGE_SUPPLY);
+      foreach($usedCarriages as $usedCarriage) {
+        $usedCarriage->setHidden(1);
+      }
     }
 
     $player = self::getPlayer();

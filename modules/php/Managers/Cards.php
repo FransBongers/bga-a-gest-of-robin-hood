@@ -200,4 +200,17 @@ class Cards extends \AGestOfRobinHood\Helpers\Pieces
     
     return Cards::get($card->getId());
   }
+
+  public static function getBalladAndEvent($beforeDraw = false) {
+    $deckCount = self::countInLocation(EVENTS_DECK);
+    if ($beforeDraw) {
+      $deckCount--;
+    }
+    $balladNumber = ceil(3 - ($deckCount / 8));
+    $eventNumber = 8 - ($deckCount % 8);
+    return [
+      'balladNumber' => $balladNumber,
+      'eventNumber' => $eventNumber,
+    ];
+  }
 }

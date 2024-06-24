@@ -753,7 +753,7 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     const ROOT = document.documentElement;
     let WIDTH = $('play_area_container').getBoundingClientRect()['width'] - 8;
     const LEFT_COLUMN = 1500;
-    const RIGHT_COLUMN = 1500;
+    const RIGHT_COLUMN = 634;
 
     if (this.settings.get({ id: 'twoColumnsLayout' }) === PREF_ENABLED) {
       WIDTH = WIDTH - 8; // grid gap

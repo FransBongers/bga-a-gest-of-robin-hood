@@ -92,7 +92,7 @@ class Disperse extends \AGestOfRobinHood\Models\AtomicAction
     $numberOfMerryMenInSpace = count($merryMenInSpace);
 
     $campsInSpace = Utils::filter($forces, function ($force) {
-      return $force->isMerryMan();
+      return $force->isCamp();
     });
 
     $selectedMerryMen = [];

@@ -2137,7 +2137,7 @@ var AGestOfRobinHood = (function () {
         var ROOT = document.documentElement;
         var WIDTH = $('play_area_container').getBoundingClientRect()['width'] - 8;
         var LEFT_COLUMN = 1500;
-        var RIGHT_COLUMN = 1500;
+        var RIGHT_COLUMN = 634;
         if (this.settings.get({ id: 'twoColumnsLayout' }) === PREF_ENABLED) {
             WIDTH = WIDTH - 8;
             var size = Number(this.settings.get({ id: 'columnSizes' }));
@@ -2404,6 +2404,7 @@ var CardArea = (function () {
             node.style.setProperty('--gestCardSizeScale', "".concat(Number(cardScale) / 100));
         }
         this.setupStocks({ gamedatas: gamedatas });
+        this.game.infoPanel.setupPlotsAndDeedsInfo();
     };
     return CardArea;
 }());
@@ -3519,6 +3520,96 @@ var tplGameMap = function (_a) {
     var gamedatas = _a.gamedatas;
     return "\n  <div id=\"gest_game_map\">\n    ".concat(tplTrack({ config: JUSTICE_TRACK_CONFIG }), "\n    ").concat(tplTrack({ config: ORDER_TRACK }), "\n    ").concat(tplTrack({ config: PARISH_STATUS_BOXES }), "\n    ").concat(tplTrack({ config: ROYAL_INSPECTION_TRACK }), "\n    ").concat(tplTrack({ config: INITIATIVE_TRACK }), "\n    ").concat(tplTrack({ config: UNIQUE_SPACES }), "\n    ").concat(tplSpaces(), "\n    ").concat(tplTrack({ config: BRIDGE_LOCATIONS }), "\n  </div>");
 };
+var getRobinHoodPlotsAndDeeds = function () { return ({
+    plots: [
+        {
+            title: _('Recruit'),
+            cost: _('1 Shilling per space.'),
+            location: _('Up to 3 non-Submissive spaces.'),
+            procedure: _('Place 1 Merry Man, or replace a Merry Man with a Camp (+1 Justice). If there is already a Camp, instead place up to 2 Merry Men or flip all Hidden.'),
+        },
+        {
+            title: _('Sneak'),
+            cost: _('1 Shilling per origin.'),
+            location: _('Up to 3 origin spaces with Merry Men.'),
+            procedure: _('Move any Merry Men to adjacent spaces. If a destination is Submissive and moving Merry Men plus Henchmen there exceeds 3, Reveal them; otherwise Hide all moving Merry Men.'),
+        },
+        {
+            title: _('Rob'),
+            cost: _('0 Shillings.'),
+            location: _('Up to 3 spaces with Hidden Merry Men and/or Robin Hood.'),
+            procedure: _("Select target and Reveal any number of Merry Men, then roll against target's Defense Value."),
+        },
+    ],
+    deeds: [
+        {
+            title: _('Turncoat'),
+            cost: _('1 Shilling.'),
+            location: _('1 Revolting Parish with a Merry Man.'),
+            procedure: _('Replace 1 Henchman with a Merry Man.'),
+        },
+        {
+            title: _('Donate'),
+            cost: _('2 Shillings per Parish.'),
+            location: _('Up to 2 Submissive Parishes with any Merry Men equal or greater than Henchmen.'),
+            procedure: _('Set each Parish to Revolting.'),
+        },
+        {
+            title: _('Swashbuckle'),
+            cost: _('0 Shillings.'),
+            location: _('1 space with Robin Hood.'),
+            procedure: _('Hide Robin Hood and up to 1 Merry Man, then move them to any adjacent spaces; or place Robin Hood from Prison in or adjacent to Nottingham, Revealed.'),
+        },
+        {
+            title: _('Inspire'),
+            cost: _('0 Shillings.'),
+            location: _('1 Parish with Hidden Robin Hood.'),
+            procedure: _('Reveal Robin Hood to set the Parish to Revolting, or if it is already Revolting instead Reveal Robin Hood to shift Royal Favour one step towards Justice.'),
+        },
+    ],
+}); };
+var getSheriffPlotsAndDeeds = function () { return ({
+    plots: [
+        {
+            title: _('Hire'),
+            cost: _('2 Shilling per space.'),
+            location: _('Up to 3 spaces (see Procedure for details).'),
+            procedure: _('Place up to 2 Henchmen in Submissive Parishes, up to 4 Henchmen in Nottingham, and set Revolting Parishes with more Henchmen than Merry Men to Submissive.'),
+        },
+        {
+            title: _('Patrol'),
+            cost: _('2 Shillings per destination.'),
+            location: _('Up to 3 destination spaces.'),
+            procedure: _('Move in any number of Henchmen from adjacent spaces, then reveal 1 Merry Man per Henchmen now there (or per 2 Henchmen in Forest).'),
+        },
+        {
+            title: _('Capture'),
+            cost: _('0 Shillings.'),
+            location: _('Up to 3 spaces with Henchmen.'),
+            procedure: _('Remove 1 Revealed enemy piece per Henchmen (or per 2 Henchmen in Revolting Parishes). Remove Merry Men to Prison (Robin Hood then Camps last).'),
+        },
+    ],
+    deeds: [
+        {
+            title: _('Ride'),
+            cost: _('0 Shilling.'),
+            location: _('Nottingham and 1 Parish.'),
+            procedure: _('Move up to 4 Henchmen from Nottingham to any one Parish.'),
+        },
+        {
+            title: _('Confiscate'),
+            cost: _('0 Shillings.'),
+            location: _('Up to 2 Submissive Parishes with Henchmen.'),
+            procedure: _('Place an Available Carriage in each Parish, then set each Parish where a Carriage was placed to Revolting.'),
+        },
+        {
+            title: _('Disperse'),
+            cost: _('3 Shillings.'),
+            location: _('1 Parish with Henchmen.'),
+            procedure: _('Remove 2 enemy pieces to Available (Camps last, shift one step towards Order if a Camp is removed), then set the Parish to Revolting.'),
+        },
+    ],
+}); };
 var InfoPanel = (function () {
     function InfoPanel(game) {
         this.game = game;
@@ -3529,17 +3620,86 @@ var InfoPanel = (function () {
     InfoPanel.prototype.updateInterface = function (_a) {
         var gamedatas = _a.gamedatas;
     };
-    InfoPanel.prototype.setup = function (_a) {
-        var gamedatas = _a.gamedatas;
-        var node = document.getElementById("player_boards");
+    InfoPanel.prototype.updateBalladInfo = function (_a) {
+        var balladNumber = _a.balladNumber, eventNumber = _a.eventNumber;
+        var node = document.getElementById('gest_ballad_info_ballad_number');
         if (!node) {
             return;
         }
-        node.insertAdjacentHTML("afterbegin", tplInfoPanel());
+        node.replaceChildren(this.getBalladName({ balladNumber: balladNumber }));
+        var eventNode = document.getElementById('gest_ballad_info_event_number');
+        if (!eventNode) {
+            return;
+        }
+        var eventText = this.game.format_string_recursive(_(' Event ${eventNumber} / 7'), {
+            eventNumber: eventNumber,
+        });
+        if (eventNumber === 8 && balladNumber !== 0) {
+            eventText = _('Royal Inspection Round');
+        }
+        else if (balladNumber === 0) {
+            eventText = '';
+        }
+        eventNode.replaceChildren(eventText);
+    };
+    InfoPanel.prototype.setupPlotsAndDeedsInfo = function () {
+        var cardArea = document.getElementById('gest_card_area');
+        if (this.game.getPlayerId() ===
+            this.game.playerManager.getRobinHoodPlayerId()) {
+            cardArea.insertAdjacentHTML('afterbegin', tplRobinHoodPlotsAndDeeds());
+        }
+        else {
+            cardArea.insertAdjacentHTML('beforeend', tplRobinHoodPlotsAndDeeds());
+        }
+        if (this.game.getPlayerId() ===
+            this.game.playerManager.getSheriffPlayerId()) {
+            cardArea.insertAdjacentHTML('afterbegin', tplSheriffPlotsAndDeeds());
+        }
+        else {
+            cardArea.insertAdjacentHTML('beforeend', tplSheriffPlotsAndDeeds());
+        }
+    };
+    InfoPanel.prototype.setup = function (_a) {
+        var gamedatas = _a.gamedatas;
+        var node = document.getElementById('player_boards');
+        if (!node) {
+            return;
+        }
+        node.insertAdjacentHTML('afterbegin', tplInfoPanel());
+        this.updateBalladInfo(gamedatas.ballad);
+    };
+    InfoPanel.prototype.getBalladName = function (_a) {
+        var balladNumber = _a.balladNumber;
+        switch (balladNumber) {
+            case 0:
+                return _('Setup');
+            case 1:
+                return _('1st Ballad');
+            case 2:
+                return _('2nd Ballad');
+            case 3:
+                return _('3rd Ballad');
+            default:
+                return '';
+        }
     };
     return InfoPanel;
 }());
-var tplInfoPanel = function () { return "<div class='player-board' id=\"info_panel\"></div>"; };
+var tplInfoPanel = function () { return "<div class='player-board' id=\"info_panel\">\n  <div id=\"gest_ballad_info\">\n    <span id=\"gest_ballad_info_ballad_number\"></span>\n    <span id=\"gest_ballad_info_event_number\"></span>\n  </div>\n  <div id=\"info_panel_buttons\">\n    \n  </div>\n</div>"; };
+var tplPlotDeedInfo = function (_a) {
+    var title = _a.title, cost = _a.cost, location = _a.location, procedure = _a.procedure;
+    return "\n<div class=\"gest_plot_deed_item\">\n  <span class=\"gest_plot_deed_title\">".concat(_(title), "</span>\n  <div class=\"gest_plot_deed_info_row\">\n    <span class=\"gest_plot_deed_info_label\">").concat(_('Cost: '), "</span><span>").concat(_(cost), "</span>\n  </div>\n      <div class=\"gest_plot_deed_info_row\"?\n    <span class=\"gest_plot_deed_info_label\">").concat(_('Location: '), "</span><span>").concat(_(location), "</span>\n  </div>\n      <div class=\"gest_plot_deed_info_row\">\n    <span class=\"gest_plot_deed_info_label\">").concat(_('Procedure: '), "</span><span>").concat(_(procedure), "</span>\n  </div>\n</div>");
+};
+var tplRobinHoodPlotsAndDeeds = function () { return "\n  <div class=\"gest_plots_and_deeds_container\" data-side=\"robinHood\">\n    <span class=\"gest_plot_title\">".concat(_('Plots'), "</span>\n    <div class=\"gest_plots_row\">\n        ").concat(getRobinHoodPlotsAndDeeds()
+    .plots.map(function (info) { return tplPlotDeedInfo(info); })
+    .join(''), "\n    </div>\n    <span class=\"gest_plot_title\" style=\"margin-top: 8px;\">").concat(_('Deeds'), "</span>\n    <div class=\"gest_plots_row\" data-items=\"4\">\n        ").concat(getRobinHoodPlotsAndDeeds()
+    .deeds.map(function (info) { return tplPlotDeedInfo(info); })
+    .join(''), "\n    </div>\n  </div>\n"); };
+var tplSheriffPlotsAndDeeds = function () { return "\n  <div class=\"gest_plots_and_deeds_container\" data-side=\"sheriff\">\n    <span class=\"gest_plot_title\">".concat(_('Plots'), "</span>\n    <div class=\"gest_plots_row\">\n        ").concat(getSheriffPlotsAndDeeds()
+    .plots.map(function (info) { return tplPlotDeedInfo(info); })
+    .join(''), "\n    </div>\n    <span class=\"gest_plot_title\" style=\"margin-top: 8px;\">").concat(_('Deeds'), "</span>\n    <div class=\"gest_plots_row\">\n        ").concat(getSheriffPlotsAndDeeds()
+    .deeds.map(function (info) { return tplPlotDeedInfo(info); })
+    .join(''), "\n    </div>\n  </div>\n"); };
 var LOG_TOKEN_BOLD_TEXT = 'boldText';
 var LOG_TOKEN_NEW_LINE = 'newLine';
 var LOG_TOKEN_CARD = 'card';
@@ -3676,6 +3836,7 @@ var NotificationManager = (function () {
             'returnToSupplyPrivate',
             'sneakMerryMen',
             'sneakMerryMenPrivate',
+            'startOfRound',
         ];
         notifs.forEach(function (notifName) {
             _this.subscriptions.push(dojo.subscribe(notifName, _this, function (notifDetails) {
@@ -4466,6 +4627,16 @@ var NotificationManager = (function () {
             });
         });
     };
+    NotificationManager.prototype.notif_startOfRound = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, balladNumber, eventNumber;
+            return __generator(this, function (_b) {
+                _a = notif.args, balladNumber = _a.balladNumber, eventNumber = _a.eventNumber;
+                this.game.infoPanel.updateBalladInfo({ balladNumber: balladNumber, eventNumber: eventNumber });
+                return [2];
+            });
+        });
+    };
     return NotificationManager;
 }());
 var PlayerManager = (function () {
@@ -4650,7 +4821,7 @@ var getSettingsConfig = function () {
                         padding: 0,
                         range: {
                             min: 50,
-                            max: 250,
+                            max: 200,
                         },
                     },
                     type: "slider",
@@ -4773,7 +4944,7 @@ var Settings = (function () {
     };
     Settings.prototype.addButton = function (_a) {
         var gamedatas = _a.gamedatas;
-        var configPanel = document.getElementById("info_panel");
+        var configPanel = document.getElementById("info_panel_buttons");
         if (configPanel) {
             configPanel.insertAdjacentHTML("beforeend", tplSettingsButton());
         }
@@ -5420,7 +5591,7 @@ var DisperseState = (function () {
             return _this.game.setElementSelected({ id: merryMan.id });
         });
         this.game.clientUpdatePageTitle({
-            text: _('Dispers in ${spaceName}?'),
+            text: _('Disperse in ${spaceName}?'),
             args: {
                 spaceName: _(this.selectedOption.space.name),
             },
@@ -7574,6 +7745,7 @@ var PatrolState = (function () {
     PatrolState.prototype.onEnteringState = function (args) {
         debug('Entering PatrolState');
         this.selectedHenchmenIds = [];
+        this.selectedSpace = null;
         this.args = args;
         this.updateInterfaceInitialStep();
     };
@@ -7596,11 +7768,12 @@ var PatrolState = (function () {
                 id: "".concat(spaceId, "_btn"),
                 text: _(space.name),
                 callback: function () {
+                    _this.selectedSpace = space;
                     if (adjacentHenchmen.length > 0) {
-                        _this.updateInterfaceSelectHenchmen({ space: space, adjacentHenchmen: adjacentHenchmen });
+                        _this.updateInterfaceSelectHenchmen();
                     }
                     else {
-                        _this.updateInterfaceConfirm({ space: space });
+                        _this.updateInterfaceConfirm();
                     }
                 },
             });
@@ -7610,15 +7783,20 @@ var PatrolState = (function () {
         });
         this.game.addUndoButtons(this.args);
     };
-    PatrolState.prototype.updateInterfaceSelectHenchmen = function (_a) {
+    PatrolState.prototype.updateInterfaceSelectHenchmen = function () {
         var _this = this;
-        var adjacentHenchmen = _a.adjacentHenchmen, space = _a.space;
+        var adjacentHenchmen = this.args.options[this.selectedSpace.id].adjacentHenchmen;
+        if (this.selectedHenchmenIds.length === adjacentHenchmen.length ||
+            adjacentHenchmen.length === 0) {
+            this.updateInterfaceConfirm();
+            return;
+        }
         this.game.clearPossible();
         this.game.clientUpdatePageTitle({
             text: _('${you} must select Henchmen to move to ${spaceName}'),
             args: {
                 you: '${you}',
-                spaceName: _(space.name),
+                spaceName: _(this.selectedSpace.name),
             },
         });
         adjacentHenchmen.forEach(function (henchman) {
@@ -7627,23 +7805,25 @@ var PatrolState = (function () {
                 callback: function () { return _this.handleHenchmenClick({ henchman: henchman }); },
             });
         });
+        this.selectedHenchmenIds.forEach(function (id) {
+            return _this.game.setElementSelected({ id: id });
+        });
         this.game.addPrimaryActionButton({
             id: 'done_btn',
             text: _('Done'),
-            callback: function () { return _this.updateInterfaceConfirm({ space: space }); },
+            callback: function () { return _this.updateInterfaceConfirm(); },
         });
         this.game.addCancelButton();
     };
-    PatrolState.prototype.updateInterfaceConfirm = function (_a) {
+    PatrolState.prototype.updateInterfaceConfirm = function () {
         var _this = this;
-        var space = _a.space;
         this.game.clearPossible();
         this.game.clientUpdatePageTitle({
             text: this.selectedHenchmenIds.length > 0
                 ? _('Move ${count} Henchmen to ${spaceName} and Patrol?')
                 : _('Patrol in ${spaceName}?'),
             args: {
-                spaceName: _(space.name),
+                spaceName: _(this.selectedSpace.name),
                 count: this.selectedHenchmenIds.length,
             },
         });
@@ -7652,7 +7832,7 @@ var PatrolState = (function () {
             _this.game.takeAction({
                 action: 'actPatrol',
                 args: {
-                    spaceId: space.id,
+                    spaceId: _this.selectedSpace.id,
                     henchmenIds: _this.selectedHenchmenIds,
                 },
             });
@@ -7672,13 +7852,12 @@ var PatrolState = (function () {
     PatrolState.prototype.handleHenchmenClick = function (_a) {
         var henchman = _a.henchman;
         if (this.selectedHenchmenIds.includes(henchman.id)) {
-            this.game.removeSelectedFromElement({ id: henchman.id });
             this.selectedHenchmenIds = this.selectedHenchmenIds.filter(function (id) { return id !== henchman.id; });
         }
         else {
-            this.game.setElementSelected({ id: henchman.id });
             this.selectedHenchmenIds.push(henchman.id);
         }
+        this.updateInterfaceSelectHenchmen();
     };
     return PatrolState;
 }());
@@ -8318,6 +8497,16 @@ var RideState = (function () {
     };
     RideState.prototype.updateInterfaceSelectHenchmen = function () {
         var _this = this;
+        if (this.selectedHenchmenIds.length === 4 ||
+            this.selectedHenchmenIds.length === this.args.henchmen.length) {
+            this.updateInterfaceConfirm();
+            return;
+        }
+        else if (this.args.henchmen.length === 1) {
+            this.selectedHenchmenIds.push(this.args.henchmen[0].id);
+            this.updateInterfaceConfirm();
+            return;
+        }
         this.game.clearPossible();
         this.game.clientUpdatePageTitle({
             text: _('${you} must select Henchmen to move to ${spaceName}'),
@@ -8332,10 +8521,14 @@ var RideState = (function () {
                 callback: function () { return _this.handleHenchmenClick({ henchman: henchman }); },
             });
         });
+        this.selectedHenchmenIds.forEach(function (id) {
+            return _this.game.setElementSelected({ id: id });
+        });
         this.game.addPrimaryActionButton({
             id: 'done_btn',
             text: _('Done'),
             callback: function () { return _this.updateInterfaceConfirm(); },
+            extraClasses: this.selectedHenchmenIds.length === 0 ? DISABLED : '',
         });
         this.game.addCancelButton();
     };
@@ -8379,16 +8572,12 @@ var RideState = (function () {
     RideState.prototype.handleHenchmenClick = function (_a) {
         var henchman = _a.henchman;
         if (this.selectedHenchmenIds.includes(henchman.id)) {
-            this.game.removeSelectedFromElement({ id: henchman.id });
             this.selectedHenchmenIds = this.selectedHenchmenIds.filter(function (id) { return id !== henchman.id; });
         }
         else {
-            this.game.setElementSelected({ id: henchman.id });
             this.selectedHenchmenIds.push(henchman.id);
         }
-        if (this.selectedHenchmenIds.length === 4) {
-            this.updateInterfaceConfirm();
-        }
+        this.updateInterfaceSelectHenchmen();
     };
     return RideState;
 }());

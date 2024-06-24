@@ -124,10 +124,10 @@ class Event07_YeomenRevolt extends \AGestOfRobinHood\Cards\Events\RegularEvent
   {
     $spaces = $this->getLightOptions();
     if (count($spaces) === 0) {
-      $this->resolveEffect($player, LIGHT, null, $ctx);
+      $this->resolveLightEffect($player, $ctx, null);
       return true;
     } else if (count($spaces) === 1) {
-      $this->resolveEffect($player, LIGHT, $spaces[0], $ctx);
+      $this->resolveLightEffect($player, $ctx, $spaces[0]);
       return true;
     }
     return false;

@@ -2,6 +2,7 @@ class PatrolState implements State {
   private game: AGestOfRobinHoodGame;
   private args: OnEnteringPatrolStateArgs;
   private selectedHenchmenIds: string[] = [];
+  private selectedSpace: GestSpace;
 
   constructor(game: AGestOfRobinHoodGame) {
     this.game = game;
@@ -10,6 +11,7 @@ class PatrolState implements State {
   onEnteringState(args: OnEnteringPatrolStateArgs) {
     debug('Entering PatrolState');
     this.selectedHenchmenIds = [];
+    this.selectedSpace = null;
     this.args = args;
     this.updateInterfaceInitialStep();
   }
@@ -52,10 +54,11 @@ class PatrolState implements State {
           id: `${spaceId}_btn`,
           text: _(space.name),
           callback: () => {
+            this.selectedSpace = space;
             if (adjacentHenchmen.length > 0) {
-              this.updateInterfaceSelectHenchmen({ space, adjacentHenchmen });
+              this.updateInterfaceSelectHenchmen();
             } else {
-              this.updateInterfaceConfirm({ space });
+              this.updateInterfaceConfirm();
             }
           },
         });
@@ -68,20 +71,23 @@ class PatrolState implements State {
     this.game.addUndoButtons(this.args);
   }
 
-  private updateInterfaceSelectHenchmen({
-    adjacentHenchmen,
-    space,
-  }: {
-    space: GestSpace;
-    adjacentHenchmen: GestForce[];
-  }) {
+  private updateInterfaceSelectHenchmen() {
+    const adjacentHenchmen =
+      this.args.options[this.selectedSpace.id].adjacentHenchmen;
+    if (
+      this.selectedHenchmenIds.length === adjacentHenchmen.length ||
+      adjacentHenchmen.length === 0
+    ) {
+      this.updateInterfaceConfirm();
+      return;
+    }
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({
       text: _('${you} must select Henchmen to move to ${spaceName}'),
       args: {
         you: '${you}',
-        spaceName: _(space.name),
+        spaceName: _(this.selectedSpace.name),
       },
     });
 
@@ -91,16 +97,20 @@ class PatrolState implements State {
         callback: () => this.handleHenchmenClick({ henchman }),
       });
     });
+    this.selectedHenchmenIds.forEach((id) =>
+      this.game.setElementSelected({ id })
+    );
+
     this.game.addPrimaryActionButton({
       id: 'done_btn',
       text: _('Done'),
-      callback: () => this.updateInterfaceConfirm({ space }),
+      callback: () => this.updateInterfaceConfirm(),
     });
 
     this.game.addCancelButton();
   }
 
-  private updateInterfaceConfirm({ space }: { space: GestSpace }) {
+  private updateInterfaceConfirm() {
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({
@@ -109,7 +119,7 @@ class PatrolState implements State {
           ? _('Move ${count} Henchmen to ${spaceName} and Patrol?')
           : _('Patrol in ${spaceName}?'),
       args: {
-        spaceName: _(space.name),
+        spaceName: _(this.selectedSpace.name),
         count: this.selectedHenchmenIds.length,
       },
     });
@@ -119,7 +129,7 @@ class PatrolState implements State {
       this.game.takeAction({
         action: 'actPatrol',
         args: {
-          spaceId: space.id,
+          spaceId: this.selectedSpace.id,
           henchmenIds: this.selectedHenchmenIds,
         },
       });
@@ -166,13 +176,14 @@ class PatrolState implements State {
 
   private handleHenchmenClick({ henchman }: { henchman: GestForce }) {
     if (this.selectedHenchmenIds.includes(henchman.id)) {
-      this.game.removeSelectedFromElement({ id: henchman.id });
+      // this.game.removeSelectedFromElement({ id: henchman.id });
       this.selectedHenchmenIds = this.selectedHenchmenIds.filter(
         (id) => id !== henchman.id
       );
     } else {
-      this.game.setElementSelected({ id: henchman.id });
+      // this.game.setElementSelected({ id: henchman.id });
       this.selectedHenchmenIds.push(henchman.id);
     }
+    this.updateInterfaceSelectHenchmen();
   }
 }

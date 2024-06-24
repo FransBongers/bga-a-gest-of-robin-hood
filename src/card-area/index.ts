@@ -147,6 +147,7 @@ class CardArea {
     }
 
     this.setupStocks({ gamedatas });
+    this.game.infoPanel.setupPlotsAndDeedsInfo();
   }
 
   // ..######...########.########.########.########.########...######.

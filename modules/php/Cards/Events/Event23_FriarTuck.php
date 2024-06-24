@@ -129,7 +129,7 @@ class Event23_FriarTuck extends \AGestOfRobinHood\Cards\Events\RegularEvent
       return false;
     }
     $space = $options[0];
-    $this->resolveEffect($player, DARK, $space, $ctx);
+    $this->resolveDarkEffect($player, $ctx, $space);
     return true;
   }
 

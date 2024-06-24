@@ -98,7 +98,11 @@ class Turncoat extends \AGestOfRobinHood\Models\AtomicAction
 
     $henchman->returnToSupply($player);
 
-    $this->placeMerryMan($player, $space, $placeRobinHood);
+    if (Forces::countInLocation(MERRY_MEN_SUPPLY) > 0) {
+      $this->placeMerryMan($player, $space, $placeRobinHood);
+    } else {
+      // TODO: notif because there are no Merry Man in supply?
+    }
 
     $this->resolveAction($args);
   }

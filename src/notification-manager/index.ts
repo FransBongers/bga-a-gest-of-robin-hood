@@ -88,6 +88,7 @@ class NotificationManager {
       'returnToSupplyPrivate',
       'sneakMerryMen', // Can be deleted?
       'sneakMerryMenPrivate',
+      'startOfRound',
     ];
 
     // example: https://github.com/thoun/knarr/blob/main/src/knarr.ts
@@ -755,5 +756,10 @@ class NotificationManager {
     await this.game.gameMap.forces[`${MERRY_MEN}_${toSpaceId}`].addCards(
       forces
     );
+  }
+
+  async notif_startOfRound(notif: Notif<NotifStartOfRoundArgs>) {
+    const { balladNumber, eventNumber } = notif.args;
+    this.game.infoPanel.updateBalladInfo({ balladNumber, eventNumber });
   }
 }

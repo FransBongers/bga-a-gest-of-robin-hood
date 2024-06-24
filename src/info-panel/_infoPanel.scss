@@ -1,6 +1,89 @@
 #info_panel {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-around;
   align-items: center;
+
+  #info_panel_buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+  }
+
+  #gest_ballad_info {
+    // background-color: yellow;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid black;
+
+    #gest_ballad_info_ballad_number {
+      font-size: x-large;
+      font-weight: bold;
+    }
+
+    #gest_ballad_info_event_number {
+      font-size: medium;
+      // font-weight: bold;
+    }
+
+  }
 }
+
+.gest_plots_and_deeds_container {
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  // background-color: white;
+  margin-bottom: 8px;
+  border: 1px solid black;
+  border-radius: 5px;
+
+  // .gest_plot_deed_item {
+  //   flex-grow: 1;
+  // }
+
+  .gest_plot_deed_title {
+    font-weight: bold;
+    // font-size: large;
+  }
+
+  .gest_plot_title {
+    font-weight: bold;
+    font-size: large;
+    align-self: center;
+  }
+
+  .gest_plots_row {
+    display: grid;
+    // flex-direction: row;
+    grid-template-columns: auto auto auto;
+    gap: 4px;
+    margin-top: 4px;
+    font-size: small;
+    justify-content: space-evenly;
+  }
+
+  .gest_plots_row[data-items="4"] {
+    grid-template-columns: auto auto auto auto;
+  }
+
+  .gest_plot_deed_info_label {
+    font-weight: bold;
+  }
+}
+
+.gest_plots_and_deeds_container[data-side=robinHood] {
+  background-color: #97957D;
+}
+
+.gest_plots_and_deeds_container[data-side=sheriff] {
+  background-color: #c0c0c0;
+}
+
+// "008000" => ROBIN_HOOD, // blue
+// "c0c0c0" => SHERIFF, // green

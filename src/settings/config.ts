@@ -110,7 +110,7 @@ const getSettingsConfig = (): Record<string, PlayerPreferenceTab> => ({
           padding: 0,
           range: {
             min: 50,
-            max: 250,
+            max: 200,
           },
         },
         type: "slider",

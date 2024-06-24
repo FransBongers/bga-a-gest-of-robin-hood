@@ -119,7 +119,7 @@ class DisperseState implements State {
     );
 
     this.game.clientUpdatePageTitle({
-      text: _('Dispers in ${spaceName}?'),
+      text: _('Disperse in ${spaceName}?'),
       args: {
         spaceName: _(this.selectedOption.space.name),
         // carriageType: carriageType,

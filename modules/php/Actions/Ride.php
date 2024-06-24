@@ -76,6 +76,10 @@ class Ride extends \AGestOfRobinHood\Models\AtomicAction
 
     $toSpace = Spaces::get($spaceId);
 
+    if (count($henchmenIds) === 0) {
+      throw new \feException("ERROR 102");
+    }
+
     $henchmen = Utils::filter($this->getHenchmenInNottingham(), function ($henchman) use ($henchmenIds) {
       return in_array($henchman->getId(), $henchmenIds);
     });

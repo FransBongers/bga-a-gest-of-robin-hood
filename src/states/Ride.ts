@@ -66,6 +66,17 @@ class RideState implements State {
   }
 
   private updateInterfaceSelectHenchmen() {
+    if (
+      this.selectedHenchmenIds.length === 4 ||
+      this.selectedHenchmenIds.length === this.args.henchmen.length
+    ) {
+      this.updateInterfaceConfirm();
+      return;
+    } else if (this.args.henchmen.length === 1) {
+      this.selectedHenchmenIds.push(this.args.henchmen[0].id);
+      this.updateInterfaceConfirm();
+      return;
+    }
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({
@@ -82,10 +93,15 @@ class RideState implements State {
         callback: () => this.handleHenchmenClick({ henchman }),
       });
     });
+    this.selectedHenchmenIds.forEach((id) =>
+      this.game.setElementSelected({ id })
+    );
+
     this.game.addPrimaryActionButton({
       id: 'done_btn',
       text: _('Done'),
       callback: () => this.updateInterfaceConfirm(),
+      extraClasses: this.selectedHenchmenIds.length === 0 ? DISABLED : '',
     });
 
     this.game.addCancelButton();
@@ -161,16 +177,17 @@ class RideState implements State {
 
   private handleHenchmenClick({ henchman }: { henchman: GestForce }) {
     if (this.selectedHenchmenIds.includes(henchman.id)) {
-      this.game.removeSelectedFromElement({ id: henchman.id });
+      // this.game.removeSelectedFromElement({ id: henchman.id });
       this.selectedHenchmenIds = this.selectedHenchmenIds.filter(
         (id) => id !== henchman.id
       );
     } else {
-      this.game.setElementSelected({ id: henchman.id });
+      // this.game.setElementSelected({ id: henchman.id });
       this.selectedHenchmenIds.push(henchman.id);
     }
-    if (this.selectedHenchmenIds.length === 4) {
-      this.updateInterfaceConfirm();
-    }
+    this.updateInterfaceSelectHenchmen();
+    // if (this.selectedHenchmenIds.length === 4) {
+    //   this.updateInterfaceConfirm();
+    // }
   }
 }
