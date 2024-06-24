@@ -166,6 +166,9 @@ class EventMaidMarianDark extends \AGestOfRobinHood\Actions\Plot
       $hasMerryMen = Utils::array_some($parish->getForces(), function ($force) {
         return $force->isMerryMan();
       });
+      if (!$hasMerryMen && $parish->isSubmissive()) {
+        continue;
+      }
       $spaces[] = [
         'space' => $parish,
         'hasMerryMen' => $hasMerryMen,

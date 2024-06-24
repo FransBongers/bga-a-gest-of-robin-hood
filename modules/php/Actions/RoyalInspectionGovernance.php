@@ -50,11 +50,13 @@ class RoyalInspectionGovernance extends \AGestOfRobinHood\Models\AtomicAction
       return $space->isSubmissive();
     }));
     $player = self::getPlayer();
+    // Plus one because the Sheriff also gets a shilling for Nottingham which is not included
+    // in PARISHES
     $player->incShillings($numberOfSubmissiveParishes + 1);
 
-    $spaces = Spaces::getAll();
+    $parishes = Spaces::get(PARISHES);
 
-    foreach($spaces as $space) {
+    foreach ($parishes as $space) {
       if (!$space->isRevolting()) {
         continue;
       }
@@ -70,21 +72,22 @@ class RoyalInspectionGovernance extends \AGestOfRobinHood\Models\AtomicAction
       for ($i = 0; $i < $numberToReturn; $i++) {
         $henchmen[$i]->returnToSupply($player);
       }
-      $parishes = Spaces::get(PARISHES);
-      foreach($parishes as $parish) {
-        if (!$parish->isRevolting()) {
-          continue;
-        }
-        $forces = $space->getForces();
-        $numberOfHenchmen = count(Utils::filter($forces, function ($force) {
-          return $force->isHenchman();
-        }));
-        $numberOfMerryMen = count(Utils::filter($forces, function ($force) {
-          return $force->isMerryMan();
-        }));
-        if ($numberOfHenchmen > $numberOfMerryMen) {
-          $parish->setToSubmissive($player);
-        }
+    }
+
+    $parishes = Spaces::get(PARISHES);
+    foreach ($parishes as $parish) {
+      if (!$parish->isRevolting()) {
+        continue;
+      }
+      $forces = $parish->getForces();
+      $numberOfHenchmen = count(Utils::filter($forces, function ($force) {
+        return $force->isHenchman();
+      }));
+      $numberOfMerryMen = count(Utils::filter($forces, function ($force) {
+        return $force->isMerryMan();
+      }));
+      if ($numberOfHenchmen > $numberOfMerryMen) {
+        $parish->setToSubmissive($player);
       }
     }
 

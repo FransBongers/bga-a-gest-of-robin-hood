@@ -72,6 +72,9 @@ class Patrol extends \AGestOfRobinHood\Actions\Plot
 
     $options = $this->getOptions();
 
+    $robinHood = Forces::get(ROBIN_HOOD);
+    $checkpoint = $robinHood->isHidden() || $robinHood->getLocation() === ROBIN_HOOD_SUPPLY;
+
     if (!isset($options[$spaceId])) {
       throw new \feException("ERROR 018");
     }
@@ -144,7 +147,7 @@ class Patrol extends \AGestOfRobinHood\Actions\Plot
 
     $this->insertPlotAction($player);
 
-    $this->resolveAction($args);
+    $this->resolveAction($args, $checkpoint);
   }
 
   //  .##.....##.########.####.##.......####.########.##....##

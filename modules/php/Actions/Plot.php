@@ -6,11 +6,14 @@ use AGestOfRobinHood\Core\Engine;
 use AGestOfRobinHood\Core\Engine\LeafNode;
 use AGestOfRobinHood\Core\Notifications;
 use AGestOfRobinHood\Managers\Cards;
+use AGestOfRobinHood\Managers\Players;
 
 class Plot extends \AGestOfRobinHood\Models\AtomicAction
 {
   public function insertPlotAction($player)
   {
+    // $player = Players::get($player->getId());
+
     $selectedAction = $this->getSelectedAction();
     if ($selectedAction === SINGLE_PLOT || ($selectedAction === null && !Cards::getTopOf(EVENTS_DISCARD)->isFortuneEvent())) {
       return;
@@ -29,7 +32,7 @@ class Plot extends \AGestOfRobinHood\Models\AtomicAction
     }
     $numberOfResolvedActions = count(Engine::getResolvedActions([$action]));
 
-    $extraActionPlotsAndDeeds = $selectedAction === PLOTS_AND_DEEDS && $numberOfResolvedActions < 2;
+    $extraActionPlotsAndDeeds = $selectedAction === PLOTS_AND_DEEDS && $numberOfResolvedActions < 2 && $this->canBePerformed($player, $player->getShillings());
     $extraActionFastCarriages = $selectedAction === EVENT && $action === ROB && $sourceIsSet && $info['source'] === 'Event22_FastCarriages' && $numberOfResolvedActions < 2;
     $extraActionWardenOfTheForest = $sourceIsSet && $info['source'] === 'Event08_WardenOfTheForest' && $action === HIRE && $numberOfResolvedActions < 1;
     // Notifications::log('extraActionWardenOfTheForest', $extraActionWardenOfTheForest);
@@ -50,8 +53,8 @@ class Plot extends \AGestOfRobinHood\Models\AtomicAction
     return $action;
   }
 
-  // public function canBePerformed($player, $availableShillings)
-  // {
-  //   return false;
-  // }
+  public function canBePerformed($player, $availableShillings)
+  {
+    return false;
+  }
 }
