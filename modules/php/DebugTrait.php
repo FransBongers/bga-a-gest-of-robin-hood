@@ -21,7 +21,7 @@ trait DebugTrait
 
   function debug_test()
   {
-    Players::getSheriffPlayer()->incShillings(2);
+    // Players::getSheriffPlayer()->incShillings(2);
     // $this->debugPlaceForces(MERRY_MEN,NEWARK,1);
     // Notifications::log('players', Players::getPlayersPerFaction());
     // Players::getRobinHoodPlayer()->incShillings(10);
@@ -43,7 +43,7 @@ trait DebugTrait
     // Forces::get('merryMen_6')->setHidden(0);
     // Forces::get('merryMen_8')->setLocation(PRISON);
     // Forces::get(ROBIN_HOOD)->setHidden(0);
-    // Forces::get(ROBIN_HOOD)->setLocation(SHIRE_WOOD);
+    Forces::get(ROBIN_HOOD)->setLocation(ROBIN_HOOD_SUPPLY);
     // Forces::get('henchmen_18')->setLocation(NOTTINGHAM);
     // Forces::get(ROBIN_HOOD)->setLocation(ROBIN_HOOD_SUPPLY);
     // Forces::get('carriage_2')->setLocation(NEWARK);

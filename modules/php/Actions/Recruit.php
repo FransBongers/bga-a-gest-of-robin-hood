@@ -66,9 +66,7 @@ class Recruit extends \AGestOfRobinHood\Actions\Plot
 
     $merryMenSupply = Forces::getInLocation(MERRY_MEN_SUPPLY)->toArray();
     $supplyCount = count($merryMenSupply);
-    $robinHoodInSupply = Utils::array_some($merryMenSupply, function ($merryMan) {
-      $merryMan->getId() === ROBIN_HOOD;
-    });
+    $robinHoodInSupply = Forces::get(ROBIN_HOOD)->getLocation() === ROBIN_HOOD_SUPPLY;
 
     $alreadyRecruitedInSpaceIds = $this->getAlreadyRecruitedSpaceIds();
 

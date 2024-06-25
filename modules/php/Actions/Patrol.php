@@ -136,6 +136,10 @@ class Patrol extends \AGestOfRobinHood\Actions\Plot
       $numberOfMerryMenToReveal = count($hiddenMerryMen);
     }
 
+    if ($numberOfMerryMenToReveal === 0) {
+      $checkpoint = false;
+    }
+
     for ($i = 0; $i < $numberOfMerryMenToReveal; $i++) {
       $index = bga_rand(0, count($hiddenMerryMen) - 1);
       $revealedMerryMan = $hiddenMerryMen[$index];

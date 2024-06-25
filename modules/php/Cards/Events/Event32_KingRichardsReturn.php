@@ -2,7 +2,7 @@
 
 namespace AGestOfRobinHood\Cards\Events;
 
-class Event32_KingRichardsReturn extends \AGestOfRobinHood\Models\EventCard
+class Event32_KingRichardsReturn extends \AGestOfRobinHood\Cards\Events\Event_RoyalInspection
 {
   public function __construct($row)
   {
