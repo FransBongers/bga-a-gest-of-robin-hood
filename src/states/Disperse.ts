@@ -79,6 +79,10 @@ class DisperseState implements State {
   }
 
   private updateInterfaceSelectMerryMenAndCamps() {
+    if (this.selectedMerryMen.length + this.selectedCamps.length === 2) {
+      this.updateInterfaceConfirm();
+      return;
+    }
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({

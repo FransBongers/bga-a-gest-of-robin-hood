@@ -112,7 +112,7 @@ class Disperse extends \AGestOfRobinHood\Models\AtomicAction
       $selectedMerryMan = $matchingMerryMen[bga_rand(0, count($matchingMerryMen) - 1)];
       $selectedMerryMen[] = $selectedMerryMan;
       $merryMenInSpace = Utils::filter($merryMenInSpace, function ($force) use ($selectedMerryMan) {
-        $force->getId() !== $selectedMerryMan->getId();
+        return $force->getId() !== $selectedMerryMan->getId();
       });
     }
 
@@ -140,18 +140,16 @@ class Disperse extends \AGestOfRobinHood\Models\AtomicAction
 
     Notifications::disperse($player, $space, $merryMen, $camps);
 
-    foreach($selectedMerryMen as $merryMan) {
+    foreach ($selectedMerryMen as $merryMan) {
       $merryMan->returnToSupply($player);
     }
-    foreach($selectedCamps as $camp) {
+    foreach ($selectedCamps as $camp) {
       $camp->returnToSupply($player);
     }
     // Select a force for each input piece
     if (!$space->isRevolting()) {
       $space->revolt($player);
     }
-
-
 
     $this->resolveAction($args);
   }

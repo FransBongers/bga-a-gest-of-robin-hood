@@ -59,6 +59,7 @@ class SelectPlotState implements State {
 
     this.game.addPassButton({
       optionalAction: this.args.optionalAction,
+      text: _('Skip Plot')
     });
     this.game.addUndoButtons(this.args);
   }

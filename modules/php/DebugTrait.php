@@ -32,10 +32,11 @@ trait DebugTrait
     // $merryMan->setHidden(0);
     // Spaces::get(BLYTH)->revolt(Players::get());
     // Forces::get(ROBIN_HOOD)->setLocation(RETFORD);
-    // Spaces::get(RETFORD)->setStatus(REVOLTING);
+    Spaces::get(RETFORD)->setStatus(REVOLTING);
     // Forces::get('camp_1')->setLocation(BLYTH);
-    // $this->debugPlaceForces(HENCHMEN,TUXFORD);
-    // $this->debugPlaceForces(MERRY_MEN,TUXFORD,10);
+    $this->debugPlaceForces(HENCHMEN,RETFORD,2);
+    $this->debugPlaceForces(MERRY_MEN,RETFORD,2);
+    $this->debugPlaceForces(CAMP,RETFORD,1);
     // Forces::get('merryMen_6')->setLocation(TUXFORD);
     // Forces::get('henchmen_4')->setLocation(RETFORD);
     // Forces::get('henchmen_2')->setLocation(BLYTH);
@@ -43,7 +44,7 @@ trait DebugTrait
     // Forces::get('merryMen_6')->setHidden(0);
     // Forces::get('merryMen_8')->setLocation(PRISON);
     // Forces::get(ROBIN_HOOD)->setHidden(0);
-    Forces::get(ROBIN_HOOD)->setLocation(ROBIN_HOOD_SUPPLY);
+    // Forces::get(ROBIN_HOOD)->setLocation(ROBIN_HOOD_SUPPLY);
     // Forces::get('henchmen_18')->setLocation(NOTTINGHAM);
     // Forces::get(ROBIN_HOOD)->setLocation(ROBIN_HOOD_SUPPLY);
     // Forces::get('carriage_2')->setLocation(NEWARK);
@@ -80,6 +81,7 @@ trait DebugTrait
   public function debugPlaceForces($type, $spaceId, $number = 1)
   {
     $supplyMap = [
+      CAMP => CAMPS_SUPPLY,
       HENCHMEN => HENCHMEN_SUPPLY,
       ROBIN_HOOD => ROBIN_HOOD_SUPPLY,
       MERRY_MEN => MERRY_MEN_SUPPLY,

@@ -141,10 +141,15 @@ class ChooseAction extends \AGestOfRobinHood\Models\AtomicAction
 
     switch ($action) {
       case SINGLE_PLOT:
+        $parent->pushChild(new LeafNode([
+          'action' => SELECT_PLOT,
+          'playerId' => $this->ctx->getPlayerId(),
+        ]));
       case PLOTS_AND_DEEDS:
         $parent->pushChild(new LeafNode([
           'action' => SELECT_PLOT,
           'playerId' => $this->ctx->getPlayerId(),
+          'optional' => true,
         ]));
         break;
       case EVENT:

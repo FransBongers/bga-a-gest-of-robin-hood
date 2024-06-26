@@ -5560,6 +5560,10 @@ var DisperseState = (function () {
     };
     DisperseState.prototype.updateInterfaceSelectMerryMenAndCamps = function () {
         var _this = this;
+        if (this.selectedMerryMen.length + this.selectedCamps.length === 2) {
+            this.updateInterfaceConfirm();
+            return;
+        }
         this.game.clearPossible();
         this.game.clientUpdatePageTitle({
             text: _('${you} may select up to two pieces to remove'),
@@ -9732,6 +9736,7 @@ var SelectPlotState = (function () {
         }
         this.game.addPassButton({
             optionalAction: this.args.optionalAction,
+            text: _('Skip Plot')
         });
         this.game.addUndoButtons(this.args);
     };

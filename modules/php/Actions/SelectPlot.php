@@ -70,7 +70,13 @@ class SelectPlot extends \AGestOfRobinHood\Actions\Plot
 
   public function actPassSelectPlot()
   {
-    $player = self::getPlayer();
+    $parent = $this->ctx->getParent();
+    if ($this->getSelectedAction() === PLOTS_AND_DEEDS) {
+      $parent->pushChild(new LeafNode([
+        'action' => SELECT_DEED,
+        'playerId' => $this->ctx->getPlayerId(),
+      ]));
+    }
 
     // Notifications::passAction($player, $shillings);
     // Stats::incPassActionCount($player->getId(), 1);
