@@ -14,7 +14,6 @@ class Tuxford extends \AGestOfRobinHood\Models\Space
       NEWARK,
       RETFORD,
       SOUTHWELL_FOREST,
-      TUXFORD,
     ];
     $this->adjacentViaOllertonHillSpaceIds = [
       SHIRE_WOOD
