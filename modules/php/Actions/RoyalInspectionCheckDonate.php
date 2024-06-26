@@ -11,17 +11,18 @@ use AGestOfRobinHood\Core\Stats;
 use AGestOfRobinHood\Helpers\GameMap;
 use AGestOfRobinHood\Helpers\Locations;
 use AGestOfRobinHood\Helpers\Utils;
+use AGestOfRobinHood\Managers\AtomicActions;
 use AGestOfRobinHood\Managers\Forces;
 use AGestOfRobinHood\Managers\Markers;
 use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\Spaces;
 
 
-class RoyalInspectionMischief extends \AGestOfRobinHood\Models\AtomicAction
+class RoyalInspectionCheckDonate extends \AGestOfRobinHood\Models\AtomicAction
 {
   public function getState()
   {
-    return ST_ROYAL_INSPECTION_MISCHIEF;
+    return ST_ROYAL_INSPECTION_CHECK_DONATE;
   }
 
   // ..######..########....###....########.########
@@ -40,37 +41,21 @@ class RoyalInspectionMischief extends \AGestOfRobinHood\Models\AtomicAction
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function stRoyalInspectionMischief()
+  public function stRoyalInspectionCheckDonate()
   {
-    $riMarker = Markers::get(ROYAL_INSPECTION_MARKER);
-    $riMarker->setLocation(Locations::royalInspectionTrack(MISCHIEF));
-    Notifications::moveRoyalInspectionMarker($riMarker);
 
-    $countingSpaces = [SHIRE_WOOD, SOUTHWELL_FOREST, OLLERTON_HILL];
-    $campsInForest = count(Utils::filter(Forces::getAll()->toArray(), function ($force) use ($countingSpaces) {
-      return $force->isCamp() && in_array($force->getLocation(), $countingSpaces);
-    }));
-
-    $robinHoodPlayer = Players::getRobinHoodPlayer();
-    $robinHoodPlayer->incShillings($campsInForest);
-
-    $this->ctx->insertAsBrother(Engine::buildTree([
-      'children' => [
-        [
-          'action' => SELECT_PLOT,
-          'playerId' => $robinHoodPlayer->getId(),
-          'optional' => true, 
-        ],
-        [
-          'action' => ROYAL_INSPECTION_CHECK_DONATE,
-          'playerId' => $robinHoodPlayer->getId(),
-        ],
-        [
-          'action' => ROYAL_INSPECTION_RETURN_MERRY_MEN_FROM_PRISON,
-          'playerId' => $robinHoodPlayer->getId(),
-        ],
-      ]
-    ]));
+    $donate = AtomicActions::get(DONATE);
+    $player = self::getPlayer();
+    Notifications::log('player', $player);
+    if ($donate->canBePerformed($player)) {
+      $this->ctx->insertAsBrother(new LeafNode([
+        'action' => DONATE,
+        'playerId' => $player->getId(),
+        'optional' => true,
+      ]));
+    } else {
+      // TODO: message that no donation is possible?
+    }
 
     $this->resolveAction(['automatic' => true]);
   }
@@ -84,7 +69,7 @@ class RoyalInspectionMischief extends \AGestOfRobinHood\Models\AtomicAction
   // .##.....##.##....##..##....##..##....##
   // .##.....##.##.....##..######....######.
 
-  public function argsRoyalInspectionMischief()
+  public function argsRoyalInspectionCheckDonate()
   {
     $data = [];
 
@@ -107,16 +92,16 @@ class RoyalInspectionMischief extends \AGestOfRobinHood\Models\AtomicAction
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function actPassRoyalInspectionMischief()
+  public function actPassRoyalInspectionCheckDonate()
   {
     $player = self::getPlayer();
     // Stats::incPassActionCount($player->getId(), 1);
     Engine::resolve(PASS);
   }
 
-  public function actRoyalInspectionMischief($args)
+  public function actRoyalInspectionCheckDonate($args)
   {
-    self::checkAction('actRoyalInspectionMischief');
+    self::checkAction('actRoyalInspectionCheckDonate');
 
 
     $this->resolveAction($args);

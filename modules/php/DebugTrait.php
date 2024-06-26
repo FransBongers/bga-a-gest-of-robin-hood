@@ -21,6 +21,7 @@ trait DebugTrait
 
   function debug_test()
   {
+    // Players::getRobinHoodPlayer()->incShillings(2);
     // Players::getSheriffPlayer()->incShillings(2);
     // $this->debugPlaceForces(MERRY_MEN,NEWARK,1);
     // Notifications::log('players', Players::getPlayersPerFaction());
@@ -31,12 +32,12 @@ trait DebugTrait
     // $merryMan->setLocation(PRISON);
     // $merryMan->setHidden(0);
     // Spaces::get(BLYTH)->revolt(Players::get());
-    // Forces::get(ROBIN_HOOD)->setLocation(RETFORD);
-    Spaces::get(RETFORD)->setStatus(REVOLTING);
-    // Forces::get('camp_1')->setLocation(BLYTH);
-    $this->debugPlaceForces(HENCHMEN,RETFORD,2);
-    $this->debugPlaceForces(MERRY_MEN,RETFORD,2);
-    $this->debugPlaceForces(CAMP,RETFORD,1);
+    // // Forces::get(ROBIN_HOOD)->setLocation(RETFORD);
+    // Spaces::get(RETFORD)->setStatus(REVOLTING);
+    // // Forces::get('camp_1')->setLocation(BLYTH);
+    $this->debugPlaceForces(HENCHMEN,SHIRE_WOOD,1);
+    $this->debugPlaceForces(TRAP_CARRIAGE,SHIRE_WOOD,1);
+    // $this->debugPlaceForces(CAMP,RETFORD,1);
     // Forces::get('merryMen_6')->setLocation(TUXFORD);
     // Forces::get('henchmen_4')->setLocation(RETFORD);
     // Forces::get('henchmen_2')->setLocation(BLYTH);
@@ -49,7 +50,7 @@ trait DebugTrait
     // Forces::get(ROBIN_HOOD)->setLocation(ROBIN_HOOD_SUPPLY);
     // Forces::get('carriage_2')->setLocation(NEWARK);
     // Forces::get('merryMen_4')->setHidden(1);
-    // Cards::get('Event24_MaidMarian')->insertOnTop(EVENTS_DECK);
+    // Cards::get('Event30_RoyalInspection')->insertOnTop(EVENTS_DECK);
     // Cards::get('Traveller02_RichMerchant')->insertOnTop(TRAVELLERS_VICTIMS_PILE);
     // Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_DECK);
     // Globals::setOllertonHillAdjacency(true);

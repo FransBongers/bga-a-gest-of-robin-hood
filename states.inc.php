@@ -672,4 +672,11 @@ $machinestates = array(
         'action' => 'stAtomicAction',
         'possibleactions' => ['actEventMaidMarianDark', 'actPassOptionalAction', 'actRestart'],
     ],
+    ST_ROYAL_INSPECTION_CHECK_DONATE => [
+        'name' => 'royalInspectionCheckDonate',
+        'description' => '',
+        'type' => 'game',
+        'action' => 'stAtomicAction',
+        'transitions' => [],
+    ],
 );

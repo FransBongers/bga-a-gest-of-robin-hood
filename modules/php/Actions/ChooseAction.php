@@ -145,6 +145,7 @@ class ChooseAction extends \AGestOfRobinHood\Models\AtomicAction
           'action' => SELECT_PLOT,
           'playerId' => $this->ctx->getPlayerId(),
         ]));
+        break;
       case PLOTS_AND_DEEDS:
         $parent->pushChild(new LeafNode([
           'action' => SELECT_PLOT,

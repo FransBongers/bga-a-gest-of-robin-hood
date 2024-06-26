@@ -42,6 +42,7 @@ class AtomicActions
     REMOVE_CAMP => 'RemoveCamp',
     REMOVE_TRAVELLER => 'RemoveTraveller',
     ROB => 'Rob',
+    ROYAL_INSPECTION_CHECK_DONATE => 'RoyalInspectionCheckDonate',
     ROYAL_INSPECTION_GOVERNANCE => 'RoyalInspectionGovernance',
     ROYAL_INSPECTION_HIDE_ALL_MERRY_MEN => 'RoyalInspectionHideAllMerryMen',
     ROYAL_INSPECTION_UNREST => 'RoyalInspectionUnrest',
