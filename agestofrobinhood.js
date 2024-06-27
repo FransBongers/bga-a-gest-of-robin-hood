@@ -7831,6 +7831,9 @@ var PatrolState = (function () {
                 count: this.selectedHenchmenIds.length,
             },
         });
+        this.selectedHenchmenIds.forEach(function (id) {
+            return _this.game.setElementSelected({ id: id });
+        });
         var callback = function () {
             _this.game.clearPossible();
             _this.game.takeAction({

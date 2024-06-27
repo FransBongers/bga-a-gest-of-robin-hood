@@ -11,6 +11,7 @@ use AGestOfRobinHood\Core\Stats;
 use AGestOfRobinHood\Helpers\GameMap;
 use AGestOfRobinHood\Helpers\Locations;
 use AGestOfRobinHood\Helpers\Utils;
+use AGestOfRobinHood\Managers\AtomicActions;
 use AGestOfRobinHood\Managers\Forces;
 use AGestOfRobinHood\Managers\Markers;
 use AGestOfRobinHood\Managers\Players;
@@ -54,23 +55,28 @@ class RoyalInspectionMischief extends \AGestOfRobinHood\Models\AtomicAction
     $robinHoodPlayer = Players::getRobinHoodPlayer();
     $robinHoodPlayer->incShillings($campsInForest);
 
-    $this->ctx->insertAsBrother(Engine::buildTree([
-      'children' => [
-        [
-          'action' => SELECT_PLOT,
-          'playerId' => $robinHoodPlayer->getId(),
-          'optional' => true, 
-        ],
-        [
-          'action' => ROYAL_INSPECTION_CHECK_DONATE,
-          'playerId' => $robinHoodPlayer->getId(),
-        ],
-        [
-          'action' => ROYAL_INSPECTION_RETURN_MERRY_MEN_FROM_PRISON,
-          'playerId' => $robinHoodPlayer->getId(),
-        ],
-      ]
-    ]));
+    $node = [
+      'children' => []
+    ];
+
+    if (AtomicActions::get(ROB)->canBePerformed($robinHoodPlayer, $robinHoodPlayer->getShillings())) {
+      $node['children'][] = [
+        'action' => ROB,
+        'playerId' => $robinHoodPlayer->getId(),
+        'optional' => true,
+      ];
+    }
+
+    $node['children'][] = [
+      'action' => ROYAL_INSPECTION_CHECK_DONATE,
+      'playerId' => $robinHoodPlayer->getId(),
+    ];
+    $node['children'][] = [
+      'action' => ROYAL_INSPECTION_RETURN_MERRY_MEN_FROM_PRISON,
+      'playerId' => $robinHoodPlayer->getId(),
+    ];
+
+    $this->ctx->insertAsBrother(Engine::buildTree($node));
 
     $this->resolveAction(['automatic' => true]);
   }

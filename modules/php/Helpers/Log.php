@@ -240,6 +240,7 @@ class Log extends \APP_DbObject
 
   public static function getCanceledNotifIds()
   {
+    // return [];
     $query = new QueryBuilder('gamelog', null, 'gamelog_packet_id');
     return self::extractNotifIds($query->where('cancel', 1)->get());
   }

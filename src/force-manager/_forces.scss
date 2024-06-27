@@ -86,10 +86,10 @@
 }
 
 .gest_force_side[data-type='RobinHood'] {
-  filter: drop-shadow(calc(var(--gestForceScale) * 3px) 0px 0px silver)
-    drop-shadow(calc(var(--gestForceScale) * -3px) 0px 0px silver)
-    drop-shadow(0px calc(var(--gestForceScale) * 3px) 0px silver)
-    drop-shadow(0px calc(var(--gestForceScale) * -3px) 0px silver);
+  filter: drop-shadow(calc(var(--gestForceScale) * 3px) 0px 0px white)
+    drop-shadow(calc(var(--gestForceScale) * -3px) 0px 0px white)
+    drop-shadow(0px calc(var(--gestForceScale) * 3px) 0px white)
+    drop-shadow(0px calc(var(--gestForceScale) * -3px) 0px white);
 }
 
 .gest_force_side[data-type='TallageCarriage'],

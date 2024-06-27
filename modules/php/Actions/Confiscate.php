@@ -152,7 +152,16 @@ class Confiscate extends \AGestOfRobinHood\Models\AtomicAction
 
     $spaces = Spaces::get(PARISHES);
 
+    $nodes = Engine::getResolvedActions([CONFISCATE]);
+    $alreadyConfiscatedSpaceIds = [];
+    foreach ($nodes as $node) {
+      $alreadyConfiscatedSpaceIds[] = $node->getActionResolutionArgs()['spaceId'];
+    }
+
     foreach ($spaces as $spaceId => $space) {
+      if (in_array($spaceId, $alreadyConfiscatedSpaceIds)) {
+        continue;
+      }
       if (!$skipSubmissiveCheck && !$space->isSubmissive()) {
         continue;
       }

@@ -135,7 +135,7 @@ class Capture extends \AGestOfRobinHood\Actions\Plot
 
     $forces = $space->getForces();
 
-    foreach($forces as $force) {
+    foreach ($forces as $force) {
       if ($force->isMerryMan() && $force->isHidden()) {
         $hasHiddenMerryMen = true;
       } else if ($force->isHenchman()) {
@@ -155,7 +155,7 @@ class Capture extends \AGestOfRobinHood\Actions\Plot
 
     $capturedPieces = [];
 
-    for($i = 0; $i < $numberOfCapturedRevealedMerryMen ; $i++) {
+    for ($i = 0; $i < $numberOfCapturedRevealedMerryMen; $i++) {
       $merryMen = $revealedMerryMen[$i];
       $merryMen->setLocation(PRISON);
       $capturedPieces[] = [
@@ -189,7 +189,7 @@ class Capture extends \AGestOfRobinHood\Actions\Plot
     // Notifs
     if (!$hasHiddenMerryMen && $remainingPiecesToCapture > 0 && count($camps) > 0) {
       $numberOfReturnedCamps = min(count($camps), $remainingPiecesToCapture);
-      for($j = 0; $j < $numberOfReturnedCamps ; $j++) {
+      for ($j = 0; $j < $numberOfReturnedCamps; $j++) {
         $camp = $camps[$j];
         $camp->returnToSupply($player);
       }
@@ -230,7 +230,7 @@ class Capture extends \AGestOfRobinHood\Actions\Plot
         return $force->isHidden() && $force->isMerryMan();
       });
       $hasPiecesToRemove = Utils::array_some($forces, function ($force) use ($hasHiddenMerryMen) {
-        return !$force->isHidden() && ($force->isMerryMan() || ($force->isCamp() && !$hasHiddenMerryMen));
+        return ($force->isMerryMan() && !$force->isHidden()) || ($force->isCamp() && !$hasHiddenMerryMen);
       });
       $numberOfHenchmen = count(Utils::filter($forces, function ($force) {
         return $force->isHenchman();

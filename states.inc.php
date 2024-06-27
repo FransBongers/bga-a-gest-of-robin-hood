@@ -503,7 +503,7 @@ $machinestates = array(
     ],
     ST_ROYAL_INSPECTION_SWAP_ROBIN_HOOD => [
         'name' => 'royalInspectionSwapRobinHood',
-        'description' => clienttranslate('${actplayer} may swap Robin Hood with any Merrt Man on the map'),
+        'description' => clienttranslate('${actplayer} may swap Robin Hood with any Merry Man on the map'),
         'descriptionmyturn' => clienttranslate('${you}'),
         'type' => 'activeplayer',
         'args' => 'argsAtomicAction',

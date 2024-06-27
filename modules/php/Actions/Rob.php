@@ -92,7 +92,8 @@ class Rob extends \AGestOfRobinHood\Actions\Plot
   {
     $player = self::getPlayer();
     // Stats::incPassActionCount($player->getId(), 1);
-    Engine::resolve(PASS);
+    // Engine::resolve(PASS);
+    $this->resolveAction(PASS);
   }
 
   public function actRob($args)

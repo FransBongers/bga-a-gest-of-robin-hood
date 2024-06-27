@@ -123,6 +123,9 @@ class PatrolState implements State {
         count: this.selectedHenchmenIds.length,
       },
     });
+    this.selectedHenchmenIds.forEach((id) =>
+      this.game.setElementSelected({ id })
+    );
 
     const callback = () => {
       this.game.clearPossible();

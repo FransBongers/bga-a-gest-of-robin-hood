@@ -84,8 +84,13 @@ trait TurnTrait
 
     $node = $card->getFlow();
 
-    Engine::setup($node, ['method' => 'stStartOfRound']);
-    Engine::proceed();
+    if (count($node['children']) > 0) {
+      Engine::setup($node, ['method' => 'stStartOfRound']);
+      Engine::proceed();
+    } else {
+      // TODO: add notification that it's not possible to resolve any action
+      $this->stStartOfRound();
+    }
   }
 
 
