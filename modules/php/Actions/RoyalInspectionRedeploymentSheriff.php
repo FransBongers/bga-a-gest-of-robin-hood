@@ -175,7 +175,7 @@ class RoyalInspectionRedeploymentSheriff extends \AGestOfRobinHood\Models\Atomic
     $henchmen = Forces::getOfType(HENCHMEN);
     foreach ($henchmen as $henchman) {
       $spaceId = $henchman->getLocation();
-      if ($spaceId === HENCHMEN_SUPPLY || $spaceId === NOTTINGHAM) {
+      if ($spaceId === HENCHMEN_SUPPLY || $spaceId === NOTTINGHAM || $spaceId === REMOVED_FROM_GAME) {
         continue;
       }
       $space = $spaces[$spaceId];

@@ -69,7 +69,7 @@ class Log extends \APP_DbObject
   public static function startEngine()
   {
     // if (!Globals::isSolo()) {
-      self::checkpoint();
+    self::checkpoint();
     // }
 
     return self::addEntry(['type' => 'engine']);
@@ -240,7 +240,6 @@ class Log extends \APP_DbObject
 
   public static function getCanceledNotifIds()
   {
-    // return [];
     $query = new QueryBuilder('gamelog', null, 'gamelog_packet_id');
     return self::extractNotifIds($query->where('cancel', 1)->get());
   }

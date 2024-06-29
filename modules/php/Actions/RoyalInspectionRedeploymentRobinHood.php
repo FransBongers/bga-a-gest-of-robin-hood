@@ -214,7 +214,7 @@ class RoyalInspectionRedeploymentRobinHood extends \AGestOfRobinHood\Models\Atom
 
     foreach ($merryMen as $merryMan) {
       $spaceId = $merryMan->getLocation();
-      if (in_array($spaceId, [MERRY_MEN_SUPPLY, ROBIN_HOOD_SUPPLY, PRISON])) {
+      if (in_array($spaceId, [MERRY_MEN_SUPPLY, ROBIN_HOOD_SUPPLY, PRISON, REMOVED_FROM_GAME])) {
         continue;
       }
       $space = $spaces[$spaceId];
