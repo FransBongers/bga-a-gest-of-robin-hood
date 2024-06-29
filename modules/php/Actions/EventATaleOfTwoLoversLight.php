@@ -111,7 +111,7 @@ class EventATaleOfTwoLoversLight extends \AGestOfRobinHood\Actions\Plot
       throw new \feException("ERROR 067");
     }
 
-    if ($henchmenCount > count($option['henchmen'])) {
+    if ($henchmenCount > 2 || $henchmenCount > count($option['henchmen'])) {
       throw new \feException("ERROR 068");
     }
 

@@ -5851,6 +5851,7 @@ var EventATaleOfTwoLoversLightState = (function () {
                 you: '${you}',
             },
         });
+        this.game.setElementSelected({ id: merryMan.id });
         var _loop_3 = function (i) {
             this_1.game.addPrimaryActionButton({
                 id: "".concat(i, "_btn"),
@@ -5861,7 +5862,7 @@ var EventATaleOfTwoLoversLightState = (function () {
             });
         };
         var this_1 = this;
-        for (var i = 0; i <= henchmen.length; i++) {
+        for (var i = 0; i <= Math.min(henchmen.length, 2); i++) {
             _loop_3(i);
         }
         this.game.addCancelButton();

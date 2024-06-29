@@ -81,7 +81,9 @@ class SelectPlot extends \AGestOfRobinHood\Actions\Plot
     // Notifications::passAction($player, $shillings);
     // Stats::incPassActionCount($player->getId(), 1);
     // Engine::resolve(PASS);
-    $this->resolveAction(PASS);
+    $this->resolveAction([
+      'pass' => true,
+    ]);
   }
 
   public function actSelectPlot($args)

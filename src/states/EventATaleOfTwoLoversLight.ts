@@ -116,8 +116,9 @@ class EventATaleOfTwoLoversLightState implements State {
         you: '${you}',
       },
     });
+    this.game.setElementSelected({ id: merryMan.id });
 
-    for (let i = 0; i <= henchmen.length; i++) {
+    for (let i = 0; i <= Math.min(henchmen.length, 2); i++) {
       this.game.addPrimaryActionButton({
         id: `${i}_btn`,
         text: `${i}`,
