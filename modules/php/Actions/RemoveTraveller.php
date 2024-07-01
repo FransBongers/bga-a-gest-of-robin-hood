@@ -23,6 +23,7 @@ class RemoveTraveller extends \AGestOfRobinHood\Actions\Plot
     return ST_REMOVE_TRAVELLER;
   }
 
+
   // ..######..########....###....########.########
   // .##....##....##......##.##......##....##......
   // .##..........##.....##...##.....##....##......
@@ -65,7 +66,6 @@ class RemoveTraveller extends \AGestOfRobinHood\Actions\Plot
       $this->resolveAction(['automatic' => true]);
       return;
     }
-    // $this->resolveAction(['automatic' => true]);
   }
 
   // ....###....########...######....######.

@@ -106,6 +106,8 @@ class NotificationManager {
             notifDetails.log,
             notifDetails.args as Record<string, unknown>
           );
+          // TODO: check if this clearPossible causes any issues?
+          this.game.clearPossible();
           if (msg != '') {
             $('gameaction_status').innerHTML = msg;
             $('pagemaintitletext').innerHTML = msg;

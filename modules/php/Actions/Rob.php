@@ -144,19 +144,20 @@ class Rob extends \AGestOfRobinHood\Actions\Plot
     $this->insertPlotAction($player);
 
     $space = $option['space'];
+    $source = isset($info['source']) ? $info['source'] : null;
 
     switch ($target) {
       case 'traveller':
-        $this->resolveTravellerTarget($player, $space, $merryMenIds);
+        $this->resolveTravellerTarget($player, $space, $merryMenIds, $source);
         break;
       case 'treasury':
-        $this->resolveTreasuryTarget($player, $space, $merryMenIds);
+        $this->resolveTreasuryTarget($player, $space, $merryMenIds, $source);
         break;
       case HIDDEN_CARRIAGE:
       case TALLAGE_CARRIAGE:
       case TRIBUTE_CARRIAGE:
       case TRAP_CARRIAGE:
-        $this->resolveCarriageTarget($player, $space, $merryMenIds, $target);
+        $this->resolveCarriageTarget($player, $space, $merryMenIds, $target, $source);
         break;
     };
 
@@ -171,7 +172,7 @@ class Rob extends \AGestOfRobinHood\Actions\Plot
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
-  private function resolveCarriageTarget($player, $space, $merryMenIds, $target)
+  private function resolveCarriageTarget($player, $space, $merryMenIds, $target, $source = null)
   {
     $forces = $space->getForces();
     shuffle($forces);
@@ -201,7 +202,9 @@ class Rob extends \AGestOfRobinHood\Actions\Plot
     }
     $dieColor = $space->isRevolting() || $space->isForest() ? GREEN : WHITE;
     $dieResult =  $dieColor === GREEN ? GestDice::rollGreenDie() : GestDice::rollWhiteDie();
-    $success = $dieResult + count($merryMenIds) > $defenseValue;
+    $modifier = $source === 'Event22_FastCarriages' ? 1 : 0;
+
+    $success = $dieResult + count($merryMenIds) + $modifier > $defenseValue;
     Notifications::robResult($player, $dieColor, $dieResult, $success);
 
     if ($success) {
@@ -240,7 +243,7 @@ class Rob extends \AGestOfRobinHood\Actions\Plot
     }
   }
 
-  private function resolveTravellerTarget($player, $space, $merryMenIds)
+  private function resolveTravellerTarget($player, $space, $merryMenIds, $source)
   {
     $card = Cards::drawAndRevealTravellerCard($player);
 
@@ -254,17 +257,19 @@ class Rob extends \AGestOfRobinHood\Actions\Plot
       'playerId' => $player->getId(),
       'spaceId' => $space->getId(),
       'merryMenIds' => $merryMenIds,
+      'source' => $source,
     ]));
   }
 
-  private function resolveTreasuryTarget($player, $space, $merryMenIds)
+  private function resolveTreasuryTarget($player, $space, $merryMenIds, $source = null)
   {
     $henchmenInSpace = count(Utils::filter($space->getForces(), function ($force) {
       return $force->isHenchman();
     }));
     $dieResult = GestDice::rollWhiteDie();
 
-    $success = count($merryMenIds) + $dieResult > $henchmenInSpace;
+    $modifier = $source === 'Event22_FastCarriages' ? 1 : 0;
+    $success = count($merryMenIds) + $dieResult + $modifier > $henchmenInSpace;
     Notifications::robTargetSheriffsTreasury($player);
     Notifications::robResult($player, WHITE, $dieResult, $success);
     if ($success) {

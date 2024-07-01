@@ -113,8 +113,10 @@ class SelectTravellerCardOption extends \AGestOfRobinHood\Models\AtomicAction
       $henchmenInSpace = count(Utils::filter($space->getForces(), function ($force) {
         return $force->isHenchman();
       }));
+      $source = isset($info['source']) ? $info['source'] : null;
+      $modifier = $source === 'Event22_FastCarriages' ? 1 : 0;
 
-      $success = count($merryMenIds) + $dieResult > $henchmenInSpace + $strength;
+      $success = count($merryMenIds) + $dieResult + $modifier > $henchmenInSpace + $strength;
       Notifications::robResult($player, $dieColor, $dieResult, $success);
     } else {
       $success = true;

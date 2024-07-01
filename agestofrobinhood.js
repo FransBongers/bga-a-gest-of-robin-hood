@@ -3845,6 +3845,7 @@ var NotificationManager = (function () {
                 var promises = promise ? [promise] : [];
                 var minDuration = 1;
                 var msg = _this.game.format_string_recursive(notifDetails.log, notifDetails.args);
+                _this.game.clearPossible();
                 if (msg != '') {
                     $('gameaction_status').innerHTML = msg;
                     $('pagemaintitletext').innerHTML = msg;
