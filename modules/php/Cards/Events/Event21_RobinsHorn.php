@@ -176,7 +176,7 @@ class Event21_RobinsHorn extends \AGestOfRobinHood\Cards\Events\RegularEvent
   private function getLightOptions()
   {
     $merryMen = Forces::getOfType(MERRY_MEN);
-    $spaceIds = Spaces::get(Forces::get(ROBIN_HOOD)->getLocation())->getAdjacentSpacesIds();;
+    $spaceIds = Spaces::get(Forces::get(ROBIN_HOOD)->getLocation())->getAdjacentSpaceIds();;
     return Utils::filter($merryMen, function ($merryMan) use ($spaceIds) {
       return in_array($merryMan->getLocation(), $spaceIds);
     });

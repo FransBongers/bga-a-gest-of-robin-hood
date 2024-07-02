@@ -508,14 +508,17 @@
 .gest_force_side[data-type=MerryMen],
 .gest_force_side[data-type=RobinHood] {
   background-image: url("img/merry_men.png");
-  background-size: 300% 100%;
+  background-size: 1100% 100%;
   width: calc(var(--gestForceScale) * 40px);
   height: calc(var(--gestForceScale) * 47px);
 }
 
-.gest_force_side[data-type=RobinHood][data-revealed=false],
+.gest_force_side[data-type=RobinHood][data-revealed=false] {
+  background-position-x: 50%;
+}
+
 .gest_force_side[data-type=MerryMen][data-revealed=false] {
-  background-position-x: 100%;
+  background-position-x: 20%;
 }
 
 .gest_force_side[data-type=MerryMen][data-revealed=true] {
@@ -523,11 +526,11 @@
 }
 
 .gest_force_side[data-type=RobinHood][data-revealed=true] {
-  background-position-x: 50%;
+  background-position-x: 60%;
 }
 
 .gest_force_side[data-type=RobinHood] {
-  filter: drop-shadow(calc(var(--gestForceScale) * 3px) 0px 0px white) drop-shadow(calc(var(--gestForceScale) * -3px) 0px 0px white) drop-shadow(0px calc(var(--gestForceScale) * 3px) 0px white) drop-shadow(0px calc(var(--gestForceScale) * -3px) 0px white);
+  filter: drop-shadow(calc(var(--gestForceScale) * 2px) 0px 0px white) drop-shadow(calc(var(--gestForceScale) * -2px) 0px 0px white) drop-shadow(0px calc(var(--gestForceScale) * 2px) 0px white) drop-shadow(0px calc(var(--gestForceScale) * -2px) 0px white);
 }
 
 .gest_force_side[data-type=TallageCarriage],
@@ -729,6 +732,15 @@
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
+}
+
+.gest_icon[data-icon=shilling] {
+  background-image: url("img/shillings.png");
+  background-size: 400% 100%;
+  background-repeat: no-repeat;
+  width: calc(var(--gestIconScale) * 33px);
+  height: calc(var(--gestIconScale) * 34px);
+  background-position-x: 66.666667%;
 }
 
 #info_panel {
@@ -1397,8 +1409,57 @@
 }
 
 /* ------- PLAYER BOARD ------- */
-.gest_player_panel_shillings_counter {
+.gest_player_panel {
+  display: grid;
+  grid-template-columns: auto auto auto auto;
   padding: 4px;
+  --gestIconScale: 1;
+  grid-gap: 6px;
+}
+
+.gest_icon_counter_container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  position: relative;
+  gap: 4px;
+}
+.gest_icon_counter_container .gest_icon[data-icon=florin] {
+  width: 33px;
+  height: 33px;
+}
+.gest_icon_counter_container .gest_card_back_icon {
+  width: 22px;
+  height: 33px;
+  margin-left: 5px;
+}
+.gest_icon_counter_container .gest_counter {
+  cursor: default;
+  font-weight: bold;
+  font-size: 20px;
+}
+.gest_icon_counter_container .gest_force_side[data-type=Camp] {
+  --gestForceScale: 0.7;
+}
+.gest_icon_counter_container .gest_force_side[data-type=MerryMen] {
+  --gestForceScale: 0.7;
+}
+.gest_icon_counter_container .gest_force_side[data-type=RobinHood] {
+  --gestForceScale: 0.7;
+}
+.gest_icon_counter_container .gest_force_side[data-type=Henchmen] {
+  --gestForceScale: 0.65;
+  margin-left: 3px;
+}
+.gest_icon_counter_container .gest_force_side[data-type=Carriage],
+.gest_icon_counter_container .gest_force_side[data-type=TallageCarriage],
+.gest_icon_counter_container .gest_force_side[data-type=TrapCarriage],
+.gest_icon_counter_container .gest_force_side[data-type=TributeCarriage] {
+  --gestForceScale: 0.57;
+}
+
+.gest_icon_counter_container.gest_none {
+  opacity: 0.3;
 }
 
 .dijitTooltipContainer {

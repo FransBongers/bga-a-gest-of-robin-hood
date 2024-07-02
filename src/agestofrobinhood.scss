@@ -19,12 +19,14 @@
 @use 'card-area/cardArea';
 @use 'force-manager/forces';
 @use 'game-map/gamemap';
+@use 'icons';
 @use 'info-panel/infoPanel';
 @use 'logs/logs';
 @use 'settings/settingsModal';
 @use 'marker-manager/markers';
 @use 'nouislider';
 @use 'player-manager/playerPanels';
+@use 'player-manager/icon-counter/icon-counter';
 @use 'tooltip-manager/tooltip';
 @import '../node_modules/bga-cards/bga-cards';
 

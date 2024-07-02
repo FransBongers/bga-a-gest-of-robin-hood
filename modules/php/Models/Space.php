@@ -63,7 +63,7 @@ class Space extends \AGestOfRobinHood\Helpers\DB_Model
     ];
   }
 
-  public function getAdjacentSpacesIds()
+  public function getAdjacentSpaceIds()
   {
     $adjacentSpaceIds = $this->adjacentSpaceIds;
     if (Globals::getOllertonHillAdjacency()) {
@@ -82,7 +82,7 @@ class Space extends \AGestOfRobinHood\Helpers\DB_Model
 
   public function getAdjacentSpaces()
   {
-    return Spaces::getMany($this->getAdjacentSpacesIds())->toArray();
+    return Spaces::getMany($this->getAdjacentSpaceIds())->toArray();
   }
 
   public function getSingleForce($type)

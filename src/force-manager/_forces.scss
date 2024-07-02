@@ -67,14 +67,17 @@
 .gest_force_side[data-type='MerryMen'],
 .gest_force_side[data-type='RobinHood'] {
   background-image: url('img/merry_men.png');
-  background-size: 300% 100%;
+  background-size: 1100% 100%;
   width: calc(var(--gestForceScale) * 40px);
   height: calc(var(--gestForceScale) * 47px);
 }
 
-.gest_force_side[data-type='RobinHood'][data-revealed='false'],
+.gest_force_side[data-type='RobinHood'][data-revealed='false'] {
+  background-position-x: 50%;
+}
+
 .gest_force_side[data-type='MerryMen'][data-revealed='false'] {
-  background-position-x: 100%;
+  background-position-x: 20%;
 }
 
 .gest_force_side[data-type='MerryMen'][data-revealed='true'] {
@@ -82,14 +85,14 @@
 }
 
 .gest_force_side[data-type='RobinHood'][data-revealed='true'] {
-  background-position-x: 50%;
+  background-position-x: 60%;
 }
 
 .gest_force_side[data-type='RobinHood'] {
-  filter: drop-shadow(calc(var(--gestForceScale) * 3px) 0px 0px white)
-    drop-shadow(calc(var(--gestForceScale) * -3px) 0px 0px white)
-    drop-shadow(0px calc(var(--gestForceScale) * 3px) 0px white)
-    drop-shadow(0px calc(var(--gestForceScale) * -3px) 0px white);
+  filter: drop-shadow(calc(var(--gestForceScale) * 2px) 0px 0px white)
+    drop-shadow(calc(var(--gestForceScale) * -2px) 0px 0px white)
+    drop-shadow(0px calc(var(--gestForceScale) * 2px) 0px white)
+    drop-shadow(0px calc(var(--gestForceScale) * -2px) 0px white);
 }
 
 .gest_force_side[data-type='TallageCarriage'],

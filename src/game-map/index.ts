@@ -293,6 +293,20 @@ class GameMap {
   // .##....##.##..........##.......##....##.......##....##..##....##
   // ..######..########....##.......##....########.##.....##..######.
 
+  isRobinHoodForce({ type }: { type: string }) {
+    return [CAMP, MERRY_MEN, ROBIN_HOOD].includes(type);
+  }
+
+  isSheriffForce({ type }: { type: string }) {
+    return [
+      CARRIAGE,
+      TALLAGE_CARRIAGE,
+      TRIBUTE_CARRIAGE,
+      TRAP_CARRIAGE,
+      HENCHMEN,
+    ].includes(type);
+  }
+
   //  .##.....##.########.####.##.......####.########.##....##
   //  .##.....##....##.....##..##........##.....##.....##..##.
   //  .##.....##....##.....##..##........##.....##......####..
@@ -358,7 +372,24 @@ class GameMap {
       case CARRIAGE:
         return `${CARRIAGE}_${spaceId}`;
       default:
-        return;
+        return `${type}_${spaceId}`;
+    }
+  }
+
+  getPublicType({ type }: { type: string }) {
+    switch (type) {
+      case ROBIN_HOOD:
+      case MERRY_MEN:
+        return MERRY_MEN;
+      case CAMP:
+        return CAMP;
+      case TALLAGE_CARRIAGE:
+      case TRAP_CARRIAGE:
+      case TRIBUTE_CARRIAGE:
+      case CARRIAGE:
+        return CARRIAGE;
+      default:
+        return type;
     }
   }
 
@@ -523,6 +554,12 @@ class GameMap {
         this.game.markerManager.updateCardInformations(marker);
       }
     }
+  }
+
+  forceIsInLocation({ force }: { force: GestForce }) {
+    return this.forces[this.getStockIdPrivate({ force })]
+      .getCards()
+      .some((forceInStock) => forceInStock.id === force.id);
   }
 
   // getCarriageElement({

@@ -172,7 +172,7 @@ class EventMaidMarianDark extends \AGestOfRobinHood\Actions\Plot
       $spaces[] = [
         'space' => $parish,
         'hasMerryMen' => $hasMerryMen,
-        'adjacentSpacesIds' => $parish->getAdjacentSpacesIds(),
+        'adjacentSpacesIds' => $parish->getAdjacentSpaceIds(),
       ];
     }
     return [

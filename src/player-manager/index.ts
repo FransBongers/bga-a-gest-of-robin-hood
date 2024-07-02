@@ -41,10 +41,22 @@ class PlayerManager {
     return Object.keys(this.players).map(Number);
   }
 
+  getRobinHoodPlayer() {
+    return Object.values(this.players).filter((player) =>
+      player.isRobinHood()
+    )[0];
+  }
+
   getRobinHoodPlayerId() {
     return Object.values(this.players)
       .filter((player) => player.isRobinHood())[0]
       .getPlayerId();
+  }
+
+  getSheriffPlayer() {
+    return Object.values(this.players).filter(
+      (player) => !player.isRobinHood()
+    )[0];
   }
 
   getSheriffPlayerId() {

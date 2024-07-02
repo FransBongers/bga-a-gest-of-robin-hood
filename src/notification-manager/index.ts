@@ -76,7 +76,7 @@ class NotificationManager {
       'placeForceAll',
       'placeForce',
       'placeForcePrivate',
-      'placeMerryMen',
+      'placeMerryMenPublic',
       'placeMerryMenPrivate',
       'putCardInVictimsPile',
       'redeploymentSheriff',
@@ -84,7 +84,7 @@ class NotificationManager {
       'removeForceFromGamePrivate',
       'removeForceFromGamePublic',
       'returnTravellersDiscardToMainDeck',
-      'returnToSupply',
+      'returnToSupplyPublic',
       'returnToSupplyPrivate',
       'sneakMerryMen', // Can be deleted?
       'sneakMerryMenPrivate',
@@ -134,8 +134,8 @@ class NotificationManager {
       this.game.framework().notifqueue.setSynchronous(notifName, undefined);
 
       [
-        'placeMerryMen',
-        'returnToSupply',
+        'placeMerryMenPublic',
+        'returnToSupplyPublic',
         'moveCarriagePublic',
         'placeForce',
         'sneakMerryMen',
@@ -261,8 +261,24 @@ class NotificationManager {
   }
 
   async notif_refreshForcesPrivate(notif: Notif<NotifRefreshForcesPrivate>) {
-    const { forces: data } = notif.args;
-    Object.entries(data).forEach(([spaceId, forces]) => {
+    const { forces: data, playerId } = notif.args;
+    const { supply, ...forcesInSpaces } = data;
+    const player = this.getPlayer({ playerId });
+    if (player.isRobinHood()) {
+      player.updateRobinHoodIconCountersPrivate({
+        Camp: supply.Camp || 0,
+        MerryMen: supply.MerryMen || 0,
+        RobinHood: supply.RobinHood || 0,
+      });
+    } else if (player.isSheriff) {
+      player.updateSheriffIconCountersPrivate({
+        TallageCarriage: supply.TallageCarriage || 0,
+        TributeCarriage: supply.TributeCarriage || 0,
+        TrapCarriage: supply.TrapCarriage || 0,
+        Henchmen: supply.Henchmen || 0,
+      });
+    }
+    Object.entries(forcesInSpaces).forEach(([spaceId, forces]) => {
       forces.forEach((force) => this.game.gameMap.addPrivateForce({ force }));
     });
   }
@@ -463,7 +479,12 @@ class NotificationManager {
   async notif_placeCardInTravellersDeck(notif: Notif<NotifPayShillingsArgs>) {}
 
   async notif_placeForce(notif: Notif<NotifPlaceForceArgs>) {
-    const { force, spaceId, count } = notif.args;
+    const { force, spaceId, count, playerId } = notif.args;
+    const type = this.game.gameMap.getPublicType({ type: force.type });
+    const troopSide = this.game.gameMap.isRobinHoodForce({ type: force.type })
+      ? 'RobinHood'
+      : 'Sheriff';
+    this.getPlayer({ playerId }).counters[troopSide][type]?.incValue(-1);
     this.game.gameMap.addPublicForces({
       spaceId,
       count,
@@ -473,20 +494,35 @@ class NotificationManager {
   }
 
   async notif_placeForceAll(notif: Notif<NotifPlaceForceAllArgs>) {
-    const { forces } = notif.args;
+    const { forces, playerId } = notif.args;
 
-    forces.forEach((force) => this.game.gameMap.addPrivateForce({ force }));
+    forces.forEach((force) => {
+      const troopSide = this.game.gameMap.isRobinHoodForce({ type: force.type })
+        ? 'RobinHood'
+        : 'Sheriff';
+      this.getPlayer({ playerId }).counters[troopSide][force.type]?.incValue(-1);
+      this.game.gameMap.addPrivateForce({ force });
+    });
   }
 
   async notif_placeForcePrivate(notif: Notif<NotifPlaceForcePrivateArgs>) {
-    const { forces } = notif.args;
+    const { forces, playerId } = notif.args;
 
-    forces.forEach((force) => this.game.gameMap.addPrivateForce({ force }));
+    forces.forEach((force) => {
+      const troopSide = this.game.gameMap.isRobinHoodForce({ type: force.type })
+        ? 'RobinHood'
+        : 'Sheriff';
+      this.getPlayer({ playerId }).counters[troopSide][force.type]?.incValue(-1);
+      this.game.gameMap.addPrivateForce({ force });
+    });
   }
 
-  async notif_placeMerryMen(notif: Notif<NotifPlaceMerryMenArgs>) {
-    const { merryMenCounts } = notif.args;
+  async notif_placeMerryMenPublic(notif: Notif<NotifPlaceMerryMenArgs>) {
+    const { merryMenCounts, playerId } = notif.args;
     Object.entries(merryMenCounts).forEach(([spaceId, countHidden]) => {
+      this.getPlayer({ playerId }).counters.RobinHood[MERRY_MEN]?.incValue(
+        -countHidden
+      );
       this.game.gameMap.addPublicForces({
         spaceId,
         count: countHidden,
@@ -499,13 +535,21 @@ class NotificationManager {
   async notif_placeMerryMenPrivate(
     notif: Notif<NotifPlaceMerryMenPrivateArgs>
   ) {
-    const { robinHood, merryMen } = notif.args;
-    if (robinHood) {
+    const { robinHood, merryMen, playerId } = notif.args;
+    const player = this.getPlayer({ playerId });
+    if (
+      robinHood &&
+      !this.game.gameMap.forceIsInLocation({ force: robinHood })
+    ) {
+      player.counters.RobinHood[ROBIN_HOOD]?.incValue(-1);
       this.game.gameMap.addPrivateForce({ force: robinHood });
     }
-    merryMen.forEach((merryMan) =>
-      this.game.gameMap.addPrivateForce({ force: merryMan })
-    );
+    merryMen.forEach((merryMan) => {
+      if (!this.game.gameMap.forceIsInLocation({ force: merryMan })) {
+        player.counters.RobinHood[MERRY_MEN]?.incValue(-1);
+        this.game.gameMap.addPrivateForce({ force: merryMan });
+      }
+    });
   }
 
   async notif_putCardInVictimsPile(
@@ -579,8 +623,21 @@ class NotificationManager {
     }
   }
 
-  async notif_returnToSupply(notif: Notif<NotifReturnToSupplyArgs>) {
-    const { force, spaceId } = notif.args;
+  async notif_returnToSupplyPublic(notif: Notif<NotifReturnToSupplyArgs>) {
+    const { force, spaceId, playerId } = notif.args;
+    const player = this.getPlayer({ playerId });
+
+    if (this.game.getPlayerId() === playerId) {
+      const troopSide = this.game.gameMap.isRobinHoodForce({ type: force.type })
+        ? 'RobinHood'
+        : 'Sheriff';
+      player.counters[troopSide]?.[force.type]?.incValue(1);
+    } else {
+      const type = this.game.gameMap.getPublicType({ type: force.type });
+      player.counters[
+        this.game.gameMap.isRobinHoodForce({ type }) ? 'RobinHood' : 'Sheriff'
+      ]?.[type]?.incValue(1);
+    }
     await this.game.gameMap.returnToSupplyPublic({
       type: force.type,
       hidden: force.hidden,
@@ -591,8 +648,12 @@ class NotificationManager {
   async notif_returnToSupplyPrivate(
     notif: Notif<NotifReturnToSupplyPrivateArgs>
   ) {
-    const { force } = notif.args;
+    const { force, playerId } = notif.args;
     await this.game.forceManager.removeCard(force);
+    const troopSide = this.game.gameMap.isRobinHoodForce({ type: force.type })
+      ? 'RobinHood'
+      : 'Sheriff';
+    this.getPlayer({ playerId }).counters[troopSide]?.[force.type]?.incValue(1);
   }
 
   async notif_sneakMerryMenPrivate(

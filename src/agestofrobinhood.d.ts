@@ -156,10 +156,30 @@ interface AGestOfRobinHoodGamedatas extends Gamedatas {
       };
       RobinHood: number;
     }
-  >;
+  > & {
+    supply: {
+      Camp: number;
+      Carriage: number;
+      Henchmen: number;
+      MerryMen: number;
+    };
+  };
   markers: Record<string, GestMarker>;
-  robinHoodForces?: Record<string, GestForce[]>;
-  sheriffForces?: Record<string, GestForce[]>;
+  robinHoodForces?: Record<string, GestForce[]> & {
+    supply: {
+      Camp: number;
+      MerryMen: number;
+      RobinHood: number;
+    };
+  };
+  sheriffForces?: Record<string, GestForce[]> & {
+    supply: {
+      Henchmen: number;
+      TallageCarriage: number;
+      TrapCarriage: number;
+      TributeCarriage: number;
+    };
+  };
   spaces: Record<string, GestSpace>;
   staticData: {
     cards: Record<string, GestCardStaticData>;

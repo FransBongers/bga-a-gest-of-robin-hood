@@ -112,11 +112,11 @@ class Forces extends \AGestOfRobinHood\Helpers\Pieces
       // ];
     }
 
-    $forces = self::getAll();
+    $forces = self::getAll()->toArray();
 
     $locationsOnMap = array_merge(SPACES, [USED_CARRIAGES, PRISON]);
 
-    foreach ($forces as $forceId => $force) {
+    foreach ($forces as $index => $force) {
       $location = $force->getLocation();
       if (!in_array($location, $locationsOnMap)) {
         continue;
@@ -148,6 +148,49 @@ class Forces extends \AGestOfRobinHood\Helpers\Pieces
         }
       }
     }
+
+    $publicData['supply'] = [
+      CAMP => count(Utils::filter($forces, function ($force) {
+        return $force->getLocation() === CAMPS_SUPPLY;
+      })),
+      CARRIAGE => count(Utils::filter($forces, function ($force) {
+        return $force->getLocation() === CARRIAGE_SUPPLY;
+      })),
+      HENCHMEN => count(Utils::filter($forces, function ($force) {
+        return $force->getLocation() === HENCHMEN_SUPPLY;
+      })),
+      MERRY_MEN => count(Utils::filter($forces, function ($force) {
+        return $force->getLocation() === MERRY_MEN_SUPPLY || $force->getLocation() === ROBIN_HOOD_SUPPLY;
+      })),
+    ];
+
+    $robinHoodForces['supply'] = [
+      CAMP => count(Utils::filter($forces, function ($force) {
+        return $force->getLocation() === CAMPS_SUPPLY;
+      })),
+      MERRY_MEN => count(Utils::filter($forces, function ($force) {
+        return $force->getLocation() === MERRY_MEN_SUPPLY;
+      })),
+      ROBIN_HOOD => count(Utils::filter($forces, function ($force) {
+        return $force->getLocation() === ROBIN_HOOD_SUPPLY;
+      })),
+    ];
+
+    $sheriffForces['supply'] = [
+      HENCHMEN => count(Utils::filter($forces, function ($force) {
+        return $force->getLocation() === HENCHMEN_SUPPLY;
+      })),
+      TALLAGE_CARRIAGE => count(Utils::filter($forces, function ($force) {
+        return $force->getLocation() === CARRIAGE_SUPPLY && $force->getType() === TALLAGE_CARRIAGE;
+      })),
+      TRAP_CARRIAGE => count(Utils::filter($forces, function ($force) {
+        return $force->getLocation() === CARRIAGE_SUPPLY && $force->getType() === TRAP_CARRIAGE;
+      })),
+      TRIBUTE_CARRIAGE => count(Utils::filter($forces, function ($force) {
+        return $force->getLocation() === CARRIAGE_SUPPLY && $force->getType() === TRIBUTE_CARRIAGE;
+      })),
+    ];
+
 
     return [
       'public' => $publicData,
@@ -203,7 +246,7 @@ class Forces extends \AGestOfRobinHood\Helpers\Pieces
 
     $forces[] = [
       "id" => "camp_{INDEX}",
-      "nbr" => 18,
+      "nbr" => 5,
       "nbrStart" => 1,
       "location" => CAMPS_SUPPLY,
       "type" => CAMP,

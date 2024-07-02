@@ -2,6 +2,10 @@
 @use 'sass:math';
 /* ------- PLAYER BOARD ------- */
 
-.gest_player_panel_shillings_counter {
+.gest_player_panel {
+  display: grid;
+  grid-template-columns: auto auto auto auto;
   padding: 4px;
+  --gestIconScale: 1;
+  grid-gap: 6px;
 }

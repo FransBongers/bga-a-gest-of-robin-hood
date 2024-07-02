@@ -134,7 +134,7 @@ class EventWillStutelyLight extends \AGestOfRobinHood\Models\AtomicAction
       $merryManSpace = Utils::array_find($spaces, function ($space) use ($spaceId) {
         return $space->getId() === $spaceId;
       });
-      $adjacentParishIds = Utils::filter($merryManSpace->getAdjacentSpacesIds(), function ($spaceId) {
+      $adjacentParishIds = Utils::filter($merryManSpace->getAdjacentSpaceIds(), function ($spaceId) {
         return in_array($spaceId, PARISHES);
       });
       if (count($adjacentParishIds) > 0) {

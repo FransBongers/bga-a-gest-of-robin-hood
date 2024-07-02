@@ -8,6 +8,7 @@ const ENABLED = 'enabled';
 const DISABLED = 'disabled';
 const GEST_SELECTABLE = 'gest_selectable';
 const GEST_SELECTED = 'gest_selected';
+const GEST_NONE = 'gest_none';
 
 /**
  * Card locations

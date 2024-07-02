@@ -94,12 +94,15 @@ class Notifications
     ]);
 
     $forces = Forces::getUiData();
-
-    self::notify(Players::getRobinHoodPlayer(), 'refreshForcesPrivate', '', [
-      'forces' => $forces[ROBIN_HOOD]
+    $rhPlayer = Players::getRobinHoodPlayer();
+    self::notify($rhPlayer, 'refreshForcesPrivate', '', [
+      'forces' => $forces[ROBIN_HOOD],
+      'player' => $rhPlayer,
     ]);
-    self::notify(Players::getSheriffPlayer(), 'refreshForcesPrivate', '', [
-      'forces' => $forces[SHERIFF]
+    $sheriffPlayer = Players::getSheriffPlayer();
+    self::notify($sheriffPlayer, 'refreshForcesPrivate', '', [
+      'forces' => $forces[SHERIFF],
+      'player' => $sheriffPlayer,
     ]);
   }
 
@@ -588,7 +591,6 @@ class Notifications
   {
     self::notify($player, 'placeMerryMenPrivate', $textPrivate, array_merge($privateTextArgs, [
       'player' => $player,
-      // 'you' => '${you}',
       'robinHood' => $robinHood,
       'merryMen' => $merryMen,
     ]));
@@ -611,7 +613,7 @@ class Notifications
       }
     }
 
-    self::notifyAll("placeMerryMen", $textPublic, array_merge($publicTextArgs, [
+    self::notifyAll("placeMerryMenPublic", $textPublic, array_merge($publicTextArgs, [
       'player' => $player,
       'merryMenCounts' => $merryMenCounts,
       'preserve' => ['playerId'],
@@ -974,7 +976,7 @@ class Notifications
       'i18n' => ['tkn_boldText_forceName', 'tkn_boldText_spaceName']
     ]);
 
-    self::notifyAll('returnToSupply', clienttranslate('${player_name} returns ${tkn_boldText_forceName} from ${tkn_boldText_spaceName} to Available Forces'), [
+    self::notifyAll('returnToSupplyPublic', clienttranslate('${player_name} returns ${tkn_boldText_forceName} from ${tkn_boldText_spaceName} to Available Forces'), [
       'player' => $actingPlayer,
       'force' => [
         'type' => $isHidden ? $force->getPublicType() : $force->getType(),

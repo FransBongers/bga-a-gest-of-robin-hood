@@ -1624,6 +1624,7 @@ var ENABLED = 'enabled';
 var DISABLED = 'disabled';
 var GEST_SELECTABLE = 'gest_selectable';
 var GEST_SELECTED = 'gest_selected';
+var GEST_NONE = 'gest_none';
 var DISCARD = 'discard';
 var PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY = 'confirmEndOfTurnPlayerSwitchOnly';
 var PREF_SHOW_ANIMATIONS = 'showAnimations';
@@ -2487,14 +2488,6 @@ var ForceManager = (function (_super) {
         div.classList.add('gest_force_side');
         div.setAttribute('data-type', force.type);
         div.setAttribute('data-revealed', 'true');
-        if ([TALLAGE_CARRIAGE, TRIBUTE_CARRIAGE, TRAP_CARRIAGE].includes(force.type)) {
-        }
-        if (force.type === ROBIN_HOOD && !force.hidden) {
-        }
-        if (force.type === CAMP) {
-        }
-        if (force.type === MERRY_MEN) {
-        }
     };
     ForceManager.prototype.setupBackDiv = function (force, div) {
         div.classList.add('gest_force_side');
@@ -2502,9 +2495,6 @@ var ForceManager = (function (_super) {
         div.setAttribute('data-revealed', 'false');
         if (force.id.startsWith('fake')) {
             return;
-        }
-        if (force.type === ROBIN_HOOD) {
-            div.insertAdjacentHTML('beforeend', '<div>*</div>');
         }
     };
     ForceManager.prototype.isCardVisible = function (force) {
@@ -3226,6 +3216,20 @@ var GameMap = (function () {
         this.setupForces({ gamedatas: gamedatas });
         this.updateTrackMarkers({ gamedatas: gamedatas });
     };
+    GameMap.prototype.isRobinHoodForce = function (_a) {
+        var type = _a.type;
+        return [CAMP, MERRY_MEN, ROBIN_HOOD].includes(type);
+    };
+    GameMap.prototype.isSheriffForce = function (_a) {
+        var type = _a.type;
+        return [
+            CARRIAGE,
+            TALLAGE_CARRIAGE,
+            TRIBUTE_CARRIAGE,
+            TRAP_CARRIAGE,
+            HENCHMEN,
+        ].includes(type);
+    };
     GameMap.prototype.addPublicForces = function (_a) {
         var type = _a.type, hidden = _a.hidden, spaceId = _a.spaceId, count = _a.count;
         for (var i = 0; i < count; i++) {
@@ -3270,7 +3274,24 @@ var GameMap = (function () {
             case CARRIAGE:
                 return "".concat(CARRIAGE, "_").concat(spaceId);
             default:
-                return;
+                return "".concat(type, "_").concat(spaceId);
+        }
+    };
+    GameMap.prototype.getPublicType = function (_a) {
+        var type = _a.type;
+        switch (type) {
+            case ROBIN_HOOD:
+            case MERRY_MEN:
+                return MERRY_MEN;
+            case CAMP:
+                return CAMP;
+            case TALLAGE_CARRIAGE:
+            case TRAP_CARRIAGE:
+            case TRIBUTE_CARRIAGE:
+            case CARRIAGE:
+                return CARRIAGE;
+            default:
+                return type;
         }
     };
     GameMap.prototype.addPrivateForce = function (_a) {
@@ -3430,6 +3451,12 @@ var GameMap = (function () {
                 this.game.markerManager.updateCardInformations(marker);
             }
         }
+    };
+    GameMap.prototype.forceIsInLocation = function (_a) {
+        var force = _a.force;
+        return this.forces[this.getStockIdPrivate({ force: force })]
+            .getCards()
+            .some(function (forceInStock) { return forceInStock.id === force.id; });
     };
     GameMap.prototype.moveMarker = function (_a) {
         return __awaiter(this, arguments, void 0, function (_b) {
@@ -3783,6 +3810,17 @@ var MarkerManager = (function (_super) {
     };
     return MarkerManager;
 }(CardManager));
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 var NotificationManager = (function () {
     function NotificationManager(game) {
         this.game = game;
@@ -3824,7 +3862,7 @@ var NotificationManager = (function () {
             'placeForceAll',
             'placeForce',
             'placeForcePrivate',
-            'placeMerryMen',
+            'placeMerryMenPublic',
             'placeMerryMenPrivate',
             'putCardInVictimsPile',
             'redeploymentSheriff',
@@ -3832,7 +3870,7 @@ var NotificationManager = (function () {
             'removeForceFromGamePrivate',
             'removeForceFromGamePublic',
             'returnTravellersDiscardToMainDeck',
-            'returnToSupply',
+            'returnToSupplyPublic',
             'returnToSupplyPrivate',
             'sneakMerryMen',
             'sneakMerryMenPrivate',
@@ -3863,8 +3901,8 @@ var NotificationManager = (function () {
             }));
             _this.game.framework().notifqueue.setSynchronous(notifName, undefined);
             [
-                'placeMerryMen',
-                'returnToSupply',
+                'placeMerryMenPublic',
+                'returnToSupplyPublic',
                 'moveCarriagePublic',
                 'placeForce',
                 'sneakMerryMen',
@@ -3930,11 +3968,28 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_refreshForcesPrivate = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var data;
+            var _a, data, playerId, supply, forcesInSpaces, player;
             var _this = this;
-            return __generator(this, function (_a) {
-                data = notif.args.forces;
-                Object.entries(data).forEach(function (_a) {
+            return __generator(this, function (_b) {
+                _a = notif.args, data = _a.forces, playerId = _a.playerId;
+                supply = data.supply, forcesInSpaces = __rest(data, ["supply"]);
+                player = this.getPlayer({ playerId: playerId });
+                if (player.isRobinHood()) {
+                    player.updateRobinHoodIconCountersPrivate({
+                        Camp: supply.Camp || 0,
+                        MerryMen: supply.MerryMen || 0,
+                        RobinHood: supply.RobinHood || 0,
+                    });
+                }
+                else if (player.isSheriff) {
+                    player.updateSheriffIconCountersPrivate({
+                        TallageCarriage: supply.TallageCarriage || 0,
+                        TributeCarriage: supply.TributeCarriage || 0,
+                        TrapCarriage: supply.TrapCarriage || 0,
+                        Henchmen: supply.Henchmen || 0,
+                    });
+                }
+                Object.entries(forcesInSpaces).forEach(function (_a) {
                     var spaceId = _a[0], forces = _a[1];
                     forces.forEach(function (force) { return _this.game.gameMap.addPrivateForce({ force: force }); });
                 });
@@ -4205,9 +4260,15 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_placeForce = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, force, spaceId, count;
-            return __generator(this, function (_b) {
-                _a = notif.args, force = _a.force, spaceId = _a.spaceId, count = _a.count;
+            var _a, force, spaceId, count, playerId, type, troopSide;
+            var _b;
+            return __generator(this, function (_c) {
+                _a = notif.args, force = _a.force, spaceId = _a.spaceId, count = _a.count, playerId = _a.playerId;
+                type = this.game.gameMap.getPublicType({ type: force.type });
+                troopSide = this.game.gameMap.isRobinHoodForce({ type: force.type })
+                    ? 'RobinHood'
+                    : 'Sheriff';
+                (_b = this.getPlayer({ playerId: playerId }).counters[troopSide][type]) === null || _b === void 0 ? void 0 : _b.incValue(-1);
                 this.game.gameMap.addPublicForces({
                     spaceId: spaceId,
                     count: count,
@@ -4220,34 +4281,50 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_placeForceAll = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var forces;
+            var _a, forces, playerId;
             var _this = this;
-            return __generator(this, function (_a) {
-                forces = notif.args.forces;
-                forces.forEach(function (force) { return _this.game.gameMap.addPrivateForce({ force: force }); });
+            return __generator(this, function (_b) {
+                _a = notif.args, forces = _a.forces, playerId = _a.playerId;
+                forces.forEach(function (force) {
+                    var _a;
+                    var troopSide = _this.game.gameMap.isRobinHoodForce({ type: force.type })
+                        ? 'RobinHood'
+                        : 'Sheriff';
+                    (_a = _this.getPlayer({ playerId: playerId }).counters[troopSide][force.type]) === null || _a === void 0 ? void 0 : _a.incValue(-1);
+                    _this.game.gameMap.addPrivateForce({ force: force });
+                });
                 return [2];
             });
         });
     };
     NotificationManager.prototype.notif_placeForcePrivate = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var forces;
+            var _a, forces, playerId;
             var _this = this;
-            return __generator(this, function (_a) {
-                forces = notif.args.forces;
-                forces.forEach(function (force) { return _this.game.gameMap.addPrivateForce({ force: force }); });
+            return __generator(this, function (_b) {
+                _a = notif.args, forces = _a.forces, playerId = _a.playerId;
+                forces.forEach(function (force) {
+                    var _a;
+                    var troopSide = _this.game.gameMap.isRobinHoodForce({ type: force.type })
+                        ? 'RobinHood'
+                        : 'Sheriff';
+                    (_a = _this.getPlayer({ playerId: playerId }).counters[troopSide][force.type]) === null || _a === void 0 ? void 0 : _a.incValue(-1);
+                    _this.game.gameMap.addPrivateForce({ force: force });
+                });
                 return [2];
             });
         });
     };
-    NotificationManager.prototype.notif_placeMerryMen = function (notif) {
+    NotificationManager.prototype.notif_placeMerryMenPublic = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var merryMenCounts;
+            var _a, merryMenCounts, playerId;
             var _this = this;
-            return __generator(this, function (_a) {
-                merryMenCounts = notif.args.merryMenCounts;
+            return __generator(this, function (_b) {
+                _a = notif.args, merryMenCounts = _a.merryMenCounts, playerId = _a.playerId;
                 Object.entries(merryMenCounts).forEach(function (_a) {
+                    var _b;
                     var spaceId = _a[0], countHidden = _a[1];
+                    (_b = _this.getPlayer({ playerId: playerId }).counters.RobinHood[MERRY_MEN]) === null || _b === void 0 ? void 0 : _b.incValue(-countHidden);
                     _this.game.gameMap.addPublicForces({
                         spaceId: spaceId,
                         count: countHidden,
@@ -4261,15 +4338,23 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_placeMerryMenPrivate = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, robinHood, merryMen;
+            var _a, robinHood, merryMen, playerId, player;
             var _this = this;
-            return __generator(this, function (_b) {
-                _a = notif.args, robinHood = _a.robinHood, merryMen = _a.merryMen;
-                if (robinHood) {
+            var _b;
+            return __generator(this, function (_c) {
+                _a = notif.args, robinHood = _a.robinHood, merryMen = _a.merryMen, playerId = _a.playerId;
+                player = this.getPlayer({ playerId: playerId });
+                if (robinHood &&
+                    !this.game.gameMap.forceIsInLocation({ force: robinHood })) {
+                    (_b = player.counters.RobinHood[ROBIN_HOOD]) === null || _b === void 0 ? void 0 : _b.incValue(-1);
                     this.game.gameMap.addPrivateForce({ force: robinHood });
                 }
                 merryMen.forEach(function (merryMan) {
-                    return _this.game.gameMap.addPrivateForce({ force: merryMan });
+                    var _a;
+                    if (!_this.game.gameMap.forceIsInLocation({ force: merryMan })) {
+                        (_a = player.counters.RobinHood[MERRY_MEN]) === null || _a === void 0 ? void 0 : _a.incValue(-1);
+                        _this.game.gameMap.addPrivateForce({ force: merryMan });
+                    }
                 });
                 return [2];
             });
@@ -4397,20 +4482,32 @@ var NotificationManager = (function () {
             });
         });
     };
-    NotificationManager.prototype.notif_returnToSupply = function (notif) {
+    NotificationManager.prototype.notif_returnToSupplyPublic = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, force, spaceId;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var _a, force, spaceId, playerId, player, troopSide, type;
+            var _b, _c, _d, _e;
+            return __generator(this, function (_f) {
+                switch (_f.label) {
                     case 0:
-                        _a = notif.args, force = _a.force, spaceId = _a.spaceId;
+                        _a = notif.args, force = _a.force, spaceId = _a.spaceId, playerId = _a.playerId;
+                        player = this.getPlayer({ playerId: playerId });
+                        if (this.game.getPlayerId() === playerId) {
+                            troopSide = this.game.gameMap.isRobinHoodForce({ type: force.type })
+                                ? 'RobinHood'
+                                : 'Sheriff';
+                            (_c = (_b = player.counters[troopSide]) === null || _b === void 0 ? void 0 : _b[force.type]) === null || _c === void 0 ? void 0 : _c.incValue(1);
+                        }
+                        else {
+                            type = this.game.gameMap.getPublicType({ type: force.type });
+                            (_e = (_d = player.counters[this.game.gameMap.isRobinHoodForce({ type: type }) ? 'RobinHood' : 'Sheriff']) === null || _d === void 0 ? void 0 : _d[type]) === null || _e === void 0 ? void 0 : _e.incValue(1);
+                        }
                         return [4, this.game.gameMap.returnToSupplyPublic({
                                 type: force.type,
                                 hidden: force.hidden,
                                 fromSpaceId: spaceId,
                             })];
                     case 1:
-                        _b.sent();
+                        _f.sent();
                         return [2];
                 }
             });
@@ -4418,14 +4515,19 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_returnToSupplyPrivate = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var force;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var _a, force, playerId, troopSide;
+            var _b, _c;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
                     case 0:
-                        force = notif.args.force;
+                        _a = notif.args, force = _a.force, playerId = _a.playerId;
                         return [4, this.game.forceManager.removeCard(force)];
                     case 1:
-                        _a.sent();
+                        _d.sent();
+                        troopSide = this.game.gameMap.isRobinHoodForce({ type: force.type })
+                            ? 'RobinHood'
+                            : 'Sheriff';
+                        (_c = (_b = this.getPlayer({ playerId: playerId }).counters[troopSide]) === null || _b === void 0 ? void 0 : _b[force.type]) === null || _c === void 0 ? void 0 : _c.incValue(1);
                         return [2];
                 }
             });
@@ -4640,6 +4742,60 @@ var NotificationManager = (function () {
     };
     return NotificationManager;
 }());
+var IconCounter = (function () {
+    function IconCounter(config) {
+        var iconCounterId = config.iconCounterId, containerId = config.containerId;
+        this.iconCounterId = iconCounterId;
+        this.containerId = containerId;
+        this.setup(config);
+    }
+    IconCounter.prototype.setup = function (_a) {
+        var icon = _a.icon, initialValue = _a.initialValue, extraIconClasses = _a.extraIconClasses, insert = _a.insert, dataAttributes = _a.dataAttributes;
+        var container = document.getElementById(this.containerId);
+        if (!container) {
+            return;
+        }
+        container.insertAdjacentHTML(insert || "beforeend", tplIconCounter({ extraIconClasses: extraIconClasses, icon: icon, iconCounterId: this.iconCounterId, value: initialValue, dataAttributes: dataAttributes }));
+        this.counter = new ebg.counter();
+        this.counter.create("".concat(this.iconCounterId, "_counter"));
+        this.counter.setValue(initialValue);
+    };
+    IconCounter.prototype.setValue = function (value) {
+        this.counter.setValue(value);
+        var node = document.getElementById(this.iconCounterId);
+        if (!node) {
+            return;
+        }
+        this.checkNone({ node: node, value: value });
+    };
+    IconCounter.prototype.incValue = function (value) {
+        this.counter.incValue(value);
+        var node = document.getElementById(this.iconCounterId);
+        if (!node) {
+            return;
+        }
+        this.checkNone({ node: node, value: this.counter.getValue() });
+    };
+    IconCounter.prototype.getValue = function () {
+        return this.counter.getValue();
+    };
+    IconCounter.prototype.checkNone = function (_a) {
+        var node = _a.node, value = _a.value;
+        if (value === 0) {
+            node.classList.add(GEST_NONE);
+        }
+        else {
+            node.classList.remove(GEST_NONE);
+        }
+    };
+    return IconCounter;
+}());
+var tplIconCounter = function (_a) {
+    var icon = _a.icon, iconCounterId = _a.iconCounterId, value = _a.value, extraIconClasses = _a.extraIconClasses, dataAttributes = _a.dataAttributes;
+    return "\n  <div id=\"".concat(iconCounterId, "\" class=\"gest_icon_counter_container").concat(value === 0 ? ' gest_none' : '', "\">\n    <span id=\"").concat(iconCounterId, "_counter\" class=\"gest_counter\"></span>\n    <div id=\"").concat(iconCounterId, "_icon\" class=\"gest_icon").concat(extraIconClasses ? " ".concat(extraIconClasses) : '', "\" ").concat(icon ? "data-icon=\"".concat(icon, "\"") : '').concat((dataAttributes || [])
+        .map(function (dataAttribute) { return " ".concat(dataAttribute.key, "=\"").concat(dataAttribute.value, "\""); })
+        .join(''), "></div>\n  </div>");
+};
 var PlayerManager = (function () {
     function PlayerManager(game) {
         console.log('Constructor PlayerManager');
@@ -4660,10 +4816,18 @@ var PlayerManager = (function () {
     PlayerManager.prototype.getPlayerIds = function () {
         return Object.keys(this.players).map(Number);
     };
+    PlayerManager.prototype.getRobinHoodPlayer = function () {
+        return Object.values(this.players).filter(function (player) {
+            return player.isRobinHood();
+        })[0];
+    };
     PlayerManager.prototype.getRobinHoodPlayerId = function () {
         return Object.values(this.players)
             .filter(function (player) { return player.isRobinHood(); })[0]
             .getPlayerId();
+    };
+    PlayerManager.prototype.getSheriffPlayer = function () {
+        return Object.values(this.players).filter(function (player) { return !player.isRobinHood(); })[0];
     };
     PlayerManager.prototype.getSheriffPlayerId = function () {
         return Object.values(this.players)
@@ -4688,7 +4852,8 @@ var GestPlayer = (function () {
     function GestPlayer(_a) {
         var game = _a.game, player = _a.player;
         this.counters = {
-            shillings: new ebg.counter(),
+            RobinHood: {},
+            Sheriff: {},
         };
         this.game = game;
         var playerId = player.id;
@@ -4705,17 +4870,264 @@ var GestPlayer = (function () {
         this.updatePlayerPanel({
             playerGamedatas: gamedatas.players[this.playerId],
         });
+        if (this.side === 'RobinHood') {
+            this.updateRobinHoodIconCounters({ gamedatas: gamedatas });
+        }
+        else if (this.side === 'Sheriff') {
+            this.updateSheriffIconCounters({ gamedatas: gamedatas });
+        }
+    };
+    GestPlayer.prototype.updateRobinHoodIconCounters = function (_a) {
+        var gamedatas = _a.gamedatas;
+        if (this.playerId !== this.game.getPlayerId()) {
+            this.counters.RobinHood[CAMP].setValue(gamedatas.forces.supply.Camp);
+            this.counters.RobinHood[MERRY_MEN].setValue(gamedatas.forces.supply.MerryMen);
+        }
+    };
+    GestPlayer.prototype.updateRobinHoodIconCountersPrivate = function (_a) {
+        var Camp = _a.Camp, MerryMen = _a.MerryMen, RobinHood = _a.RobinHood;
+        this.counters.RobinHood[CAMP].setValue(Camp);
+        this.counters.RobinHood[MERRY_MEN].setValue(MerryMen);
+        this.counters.RobinHood[ROBIN_HOOD].setValue(RobinHood);
+    };
+    GestPlayer.prototype.updateSheriffIconCounters = function (_a) {
+        var gamedatas = _a.gamedatas;
+        if (this.playerId !== this.game.getPlayerId()) {
+            this.counters.Sheriff[CARRIAGE].setValue(gamedatas.forces.supply.Carriage);
+            this.counters.Sheriff[HENCHMEN].setValue(gamedatas.forces.supply.Henchmen);
+        }
+    };
+    GestPlayer.prototype.updateSheriffIconCountersPrivate = function (_a) {
+        var Henchmen = _a.Henchmen, TallageCarriage = _a.TallageCarriage, TributeCarriage = _a.TributeCarriage, TrapCarriage = _a.TrapCarriage;
+        this.counters.Sheriff[TALLAGE_CARRIAGE].setValue(TallageCarriage);
+        this.counters.Sheriff[TRIBUTE_CARRIAGE].setValue(TributeCarriage);
+        this.counters.Sheriff[TRAP_CARRIAGE].setValue(TrapCarriage);
+        this.counters.Sheriff[HENCHMEN].setValue(Henchmen);
     };
     GestPlayer.prototype.setupPlayer = function (_a) {
         var gamedatas = _a.gamedatas;
-        var playerGamedatas = gamedatas.players[this.playerId];
-        this.setupPlayerPanel({ playerGamedatas: playerGamedatas });
+        this.setupPlayerPanel({ gamedatas: gamedatas });
+    };
+    GestPlayer.prototype.setupRobinHoodIconCounters = function (_a) {
+        var _b, _c, _d;
+        var gamedatas = _a.gamedatas;
+        if (this.playerId === this.game.getPlayerId()) {
+            this.counters.RobinHood[CAMP] = new IconCounter({
+                containerId: "gest_player_panel_".concat(this.playerId),
+                extraIconClasses: 'gest_force_side',
+                icon: 'camp',
+                iconCounterId: "gest_camps_counter_".concat(this.playerId),
+                initialValue: ((_b = gamedatas.robinHoodForces) === null || _b === void 0 ? void 0 : _b.supply.Camp) || 0,
+                dataAttributes: [
+                    {
+                        key: 'data-revealed',
+                        value: 'true',
+                    },
+                    {
+                        key: 'data-type',
+                        value: CAMP,
+                    },
+                ],
+            });
+            this.counters.RobinHood[MERRY_MEN] = new IconCounter({
+                containerId: "gest_player_panel_".concat(this.playerId),
+                extraIconClasses: 'gest_force_side',
+                icon: '',
+                iconCounterId: "gest_merryMen_counter_".concat(this.playerId),
+                initialValue: ((_c = gamedatas.robinHoodForces) === null || _c === void 0 ? void 0 : _c.supply.MerryMen) || 0,
+                dataAttributes: [
+                    {
+                        key: 'data-revealed',
+                        value: 'true',
+                    },
+                    {
+                        key: 'data-type',
+                        value: MERRY_MEN,
+                    },
+                ],
+            });
+            this.counters.RobinHood[ROBIN_HOOD] = new IconCounter({
+                containerId: "gest_player_panel_".concat(this.playerId),
+                extraIconClasses: 'gest_force_side',
+                icon: '',
+                iconCounterId: "gest_RobinHood_counter_".concat(this.playerId),
+                initialValue: ((_d = gamedatas.robinHoodForces) === null || _d === void 0 ? void 0 : _d.supply.RobinHood) || 0,
+                dataAttributes: [
+                    {
+                        key: 'data-revealed',
+                        value: 'true',
+                    },
+                    {
+                        key: 'data-type',
+                        value: ROBIN_HOOD,
+                    },
+                ],
+            });
+        }
+        else {
+            this.counters.RobinHood[CAMP] = new IconCounter({
+                containerId: "gest_player_panel_".concat(this.playerId),
+                extraIconClasses: 'gest_force_side',
+                icon: 'camp',
+                iconCounterId: "gest_camps_counter_".concat(this.playerId),
+                initialValue: gamedatas.forces.supply.Camp,
+                dataAttributes: [
+                    {
+                        key: 'data-revealed',
+                        value: 'false',
+                    },
+                    {
+                        key: 'data-type',
+                        value: CAMP,
+                    },
+                ],
+            });
+            this.counters.RobinHood[MERRY_MEN] = new IconCounter({
+                containerId: "gest_player_panel_".concat(this.playerId),
+                extraIconClasses: 'gest_force_side',
+                icon: '',
+                iconCounterId: "gest_merryMen_counter_".concat(this.playerId),
+                initialValue: gamedatas.forces.supply.MerryMen,
+                dataAttributes: [
+                    {
+                        key: 'data-revealed',
+                        value: 'false',
+                    },
+                    {
+                        key: 'data-type',
+                        value: MERRY_MEN,
+                    },
+                ],
+            });
+        }
+    };
+    GestPlayer.prototype.setupSheriffIconCounters = function (_a) {
+        var _b, _c, _d, _e;
+        var gamedatas = _a.gamedatas;
+        if (this.playerId === this.game.getPlayerId()) {
+            this.counters.Sheriff[TALLAGE_CARRIAGE] = new IconCounter({
+                containerId: "gest_player_panel_".concat(this.playerId),
+                extraIconClasses: 'gest_force_side',
+                icon: '',
+                iconCounterId: "gest_tallageCarriage_counter_".concat(this.playerId),
+                initialValue: ((_b = gamedatas.sheriffForces) === null || _b === void 0 ? void 0 : _b.supply.TallageCarriage) || 0,
+                dataAttributes: [
+                    {
+                        key: 'data-revealed',
+                        value: 'true',
+                    },
+                    {
+                        key: 'data-type',
+                        value: TALLAGE_CARRIAGE,
+                    },
+                ],
+            });
+            this.counters.Sheriff[TRIBUTE_CARRIAGE] = new IconCounter({
+                containerId: "gest_player_panel_".concat(this.playerId),
+                extraIconClasses: 'gest_force_side',
+                icon: '',
+                iconCounterId: "gest_tributeCarriage_counter_".concat(this.playerId),
+                initialValue: ((_c = gamedatas.sheriffForces) === null || _c === void 0 ? void 0 : _c.supply.TributeCarriage) || 0,
+                dataAttributes: [
+                    {
+                        key: 'data-revealed',
+                        value: 'true',
+                    },
+                    {
+                        key: 'data-type',
+                        value: TRIBUTE_CARRIAGE,
+                    },
+                ],
+            });
+            this.counters.Sheriff[TRAP_CARRIAGE] = new IconCounter({
+                containerId: "gest_player_panel_".concat(this.playerId),
+                extraIconClasses: 'gest_force_side',
+                icon: '',
+                iconCounterId: "gest_trapCarriage_counter_".concat(this.playerId),
+                initialValue: ((_d = gamedatas.sheriffForces) === null || _d === void 0 ? void 0 : _d.supply.TrapCarriage) || 0,
+                dataAttributes: [
+                    {
+                        key: 'data-revealed',
+                        value: 'true',
+                    },
+                    {
+                        key: 'data-type',
+                        value: TRAP_CARRIAGE,
+                    },
+                ],
+            });
+            this.counters.Sheriff[HENCHMEN] = new IconCounter({
+                containerId: "gest_player_panel_".concat(this.playerId),
+                extraIconClasses: 'gest_force_side',
+                icon: '',
+                iconCounterId: "gest_henchmen_counter_".concat(this.playerId),
+                initialValue: ((_e = gamedatas.sheriffForces) === null || _e === void 0 ? void 0 : _e.supply.Henchmen) || 0,
+                dataAttributes: [
+                    {
+                        key: 'data-revealed',
+                        value: 'true',
+                    },
+                    {
+                        key: 'data-type',
+                        value: HENCHMEN,
+                    },
+                ],
+            });
+        }
+        else {
+            this.counters.Sheriff[CARRIAGE] = new IconCounter({
+                containerId: "gest_player_panel_".concat(this.playerId),
+                extraIconClasses: 'gest_force_side',
+                icon: '',
+                iconCounterId: "gest_carriage_counter_".concat(this.playerId),
+                initialValue: gamedatas.forces.supply.Carriage,
+                dataAttributes: [
+                    {
+                        key: 'data-revealed',
+                        value: 'false',
+                    },
+                    {
+                        key: 'data-type',
+                        value: CARRIAGE,
+                    },
+                ],
+            });
+            this.counters.Sheriff[HENCHMEN] = new IconCounter({
+                containerId: "gest_player_panel_".concat(this.playerId),
+                extraIconClasses: 'gest_force_side',
+                icon: '',
+                iconCounterId: "gest_henchmen_counter_".concat(this.playerId),
+                initialValue: gamedatas.forces.supply.Henchmen,
+                dataAttributes: [
+                    {
+                        key: 'data-revealed',
+                        value: 'true',
+                    },
+                    {
+                        key: 'data-type',
+                        value: HENCHMEN,
+                    },
+                ],
+            });
+        }
     };
     GestPlayer.prototype.setupPlayerPanel = function (_a) {
-        var playerGamedatas = _a.playerGamedatas;
+        var gamedatas = _a.gamedatas;
+        var playerGamedatas = gamedatas.players[this.playerId];
         var playerBoardDiv = document.getElementById("player_board_".concat(this.playerId));
         playerBoardDiv.insertAdjacentHTML('beforeend', tplPlayerPanel({ playerId: this.playerId }));
-        this.counters.shillings.create("shillings_counter_".concat(this.playerId));
+        this.counters.shillings = new IconCounter({
+            containerId: "gest_player_panel_".concat(this.playerId),
+            icon: 'shilling',
+            iconCounterId: "gest_shillings_counter_".concat(this.playerId),
+            initialValue: playerGamedatas.shillings,
+        });
+        if (this.side === 'RobinHood') {
+            this.setupRobinHoodIconCounters({ gamedatas: gamedatas });
+        }
+        else if (this.side === 'Sheriff') {
+            this.setupSheriffIconCounters({ gamedatas: gamedatas });
+        }
         this.updatePlayerPanel({ playerGamedatas: playerGamedatas });
     };
     GestPlayer.prototype.updatePlayerPanel = function (_a) {
@@ -4744,11 +5156,14 @@ var GestPlayer = (function () {
     GestPlayer.prototype.isRobinHood = function () {
         return this.side === 'RobinHood';
     };
+    GestPlayer.prototype.isSheriff = function () {
+        return this.side === 'Sheriff';
+    };
     return GestPlayer;
 }());
 var tplPlayerPanel = function (_a) {
     var playerId = _a.playerId;
-    return "<div id=\"gest_player_panel_".concat(playerId, "\" class=\"gest_player_panel\">\n            <div class=\"gest_player_panel_shillings_counter\">\n              <span>Shillings: </span><span id=\"shillings_counter_").concat(playerId, "\"></span>\n            </div>\n          </div>");
+    return "<div id=\"gest_player_panel_".concat(playerId, "\" class=\"gest_player_panel\">\n\n          </div>");
 };
 var getSettingsConfig = function () {
     var _a, _b;
@@ -9969,11 +10384,14 @@ var SetupRobinHoodState = (function () {
         var _this = this;
         this.game.addCancelButton({
             callback: function () {
+                var rhPlayer = _this.game.playerManager.getRobinHoodPlayer();
                 if (_this.robinHood) {
                     _this.game.forceManager.removeCard(_this.robinHood);
+                    rhPlayer.counters.RobinHood[ROBIN_HOOD].incValue(1);
                 }
                 _this.merryMen.forEach(function (merryMan) {
-                    return _this.game.forceManager.removeCard(merryMan);
+                    _this.game.forceManager.removeCard(merryMan);
+                    rhPlayer.counters.RobinHood[MERRY_MEN].incValue(1);
                 });
                 _this.game.onCancel();
             },
@@ -9991,9 +10409,11 @@ var SetupRobinHoodState = (function () {
     };
     SetupRobinHoodState.prototype.handleButtonClick = function (spaceId) {
         var _this = this;
+        var rhPlayer = this.game.playerManager.getRobinHoodPlayer();
         if (this.robinHood === null) {
             var robinHood = this.args._private.robinHood;
             robinHood.location = spaceId;
+            rhPlayer.counters.RobinHood[ROBIN_HOOD].incValue(-1);
             this.game.gameMap.forces["".concat(MERRY_MEN, "_").concat(spaceId)].addCard(robinHood);
             this.robinHood = robinHood;
         }
@@ -10002,6 +10422,7 @@ var SetupRobinHoodState = (function () {
                 return !_this.merryMen.some(function (placedMerryMan) { return placedMerryMan.id === force.id; });
             });
             merryMan.location = spaceId;
+            rhPlayer.counters.RobinHood[MERRY_MEN].incValue(-1);
             this.game.gameMap.forces["".concat(MERRY_MEN, "_").concat(spaceId)].addCard(merryMan);
             this.merryMen.push(merryMan);
         }

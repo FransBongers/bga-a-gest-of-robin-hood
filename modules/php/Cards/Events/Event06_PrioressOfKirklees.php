@@ -2,9 +2,11 @@
 
 namespace AGestOfRobinHood\Cards\Events;
 
+use AGestOfRobinHood\Core\Engine;
 use AGestOfRobinHood\Core\Engine\LeafNode;
 use AGestOfRobinHood\Core\Notifications;
 use AGestOfRobinHood\Helpers\GameMap;
+use AGestOfRobinHood\Helpers\Log;
 use AGestOfRobinHood\Helpers\Utils;
 use AGestOfRobinHood\Managers\Cards;
 use AGestOfRobinHood\Managers\Forces;
@@ -55,13 +57,23 @@ class Event06_PrioressOfKirklees extends \AGestOfRobinHood\Cards\Events\RegularE
 
   public function performDarkEffect($player, $successful, $ctx = null, $space = null)
   {
-    $ctx->insertAsBrother(new LeafNode([
-      'action' => EVENT_SELECT_FORCES,
-      'playerId' => $player->getId(),
-      'cardId' => $this->id,
-      'effect' => DARK,
-      'optional' => true,
-    ]));
+    $robinHood = Forces::get(ROBIN_HOOD);
+    $checkpoint = $robinHood->isHidden() || $robinHood->getLocation() === ROBIN_HOOD_SUPPLY;
+    $robinHood->eventRevealBySheriff($player);
+
+    if ($robinHood->getLocation() !== ROBIN_HOOD_SUPPLY) {
+      $ctx->insertAsBrother(new LeafNode([
+        'action' => EVENT_SELECT_FORCES,
+        'playerId' => $player->getId(),
+        'cardId' => $this->id,
+        'effect' => DARK,
+        'optional' => true,
+      ]));
+    }
+    // TODO: check if this works on prod
+    if ($checkpoint) {
+      Engine::checkpoint();
+    }
   }
 
   public function canPerformLightEffect($player)
@@ -72,7 +84,7 @@ class Event06_PrioressOfKirklees extends \AGestOfRobinHood\Cards\Events\RegularE
   public function canPerformDarkEffect($player)
   {
     $robinHood = Forces::get(ROBIN_HOOD);
-    return !$robinHood->isHidden() && in_array($robinHood->getLocation(), SPACES);
+    return !in_array($robinHood->getLocation(), [PRISON, REMOVED_FROM_GAME]);
   }
 
 

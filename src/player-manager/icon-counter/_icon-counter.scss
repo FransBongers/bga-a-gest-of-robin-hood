@@ -1,0 +1,58 @@
+@use "sass:math";
+
+.gest_icon_counter_container {
+  // width: 50px;
+  // height: 50px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  // justify-content: center;
+  position: relative;
+  gap: 4px;
+
+  .gest_icon[data-icon=florin] {
+    width: 33px;
+    height: 33px;
+  }
+
+  .gest_card_back_icon {
+    width: 22px;
+    height: 33px;
+    margin-left: 5px;
+  }
+
+  .gest_counter {
+    cursor: default;
+    font-weight: bold;
+    font-size: 20px;
+  }
+
+  .gest_force_side[data-type=Camp] {
+    --gestForceScale: 0.7;
+  }
+
+  .gest_force_side[data-type=MerryMen] {
+    --gestForceScale: 0.7;
+  }
+
+  .gest_force_side[data-type=RobinHood] {
+    --gestForceScale: 0.7;
+  }
+
+  .gest_force_side[data-type=Henchmen] {
+    --gestForceScale: 0.65;
+    margin-left: 3px;
+  }
+
+
+  .gest_force_side[data-type=Carriage],
+  .gest_force_side[data-type=TallageCarriage],
+  .gest_force_side[data-type=TrapCarriage],
+  .gest_force_side[data-type=TributeCarriage] {
+    --gestForceScale: 0.57;
+  }
+}
+
+.gest_icon_counter_container.gest_none {
+  opacity: 0.3;
+}

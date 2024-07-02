@@ -1,0 +1,8 @@
+.gest_icon[data-icon='shilling'] {
+  background-image: url('img/shillings.png');
+  background-size: 400% 100%;
+  background-repeat: no-repeat;
+  width: calc(var(--gestIconScale) * 33px);
+  height: calc(var(--gestIconScale) * 34px);
+  background-position-x: 66.666667%;
+}

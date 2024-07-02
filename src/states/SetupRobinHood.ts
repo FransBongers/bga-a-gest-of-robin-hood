@@ -119,12 +119,16 @@ class SetupRobinHoodState implements State {
   addCancelButton() {
     this.game.addCancelButton({
       callback: () => {
+        const rhPlayer = this.game.playerManager.getRobinHoodPlayer();
+
         if (this.robinHood) {
           this.game.forceManager.removeCard(this.robinHood);
+          rhPlayer.counters.RobinHood[ROBIN_HOOD].incValue(1);
         }
-        this.merryMen.forEach((merryMan) =>
-          this.game.forceManager.removeCard(merryMan)
-        );
+        this.merryMen.forEach((merryMan) => {
+          this.game.forceManager.removeCard(merryMan);
+          rhPlayer.counters.RobinHood[MERRY_MEN].incValue(1);
+        });
         this.game.onCancel();
       },
     });
@@ -157,9 +161,13 @@ class SetupRobinHoodState implements State {
   // .##.....##.##.....##.##....##.########..########.########..######.
 
   handleButtonClick(spaceId: string) {
+    const rhPlayer = this.game.playerManager.getRobinHoodPlayer();
+
     if (this.robinHood === null) {
       const robinHood = this.args._private.robinHood;
       robinHood.location = spaceId;
+
+      rhPlayer.counters.RobinHood[ROBIN_HOOD].incValue(-1);
       this.game.gameMap.forces[`${MERRY_MEN}_${spaceId}`].addCard(robinHood);
       this.robinHood = robinHood;
     } else {
@@ -170,6 +178,7 @@ class SetupRobinHoodState implements State {
           )
       );
       merryMan.location = spaceId;
+      rhPlayer.counters.RobinHood[MERRY_MEN].incValue(-1);
       this.game.gameMap.forces[`${MERRY_MEN}_${spaceId}`].addCard(merryMan);
       this.merryMen.push(merryMan);
     }

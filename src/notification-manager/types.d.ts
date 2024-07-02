@@ -17,8 +17,18 @@ interface NotifRefreshUIArgs {
   datas: AGestOfRobinHoodGamedatas;
 }
 
-interface NotifRefreshForcesPrivate {
-  forces: Record<string, GestForce[]>;
+interface NotifRefreshForcesPrivate extends NotifWithPlayerArgs {
+  forces: Record<string, GestForce[]> & {
+    supply: {
+      Camp?: number;
+      MerryMen?: number;
+      RobinHood?: number;
+      Henchmen?: number;
+      TallageCarriage?: number;
+      TrapCarriage?: number;
+      TributeCarriage?: number;
+    };
+  };
 }
 
 interface NotifClearTurnArgs extends NotifWithPlayerArgs {
@@ -163,7 +173,6 @@ interface NotifRemoveCardFromGameArgs {
 interface NotifRevealCarriageArgs extends NotifWithPlayerArgs {
   carriage: GestForce;
 }
-
 
 interface NotifHideForceArgs extends NotifWithPlayerArgs {
   force: GestForce;
