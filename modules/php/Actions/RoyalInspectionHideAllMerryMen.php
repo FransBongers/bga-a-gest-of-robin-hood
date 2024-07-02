@@ -48,7 +48,7 @@ class RoyalInspectionHideAllMerryMen extends \AGestOfRobinHood\Models\AtomicActi
     $player = self::getPlayer();
 
     foreach($forces as $merryMan) {
-      if (in_array($merryMan->getLocation(), [PRISON, MERRY_MEN_SUPPLY, ROBIN_HOOD_SUPPLY]) || $merryMan->isHidden()) {
+      if (in_array($merryMan->getLocation(), [PRISON, MERRY_MEN_SUPPLY, ROBIN_HOOD_SUPPLY, REMOVED_FROM_GAME]) || $merryMan->isHidden()) {
         continue;
       }
       $merryMan->hide($player);
