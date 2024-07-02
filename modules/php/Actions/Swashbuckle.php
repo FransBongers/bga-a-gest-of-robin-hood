@@ -207,11 +207,11 @@ class Swashbuckle extends \AGestOfRobinHood\Models\AtomicAction
     $merryMenThatCanPerform = [];
     if ($mayUseAnyMerryMen) {
       $merryMenThatCanPerform = Utils::filter(Forces::getOfType(MERRY_MEN), function ($force) {
-        return $force->getLocation() !== MERRY_MEN_SUPPLY;
+        return !in_array($force->getLocation(),[MERRY_MEN_SUPPLY, REMOVED_FROM_GAME]);
       });
     }
     $robinHood = Forces::get(ROBIN_HOOD);
-    if ($robinHood->getLocation() !== ROBIN_HOOD_SUPPLY) {
+    if (!in_array($robinHood->getLocation(),[ROBIN_HOOD_SUPPLY, REMOVED_FROM_GAME])) {
       $merryMenThatCanPerform[] = $robinHood;
     }
 
