@@ -4523,7 +4523,9 @@ var NotificationManager = (function () {
                         troopSide = this.game.gameMap.isRobinHoodForce({ type: force.type })
                             ? 'RobinHood'
                             : 'Sheriff';
-                        player = troopSide === 'RobinHood' ? this.game.playerManager.getRobinHoodPlayer() : this.game.playerManager.getSheriffPlayer();
+                        player = troopSide === 'RobinHood'
+                            ? this.game.playerManager.getRobinHoodPlayer()
+                            : this.game.playerManager.getSheriffPlayer();
                         (_c = (_b = player.counters[troopSide]) === null || _b === void 0 ? void 0 : _b[force.type]) === null || _c === void 0 ? void 0 : _c.incValue(1);
                         return [2];
                 }
@@ -4593,8 +4595,15 @@ var NotificationManager = (function () {
                             selectedForce.type = move.to.type;
                             selectedForce.hidden = move.to.hidden;
                             var stock = _this.game.gameMap.forces["".concat(MERRY_MEN, "_").concat(move.to.spaceId)];
+                            if (move.from.type === ROBIN_HOOD && move.to.type === MERRY_MEN) {
+                                _this.game.forceManager.updateCardInformations(selectedForce, {
+                                    updateBack: true,
+                                });
+                            }
                             if (move.from.spaceId === move.to.spaceId) {
-                                promises.push(_this.game.forceManager.updateCardInformations(selectedForce));
+                                promises.push(_this.game.forceManager.updateCardInformations(selectedForce, {
+                                    updateBack: true,
+                                }));
                             }
                             else {
                                 promises.push(stock.addCard(selectedForce));

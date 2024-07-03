@@ -30,6 +30,7 @@ class AtomicActions
     EVENT_WILL_STUTELY_LIGHT => 'EventWillStutelyLight',
     FORTUNE_EVENT_DAY_OF_MARKET_ROBIN_HOOD => 'FortuneEventDayOfMarketRobinHood',
     FORTUNE_EVENT_DAY_OF_MARKET_SHERIFF => 'FortuneEventDayOfMarketSheriff',
+    FORTUNE_EVENT_WARDEN_OF_THE_FOREST_RESULT => 'FortuneEventWardenOfTheForestResult',
     FORTUNE_EVENT_QUEEN_ELEANOR => 'FortuneEventQueenEleanor',
     DONATE => 'Donate',
     HIRE => 'Hire',

@@ -28,17 +28,16 @@ class Event08_WardenOfTheForest extends \AGestOfRobinHood\Models\EventCard
   public function getFlow()
   {
     $nodes = [
-      'children' => [
-      ],
+      'children' => [],
     ];
 
     $hire = AtomicActions::get(HIRE);
     $sheriff = Players::getSheriffPlayer();
-
-    if ($sheriff->getShillings() >=2 && $hire->getOptions($this->id) > 0) {
+    $sheriffId = $sheriff->getId();
+    if ($sheriff->getShillings() >= 2 && count($hire->getOptions($this->id)) > 0) {
       $nodes['children'][] = [
         'action' => HIRE,
-        'playerId' => $sheriff->getId(),
+        'playerId' => $sheriffId,
         'optional' => true,
         'source' => $this->id,
       ];
@@ -46,15 +45,26 @@ class Event08_WardenOfTheForest extends \AGestOfRobinHood\Models\EventCard
 
     $donate = AtomicActions::get(DONATE);
     $robinHood = Players::getRobinHoodPlayer();
-
+    $robinHoodId = $robinHood->getId();
     if ($donate->canBePerformed($robinHood, $robinHood->getShillings())) {
       $nodes['children'][] = [
         'action' => DONATE,
-        'playerId' => $robinHood->getId(),
+        'playerId' => $robinHoodId,
         'optional' => true,
         'source' => $this->id,
       ];
     }
+
+    $resultPlayerId = $sheriff->getId();
+    if (count($nodes['children']) === 1) {
+      $resultPlayerId = $nodes['children'][0]['playerId'] === $sheriffId ? $robinHoodId : $sheriffId;
+    }
+
+    $nodes['children'][] = [
+      'action' => FORTUNE_EVENT_WARDEN_OF_THE_FOREST_RESULT,
+      'playerId' => $resultPlayerId,
+      'source' => $this->id,
+    ];
 
     return $nodes;
   }

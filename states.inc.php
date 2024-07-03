@@ -686,4 +686,11 @@ $machinestates = array(
         'action' => 'stAtomicAction',
         'transitions' => [],
     ],
+    ST_FORTUNE_EVENT_WARDEN_OF_THE_FOREST_RESULT => [
+        'name' => 'fortuneEventWardenOfTheForestResult',
+        'description' => '',
+        'type' => 'game',
+        'action' => 'stAtomicAction',
+        'transitions' => [],
+    ],
 );

@@ -42,8 +42,11 @@ class Hire extends \AGestOfRobinHood\Actions\Plot
   public function stHire()
   {
     $player = self::getPlayer();
+    $info = $this->ctx->getInfo();
 
-    if (!$this->canBePerformed($player, $player->getShillings())) {
+    $source = isset($info['source']) ? $info['source'] : null;
+
+    if (!$this->canBePerformed($player, $player->getShillings(), null, $source)) {
       $this->resolveAction(['automatic' => true]);
     }
   }
@@ -142,13 +145,13 @@ class Hire extends \AGestOfRobinHood\Actions\Plot
   //  ..#######.....##....####.########.####....##.......##...
 
 
-  public function canBePerformed($player, $availableShillings, $cost = null)
+  public function canBePerformed($player, $availableShillings, $cost = null, $source = null)
   {
     if (($cost === null && $availableShillings < 2) || ($cost !== null && $availableShillings < $cost)) {
       return false;
     }
 
-    return count($this->getOptions()) > 0;
+    return count($this->getOptions($source)) > 0;
   }
 
   public function getName()

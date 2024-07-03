@@ -31,10 +31,11 @@ class Plot extends \AGestOfRobinHood\Models\AtomicAction
       $leafNode['source'] = $info['source'];
     }
     $numberOfResolvedActions = count(Engine::getResolvedActions([$action]));
+    $availableShillings = $player->getShillings();
 
-    $extraActionPlotsAndDeeds = $selectedAction === PLOTS_AND_DEEDS && $numberOfResolvedActions < 2 && $this->canBePerformed($player, $player->getShillings());
+    $extraActionPlotsAndDeeds = $selectedAction === PLOTS_AND_DEEDS && $numberOfResolvedActions < 2 && $this->canBePerformed($player, $availableShillings);
     $extraActionFastCarriages = $selectedAction === EVENT && $action === ROB && $sourceIsSet && $info['source'] === 'Event22_FastCarriages' && $numberOfResolvedActions < 2;
-    $extraActionWardenOfTheForest = $sourceIsSet && $info['source'] === 'Event08_WardenOfTheForest' && $action === HIRE && $numberOfResolvedActions < 1;
+    $extraActionWardenOfTheForest = $sourceIsSet && $info['source'] === 'Event08_WardenOfTheForest' && $action === HIRE && $numberOfResolvedActions < 1 && $this->canBePerformed($player, $availableShillings >= 2, null, $info['source']);
     // Notifications::log('extraActionWardenOfTheForest', $extraActionWardenOfTheForest);
     if ($extraActionPlotsAndDeeds || $extraActionFastCarriages || $extraActionWardenOfTheForest) {
       $this->ctx->insertAsBrother(new LeafNode($leafNode));

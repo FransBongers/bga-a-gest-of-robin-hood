@@ -500,7 +500,9 @@ class NotificationManager {
       const troopSide = this.game.gameMap.isRobinHoodForce({ type: force.type })
         ? 'RobinHood'
         : 'Sheriff';
-      this.getPlayer({ playerId }).counters[troopSide][force.type]?.incValue(-1);
+      this.getPlayer({ playerId }).counters[troopSide][force.type]?.incValue(
+        -1
+      );
       this.game.gameMap.addPrivateForce({ force });
     });
   }
@@ -512,7 +514,9 @@ class NotificationManager {
       const troopSide = this.game.gameMap.isRobinHoodForce({ type: force.type })
         ? 'RobinHood'
         : 'Sheriff';
-      this.getPlayer({ playerId }).counters[troopSide][force.type]?.incValue(-1);
+      this.getPlayer({ playerId }).counters[troopSide][force.type]?.incValue(
+        -1
+      );
       this.game.gameMap.addPrivateForce({ force });
     });
   }
@@ -653,7 +657,10 @@ class NotificationManager {
     const troopSide = this.game.gameMap.isRobinHoodForce({ type: force.type })
       ? 'RobinHood'
       : 'Sheriff';
-    const player = troopSide === 'RobinHood' ? this.game.playerManager.getRobinHoodPlayer() : this.game.playerManager.getSheriffPlayer();
+    const player =
+      troopSide === 'RobinHood'
+        ? this.game.playerManager.getRobinHoodPlayer()
+        : this.game.playerManager.getSheriffPlayer();
     player.counters[troopSide]?.[force.type]?.incValue(1);
   }
 
@@ -687,7 +694,6 @@ class NotificationManager {
 
   async notif_moveMerryMenPublic(notif: Notif<NotifMoveMerryMenPublicArgs>) {
     const { moves } = notif.args;
-
     const selectedForces: GestForce[] = [];
     const promises = [];
 
@@ -701,9 +707,16 @@ class NotificationManager {
       selectedForce.type = move.to.type;
       selectedForce.hidden = move.to.hidden;
       const stock = this.game.gameMap.forces[`${MERRY_MEN}_${move.to.spaceId}`];
+      if (move.from.type === ROBIN_HOOD && move.to.type === MERRY_MEN) {
+        this.game.forceManager.updateCardInformations(selectedForce, {
+          updateBack: true,
+        });
+      }
       if (move.from.spaceId === move.to.spaceId) {
         promises.push(
-          this.game.forceManager.updateCardInformations(selectedForce)
+          this.game.forceManager.updateCardInformations(selectedForce, {
+            updateBack: true,
+          })
         );
       } else {
         promises.push(stock.addCard(selectedForce));
