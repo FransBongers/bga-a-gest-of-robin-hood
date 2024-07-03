@@ -47,7 +47,7 @@ trait DebugTrait
     // Forces::get('henchmen_4')->setLocation(TUXFORD);
     // Forces::get('henchmen_1')->setLocation(RETFORD);
 
-    Forces::get('merryMen_4')->setLocation(BLYTH);
+    // Forces::get('merryMen_4')->setLocation(BLYTH);
     // Forces::get('merryMen_1')->setHidden(0);
     // Forces::get('merryMen_5')->setLocation(SOUTHWELL_FOREST);
     // Forces::get('merryMen_5')->setHidden(0);
@@ -58,7 +58,7 @@ trait DebugTrait
     // Forces::get(ROBIN_HOOD)->setLocation(ROBIN_HOOD_SUPPLY);
     // Forces::get('carriage_2')->setLocation(NEWARK);
     // Forces::get('merryMen_4')->setHidden(1);
-    // Cards::get('Event14_TemporaryTruce')->insertOnTop(EVENTS_DECK);
+    Cards::get('Event20_MajorOak')->insertOnTop(EVENTS_DECK);
     // Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_VICTIMS_PILE);
     // Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_DECK);
     // Globals::setOllertonHillAdjacency(true);

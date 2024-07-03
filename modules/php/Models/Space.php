@@ -5,7 +5,7 @@ namespace AGestOfRobinHood\Models;
 use AGestOfRobinHood\Core\Globals;
 use AGestOfRobinHood\Core\Notifications;
 use AGestOfRobinHood\Helpers\Utils;
-use AGestOfRobinHood\Managers\Connections;
+use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\Forces;
 use AGestOfRobinHood\Managers\Spaces;
 use AGestOfRobinHood\Managers\Units;
@@ -66,7 +66,7 @@ class Space extends \AGestOfRobinHood\Helpers\DB_Model
   public function getAdjacentSpaceIds()
   {
     $adjacentSpaceIds = $this->adjacentSpaceIds;
-    if (Globals::getOllertonHillAdjacency()) {
+    if (Globals::getOllertonHillAdjacency() && Players::get()->isRobinHood()) {
       $adjacentSpaceIds = array_merge($adjacentSpaceIds, $this->adjacentViaOllertonHillSpaceIds);
     }
     $bridgeLocation = Globals::getBridgeLocation();
