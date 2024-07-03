@@ -120,6 +120,9 @@ class GameMap extends \APP_DbObject
 
     for ($i = 0; $i < $numberToPlace; $i++) {
       $merryMan = Forces::getTopOf(MERRY_MEN_SUPPLY);
+      if ($merryMan === null) {
+        continue;
+      }
       $merryMan->setLocation($spaceId);
       $merryMenToPlace[] = $merryMan;
     }

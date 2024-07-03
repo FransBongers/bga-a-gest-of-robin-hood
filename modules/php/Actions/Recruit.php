@@ -59,52 +59,10 @@ class Recruit extends \AGestOfRobinHood\Actions\Plot
 
   public function argsRecruit()
   {
-    $spaces = $this->getOptions();
-
-    $options = [];
+    $options = $this->getOptions();
     $playerId = $this->ctx->getPlayerId();
 
-    $merryMenSupply = Forces::getInLocation(MERRY_MEN_SUPPLY)->toArray();
-    $supplyCount = count($merryMenSupply);
     $robinHoodInSupply = Forces::get(ROBIN_HOOD)->getLocation() === ROBIN_HOOD_SUPPLY;
-
-    $alreadyRecruitedInSpaceIds = $this->getAlreadyRecruitedSpaceIds();
-
-    foreach ($spaces as $space) {
-      if (in_array($space->getId(), $alreadyRecruitedInSpaceIds)) {
-        continue;
-      }
-
-      $forcesInSpace = $space->getForces();
-      $hasCamp = Utils::array_some($forcesInSpace, function ($force) {
-        return $force->getType() === CAMP;
-      });
-      // Can you replace Robin Hood with a camp?
-      $merryMen = Utils::filter($forcesInSpace, function ($force) {
-        return $force->isMerryMan();
-      });
-      $recruitOptions = [];
-      if ($hasCamp && $supplyCount >= 2) {
-        $recruitOptions[] = PLACE_TWO_MERRY_MEN;
-      } else if (($hasCamp && $supplyCount === 1) || $supplyCount > 0) {
-        $recruitOptions[] = PLACE_MERRY_MAN;
-      }
-      if (!$hasCamp && count($merryMen) > 0) {
-        $recruitOptions[] = REPLACE_MERRY_MAN_WITH_CAMP;
-      }
-      if ($hasCamp && Utils::array_some($merryMen, function ($merryMan) {
-        return !$merryMan->isHidden();
-      })) {
-        $recruitOptions[] = FLIP_ALL_MERRY_MAN_TO_HIDDEN;
-      }
-
-      $options[$space->getId()] = [
-        'space' => $space,
-        'merryMen' => $merryMen,
-        'recruitOptions' => $recruitOptions,
-      ];
-    }
-
 
 
     $data = [
@@ -220,9 +178,7 @@ class Recruit extends \AGestOfRobinHood\Actions\Plot
       return false;
     }
 
-    return count(Utils::filter(Spaces::getAll()->toArray(), function ($space) {
-      return $space->getStatus() !== SUBMISSIVE && $space->getId() !== OLLERTON_HILL;
-    })) > 0;
+    return count($this->getOptions()) > 0;
   }
 
   public function getName()
@@ -272,9 +228,59 @@ class Recruit extends \AGestOfRobinHood\Actions\Plot
 
   public function getOptions()
   {
-    return Utils::filter(Spaces::getAll()->toArray(), function ($space) {
+    $spaces = Utils::filter(Spaces::getAll()->toArray(), function ($space) {
       return $space->getStatus() !== SUBMISSIVE && $space->getId() !== OLLERTON_HILL;
     });
+
+    $options = [];
+
+    $merryMenSupply = Forces::getInLocation(MERRY_MEN_SUPPLY)->toArray();
+    $supplyCount = count($merryMenSupply);
+    $robinHoodInSupply = Forces::get(ROBIN_HOOD)->getLocation() === ROBIN_HOOD_SUPPLY;
+    if ($robinHoodInSupply) {
+      $supplyCount += 1;
+    }
+
+    $alreadyRecruitedInSpaceIds = $this->getAlreadyRecruitedSpaceIds();
+
+    foreach ($spaces as $space) {
+      if (in_array($space->getId(), $alreadyRecruitedInSpaceIds)) {
+        continue;
+      }
+
+      $forcesInSpace = $space->getForces();
+      $hasCamp = Utils::array_some($forcesInSpace, function ($force) {
+        return $force->getType() === CAMP;
+      });
+
+      $merryMen = Utils::filter($forcesInSpace, function ($force) {
+        return $force->isMerryMan();
+      });
+
+      $recruitOptions = [];
+      if ($hasCamp && $supplyCount >= 2) {
+        $recruitOptions[] = PLACE_TWO_MERRY_MEN;
+      } else if (($hasCamp && $supplyCount === 1) || $supplyCount > 0) {
+        $recruitOptions[] = PLACE_MERRY_MAN;
+      }
+      if (!$hasCamp && count($merryMen) > 0) {
+        $recruitOptions[] = REPLACE_MERRY_MAN_WITH_CAMP;
+      }
+      if ($hasCamp && Utils::array_some($merryMen, function ($merryMan) {
+        return !$merryMan->isHidden();
+      })) {
+        $recruitOptions[] = FLIP_ALL_MERRY_MAN_TO_HIDDEN;
+      }
+
+      if (count($recruitOptions) > 0) {
+        $options[$space->getId()] = [
+          'space' => $space,
+          'merryMen' => $merryMen,
+          'recruitOptions' => $recruitOptions,
+        ];
+      }
+    }
+    return $options;
   }
 
   public function getAlreadyRecruitedSpaceIds()

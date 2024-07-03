@@ -62,7 +62,6 @@ class GestCardManager extends CardManager<GestCard> {
     if (!node) {
       return;
     }
-    console.log('updateElement', cards);
     node.style.top = '0px';
     node.style.left = '0px';
     node.style.position = 'absolute';

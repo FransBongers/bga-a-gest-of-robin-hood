@@ -141,6 +141,7 @@ class Event28_NottinghamFair extends \AGestOfRobinHood\Cards\Events\RegularEvent
   private function getDarkOptions()
   {
     $merryMen = Forces::getOfType(MERRY_MEN);
+    $merryMen[] = Forces::get(ROBIN_HOOD);
     $spaceIds = Spaces::get(NOTTINGHAM)->getAdjacentSpaceIds();
     return Utils::filter($merryMen, function ($merryMan) use ($spaceIds) {
       return in_array($merryMan->getLocation(), $spaceIds);

@@ -56,9 +56,7 @@ class Event02_BishopOfHereford extends \AGestOfRobinHood\Cards\Events\RegularEve
 
   public function canPerformLightEffect($player)
   {
-    return Utils::array_some(Forces::getOfType(MERRY_MEN), function ($merryMan) {
-      return in_array($merryMan->getLocation(), SPACES);
-    });
+    return true;
   }
 
   public function canPerformDarkEffect($player)
