@@ -90,9 +90,9 @@ class RoyalInspectionRedeploymentRobinHood extends \AGestOfRobinHood\Models\Atom
 
   public function actPassRoyalInspectionRedeploymentRobinHood()
   {
-    $player = self::getPlayer();
+    // $player = self::getPlayer();
     // Stats::incPassActionCount($player->getId(), 1);
-    Engine::resolve(PASS);
+    $this->resolveAction(PASS);
   }
 
   public function actRoyalInspectionRedeploymentRobinHood($args)
@@ -218,12 +218,12 @@ class RoyalInspectionRedeploymentRobinHood extends \AGestOfRobinHood\Models\Atom
         continue;
       }
       $space = $spaces[$spaceId];
-      if ($space->isParish() && ($isTemporaryTruce || $space->isSubmissive()) && !in_array($spaceId, $parishesWithACampIds)) {
+      if (in_array($spaceId, PARISHES_AND_NOTTINGHAM) && ($isTemporaryTruce || $space->isSubmissive()) && !in_array($spaceId, $parishesWithACampIds)) {
         $merryMenMustMove[$merryMan->getId()] = [
           'merryMan' => $merryMan,
           'spaceIds' => $destinations,
         ];
-      } else if (!$isTemporaryTruce) {
+      } else {
         $merryMenMayMove[$merryMan->getId()] = [
           'merryMan' => $merryMan,
           'spaceIds' => Utils::filter($destinations, function ($dest) use ($spaceId) {

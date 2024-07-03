@@ -42,10 +42,6 @@ class RoyalInspectionGovernance extends \AGestOfRobinHood\Models\AtomicAction
 
   public function stRoyalInspectionGovernance()
   {
-    $riMarker = Markers::get(ROYAL_INSPECTION_MARKER);
-    $riMarker->setLocation(Locations::royalInspectionTrack(GOVERNANCE));
-    Notifications::moveRoyalInspectionMarker($riMarker);
-
     $numberOfSubmissiveParishes = count(Utils::filter(Spaces::get(PARISHES)->toArray(), function ($space) {
       return $space->isSubmissive();
     }));

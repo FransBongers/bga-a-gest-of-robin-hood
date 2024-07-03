@@ -653,7 +653,8 @@ class NotificationManager {
     const troopSide = this.game.gameMap.isRobinHoodForce({ type: force.type })
       ? 'RobinHood'
       : 'Sheriff';
-    this.getPlayer({ playerId }).counters[troopSide]?.[force.type]?.incValue(1);
+    const player = troopSide === 'RobinHood' ? this.game.playerManager.getRobinHoodPlayer() : this.game.playerManager.getSheriffPlayer();
+    player.counters[troopSide]?.[force.type]?.incValue(1);
   }
 
   async notif_sneakMerryMenPrivate(

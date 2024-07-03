@@ -40,9 +40,6 @@ class ForceManager extends CardManager<GestForce> {
   }
 
   isCardVisible(force: GestForce) {
-    if (force.type === ROBIN_HOOD) {
-      console.log('robin hood back',force);
-    }
     return !force.hidden;
   }
 }

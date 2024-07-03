@@ -43,10 +43,6 @@ class RoyalInspectionReset extends \AGestOfRobinHood\Models\AtomicAction
 
   public function stRoyalInspectionReset()
   {
-    $riMarker = Markers::get(ROYAL_INSPECTION_MARKER);
-    $riMarker->setLocation(Locations::royalInspectionTrack(RESET));
-    Notifications::moveRoyalInspectionMarker($riMarker);
-
     Cards::moveAllInLocation(TRAVELLERS_DISCARD, TRAVELLERS_DECK);
     Cards::shuffle(TRAVELLERS_DECK);
 
@@ -59,8 +55,6 @@ class RoyalInspectionReset extends \AGestOfRobinHood\Models\AtomicAction
 
     Notifications::firstEligible($markers[ROBIN_HOOD_ELIGIBILITY_MARKER]);
     Notifications::secondEligible($markers[SHERIFF_ELIGIBILITY_MARKER]);
-
-    $riMarker->setLocation(Locations::royalInspectionTrack(BALAD));
 
     $this->resolveAction(['automatic' => true]);
   }

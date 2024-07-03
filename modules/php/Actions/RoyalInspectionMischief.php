@@ -43,10 +43,6 @@ class RoyalInspectionMischief extends \AGestOfRobinHood\Models\AtomicAction
 
   public function stRoyalInspectionMischief()
   {
-    $riMarker = Markers::get(ROYAL_INSPECTION_MARKER);
-    $riMarker->setLocation(Locations::royalInspectionTrack(MISCHIEF));
-    Notifications::moveRoyalInspectionMarker($riMarker);
-
     $countingSpaces = [SHIRE_WOOD, SOUTHWELL_FOREST, OLLERTON_HILL];
     $campsInForest = count(Utils::filter(Forces::getAll()->toArray(), function ($force) use ($countingSpaces) {
       return $force->isCamp() && in_array($force->getLocation(), $countingSpaces);

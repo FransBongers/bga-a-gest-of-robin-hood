@@ -679,4 +679,11 @@ $machinestates = array(
         'action' => 'stAtomicAction',
         'transitions' => [],
     ],
+    ST_ROYAL_INSPECTION_MOVE_MARKER => [
+        'name' => 'royalInspectionMoveMarker',
+        'description' => '',
+        'type' => 'game',
+        'action' => 'stAtomicAction',
+        'transitions' => [],
+    ],
 );

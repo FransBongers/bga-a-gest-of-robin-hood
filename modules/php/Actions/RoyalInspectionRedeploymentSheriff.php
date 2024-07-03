@@ -42,13 +42,7 @@ class RoyalInspectionRedeploymentSheriff extends \AGestOfRobinHood\Models\Atomic
 
   public function stRoyalInspectionRedeploymentSheriff()
   {
-    $info = $this->ctx->getInfo();
-    if (isset($info['source']) && $info['source'] === 'Event14_TemporaryTruce') {
-      return;
-    }
-    $riMarker = Markers::get(ROYAL_INSPECTION_MARKER);
-    $riMarker->setLocation(Locations::royalInspectionTrack(REDEPLOYMENT));
-    Notifications::moveRoyalInspectionMarker($riMarker);
+
   }
 
 
@@ -100,6 +94,8 @@ class RoyalInspectionRedeploymentSheriff extends \AGestOfRobinHood\Models\Atomic
     $requiredMoves = $args['requiredMoves'];
     $optionalMoves = $args['optionalMoves'];
 
+    Notifications::log('optional', $optionalMoves);
+
     $stateArgs = $this->getOptions();
 
     $forces = [];
@@ -114,12 +110,20 @@ class RoyalInspectionRedeploymentSheriff extends \AGestOfRobinHood\Models\Atomic
       $forces[] = $henchman;
     }
 
-    foreach ($optionalMoves as $henchmanId) {
+    foreach ($optionalMoves as $henchmanId => $destinationId) {
+      if ($destinationId === null) {
+        continue;
+      }
       if (!isset($stateArgs['henchmenMayMove'][$henchmanId])) {
         throw new \feException("ERROR 049");
       }
-      $henchman = $stateArgs['henchmenMayMove'][$henchmanId]['henchman'];
-      $henchman->setLocation(NOTTINGHAM);
+      $option = $stateArgs['henchmenMayMove'][$henchmanId];
+      $henchman = $option['henchman'];
+
+      if (!in_array($destinationId, $option['spaceIds'])) {
+        throw new \feException("ERROR 103");
+      }
+      $henchman->setLocation($destinationId);
       $forces[] = $henchman;
     }
 
@@ -129,7 +133,7 @@ class RoyalInspectionRedeploymentSheriff extends \AGestOfRobinHood\Models\Atomic
     if (!$isTemporaryTruce) {
       $usedCarriages = Forces::getInLocation(USED_CARRIAGES)->toArray();
       Forces::moveAllInLocation(USED_CARRIAGES, CARRIAGE_SUPPLY);
-      foreach($usedCarriages as $usedCarriage) {
+      foreach ($usedCarriages as $usedCarriage) {
         $usedCarriage->setHidden(1);
       }
     }
@@ -175,7 +179,10 @@ class RoyalInspectionRedeploymentSheriff extends \AGestOfRobinHood\Models\Atomic
     $henchmen = Forces::getOfType(HENCHMEN);
     foreach ($henchmen as $henchman) {
       $spaceId = $henchman->getLocation();
-      if ($spaceId === HENCHMEN_SUPPLY || $spaceId === NOTTINGHAM || $spaceId === REMOVED_FROM_GAME) {
+      if ($spaceId === HENCHMEN_SUPPLY || $spaceId === REMOVED_FROM_GAME) {
+        continue;
+      }
+      if (!$isTemporaryTruce && $spaceId === NOTTINGHAM) {
         continue;
       }
       $space = $spaces[$spaceId];
@@ -184,10 +191,12 @@ class RoyalInspectionRedeploymentSheriff extends \AGestOfRobinHood\Models\Atomic
           'henchman' => $henchman,
           'spaceIds' => $submissiveSpaceIds,
         ];
-      } else if (!$isTemporaryTruce) {
+      } else {
         $henchmenMayMove[$henchman->getId()] = [
           'henchman' => $henchman,
-          'spaceIds' => [NOTTINGHAM],
+          'spaceIds' => $isTemporaryTruce ? Utils::filter($submissiveSpaceIds, function ($destinationId) use ($spaceId) {
+            return $destinationId !== $spaceId;
+          }) : [NOTTINGHAM],
         ];
       }
     }

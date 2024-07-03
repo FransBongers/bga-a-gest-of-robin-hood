@@ -46,6 +46,7 @@ class AtomicActions
     ROYAL_INSPECTION_GOVERNANCE => 'RoyalInspectionGovernance',
     ROYAL_INSPECTION_HIDE_ALL_MERRY_MEN => 'RoyalInspectionHideAllMerryMen',
     ROYAL_INSPECTION_UNREST => 'RoyalInspectionUnrest',
+    ROYAL_INSPECTION_MOVE_MARKER => 'RoyalInspectionMoveMarker',
     ROYAL_INSPECTION_MISCHIEF => 'RoyalInspectionMischief',
     ROYAL_INSPECTION_PLACE_ROBIN_HOOD => 'RoyalInspectionPlaceRobinHood',
     ROYAL_INSPECTION_REDEPLOYMENT_SHERIFF => 'RoyalInspectionRedeploymentSheriff',

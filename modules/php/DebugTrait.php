@@ -3,6 +3,7 @@
 namespace AGestOfRobinHood;
 
 use AGestOfRobinHood\Core\Engine;
+use AGestOfRobinHood\Core\Game;
 use AGestOfRobinHood\Core\Globals;
 use AGestOfRobinHood\Core\Notifications;
 use AGestOfRobinHood\Helpers\GameMap;
@@ -36,28 +37,28 @@ trait DebugTrait
     // Forces::get(ROBIN_HOOD)->setLocation(ROBIN_HOOD_SUPPLY);
     // Spaces::get(RETFORD)->setStatus(REVOLTING);
     // // Forces::get('camp_1')->setLocation(BLYTH);
-    // $this->debugPlaceForces(MERRY_MEN,TUXFORD,2);
+    // $this->debugPlaceForces(MERRY_MEN,TUXFORD,1);
     // $this->debugPlaceForces(MERRY_MEN,BINGHAM,2);
     // $this->debugPlaceForces(MERRY_MEN,RETFORD,2);
-    // $this->debugPlaceForces(MERRY_MEN,NEWARK,2);
+    // $this->debugPlaceForces(HENCHMEN,SHIRE_WOOD,1);
     // $this->debugPlaceForces(TRAP_CARRIAGE,SHIRE_WOOD,1);
     // $this->debugPlaceForces(CAMP,RETFORD,1);
-    // Forces::get('merryMen_7')->setLocation(BLYTH);
+    // Forces::get('merryMen_5')->setLocation(NEWARK);
     // Forces::get('henchmen_4')->setLocation(TUXFORD);
     // Forces::get('henchmen_1')->setLocation(RETFORD);
 
-    Forces::get('merryMen_1')->setLocation(SOUTHWELL_FOREST);
-    Forces::get('merryMen_1')->setHidden(0);
-    Forces::get('merryMen_5')->setLocation(SOUTHWELL_FOREST);
-    Forces::get('merryMen_5')->setHidden(0);
+    Forces::get('merryMen_4')->setLocation(BLYTH);
+    // Forces::get('merryMen_1')->setHidden(0);
+    // Forces::get('merryMen_5')->setLocation(SOUTHWELL_FOREST);
+    // Forces::get('merryMen_5')->setHidden(0);
     // Forces::get('merryMen_8')->setLocation(PRISON);
     // Forces::get(ROBIN_HOOD)->setHidden(0);
-    Forces::get(ROBIN_HOOD)->setLocation(SHIRE_WOOD);
+    // Forces::get(ROBIN_HOOD)->setLocation(SHIRE_WOOD);
     // Forces::get('henchmen_18')->setLocation(MANSFIELD);
     // Forces::get(ROBIN_HOOD)->setLocation(ROBIN_HOOD_SUPPLY);
     // Forces::get('carriage_2')->setLocation(NEWARK);
     // Forces::get('merryMen_4')->setHidden(1);
-    // Cards::get('Event28_NottinghamFair')->insertOnTop(EVENTS_DECK);
+    // Cards::get('Event14_TemporaryTruce')->insertOnTop(EVENTS_DECK);
     // Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_VICTIMS_PILE);
     // Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_DECK);
     // Globals::setOllertonHillAdjacency(true);
@@ -186,6 +187,7 @@ trait DebugTrait
     $engine = Globals::getEngine();
     self::loadDebugUpdateEngine($engine, $map);
     Globals::setEngine($engine);
+    Game::get()->reloadPlayersBasicInfos(); // Is this necessary?
   }
 
   static function loadDebugUpdateEngine(&$node, $map)

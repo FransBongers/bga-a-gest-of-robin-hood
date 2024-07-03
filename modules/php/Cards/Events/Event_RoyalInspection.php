@@ -4,6 +4,7 @@ namespace AGestOfRobinHood\Cards\Events;
 
 use AGestOfRobinHood\Core\Engine\LeafNode;
 use AGestOfRobinHood\Core\Notifications;
+use AGestOfRobinHood\Helpers\Locations;
 use AGestOfRobinHood\Managers\Forces;
 use AGestOfRobinHood\Managers\Players;
 
@@ -32,12 +33,27 @@ class Event_RoyalInspection extends \AGestOfRobinHood\Models\EventCard
           'isKingRichardsReturn' => $this->id === 'Event32_KingRichardsReturn',
         ],
         [
+          'action' => ROYAL_INSPECTION_MOVE_MARKER,
+          'playerId' => $robinHoodPlayerId,
+          'location' => Locations::royalInspectionTrack(MISCHIEF),
+        ],
+        [
           'action' => ROYAL_INSPECTION_MISCHIEF,
           'playerId' => $robinHoodPlayerId,
         ],
         [
+          'action' => ROYAL_INSPECTION_MOVE_MARKER,
+          'playerId' => $sheriffPlayerId,
+          'location' => Locations::royalInspectionTrack(GOVERNANCE),
+        ],
+        [
           'action' => ROYAL_INSPECTION_GOVERNANCE,
           'playerId' => $sheriffPlayerId,
+        ],
+        [
+          'action' => ROYAL_INSPECTION_MOVE_MARKER,
+          'playerId' => $sheriffPlayerId,
+          'location' => Locations::royalInspectionTrack(REDEPLOYMENT),
         ],
         [
           'action' => ROYAL_INSPECTION_REDEPLOYMENT_SHERIFF,
@@ -61,8 +77,18 @@ class Event_RoyalInspection extends \AGestOfRobinHood\Models\EventCard
           'optional' => true,
         ],
         [
+          'action' => ROYAL_INSPECTION_MOVE_MARKER,
+          'playerId' => $sheriffPlayerId,
+          'location' => Locations::royalInspectionTrack(RESET),
+        ],
+        [
           'action' => ROYAL_INSPECTION_RESET,
-          'playerId' => $robinHoodPlayerId,
+          'playerId' => $sheriffPlayerId,
+        ],
+        [
+          'action' => ROYAL_INSPECTION_MOVE_MARKER,
+          'playerId' => $sheriffPlayerId,
+          'location' => Locations::royalInspectionTrack(BALAD),
         ],
       ]
     ];
