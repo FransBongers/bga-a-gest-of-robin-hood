@@ -50,9 +50,8 @@ class PatrolState implements State {
 
     Object.entries(this.args.options).forEach(
       ([spaceId, { space, adjacentHenchmen }]) => {
-        this.game.addPrimaryActionButton({
-          id: `${spaceId}_btn`,
-          text: _(space.name),
+        this.game.setSpaceSelectable({
+          id: spaceId,
           callback: () => {
             this.selectedSpace = space;
             if (adjacentHenchmen.length > 0) {

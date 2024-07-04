@@ -48,7 +48,7 @@ class SetupRobinHoodState implements State {
       },
     });
 
-    this.addSpaceButtons();
+    this.setSpacesSelectable();
 
     this.game.addPassButton({
       optionalAction: this.args.optionalAction,
@@ -66,7 +66,7 @@ class SetupRobinHoodState implements State {
       },
     });
 
-    this.addSpaceButtons();
+    this.setSpacesSelectable();
 
     this.addCancelButton();
   }
@@ -134,13 +134,17 @@ class SetupRobinHoodState implements State {
     });
   }
 
-  addSpaceButtons() {
+  private setSpacesSelectable() {
     [SHIRE_WOOD, SOUTHWELL_FOREST, REMSTON].forEach((spaceId) => {
-      this.game.addPrimaryActionButton({
-        id: `${spaceId}_select`,
-        text: _(this.game.gamedatas.spaces[spaceId].name),
+      this.game.setSpaceSelectable({
+        id: spaceId,
         callback: () => this.handleButtonClick(spaceId),
       });
+      // this.game.addPrimaryActionButton({
+      //   id: `${spaceId}_select`,
+      //   text: _(this.game.gamedatas.spaces[spaceId].name),
+      //   callback: () => this.handleButtonClick(spaceId),
+      // });
     });
   }
 

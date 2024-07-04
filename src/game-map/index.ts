@@ -315,6 +315,20 @@ class GameMap {
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
+  clearSelectable() {
+    SPACES.forEach((space) => {
+      const element = document.getElementById(`gest_map_space_${space}`);
+      if (element) {
+        element.classList.remove(GEST_SELECTABLE, GEST_SELECTED);
+      }
+    });
+
+    const mapSpaces = document.getElementById('gest_map_spaces');
+    if (mapSpaces) {
+      mapSpaces.classList.remove(GEST_SELECTABLE);
+    }
+  }
+
   addPublicForces({
     type,
     hidden,

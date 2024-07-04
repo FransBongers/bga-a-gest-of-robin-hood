@@ -55,9 +55,8 @@ class EventSelectSpaceState implements State {
     });
 
     this.args.spaces.forEach((space) => {
-      this.game.addPrimaryActionButton({
-        id: `${space.id}_btn`,
-        text: _(space.name),
+      this.game.setSpaceSelectable({
+        id: space.id,
         callback: () => this.updateInterfaceConfirm({ space }),
       });
     });

@@ -7,14 +7,14 @@
   background-size: calc(
       var(--leftColumnScale) * var(--mapSizeMultiplier) * 1500px
     )
-    calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 1942px);
+    calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 1924px);
   background-repeat: no-repeat;
   // grid-column: 1 / span 1;
   // grid-row: span 1;
   position: relative;
   // height: 2318px;
   // width: 1500px;
-  height: calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 1942px);
+  height: calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 1924px);
   width: calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 1500px);
   // box-shadow: rgb(0 0 0) 2px 2px 8px;
   box-shadow: 1px 1px 5px #000;
@@ -23,6 +23,67 @@
   --gestMarkerScale: var(--leftColumnScale) * var(--mapSizeMultiplier);
   --gestTokenScale: var(--leftColumnScale) * var(--mapSizeMultiplier);
   --gestForceScale: var(--leftColumnScale) * var(--mapSizeMultiplier);
+}
+
+#gest_map_spaces {
+  position: absolute;
+  // left: 91px;
+  // top: 89px;
+  left: calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 0px);
+  top: calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 0px);
+  height: calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 1924px);
+  // width: calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 0.6875 * 1375px);
+  width: calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 1500px);
+
+  g {
+    height: calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 1986px);
+    width: calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 1375px);
+  }
+  // width: 819px;
+  // height: 402px;
+  // background-color: blue;
+
+  .gest_map_space {
+    fill: transparent;
+    // fill: base.$selected-color;
+    // fill-opacity: 25%;
+    // stroke: base.$selected-color;
+    // stroke-width: 3;
+    // cursor: pointer;
+    // z-index: 50;
+    transform: translate(
+        calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 234px),
+        calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 102px)
+      )
+      scale(calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 0.75));
+  }
+
+  .gest_map_space.gest_selectable {
+    fill: base.$selectable-color;
+    fill-opacity: 15%;
+    stroke: base.$selectable-color;
+    stroke-width: calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 16);
+    cursor: pointer;
+    z-index: 50;
+  }
+
+  .gest_map_space.gest_selected {
+    fill: base.$selected-color;
+    fill-opacity: 25%;
+    stroke: base.$selected-color;
+    stroke-width: calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 16);
+    cursor: pointer;
+    z-index: 50;
+  }
+
+  .gest_map_space.gest_selectable:hover {
+    fill: base.$selected-color;
+    stroke: base.$selected-color;
+  }
+}
+
+#gest_map_spaces.gest_selectable {
+  z-index: 50;
 }
 
 .gest_bridge_location {
@@ -35,8 +96,7 @@
 
 .gest_bridge_location.gest_selectable {
   cursor: pointer;
-  box-shadow: 0px 0px 0px calc(var(--gestMapScale) * 4px)
-    base.$selectable-color !important;
+  box-shadow: 0px 0px 0px calc(var(--gestMapScale) * 4px) base.$selectable-color !important;
 }
 
 .gest_bridge_location.gest_selected {
@@ -44,7 +104,7 @@
   box-shadow: 0px 0px 0px calc(var(--gestMapScale) * 4px) base.$selected-color !important;
 }
 
-.gest_bridge_location[data-has-bridge=true] {
+.gest_bridge_location[data-has-bridge='true'] {
   background-image: url('img/tokens.png');
   background-size: 400% 100%;
   // border: 1px solid black;
@@ -56,6 +116,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  // background-color: yellow;
+  // opacity: 0.5;
 }
 
 .gest_justice_order_track {

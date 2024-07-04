@@ -61,9 +61,8 @@ class DisperseState implements State {
     });
 
     Object.entries(this.args.options).forEach(([spaceId, option]) =>
-      this.game.addPrimaryActionButton({
-        id: `${spaceId}_btn`,
-        text: _(option.space.name),
+      this.game.setSpaceSelectable({
+        id: spaceId,
         callback: () => {
           this.selectedOption = option;
           this.selectPublicForces();

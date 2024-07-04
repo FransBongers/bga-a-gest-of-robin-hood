@@ -112,9 +112,8 @@ class RoyalInspectionRedeploymentRobinHoodState implements State {
     this.game.setElementSelected({ id: option.merryMan.id });
 
     option.spaceIds.forEach((spaceId) => {
-      this.game.addPrimaryActionButton({
-        id: `${spaceId}_btn`,
-        text: _(this.args._private.spaces[spaceId].name),
+      this.game.setSpaceSelectable({
+        id: spaceId,
         callback: async () => {
           if (optionalMove) {
             this.optionalMoves[option.merryMan.id] = spaceId;

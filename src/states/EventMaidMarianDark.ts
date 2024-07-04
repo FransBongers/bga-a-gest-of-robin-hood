@@ -85,9 +85,8 @@ class EventMaidMarianDarkState implements State {
 
     this.args._private.spaces.forEach((option) => {
       const space = option.space;
-      this.game.addPrimaryActionButton({
-        id: `${space.id}_btn`,
-        text: _(space.name),
+      this.game.setSpaceSelectable({
+        id: space.id,
         callback: () => {
           this.option = option;
           if (option.hasMerryMen) {
@@ -118,9 +117,8 @@ class EventMaidMarianDarkState implements State {
 
     this.option.adjacentSpacesIds.forEach((id) => {
       const space = this.game.gamedatas.spaces[id];
-      this.game.addPrimaryActionButton({
-        id: `${space.id}_btn`,
-        text: _(space.name),
+      this.game.setSpaceSelectable({
+        id: space.id,
         callback: () => {
           this.merryMenSpaceId = space.id;
           this.updateInterfaceConfirm();

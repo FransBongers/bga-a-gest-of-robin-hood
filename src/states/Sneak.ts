@@ -49,10 +49,9 @@ class SneakState extends MoveForcesState implements State {
       },
     });
 
-    Object.entries(this.args._private.options).forEach(([spacId, option]) => {
-      this.game.addPrimaryActionButton({
-        id: `${spacId}_btn`,
-        text: _(option.space.name),
+    Object.entries(this.args._private.options).forEach(([spaceId, option]) => {
+      this.game.setSpaceSelectable({
+        id: spaceId,
         callback: () => {
           this.selectedOption = option;
           this.udpateInterfaceSelectMerryMan();
@@ -118,9 +117,8 @@ class SneakState extends MoveForcesState implements State {
 
     this.game.setElementSelected({ id: merryMan.id });
     this.selectedOption.adjacentSpaces.forEach((space) => {
-      this.game.addPrimaryActionButton({
-        id: `${space.id}_btn`,
-        text: _(space.name),
+      this.game.setSpaceSelectable({
+        id: space.id,
         callback: async () => {
           const fromSpaceId = merryMan.location;
           merryMan.location = space.id;

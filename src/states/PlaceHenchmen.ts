@@ -59,9 +59,8 @@ class PlaceHenchmenState extends PlaceForcesState implements State {
         return this.spaceId === null ? true : spaceId === this.spaceId;
       })
       .forEach(([spaceId, space]) =>
-        this.game.addPrimaryActionButton({
-          id: `${space.id}_btn`,
-          text: _(space.name),
+        this.game.setSpaceSelectable({
+          id: space.id,
           callback: async () => this.handlePlacement({ spaceId }),
         })
       );

@@ -74,9 +74,8 @@ class MoveCarriageState implements State {
     });
 
     option.to.forEach((space) => {
-      this.game.addPrimaryActionButton({
-        id: `${space.id}_btn`,
-        text: _(space.name),
+      this.game.setSpaceSelectable({
+        id: space.id,
         callback: () => {
           this.updateInterfaceBringHenchman({
             carriage: option.carriage,

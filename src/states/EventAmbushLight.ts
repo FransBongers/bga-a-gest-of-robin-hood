@@ -55,9 +55,8 @@ class EventAmbushLightState implements State {
     });
 
     this.args._private.spaceIds.forEach((spaceId) => {
-      this.game.addPrimaryActionButton({
-        id: `${spaceId}_btn`,
-        text: _(this.game.gamedatas.spaces[spaceId].name),
+      this.game.setSpaceSelectable({
+        id: spaceId,
         callback: () => {
           this.selectedSpaceId = spaceId;
           this.updateInterfaceSelectMerryMen();

@@ -47,9 +47,8 @@ class RobState implements State {
     });
 
     Object.entries(this.args._private.options).forEach(([spaceId, option]) =>
-      this.game.addPrimaryActionButton({
-        id: `${spaceId}_btn`,
-        text: _(option.space.name),
+      this.game.setSpaceSelectable({
+        id: spaceId,
         callback: () => this.updateInterfaceSelectTarget({ option }),
       })
     );
@@ -73,6 +72,8 @@ class RobState implements State {
       return;
     }
 
+    this.game.setSpaceSelected({ id: option.space.id });
+
     this.game.clientUpdatePageTitle({
       text: _('${you} must select a target'),
       args: {
@@ -88,7 +89,7 @@ class RobState implements State {
           this.updateInterfaceSelectMerryMen({
             space: option.space,
             target: target,
-            merryMen: option.merryMen
+            merryMen: option.merryMen,
           }),
       });
     });
@@ -115,6 +116,7 @@ class RobState implements State {
       });
       return;
     }
+    this.game.setSpaceSelected({ id: space.id });
 
     this.game.clientUpdatePageTitle({
       text: _('${you} must select Merry Men to Rob with'),

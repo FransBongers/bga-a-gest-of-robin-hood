@@ -546,6 +546,8 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
 
     dojo.query(`.${GEST_SELECTABLE}`).removeClass(GEST_SELECTABLE);
     dojo.query(`.${GEST_SELECTED}`).removeClass(GEST_SELECTED);
+
+    this.gameMap.clearSelectable();
   }
 
   public getPlayerId(): number {
@@ -635,6 +637,38 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
 
   setLocationSelected({ id }: { id: string }) {
     const node = $(id);
+    if (node === null) {
+      return;
+    }
+    node.classList.add(GEST_SELECTED);
+  }
+
+  setSpaceSelectable({
+    id,
+    callback,
+  }: {
+    id: string;
+    callback: (event: PointerEvent) => void;
+  }) {
+    const container = document.getElementById('gest_map_spaces');
+    console.log('container', container);
+    container.classList.add(GEST_SELECTABLE);
+
+    const node = document.getElementById(`gest_map_space_${id}`);
+
+    if (!node) {
+      return;
+    }
+    node.classList.add(GEST_SELECTABLE);
+    this._connections.push(
+      dojo.connect(node, 'onclick', this, (event: PointerEvent) =>
+        callback(event)
+      )
+    );
+  }
+
+  setSpaceSelected({ id }: { id: string }) {
+    const node = document.getElementById(`gest_map_space_${id}`);
     if (node === null) {
       return;
     }

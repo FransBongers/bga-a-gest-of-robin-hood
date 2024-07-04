@@ -608,16 +608,56 @@
  */
 #gest_game_map {
   background-image: url("img/board.jpg");
-  background-size: calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 1500px) calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 1942px);
+  background-size: calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 1500px) calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 1924px);
   background-repeat: no-repeat;
   position: relative;
-  height: calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 1942px);
+  height: calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 1924px);
   width: calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 1500px);
   box-shadow: 1px 1px 5px #000;
   --gestMapScale: var(--leftColumnScale) * var(--mapSizeMultiplier);
   --gestMarkerScale: var(--leftColumnScale) * var(--mapSizeMultiplier);
   --gestTokenScale: var(--leftColumnScale) * var(--mapSizeMultiplier);
   --gestForceScale: var(--leftColumnScale) * var(--mapSizeMultiplier);
+}
+
+#gest_map_spaces {
+  position: absolute;
+  left: calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 0px);
+  top: calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 0px);
+  height: calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 1924px);
+  width: calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 1500px);
+}
+#gest_map_spaces g {
+  height: calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 1986px);
+  width: calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 1375px);
+}
+#gest_map_spaces .gest_map_space {
+  fill: transparent;
+  transform: translate(calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 234px), calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 102px)) scale(calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 0.75));
+}
+#gest_map_spaces .gest_map_space.gest_selectable {
+  fill: #ffff00;
+  fill-opacity: 15%;
+  stroke: #ffff00;
+  stroke-width: calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 16);
+  cursor: pointer;
+  z-index: 50;
+}
+#gest_map_spaces .gest_map_space.gest_selected {
+  fill: #0000ff;
+  fill-opacity: 25%;
+  stroke: #0000ff;
+  stroke-width: calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 16);
+  cursor: pointer;
+  z-index: 50;
+}
+#gest_map_spaces .gest_map_space.gest_selectable:hover {
+  fill: #0000ff;
+  stroke: #0000ff;
+}
+
+#gest_map_spaces.gest_selectable {
+  z-index: 50;
 }
 
 .gest_bridge_location {

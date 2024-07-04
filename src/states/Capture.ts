@@ -45,9 +45,8 @@ class CaptureState implements State {
     });
 
     this.args.spaces.forEach((space) => {
-      this.game.addPrimaryActionButton({
-        id: `${space.id}_btn`,
-        text: _(space.name),
+      this.game.setSpaceSelectable({
+        id: space.id,
         callback: () => {
           this.updateInterfaceConfirm({ space });
         },
@@ -69,6 +68,7 @@ class CaptureState implements State {
         spaceName: _(space.name),
       },
     });
+    this.game.setSpaceSelected({ id: space.id });
 
     const callback = () => {
       this.game.clearPossible();

@@ -45,9 +45,8 @@ class PlaceMerryManInSpaceState implements State {
     });
 
     Object.values(this.args._private.spaces).forEach((space) => {
-      this.game.addPrimaryActionButton({
-        id: `${space.id}_btn`,
-        text: _(space.name),
+      this.game.setSpaceSelectable({
+        id: space.id,
         callback: () => {
           if (
             this.args._private.robinHoodInSupply &&

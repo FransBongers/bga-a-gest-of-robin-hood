@@ -45,9 +45,8 @@ class EventATaleOfTwoLoversLightState implements State {
     });
 
     Object.entries(this.args._private).forEach(([spaceId, option]) =>
-      this.game.addPrimaryActionButton({
-        id: `${spaceId}_btn`,
-        text: _(option.space.name),
+      this.game.setSpaceSelectable({
+        id: spaceId,
         callback: () => this.updateInterfaceSelectMerryMen(option),
       })
     );

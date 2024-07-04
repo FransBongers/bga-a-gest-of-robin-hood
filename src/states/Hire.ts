@@ -48,9 +48,8 @@ class HireState implements State {
 
     Object.entries(this.args.options).forEach(
       ([spaceId, { action, space, max }]) => {
-        this.game.addPrimaryActionButton({
-          id: `${spaceId}_btn`,
-          text: _(space.name),
+        this.game.setSpaceSelectable({
+          id: spaceId,
           callback: () => {
             if (action === 'place') {
               this.updateIntefaceSelectNumber({ action, space, max });

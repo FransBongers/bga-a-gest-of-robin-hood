@@ -84,9 +84,8 @@ class EventRoyalPardonLightState implements State {
     this.merryMenIds.forEach((id) => this.game.setElementSelected({ id }));
 
     this.args._private.spaces.forEach((space) => {
-      this.game.addPrimaryActionButton({
-        id: `${space.id}_btn`,
-        text: _(space.name),
+      this.game.setSpaceSelectable({
+        id: space.id,
         callback: () => {
           this.updateInterfaceConfirm({ space });
         },

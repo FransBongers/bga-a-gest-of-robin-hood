@@ -50,6 +50,11 @@ interface AGestOfRobinHoodGame extends Game {
     callback: (event: PointerEvent) => void;
   }) => void;
   setLocationSelected: (props: { id: string }) => void;
+  setSpaceSelectable: (props: {
+    id: string;
+    callback: (event: PointerEvent) => void;
+  }) => void;
+  setSpaceSelected: (props: { id: string }) => void;
   setElementSelectable: (props: {
     id: string;
     callback: (event: PointerEvent) => void;

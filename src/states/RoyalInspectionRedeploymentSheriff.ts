@@ -113,9 +113,8 @@ class RoyalInspectionRedeploymentSheriffState implements State {
     this.game.setElementSelected({ id: option.henchman.id });
 
     option.spaceIds.forEach((spaceId) => {
-      this.game.addPrimaryActionButton({
-        id: `${spaceId}_btn`,
-        text: _(this.args.spaces[spaceId].name),
+      this.game.setSpaceSelectable({
+        id: spaceId,
         callback: async () =>
           this.handleDestinationSelected({ option, spaceId, optionalMove }),
       });
@@ -134,7 +133,7 @@ class RoyalInspectionRedeploymentSheriffState implements State {
 
     this.game.clientUpdatePageTitle({
       text:
-        this.args.source === '"Event14_TemporaryTruce"'
+        this.args.source === 'Event14_TemporaryTruce'
           ? _('${you} may select other Henchmen to move to Submissive Spaces')
           : _('${you} may select other Henchmen to move to Nottingham'),
       args: {

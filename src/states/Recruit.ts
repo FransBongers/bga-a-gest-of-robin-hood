@@ -45,9 +45,8 @@ class RecruitState implements State {
     });
 
     Object.entries(this.args._private.options).forEach(([spaceId, option]) => {
-      this.game.addPrimaryActionButton({
-        id: `${spaceId}_btn`,
-        text: _(option.space.name),
+      this.game.setSpaceSelectable({
+        id: spaceId,
         callback: () => this.updateInterfaceSelectOption(option),
       });
     });
@@ -71,6 +70,7 @@ class RecruitState implements State {
         you: '${you}',
       },
     });
+    this.game.setSpaceSelected({ id: space.id });
 
     recruitOptions.forEach((option) => {
       this.game.addPrimaryActionButton({
@@ -150,6 +150,14 @@ class RecruitState implements State {
     recruitOption: string;
     merryMen: GestForce[];
   }) {
+    if (merryMen.length === 1) {
+      this.updateInterfaceConfirm({
+        space,
+        recruitOption,
+        merryManId: merryMen[0].id,
+      });
+      return;
+    }
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({
@@ -158,6 +166,7 @@ class RecruitState implements State {
         you: '${you}',
       },
     });
+    this.game.setSpaceSelected({ id: space.id });
 
     merryMen.forEach((merryMan) => {
       this.game.setElementSelectable({
@@ -198,6 +207,7 @@ class RecruitState implements State {
         spaceName: _(space.name),
       },
     });
+    this.game.setSpaceSelected({ id: space.id });
 
     const callback = () => {
       this.game.clearPossible();

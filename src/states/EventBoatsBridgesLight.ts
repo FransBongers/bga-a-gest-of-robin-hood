@@ -50,9 +50,8 @@ class EventBoatsBridgesLightState implements State {
 
     Object.entries(this.args._private).forEach(
       ([spaceId, { space, merryMen }]) => {
-        this.game.addPrimaryActionButton({
-          id: `${spaceId}_btn`,
-          text: _(space.name),
+        this.game.setSpaceSelectable({
+          id: spaceId,
           callback: () => {
             this.fromSpaceId = spaceId;
             this.updateInterfaceSelectMerryMen();
@@ -128,9 +127,8 @@ class EventBoatsBridgesLightState implements State {
     SPACES.filter(
       (id) => ![this.fromSpaceId, SHIRE_WOOD, OLLERTON_HILL].includes(id)
     ).forEach((spaceId) => {
-      this.game.addPrimaryActionButton({
-        id: `${spaceId}_btn`,
-        text: _(this.game.gamedatas.spaces[spaceId].name),
+      this.game.setSpaceSelectable({
+        id: spaceId,
         callback: () => this.updateInterfaceConfirm({ toSpaceId: spaceId }),
       });
     });

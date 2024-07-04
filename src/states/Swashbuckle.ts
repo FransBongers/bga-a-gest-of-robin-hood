@@ -90,9 +90,8 @@ class SwashbuckleState implements State {
     });
 
     spaces.forEach((space) => {
-      this.game.addPrimaryActionButton({
-        id: `${space.id}_btn`,
-        text: _(space.name),
+      this.game.setSpaceSelectable({
+        id: space.id,
         callback: () => {
           if (fromPrison) {
             this.updateInterfaceConfirm({
@@ -194,9 +193,8 @@ class SwashbuckleState implements State {
     this.game.setElementSelected({ id: merryManId });
 
     spaces.forEach((space) => {
-      this.game.addPrimaryActionButton({
-        id: `${space.id}_btn`,
-        text: _(space.name),
+      this.game.setSpaceSelectable({
+        id: space.id,
         callback: () =>
           this.updateInterfaceConfirm({
             spaceRobinHood,
