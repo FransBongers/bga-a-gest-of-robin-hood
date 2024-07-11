@@ -2881,31 +2881,31 @@ var ROYAL_INSPECTION_TRACK = [
     {
         id: 'royalInspectionTrack_unrest',
         top: 862,
-        left: 1211,
+        left: 1210,
         extraClasses: 'gest_marker_space gest_royal_inspection_track',
     },
     {
         id: 'royalInspectionTrack_mischief',
         top: 956,
-        left: 1211,
+        left: 1210,
         extraClasses: 'gest_marker_space gest_royal_inspection_track',
     },
     {
         id: 'royalInspectionTrack_governance',
         top: 1047,
-        left: 1211,
+        left: 1210,
         extraClasses: 'gest_marker_space gest_royal_inspection_track',
     },
     {
         id: 'royalInspectionTrack_redeployment',
         top: 1138,
-        left: 1211,
+        left: 1210,
         extraClasses: 'gest_marker_space gest_royal_inspection_track',
     },
     {
         id: 'royalInspectionTrack_reset',
         top: 1228,
-        left: 1211,
+        left: 1210,
         extraClasses: 'gest_marker_space gest_royal_inspection_track',
     },
     {
@@ -3102,14 +3102,17 @@ var GameMap = (function () {
                 }
                 _this.forces[id] = new LineStock(_this.game.forceManager, element, {
                     center: true,
+                    gap: '0px',
                 });
             });
         });
         this.forces['Carriage_usedCarriages'] = new LineStock(this.game.forceManager, document.getElementById('Carriage_usedCarriages'), {
             center: true,
+            gap: '0px',
         });
         this.forces["".concat(MERRY_MEN, "_prison")] = new LineStock(this.game.forceManager, document.getElementById("".concat(MERRY_MEN, "_prison")), {
             center: true,
+            gap: '0px',
         });
         this.updateForces({ gamedatas: gamedatas });
     };

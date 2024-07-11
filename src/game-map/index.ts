@@ -113,6 +113,7 @@ class GameMap {
           element,
           {
             center: true,
+            gap: '0px',
           }
         );
       });
@@ -122,6 +123,7 @@ class GameMap {
       document.getElementById('Carriage_usedCarriages'),
       {
         center: true,
+        gap: '0px',
       }
     );
     this.forces[`${MERRY_MEN}_prison`] = new LineStock<GestForce>(
@@ -129,6 +131,7 @@ class GameMap {
       document.getElementById(`${MERRY_MEN}_prison`),
       {
         center: true,
+        gap: '0px',
       }
     );
 
