@@ -40,8 +40,29 @@ class Players extends \AGestOfRobinHood\Helpers\DB_Manager
     ]);
 
     $values = [];
+
+    $rolesOption = Globals::getGameOptionRoles();
+    $thereIsATableAdmin = Utils::array_some(array_values($players), function ($player) {
+      return isset($player['player_is_admin']) && intval($player['player_is_admin']) === 1;
+    });
+
     foreach ($players as $playerId => $player) {
-      $color = array_shift($colors);
+      $color = null;
+      if ($rolesOption > 0 && $thereIsATableAdmin) {
+        $playerIsTableAdmin = isset($player['player_is_admin']) && intval($player['player_is_admin']) === 1;
+        if ($playerIsTableAdmin && $rolesOption === 1) {
+          $color = $colors[0];
+        } else if (!$playerIsTableAdmin && $rolesOption === 1) {
+          $color = $colors[1];
+        } else if ($playerIsTableAdmin && $rolesOption === 2) {
+          $color = $colors[1];
+        } else if (!$playerIsTableAdmin && $rolesOption === 2) {
+          $color = $colors[0];
+        }
+      } else {
+        $color = array_shift($colors);
+      }
+      
       $values[] = [$playerId, $color, $player['player_canal'], $player['player_name'], $player['player_avatar'], 0];
     }
 

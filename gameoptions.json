@@ -1,0 +1,18 @@
+{
+  "100": {
+    "name": "Roles",
+    "values": {
+      "0": {
+        "name": "Random roles"
+      },
+      "1": {
+        "name": "Table admin plays Robin Hood",
+        "tmdisplay": "Table admin plays Robin Hood"
+      },
+      "2": {
+        "name": "Table admin plays Sheriff",
+        "tmdisplay": "Table admin plays Sheriff"
+      }
+    }
+  }
+}

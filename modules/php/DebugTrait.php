@@ -22,6 +22,17 @@ trait DebugTrait
 
   function debug_test()
   {
+    // $playersSetup = Globals::getPlayers();
+
+    // $thereIsATableAdmin = Utils::array_some(array_values($playersSetup), function ($player) {
+    //   return isset($player['player_is_admin']) && intval($player['player_is_admin']) === 1;
+    // });
+    // Notifications::log('thereIsATableAdmin', $thereIsATableAdmin);
+
+    // Notifications::log('players', Globals::getPlayers());
+    // Notifications::log('options', Globals::getGameOptions());
+    // Notifications::log('roles option', Globals::getGameOptionRoles());
+    
     // Notifications::log('adjacent',Spaces::get(BINGHAM)->getAdjacentSpaceIds());
     // Players::getRobinHoodPlayer()->incShillings(-3);
     // Players::getSheriffPlayer()->incShillings(2);
@@ -59,7 +70,7 @@ trait DebugTrait
     // Forces::get(ROBIN_HOOD)->setLocation(ROBIN_HOOD_SUPPLY);
     // Forces::get('carriage_2')->setLocation(NEWARK);
     // Forces::get('merryMen_4')->setHidden(1);
-    Cards::get('Event30_RoyalInspection')->insertOnTop(EVENTS_DECK);
+    // Cards::get('Event30_RoyalInspection')->insertOnTop(EVENTS_DECK);
     // Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_VICTIMS_PILE);
     // Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_DECK);
     // Globals::setOllertonHillAdjacency(true);
