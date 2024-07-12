@@ -24,6 +24,7 @@ class Globals extends \AGestOfRobinHood\Helpers\DB_Manager
     'test' => 'obj',
     'ollertonHillAdjacency' => 'bool',
     'bridgeLocation' => 'str',
+    'checkpoint' => 'bool',
   ];
 
   protected static $table = 'global_variables';
@@ -150,5 +151,6 @@ class Globals extends \AGestOfRobinHood\Helpers\DB_Manager
     // Game options
     self::setOllertonHillAdjacency(false);
     self::setBridgeLocation('');
+    self::setCheckpoint(false);
   }
 }

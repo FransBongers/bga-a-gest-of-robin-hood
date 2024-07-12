@@ -107,8 +107,6 @@ class ChooseAction extends \AGestOfRobinHood\Models\AtomicAction
       $this->handleAction($player, $action);
     }
 
-
-
     $this->resolveAction($args);
   }
 

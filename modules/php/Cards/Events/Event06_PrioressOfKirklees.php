@@ -3,6 +3,7 @@
 namespace AGestOfRobinHood\Cards\Events;
 
 use AGestOfRobinHood\Core\Engine;
+use AGestOfRobinHood\Core\Globals;
 use AGestOfRobinHood\Core\Engine\LeafNode;
 use AGestOfRobinHood\Core\Notifications;
 use AGestOfRobinHood\Helpers\GameMap;
@@ -70,9 +71,10 @@ class Event06_PrioressOfKirklees extends \AGestOfRobinHood\Cards\Events\RegularE
         'optional' => true,
       ]));
     }
-    // TODO: check if this works on prod
+
     if ($checkpoint) {
-      Engine::checkpoint();
+      // Log::checkpoint();
+      Globals::setCheckpoint(true);
     }
   }
 

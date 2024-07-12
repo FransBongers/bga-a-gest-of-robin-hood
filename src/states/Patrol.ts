@@ -42,7 +42,7 @@ class PatrolState implements State {
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({
-      text: _('${you} must select a Space to move Henchmen to'),
+      text: _('${you} must select a Space to Patrol'),
       args: {
         you: '${you}',
       },
@@ -116,7 +116,7 @@ class PatrolState implements State {
       text:
         this.selectedHenchmenIds.length > 0
           ? _('Move ${count} Henchmen to ${spaceName} and Patrol?')
-          : _('Patrol in ${spaceName}?'),
+          : _('Patrol in ${spaceName} without moving Henchmen?'),
       args: {
         spaceName: _(this.selectedSpace.name),
         count: this.selectedHenchmenIds.length,

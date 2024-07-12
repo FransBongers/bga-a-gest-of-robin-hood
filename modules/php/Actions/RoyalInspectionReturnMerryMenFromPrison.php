@@ -43,7 +43,7 @@ class RoyalInspectionReturnMerryMenFromPrison extends \AGestOfRobinHood\Models\A
   public function stRoyalInspectionReturnMerryMenFromPrison()
   {
     $options = $this->getOptions();
-    if ($options['robinHoodInPrison']) {
+    if ($options['robinHoodInPrison'] && $options['numberToReturn'] > 0) {
       return;
     }
     $merryMen = $options['merryMen'];

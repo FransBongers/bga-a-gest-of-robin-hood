@@ -201,13 +201,15 @@ class Patrol extends \AGestOfRobinHood\Actions\Plot
       $adjacentHenchmen = Utils::filter($forces, function ($force) use ($adjacentSpaceIds, $alreadyMovedHenchmenIds) {
         return $force->isHenchman() && in_array($force->getLocation(), $adjacentSpaceIds) && !in_array($force->getId(), $alreadyMovedHenchmenIds);
       });
-      $countHenchmenInSpace = Utils::filter($forces, function ($force) use ($spaceId) {
+      $countHenchmenInSpace = count(Utils::filter($forces, function ($force) use ($spaceId) {
         return $force->isHenchman() && $force->getLocation() === $spaceId;
-      });
+      }));
       $spaceHasHiddenMerryMen = Utils::array_some($forces, function ($force) use ($spaceId) {
         return $force->isMerryMan() && $force->isHidden() && $force->getLocation() === $spaceId;
       });
       $isForest = in_array($spaceId, [SHIRE_WOOD, SOUTHWELL_FOREST]);
+
+
       if (
         count($adjacentHenchmen) > 0 ||
         ($isForest && $countHenchmenInSpace >= 2 && $spaceHasHiddenMerryMen) ||

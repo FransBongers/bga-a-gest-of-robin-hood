@@ -43,6 +43,8 @@ class AtomicAction
 
   public function resolveAction($args = [], $checkpoint = false)
   {
+    $checkpoint = $checkpoint || Globals::getCheckpoint(); // Note: custom for Gest right now
+    Globals::setCheckpoint(false);
     Engine::resolveAction($args, $checkpoint, $this->ctx);
     Engine::proceed();
   }

@@ -8209,7 +8209,7 @@ var PatrolState = (function () {
         var _this = this;
         this.game.clearPossible();
         this.game.clientUpdatePageTitle({
-            text: _('${you} must select a Space to move Henchmen to'),
+            text: _('${you} must select a Space to Patrol'),
             args: {
                 you: '${you}',
             },
@@ -8272,7 +8272,7 @@ var PatrolState = (function () {
         this.game.clientUpdatePageTitle({
             text: this.selectedHenchmenIds.length > 0
                 ? _('Move ${count} Henchmen to ${spaceName} and Patrol?')
-                : _('Patrol in ${spaceName}?'),
+                : _('Patrol in ${spaceName} without moving Henchmen?'),
             args: {
                 spaceName: _(this.selectedSpace.name),
                 count: this.selectedHenchmenIds.length,

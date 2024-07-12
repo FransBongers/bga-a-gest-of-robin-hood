@@ -37,7 +37,8 @@ trait DebugTrait
     // Forces::get(ROBIN_HOOD)->setLocation(ROBIN_HOOD_SUPPLY);
     // Spaces::get(RETFORD)->setStatus(REVOLTING);
     // // Forces::get('camp_1')->setLocation(BLYTH);
-    // $this->debugPlaceForces(HENCHMEN,REMSTON,2);
+    // $this->debugPlaceForces(ROBIN_HOOD,TUXFORD,1);
+    // $this->debugPlaceForces(MERRY_MEN,TUXFORD,1);
     // $this->debugPlaceForces(MERRY_MEN,BINGHAM,2);
     // $this->debugPlaceForces(MERRY_MEN,RETFORD,2);
     // $this->debugPlaceForces(HENCHMEN,SHIRE_WOOD,1);
@@ -53,7 +54,7 @@ trait DebugTrait
     // Forces::get('merryMen_5')->setHidden(0);
     // Forces::get('merryMen_8')->setLocation(PRISON);
     // Forces::get(ROBIN_HOOD)->setHidden(0);
-    // Forces::get(ROBIN_HOOD)->setLocation(SHIRE_WOOD);
+    // Forces::get(ROBIN_HOOD)->setLocation(PRISON);
     // Forces::get('henchmen_18')->setLocation(MANSFIELD);
     // Forces::get(ROBIN_HOOD)->setLocation(ROBIN_HOOD_SUPPLY);
     // Forces::get('carriage_2')->setLocation(NEWARK);
