@@ -3,11 +3,13 @@
 const tlpLogTokenBoldText = ({
   text,
   tooltipId,
+  italic = false,
 }: {
   text: string;
   tooltipId?: string;
+  italic?: boolean;
 }) =>
-  `<span ${tooltipId ? `id="${tooltipId}"` : ''} style="font-weight: 700;">${_(
+  `<span ${tooltipId ? `id="${tooltipId}"` : ''} style="font-weight: 700;${italic ? ' font-style: italic;' : ''}">${_(
     text
   )}</span>`;
 

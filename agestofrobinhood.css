@@ -422,14 +422,20 @@
 #gest_card_area {
   --gestCardScale: var(--rightColumnScale) * var(--gestCardSizeScale);
 }
-#gest_card_area .gest_card_row {
+#gest_card_area #gest_decks {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+#gest_card_area #gest_decks .gest_card_row {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 8px;
 }
-#gest_card_area .gest_card_row .gest_card_stock {
+#gest_card_area #gest_decks .gest_card_row .gest_card_stock {
   box-sizing: border-box;
   position: relative;
   height: calc(var(--gestCardScale) * 355px);
@@ -786,7 +792,8 @@
 #info_panel #info_panel_buttons {
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: space-evenly;
+  width: 100%;
   align-items: center;
 }
 #info_panel #gest_ballad_info {
@@ -843,6 +850,237 @@
 
 .gest_plots_and_deeds_container[data-side=sheriff] {
   background-color: #c0c0c0;
+}
+
+#information_button {
+  border-radius: 50%;
+  background-color: transparent;
+  cursor: pointer;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#information_button .information_modal_icon {
+  width: 40px;
+  height: 40px;
+  background: url('data:image/svg+xml;utf8,<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13,9H11V7H13M13,17H11V11H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" /></svg>');
+}
+#information_button:hover .information_modal_icon {
+  width: 48px;
+  height: 48px;
+}
+
+#popin_information_modal_underlay {
+  background-color: #000 !important;
+}
+
+.information_modal {
+  background-color: white;
+  background-size: cover;
+  border-radius: 8px;
+  box-shadow: rgb(0, 0, 0) 1px 1px 5px;
+  border: 1px solid black;
+  max-width: 1200px;
+  min-width: 640px;
+}
+.information_modal .information_modal_closeicon {
+  background-color: #a47a77;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: -18px;
+  right: -18px;
+  font-size: 90%;
+  color: white !important;
+  border: 1px solid #dfbda8;
+  cursor: pointer;
+}
+.information_modal .information_modal_closeicon:hover {
+  text-decoration: none;
+  color: #ccc !important;
+  transform: scale(1.1);
+}
+.information_modal .information_modal_closeicon i {
+  margin-top: -2px;
+}
+.information_modal h2 {
+  text-align: center;
+  font-size: large;
+  font-weight: bold;
+  margin: 0px;
+  padding: 7px 0px;
+  border-bottom: 1px solid black;
+}
+.information_modal #information_modal_content {
+  min-height: 200px;
+}
+.information_modal #information_modal_content .information_modal_tabs {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+.information_modal #information_modal_content .information_modal_tabs .information_modal_tab {
+  flex-grow: 1;
+  width: 25%;
+  background-color: rgba(30, 20, 17, 0.5);
+  border-bottom: 1px solid black;
+  border-left: 1px solid black;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+.information_modal #information_modal_content .information_modal_tabs .information_modal_tab span {
+  font-weight: bold;
+  font-size: large;
+  text-align: center;
+}
+.information_modal #information_modal_content .information_modal_tabs .information_modal_tab[data-state=selected] {
+  background-color: transparent;
+  border-bottom: none;
+  cursor: auto;
+}
+.information_modal #information_modal_content .information_modal_tab:first-child {
+  border-left: none !important;
+}
+.information_modal #information_modal_content .information_modal_tab:last-child {
+  border-right: none;
+}
+.information_modal #information_modal_content .gest_arrow {
+  background-image: url("img/arrow.svg");
+  min-width: 52.7px;
+  max-width: 52.7px;
+  min-height: 7.33px;
+  max-height: 7.33px;
+  background-repeat: no-repeat;
+  margin-top: 6px;
+}
+.information_modal #information_modal_content #gest_orderJustice {
+  padding: 16px;
+}
+.information_modal #information_modal_content #gest_orderJustice .gest_row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 8px;
+}
+.information_modal #information_modal_content #gest_robSummary {
+  padding: 16px;
+  --gestForceScale: 0.857;
+}
+.information_modal #information_modal_content #gest_robSummary .gest_row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 8px;
+}
+.information_modal #information_modal_content #gest_robSummary .gest_title {
+  font-weight: 700;
+  font-size: large;
+}
+.information_modal #information_modal_content #gest_robSummary .gest_section_title {
+  font-weight: 700;
+}
+.information_modal #information_modal_content #gest_robSummary #gest_nottingham_image {
+  background-image: url("img/nottingham.jpg");
+  width: 60px;
+  height: 60px;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+.information_modal #information_modal_content #gest_royalInspectionRound {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.information_modal #information_modal_content #gest_royalInspectionRound .gest_row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 8px;
+}
+.information_modal #information_modal_content #gest_travellers {
+  padding: 16px;
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.information_modal #information_modal_content #gest_travellers .gest_traveller_info_row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 8px;
+  min-width: 530px;
+  max-width: 530px;
+}
+.information_modal #information_modal_content #gest_travellers .gest_traveller_info_row .gest_traveller_image {
+  background-image: url("img/travellers.jpg");
+  background-size: 400% 200%;
+  min-width: 151px;
+  min-height: 139px;
+}
+.information_modal #information_modal_content #gest_travellers .gest_traveller_info_row .gest_traveller_image[data-image=richMerchant] {
+  background-position-x: 66.66666667%;
+  background-position-y: 100%;
+}
+.information_modal #information_modal_content #gest_travellers .gest_traveller_info_row .gest_traveller_image[data-image=nobleKnight] {
+  background-position-x: 0%;
+  background-position-y: 100%;
+}
+.information_modal #information_modal_content #gest_travellers .gest_traveller_info_row .gest_traveller_image[data-image=monks] {
+  background-position-x: 100%;
+  background-position-y: 0%;
+}
+.information_modal #information_modal_content #gest_travellers .gest_traveller_info_row .gest_traveller_image[data-image=potter] {
+  background-position-x: 33.3333333%;
+  background-position-y: 100%;
+}
+.information_modal #information_modal_content #gest_travellers .gest_traveller_info_row .gest_traveller_image[data-image=millersSon] {
+  background-position-x: 66.66666667%;
+  background-position-y: 0%;
+}
+.information_modal #information_modal_content #gest_travellers .gest_traveller_info_row .gest_traveller_image[data-image=bishopOfHereford] {
+  background-position-x: 0%;
+  background-position-y: 0%;
+}
+.information_modal #information_modal_content #gest_travellers .gest_traveller_info_row .gest_traveller_image[data-image=guyOfGisborne] {
+  background-position-x: 33.3333333%;
+  background-position-y: 0%;
+}
+.information_modal #information_modal_content #gest_travellers .gest_traveller_info_row .gest_traveller_image[data-image=richardAtTheLea] {
+  background-position-x: 100%;
+  background-position-y: 100%;
+}
+.information_modal #information_modal_content #gest_travellers .gest_traveller_info_row .gest_traveller_stats_container .gest_row .gest_traveller_name,
+.information_modal #information_modal_content #gest_travellers .gest_traveller_info_row .gest_traveller_stats_container .gest_row .gest_traveller_defense {
+  font-weight: bold;
+}
+.information_modal #information_modal_content #gest_travellers .gest_traveller_info_row .gest_traveller_stats_container .gest_row .gest_traveller_deck_count {
+  font-style: italic;
+}
+.information_modal #information_modal_content #gest_travellers .gest_traveller_info_row .gest_traveller_stats_container .gest_row .gest_rob_result {
+  font-weight: bold;
+  font-style: italic;
+}
+
+.gest_royal_inspection_info .gest_row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 8px;
+}
+.gest_royal_inspection_info .gest_row .gest_list_item {
+  font-weight: bold;
+  margin-left: 8px;
 }
 
 /* ------- UNDO TURN ------- */

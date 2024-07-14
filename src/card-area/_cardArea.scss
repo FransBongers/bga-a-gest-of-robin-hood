@@ -7,28 +7,37 @@
   //   box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.5);
   // }
 
-  .gest_card_row {
+  #gest_decks {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     gap: 8px;
-    margin-bottom: 8px;
 
-    .gest_card_stock {
-      box-sizing: border-box;
-      position: relative;
-      height: calc(var(--gestCardScale) * 355px);
-      width: calc(var(--gestCardScale) * 206px);
-      // background-color: blue;
-      border-radius: calc(var(--gestCardScale) * 5px);
+    .gest_card_row {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
+  
+      .gest_card_stock {
+        box-sizing: border-box;
+        position: relative;
+        height: calc(var(--gestCardScale) * 355px);
+        width: calc(var(--gestCardScale) * 206px);
+        // background-color: blue;
+        border-radius: calc(var(--gestCardScale) * 5px);
+      }
+  
+  
+  
+      // #gest_events_discard,
+      // #gest_travellers_discard.
+      // #gest_travellers_vicitimsPile {
+  
+      // }
     }
-
-
-
-    // #gest_events_discard,
-    // #gest_travellers_discard.
-    // #gest_travellers_vicitimsPile {
-
-    // }
   }
+
+
 }

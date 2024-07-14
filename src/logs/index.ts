@@ -1,4 +1,5 @@
 const LOG_TOKEN_BOLD_TEXT = 'boldText';
+const LOG_TOKEN_BOLD_ITALIC_TEXT = 'boldItalicText';
 const LOG_TOKEN_NEW_LINE = 'newLine';
 // const LOG_TOKEN_PLAYER_NAME = "playerName";
 // Game specific
@@ -22,6 +23,8 @@ const getTokenDiv = ({
   switch (type) {
     case LOG_TOKEN_BOLD_TEXT:
       return tlpLogTokenBoldText({ text: value });
+    case LOG_TOKEN_BOLD_ITALIC_TEXT:
+      return tlpLogTokenBoldText({ text: value, italic: true });
     case LOG_TOKEN_CARD:
       return tplLogTokenCard(value);
     case LOG_TOKEN_CARD_NAME:

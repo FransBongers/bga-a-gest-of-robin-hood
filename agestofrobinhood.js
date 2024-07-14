@@ -1809,6 +1809,7 @@ var AGestOfRobinHood = (function () {
         this.tooltipManager = new TooltipManager(this);
         this.playerManager = new PlayerManager(this);
         this.infoPanel = new InfoPanel(this);
+        this.informationModal = new InformationModal(this);
         this.settings = new Settings(this);
         this.animationManager = new AnimationManager(this, {
             duration: this.settings.get({ id: PREF_SHOW_ANIMATIONS }) === DISABLED
@@ -2432,7 +2433,7 @@ var CardArea = (function () {
     };
     return CardArea;
 }());
-var tplCardArea = function () { return "\n  <div id=\"gest_card_area\">\n    <div class=\"gest_card_row\">\n      <div id=\"gest_events_deck\" class=\"gest_card_stock gest_card_side\" data-card-id=\"EventBack\" style=\"box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.5);\"></div>\n      <div id=\"gest_events_discard\" class=\"gest_card_stock\"></div>\n    </div>\n    <div class=\"gest_card_row\">\n      <div id=\"gest_travellers_deck\" class=\"gest_card_stock gest_card_side\" data-card-id=\"TravellerBack\" style=\" box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.5);\"></div>\n      <div id=\"gest_travellers_discard\" class=\"gest_card_stock\"></div>\n      <div id=\"gest_travellers_vicitimsPile\" class=\"gest_card_stock\"></div>\n    </div>\n  </div>\n"; };
+var tplCardArea = function () { return "\n  <div id=\"gest_card_area\">\n    <div id=\"gest_decks\">\n      <div class=\"gest_card_row\">\n        <div id=\"gest_events_deck\" class=\"gest_card_stock gest_card_side\" data-card-id=\"EventBack\" style=\"box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.5);\"></div>\n        <div id=\"gest_events_discard\" class=\"gest_card_stock\"></div>\n      </div>\n      <div class=\"gest_card_row\">\n        <div id=\"gest_travellers_deck\" class=\"gest_card_stock gest_card_side\" data-card-id=\"TravellerBack\" style=\" box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.5);\"></div>\n        <div id=\"gest_travellers_discard\" class=\"gest_card_stock\"></div>\n        <div id=\"gest_travellers_vicitimsPile\" class=\"gest_card_stock\"></div>\n      </div>\n    </div>\n  </div>\n"; };
 var GestCardManager = (function (_super) {
     __extends(GestCardManager, _super);
     function GestCardManager(game) {
@@ -3761,7 +3762,257 @@ var tplSheriffPlotsAndDeeds = function () { return "\n  <div class=\"gest_plots_
     .join(''), "\n    </div>\n    <span class=\"gest_plot_title\" style=\"margin-top: 8px;\">").concat(_('Deeds'), "</span>\n    <div class=\"gest_plots_row\">\n        ").concat(getSheriffPlotsAndDeeds()
     .deeds.map(function (info) { return tplPlotDeedInfo(info); })
     .join(''), "\n    </div>\n  </div>\n"); };
+var getTravellersConfig = function () { return [
+    {
+        name: _('Rich Merchant'),
+        inDeck: '(x2)',
+        defense: 1,
+        success: _('2 Shillings / 4 Shillings (Victim)'),
+        failure: _('No effect / 2 Shillings to Sheriff'),
+        image: 'richMerchant',
+    },
+    {
+        name: _('Noble Knight'),
+        inDeck: '(x2)',
+        defense: 2,
+        success: _('3 Shillings / 5 Shillings (Victim)'),
+        failure: _('No effect / Captured'),
+        image: 'nobleKnight',
+    },
+    {
+        name: _('Monks'),
+        inDeck: '(x3)',
+        defense: 0,
+        success: _('1 Shilling / 3 Shillings (Victim)'),
+        failure: _('No effect / Submissive'),
+        image: 'monks',
+    },
+    {
+        name: _('The Potter'),
+        inDeck: '(x1)',
+        defense: 1,
+        success: _('3 Shillings / 2 from Sheriff and +1 Justice (Victim)'),
+        failure: _('No effect / Robin Hood Captured (+1 Order)'),
+        image: 'potter',
+    },
+    {
+        name: _('The Miller\'s Son'),
+        inDeck: '(x1)',
+        defense: 0,
+        success: _('2 Shillings / 1 Shilling and Merry Man (Victim)'),
+        failure: _('No effect / Henchman'),
+        image: 'millersSon',
+    },
+    {
+        name: _('Bishop of Hereford'),
+        inDeck: '(x1 added by Event)',
+        defense: 1,
+        success: _('3 Shillings / 6 Shillings (Victim)'),
+        failure: _('No effect / 3 Shillings to Sheriff and Submissive'),
+        image: 'bishopOfHereford',
+    },
+    {
+        name: _('Guy of Gisborne'),
+        inDeck: '(x1 added by Event)',
+        defense: 3,
+        success: _('Remove'),
+        failure: _('Captured'),
+        image: 'guyOfGisborne',
+    },
+    {
+        name: _('Richard at the Lea'),
+        inDeck: '(x1)',
+        defense: 1,
+        success: _('2 Shillings'),
+        failure: _('No Effect'),
+        extraText: _('Or pay 3 Shillings for Camp and Revolt in Retford'),
+        image: 'richardAtTheLea',
+    },
+]; };
+var robSummarySteps = function () {
+    return [
+        _('Reveal at least one Hidden Merry Man in the Rob space (or use Robin Hood)'),
+        _('Select a target: a Traveller drawn from the deck, a Carriage in the space, or the Treasury if in Nottingham'),
+        _('Select Traveller option or reveal Carriage'),
+        _('Roll a green die in Forests and Revolting Parishes, or a white die in Submissive or Passive spaces'),
+        _('If the number of just Revealed Merry Men (always count Robin Hood, even if already Revealed) plus the die result is greater than the target\'s Defense plus the number of Henchmen in the space, the Rob is a success, otherwise it is a failure'),
+    ];
+};
+var carriagesRobInfo = function () {
+    return [
+        {
+            image: 'TallageCarriage',
+            title: _('Tallage: 0 Defense'),
+            success: _('${tkn_boldItalicText_success} 5 Shillings, send to Used Carriages'),
+            failure: _('${tkn_boldItalicText_failure} No effect (Carriage stays revealed'),
+        },
+        {
+            image: 'TributeCarriage',
+            title: _('Tribute: 0 Defense'),
+            success: _('${tkn_boldItalicText_success} 2 Shillings, +1 Justice, send to Used Carriages'),
+            failure: _('${tkn_boldItalicText_failure} No effect (Carriage stays revealed'),
+        },
+        {
+            image: 'TrapCarriage',
+            title: _('Trap: 2 Defense'),
+            success: _('${tkn_boldItalicText_success} 2 Shillings, send to Used Carriages'),
+            failure: _('${tkn_boldItalicText_failure} Captured (Carriage stays revealed'),
+        }
+    ];
+};
+var InformationModal = (function () {
+    function InformationModal(game) {
+        this.selectedTab = "royalInspectionRound";
+        this.tabs = {
+            orderJustice: {
+                text: _("Order & Justice"),
+            },
+            robSummary: {
+                text: _("Rob Summary"),
+            },
+            travellers: {
+                text: _("Travellers"),
+            },
+            royalInspectionRound: {
+                text: _("Royal Inspection Round"),
+            },
+        };
+        this.game = game;
+        var gamedatas = game.gamedatas;
+        this.setup({ gamedatas: gamedatas });
+    }
+    InformationModal.prototype.clearInterface = function () { };
+    InformationModal.prototype.updateInterface = function (_a) {
+        var gamedatas = _a.gamedatas;
+    };
+    InformationModal.prototype.addButton = function (_a) {
+        var gamedatas = _a.gamedatas;
+        var configPanel = document.getElementById("info_panel_buttons");
+        if (configPanel) {
+            configPanel.insertAdjacentHTML("beforeend", tplInformationButton());
+        }
+    };
+    InformationModal.prototype.setupModal = function (_a) {
+        var gamedatas = _a.gamedatas;
+        this.modal = new Modal("information_modal", {
+            class: "information_modal",
+            closeIcon: "fa-times",
+            contents: tplInformationModalContent({
+                tabs: this.tabs,
+                game: this.game,
+            }),
+            closeAction: "hide",
+            verticalAlign: "flex-start",
+            breakpoint: 740,
+        });
+    };
+    InformationModal.prototype.setup = function (_a) {
+        var _this = this;
+        var gamedatas = _a.gamedatas;
+        this.addButton({ gamedatas: gamedatas });
+        this.setupModal({ gamedatas: gamedatas });
+        this.informationModalContent();
+        this.changeTab({ id: this.selectedTab });
+        Object.keys(this.tabs).forEach(function (id) {
+            dojo.connect($("information_modal_tab_".concat(id)), "onclick", function () {
+                return _this.changeTab({ id: id });
+            });
+        });
+        dojo.connect($("information_button"), "onclick", function () {
+            return _this.modal.show();
+        });
+    };
+    InformationModal.prototype.informationModalContent = function () { };
+    InformationModal.prototype.changeTab = function (_a) {
+        var id = _a.id;
+        var currentTab = document.getElementById("information_modal_tab_".concat(this.selectedTab));
+        var currentTabContent = document.getElementById("gest_".concat(this.selectedTab));
+        currentTab.removeAttribute("data-state");
+        if (currentTabContent) {
+            currentTabContent.style.display = "none";
+        }
+        this.selectedTab = id;
+        var tab = document.getElementById("information_modal_tab_".concat(id));
+        var tabContent = document.getElementById("gest_".concat(this.selectedTab));
+        tab.setAttribute("data-state", "selected");
+        if (tabContent) {
+            tabContent.style.display = "";
+        }
+    };
+    return InformationModal;
+}());
+var tplInformationButton = function () { return "<button id=\"information_button\" type=\"button\" class=\"information_modal_button\">\n<div class=\"information_modal_icon\"></div>\n</button>"; };
+var tplInfoModalTab = function (_a) {
+    var id = _a.id, text = _a.text;
+    return "\n  <div id=\"information_modal_tab_".concat(id, "\" class=\"information_modal_tab\">\n    <span>").concat(_(text), "</span>\n  </div>");
+};
+var orderJusticeInfo = function (_a) {
+    var game = _a.game;
+    return "\n  <div>\n    <div style=\"margin-bottom: 2px;\">\n      <span>".concat(game.format_string_recursive(_('To shift Royal Favour towards ${tkn_boldText_order}'), { tkn_boldText_order: _('Order:') }), "</span>\n    </div>\n    <div class=\"gest_row\">\n      <div class=\"gest_arrow\"></div>\n      <span>").concat(_('Some Event and Traveller effects (+1 Order)'), "</span>\n    </div>\n    <div class=\"gest_row\">\n      <div class=\"gest_arrow\"></div>\n      <span>").concat(_('Remove Camps (+1 Order)'), "</span>\n    </div>\n    <div class=\"gest_row\">\n      <div class=\"gest_arrow\"></div>\n      <span>").concat(_('Capture Robin Hood (+1 Order)'), "</span>\n    </div>\n    <div class=\"gest_row\">\n      <div class=\"gest_arrow\"></div>\n      <span>").concat(_('Bring Carriages to Nottingham (+1 Order, +2 for Tribute)'), "</span>\n    </div>\n    <div class=\"gest_row\">\n      <div class=\"gest_arrow\"></div>\n      <span>").concat(game.format_string_recursive(_('${tkn_boldItalicText_royalInspection} 5-7 Submissive Parishes (+1 Order)'), {
+        tkn_boldItalicText_royalInspection: _('Royal Inspection:'),
+    }), "</span>\n    </div>\n  </div>\n  <div>\n  </div>\n  <div style=\"margin-top: 16px;\">\n    <div style=\"margin-bottom: 2px;\">\n      <span>").concat(game.format_string_recursive(_('To shift Royal Favour towards ${tkn_boldText_order}'), { tkn_boldText_order: _('Justice:') }), "</span>\n    </div>\n    <div class=\"gest_row\">\n      <div class=\"gest_arrow\"></div>\n      <span>").concat(game.format_string_recursive(_('Some Event and Traveller effects (+1 Justice)'), { tkn_arrow: '=>' }), "</span>\n    </div>\n    <div class=\"gest_row\">\n      <div class=\"gest_arrow\"></div>\n      <span>").concat(game.format_string_recursive(_('Place Camps (+1 Justice)'), {
+        tkn_arrow: '=>',
+    }), "</span>\n    </div>\n    <div class=\"gest_row\">\n      <div class=\"gest_arrow\"></div>\n      <span>").concat(game.format_string_recursive(_('Inspire in Revolting Parishes (+1 Justice)'), { tkn_arrow: '=>' }), "</span>\n    </div>\n    <div class=\"gest_row\">\n      <div class=\"gest_arrow\"></div>\n      <span>").concat(game.format_string_recursive(_('Rob Tribute Carriages or the Treasury (+1 Justice)'), { tkn_arrow: '=>' }), "</span>\n    </div>\n    <div class=\"gest_row\">\n      <div class=\"gest_arrow\"></div>\n      <span>").concat(game.format_string_recursive(_('${tkn_boldItalicText_royalInspection} 3-4 Submissive Parishes (+1 Justice)'), {
+        tkn_boldItalicText_royalInspection: _('Royal Inspection:'),
+    }), "</span>\n    </div>\n    <div class=\"gest_row\">\n      <div class=\"gest_arrow\"></div>\n      <span>").concat(game.format_string_recursive(_('${tkn_boldItalicText_royalInspection} 1-2 Submissive Parishes (+2 Justice)'), {
+        tkn_boldItalicText_royalInspection: _('Royal Inspection:'),
+    }), "</span>\n    </div>\n    <div class=\"gest_row\">\n      <div class=\"gest_arrow\"></div>\n      <span>").concat(game.format_string_recursive(_('${tkn_boldItalicText_royalInspection} 0 Submissive Parishes (+3 Justice)'), {
+        tkn_boldItalicText_royalInspection: _('Royal Inspection:'),
+    }), "</span>\n    </div>\n  </div>\n");
+};
+var robSummaryInfo = function (_a) {
+    var game = _a.game;
+    return "\n  <div>\n      ".concat(robSummarySteps()
+        .map(function (step) { return "\n          <div class=\"gest_row\">\n            <div class=\"gest_arrow\"></div>\n            <span>".concat(_(step), "</span>\n          </div>\n        "); })
+        .join(''), "\n    <div class=\"gest_row\" style=\"margin-top: 16px;\">\n      <div id=\"gest_nottingham_image\"></div>\n      <div>\n        <span class=\"gest_title\">").concat(_('Treasury'), "</span>\n          <div><span>").concat(game.format_string_recursive(_('${tkn_boldItalicText_success} 2 Shillings from Sheriff, +1 Justice'), {
+        tkn_boldItalicText_success: _('Success: '),
+    }), "</span></div>\n      <div>\n        <span>").concat(game.format_string_recursive(_('${tkn_boldItalicText_failure} No effect'), {
+        tkn_boldItalicText_failure: _('Failure: '),
+    }), "</span></div>\n      </div>\n    </div>\n    <div style=\"margin-top: 16px;\">\n        <span class=\"gest_title\" style=\"margin-left: 68px;\">").concat(_('Carriages'), "</span>\n        ").concat(carriagesRobInfo()
+        .map(function (info) { return "\n          <div class=\"gest_row\" style=\"margin-top: 8px;\">\n            <div class=\"gest_force_side\" data-type=\"".concat(info.image, "\" data-revealed=\"true\"></div>\n            <div>\n              <div><span class=\"gest_section_title\">").concat(_(info.title), "</span></div>\n              <div><span>").concat(game.format_string_recursive(_(info.success), {
+        tkn_boldItalicText_success: _('Success: '),
+    }), "</span></div>\n              <div>\n                <span>").concat(game.format_string_recursive(_(info.failure), {
+        tkn_boldItalicText_failure: _('Failure: '),
+    }), "</span></div>\n            </div>\n          </div>   \n          "); })
+        .join(''), "\n    </div>\n  </div>\n");
+};
+var travellerInfoRow = function (info) { return "<div class=\"gest_traveller_info_row\">\n        <div class=\"gest_traveller_image\" data-image=\"".concat(info.image, "\"></div>\n        <div class=\"gest_traveller_stats_container\">\n          <div class=\"gest_row\">\n            <span class=\"gest_traveller_name\">").concat(_(info.name), "</span>\n            <span class=\"gest_traveller_deck_count\">").concat(_(info.inDeck), "</span>\n            <span style=\"font-weight: bold;\">: </span>\n            <span class=\"gest_traveller_defense\">").concat(info.defense, " Defense</span>\n          </div>\n          <div class=\"gest_row\">\n            <span class=\"gest_rob_result\">").concat(_('Success: '), "</span>\n            <span>").concat(_(info.success), "</span>\n          </div>\n          <div class=\"gest_row\">\n            <span class=\"gest_rob_result\">").concat(_('Failure: '), "</span>\n            <span>").concat(_(info.failure), "</span>\n          </div>\n  </div>\n</div>"); };
+var royalInspectionUnrest = function (_a) {
+    var game = _a.game;
+    return "\n  <div class=\"gest_royal_inspection_info\">\n    <div>    \n      <span>".concat(game.format_string_recursive(_('${tkn_boldText_unrest} Check the number of Submissive Parises:'), { tkn_boldText_unrest: _('Unrest: ') }), "</span>\n    </div>\n    <div class=\"gest_row\">    \n      <span class=\"gest_list_item\">\u2022</span>\n      <span>").concat(_('5-7 Submissive Parishes: +1 Order'), "</span>\n    </div>\n    <div class=\"gest_row\">    \n      <span class=\"gest_list_item\">\u2022</span>\n      <span>").concat(_('3-4 Submissive Parishes: +1 Justice'), "</span>\n    </div>\n    <div class=\"gest_row\">    \n      <span class=\"gest_list_item\">\u2022</span>\n      <span\">").concat(_('1-2 Submissive Parishes: +2 Justice'), "</span>\n    </div>\n    <div class=\"gest_row\">    \n      <span class=\"gest_list_item\">\u2022</span>\n      <span>").concat(_('5-7 Submissive Parishes: +3 Justice'), "</span>\n    </div>\n    <div><span>").concat(_('Then check for automatic victory (Royal Favour at 5 or more)'), "</span></div>\n  </div>\n");
+};
+var royalInspectionMischief = function (_a) {
+    var game = _a.game;
+    return "\n  <div class=\"gest_royal_inspection_info\">\n    <span>".concat(game.format_string_recursive(_('${tkn_boldText_mischief} Robin Hood gains 1 Shilling for each Camp in a Forest or Ollerton Hill, then performs a Single Rob Plot and may Donate in up to two Parishes. Return half (rounded down) Merry Men in Prison to Available.'), { tkn_boldText_mischief: _('Mischief: ') }), "</span>\n  </div>\n");
+};
+var royalInspectionGovernance = function (_a) {
+    var game = _a.game;
+    return "\n  <div class=\"gest_royal_inspection_info\">\n    <span>".concat(game.format_string_recursive(_('${tkn_boldText_governance} Sheriff gains 1 Shilling for each Submissive space (including Nottingham). Remove half (rounded down) Henchmen from each Revolting Parish. Set any Revolting Parish where Henchmen now outnumber Merry Men to Submissive.'), { tkn_boldText_governance: _('Governance: ') }), "</span>\n  </div>\n");
+};
+var royalInspectionRedployment = function (_a) {
+    var game = _a.game;
+    return "\n  <div class=\"gest_royal_inspection_info\">\n    <div><span>".concat(game.format_string_recursive(_('${tkn_boldText_redeployment} Sheriff then Robin Hood must redeploy their Henchmen and Merry Men:'), { tkn_boldText_redeployment: _('Redeployment: ') }), "</span></div>\n    <div class=\"gest_row\">\n      <span class=\"gest_list_item\">\u2022</span>\n      <span>").concat(_('Henchmen must move from Revolting Parishes and Forests to Submissive spaces, any other may move to Nottingham. Used Carriages to Available.'), "</span></li>\n    </div>  \n    <div class=\"gest_row\">    \n      <span class=\"gest_list_item\">\u2022</span>\n      <span>").concat(_('Merry Men must move from Submissive spaces to Forests or Camps, any others may do the same, then flip all Hidden. Place Robin Hood from Available to any Forest, then may secretly swap him with any Merry Man.'), "</span></li>\n    </div>\n  </div>\n");
+};
+var royalInspectionReset = function (_a) {
+    var game = _a.game;
+    return "\n  <div class=\"gest_royal_inspection_info\">\n    <span>".concat(game.format_string_recursive(_('${tkn_boldText_reset} Shuffle the Traveller deck discard pile back into the main Traveller deck. Set Robin Hood to First Eligible and the Sheriff to Second Eligible, then draw the next Event card and continue play.'), { tkn_boldText_reset: _('Reset: ') }), "</span>\n  </div>\n");
+};
+var royalInspectionRoundInfo = function (_a) {
+    var game = _a.game;
+    return "\n  <div class=\"gest_row\">\n    <div class=\"gest_arrow\"></div>\n    ".concat(royalInspectionUnrest({ game: game }), "\n  </div>\n  <div class=\"gest_row\">\n    <div class=\"gest_arrow\"></div>\n    ").concat(royalInspectionMischief({ game: game }), "\n  </div>  \n  <div class=\"gest_row\">\n    <div class=\"gest_arrow\"></div>\n    ").concat(royalInspectionGovernance({ game: game }), "\n  </div>\n  <div class=\"gest_row\">\n    <div class=\"gest_arrow\"></div>\n    ").concat(royalInspectionRedployment({ game: game }), "\n  </div>\n  <div class=\"gest_row\">\n    <div class=\"gest_arrow\"></div>\n    ").concat(royalInspectionReset({ game: game }), "\n  </div>  \n");
+};
+var tplInformationModalContent = function (_a) {
+    var tabs = _a.tabs, game = _a.game;
+    var TRAVELLERS_CONFIG = getTravellersConfig();
+    return "<div id=\"information_modal_content\">\n    <div class=\"information_modal_tabs\">\n      ".concat(Object.entries(tabs)
+        .map(function (_a) {
+        var id = _a[0], info = _a[1];
+        return tplInfoModalTab({ id: id, text: info.text });
+    })
+        .join(''), "\n    </div>\n      <div id=\"gest_orderJustice\" style=\"display: none;\">\n        ").concat(orderJusticeInfo({ game: game }), "\n      </div>\n      <div id=\"gest_robSummary\" style=\"display: none;\">\n      ").concat(robSummaryInfo({ game: game }), "\n    </div>\n    <div id=\"gest_travellers\" style=\"display: none;\">\n    ").concat(TRAVELLERS_CONFIG.map(travellerInfoRow).join(''), "\n    </div>\n    <div id=\"gest_royalInspectionRound\" style=\"display: none;\">\n    ").concat(royalInspectionRoundInfo({ game: game }), "\n    </div>\n  </div>");
+};
 var LOG_TOKEN_BOLD_TEXT = 'boldText';
+var LOG_TOKEN_BOLD_ITALIC_TEXT = 'boldItalicText';
 var LOG_TOKEN_NEW_LINE = 'newLine';
 var LOG_TOKEN_CARD = 'card';
 var LOG_TOKEN_CARD_NAME = 'cardName';
@@ -3774,6 +4025,8 @@ var getTokenDiv = function (_a) {
     switch (type) {
         case LOG_TOKEN_BOLD_TEXT:
             return tlpLogTokenBoldText({ text: value });
+        case LOG_TOKEN_BOLD_ITALIC_TEXT:
+            return tlpLogTokenBoldText({ text: value, italic: true });
         case LOG_TOKEN_CARD:
             return tplLogTokenCard(value);
         case LOG_TOKEN_CARD_NAME:
@@ -3797,8 +4050,8 @@ var getTokenDiv = function (_a) {
     }
 };
 var tlpLogTokenBoldText = function (_a) {
-    var text = _a.text, tooltipId = _a.tooltipId;
-    return "<span ".concat(tooltipId ? "id=\"".concat(tooltipId, "\"") : '', " style=\"font-weight: 700;\">").concat(_(text), "</span>");
+    var text = _a.text, tooltipId = _a.tooltipId, _b = _a.italic, italic = _b === void 0 ? false : _b;
+    return "<span ".concat(tooltipId ? "id=\"".concat(tooltipId, "\"") : '', " style=\"font-weight: 700;").concat(italic ? ' font-style: italic;' : '', "\">").concat(_(text), "</span>");
 };
 var tplLogTokenPlayerName = function (_a) {
     var name = _a.name, color = _a.color;

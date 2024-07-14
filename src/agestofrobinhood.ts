@@ -58,6 +58,7 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
   public cardManager: GestCardManager;
   public forceManager: ForceManager;
   public gameMap: GameMap;
+  public informationModal: InformationModal;
   public markerManager: MarkerManager;
 
   public activeStates: {
@@ -200,6 +201,7 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     this.tooltipManager = new TooltipManager(this);
     this.playerManager = new PlayerManager(this);
     this.infoPanel = new InfoPanel(this);
+    this.informationModal = new InformationModal(this);
     this.settings = new Settings(this);
 
     this.animationManager = new AnimationManager(this, {
