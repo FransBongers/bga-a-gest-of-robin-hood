@@ -45,7 +45,6 @@ class Event18_AllanADale extends \AGestOfRobinHood\Cards\Events\RegularEvent
 
   public function performLightEffect($player, $successful, $ctx = null, $space = null)
   {
-    Notifications::log('lightOptions', $this->getLightOptions());
     if (count($this->getLightOptions()) === 0) {
       Players::moveRoyalFavour($player, 1, JUSTICE);
     } else {

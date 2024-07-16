@@ -43,10 +43,11 @@ class RoyalInspectionReset extends \AGestOfRobinHood\Models\AtomicAction
 
   public function stRoyalInspectionReset()
   {
+    $cardsInDiscard = Cards::getInLocation(TRAVELLERS_DISCARD)->toArray();
     Cards::moveAllInLocation(TRAVELLERS_DISCARD, TRAVELLERS_DECK);
     Cards::shuffle(TRAVELLERS_DECK);
 
-    Notifications::returnTravellersDiscardToMainDeck();
+    Notifications::returnTravellersDiscardToMainDeck($cardsInDiscard);
 
     $markers = Markers::get([ROBIN_HOOD_ELIGIBILITY_MARKER, SHERIFF_ELIGIBILITY_MARKER]);
 

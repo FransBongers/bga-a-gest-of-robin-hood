@@ -35,7 +35,7 @@ class SelectTravellerCardOption extends \AGestOfRobinHood\Models\AtomicAction
 
   public function argsSelectTravellerCardOption()
   {
-    $card = Cards::getTopOf(TRAVELLERS_DISCARD);
+    $card = Cards::getTopOf(TRAVELLER_ROBBED);
     $player = self::getPlayer();
 
     $data = [
@@ -43,7 +43,7 @@ class SelectTravellerCardOption extends \AGestOfRobinHood\Models\AtomicAction
       'darkOptionAvailable' => $card->canPerformDarkEffect($player),
       'lightOptionAvailable' => $card->canPerformLightEffect($player),
     ];
-
+    
     return $data;
   }
 

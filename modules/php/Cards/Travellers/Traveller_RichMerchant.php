@@ -30,6 +30,11 @@ class Traveller_RichMerchant extends \AGestOfRobinHood\Models\TravellerCard
       ]));
     } else {
       Players::getSheriffPlayer()->incShillings(2);
+      $ctx->insertAsBrother(new LeafNode([
+        'action' => PUT_TRAVELLER_IN_DISCARD_PILE,
+        'playerId' => $player->getId(),
+        'cardId' => $this->getId(),
+      ]));
     }
   }
 
@@ -38,5 +43,10 @@ class Traveller_RichMerchant extends \AGestOfRobinHood\Models\TravellerCard
     if ($successful) {
       $player->incShillings(2);
     }
+    $ctx->insertAsBrother(new LeafNode([
+      'action' => PUT_TRAVELLER_IN_DISCARD_PILE,
+      'playerId' => $player->getId(),
+      'cardId' => $this->getId(),
+    ]));
   }
 }

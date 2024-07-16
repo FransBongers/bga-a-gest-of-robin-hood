@@ -5,7 +5,7 @@ const getTravellersConfig = (): TravellerInfo[] => [
     defense: 1,
     success: _('2 Shillings / 4 Shillings (Victim)'),
     failure: _('No effect / 2 Shillings to Sheriff'),
-    image: 'richMerchant',
+    image: 'RichMerchant',
   },
   {
     name: _('Noble Knight'),
@@ -13,7 +13,7 @@ const getTravellersConfig = (): TravellerInfo[] => [
     defense: 2,
     success: _('3 Shillings / 5 Shillings (Victim)'),
     failure: _('No effect / Captured'),
-    image: 'nobleKnight',
+    image: 'NobleKnight',
   },
   {
     name: _('Monks'),
@@ -21,7 +21,7 @@ const getTravellersConfig = (): TravellerInfo[] => [
     defense: 0,
     success: _('1 Shilling / 3 Shillings (Victim)'),
     failure: _('No effect / Submissive'),
-    image: 'monks',
+    image: 'Monks',
   },
   {
     name: _('The Potter'),
@@ -29,7 +29,7 @@ const getTravellersConfig = (): TravellerInfo[] => [
     defense: 1,
     success: _('3 Shillings / 2 from Sheriff and +1 Justice (Victim)'),
     failure: _('No effect / Robin Hood Captured (+1 Order)'),
-    image: 'potter',
+    image: 'ThePotter',
   },
   {
     name: _('The Miller\'s Son'),
@@ -37,7 +37,7 @@ const getTravellersConfig = (): TravellerInfo[] => [
     defense: 0,
     success: _('2 Shillings / 1 Shilling and Merry Man (Victim)'),
     failure: _('No effect / Henchman'),
-    image: 'millersSon',
+    image: 'TheMillersSon',
   },
   {
     name: _('Bishop of Hereford'),
@@ -45,7 +45,7 @@ const getTravellersConfig = (): TravellerInfo[] => [
     defense: 1,
     success: _('3 Shillings / 6 Shillings (Victim)'),
     failure: _('No effect / 3 Shillings to Sheriff and Submissive'),
-    image: 'bishopOfHereford',
+    image: 'BishopOfHereford',
   },
   {
     name: _('Guy of Gisborne'),
@@ -53,7 +53,7 @@ const getTravellersConfig = (): TravellerInfo[] => [
     defense: 3,
     success: _('Remove'),
     failure: _('Captured'),
-    image: 'guyOfGisborne',
+    image: 'GuyOfGisborne',
   },
   {
     name: _('Richard at the Lea'),
@@ -62,7 +62,7 @@ const getTravellersConfig = (): TravellerInfo[] => [
     success: _('2 Shillings'),
     failure: _('No Effect'),
     extraText: _('Or pay 3 Shillings for Camp and Revolt in Retford'),
-    image: 'richardAtTheLea',
+    image: 'RichardAtTheLea',
   },
 ]
 

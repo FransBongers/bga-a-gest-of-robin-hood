@@ -104,6 +104,7 @@ const ST_EVENT_MAID_MARIAN_DARK = 74;
 const ST_ROYAL_INSPECTION_CHECK_DONATE = 75;
 const ST_ROYAL_INSPECTION_MOVE_MARKER = 76;
 const ST_FORTUNE_EVENT_WARDEN_OF_THE_FOREST_RESULT = 77;
+const ST_PUT_TRAVELLER_IN_DISCARD_PILE = 78;
 
 /**
  * Atomic actions
@@ -115,6 +116,7 @@ const PLACE_HENCHMEN = 'PLACE_HENCHMEN';
 const PLACE_MERRY_MAN_IN_SPACE = 'PLACE_MERRY_MAN_IN_SPACE';
 const PRE_END_GAME = 'PRE_END_GAME';
 const PUT_CARD_IN_VICTIMS_PILE = 'PUT_CARD_IN_VICTIMS_PILE';
+const PUT_TRAVELLER_IN_DISCARD_PILE = 'PUT_TRAVELLER_IN_DISCARD_PILE';
 const REMOVE_CAMP = 'REMOVE_CAMP';
 const REMOVE_TRAVELLER = 'REMOVE_TRAVELLER';
 const ROYAL_INSPECTION_CHECK_DONATE = 'ROYAL_INSPECTION_CHECK_DONATE';
@@ -254,6 +256,7 @@ const TRAVELLERS_POOL = 'travellersPool';
 const EVENTS_DISCARD = 'eventsDiscard';
 const TRAVELLERS_DISCARD = 'travellersDiscard';
 const TRAVELLERS_VICTIMS_PILE = 'travellersVictimsPile';
+const TRAVELLER_ROBBED = 'travellerRobbed';
 
 const REMOVED_FROM_GAME = 'removedFromGame';
 
@@ -362,4 +365,15 @@ const MONK_IDS = [
   'Traveller06_Monks',
   'Traveller07_Monks',
   'Traveller08_Monks',
+];
+
+const TRAVELLERS = [
+  'RichMerchant',
+  'NobleKnight',
+  'Monks',
+  'ThePotter',
+  'TheMillersSon',
+  'BishopOfHereford',
+  'GuyOfGisborne',
+  'RichardAtTheLea',
 ];

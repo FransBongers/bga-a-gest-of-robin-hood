@@ -58,6 +58,7 @@ class AtomicActions
     PLACE_HENCHMEN => 'PlaceHenchmen',
     PLACE_MERRY_MAN_IN_SPACE => 'PlaceMerryManInSpace',
     PUT_CARD_IN_VICTIMS_PILE => 'PutCardInVictimsPile',
+    PUT_TRAVELLER_IN_DISCARD_PILE => 'PutTravellerInDiscardPile',
     SELECT_DEED => 'SelectDeed',
     SELECT_EVENT_EFFECT => 'SelectEventEffect',
     SELECT_PLOT => 'SelectPlot',

@@ -1712,6 +1712,7 @@ var TRAVELLERS_DECK = 'travellersDeck';
 var TRAVELLERS_POOL = 'travellersPool';
 var EVENTS_DISCARD = 'eventsDiscard';
 var TRAVELLERS_DISCARD = 'travellersDiscard';
+var TRAVELLER_ROBBED = 'travellerRobbed';
 var TRAVELLERS_VICTIMS_PILE = 'travellersVictimsPile';
 var REMOVED_FROM_GAME = 'removedFromGame';
 var GAIN_TWO_SHILLINGS = 'gainTwoShillings';
@@ -1723,6 +1724,16 @@ var MONK_IDS = [
     'Traveller06_Monks',
     'Traveller07_Monks',
     'Traveller08_Monks',
+];
+var TRAVELLERS = [
+    'RichMerchant',
+    'NobleKnight',
+    'Monks',
+    'ThePotter',
+    'TheMillersSon',
+    'BishopOfHereford',
+    'GuyOfGisborne',
+    'RichardAtTheLea',
 ];
 define([
     'dojo',
@@ -2067,7 +2078,6 @@ var AGestOfRobinHood = (function () {
     AGestOfRobinHood.prototype.setSpaceSelectable = function (_a) {
         var id = _a.id, callback = _a.callback;
         var container = document.getElementById('gest_map_spaces');
-        console.log('container', container);
         container.classList.add(GEST_SELECTABLE);
         var node = document.getElementById("gest_map_space_".concat(id));
         if (!node) {
@@ -2392,15 +2402,14 @@ var CardArea = (function () {
     CardArea.prototype.clearInterface = function () { };
     CardArea.prototype.updateInterface = function (_a) {
         var gamedatas = _a.gamedatas;
+        this.updateCounters({ gamedatas: gamedatas });
     };
     CardArea.prototype.setupStocks = function (_a) {
         var gamedatas = _a.gamedatas;
         this.stocks = {
             eventsDeck: new ManualPositionStock(this.game.cardManager, document.getElementById('gest_events_deck'), {}, this.game.cardManager.updateDisplay),
             eventsDiscard: new ManualPositionStock(this.game.cardManager, document.getElementById('gest_events_discard'), {}, this.game.cardManager.updateDisplay),
-            travellersDeck: new ManualPositionStock(this.game.cardManager, document.getElementById('gest_travellers_deck'), {}, this.game.cardManager.updateDisplay),
-            travellersDiscard: new ManualPositionStock(this.game.cardManager, document.getElementById('gest_travellers_discard'), {}, this.game.cardManager.updateDisplay),
-            travellersVictimsPile: new ManualPositionStock(this.game.cardManager, document.getElementById('gest_travellers_vicitimsPile'), {}, this.game.cardManager.updateDisplay),
+            travellerRobbed: new ManualPositionStock(this.game.cardManager, document.getElementById('gest_traveller_robbed'), {}, this.game.cardManager.updateDisplay),
         };
         this.updateCards({ gamedatas: gamedatas });
     };
@@ -2409,12 +2418,38 @@ var CardArea = (function () {
         if (gamedatas.cards.eventsDiscard) {
             this.stocks.eventsDiscard.addCard(gamedatas.cards.eventsDiscard);
         }
-        if (gamedatas.cards.travellersDiscard) {
-            this.stocks.travellersDiscard.addCard(gamedatas.cards.travellersDiscard);
+        if (gamedatas.cards.travellerRobbed) {
+            this.stocks.travellerRobbed.addCard(gamedatas.cards.travellerRobbed);
         }
-        if (gamedatas.cards.travellersVictimsPile) {
-            this.stocks.travellersVictimsPile.addCard(gamedatas.cards.travellersVictimsPile);
-        }
+    };
+    CardArea.prototype.setupCounters = function (_a) {
+        var _this = this;
+        var gamedatas = _a.gamedatas;
+        this.counters = {
+            travellersDeck: new ebg.counter(),
+            travellersDiscard: new ebg.counter(),
+            travellersInDeck: {},
+            victimsPile: new ebg.counter(),
+        };
+        this.counters.travellersDeck.create('gest_travellers_deck_counter');
+        this.counters.travellersDiscard.create('gest_travellers_discard_counter');
+        this.counters.victimsPile.create('gest_victims_pile_counter');
+        TRAVELLERS.forEach(function (traveller) {
+            _this.counters.travellersInDeck[traveller] = new ebg.counter();
+            _this.counters.travellersInDeck[traveller].create("gest_traveller_".concat(traveller, "_counter"));
+        });
+        this.updateCounters({ gamedatas: gamedatas });
+    };
+    CardArea.prototype.updateCounters = function (_a) {
+        var _this = this;
+        var gamedatas = _a.gamedatas;
+        this.counters.travellersDeck.setValue(gamedatas.cards.counts.travellersDeck);
+        this.counters.travellersDiscard.setValue(gamedatas.cards.counts.travellersDiscard);
+        this.counters.victimsPile.setValue(gamedatas.cards.counts.travellersVictimsPile);
+        Object.entries(gamedatas.cards.counts.travellers).forEach(function (_a) {
+            var traveller = _a[0], count = _a[1];
+            _this.setTravellerInDeckCounterValue(traveller, count);
+        });
     };
     CardArea.prototype.setupCardArea = function (_a) {
         var gamedatas = _a.gamedatas;
@@ -2429,11 +2464,45 @@ var CardArea = (function () {
             node.style.setProperty('--gestCardSizeScale', "".concat(Number(cardScale) / 100));
         }
         this.setupStocks({ gamedatas: gamedatas });
+        this.setupCounters({ gamedatas: gamedatas });
         this.game.infoPanel.setupPlotsAndDeedsInfo();
+    };
+    CardArea.prototype.setTravellerInDeckCounterValue = function (traveller, value) {
+        this.counters.travellersInDeck[traveller].setValue(value);
+        var node = document.getElementById("gest_traveller_".concat(traveller, "_counter_row"));
+        if (!node) {
+            return;
+        }
+        if (value === 0) {
+            node.classList.add(GEST_NONE);
+        }
+        else {
+            node.classList.remove(GEST_NONE);
+        }
+    };
+    CardArea.prototype.incTravellerInDeckCounterValue = function (traveller, value) {
+        var counter = this.counters.travellersInDeck[traveller];
+        counter.incValue(value);
+        var node = document.getElementById("gest_traveller_".concat(traveller, "_counter_row"));
+        if (!node) {
+            return;
+        }
+        var counterValue = this.counters.travellersInDeck[traveller].getValue();
+        if (counterValue === 0) {
+            node.classList.add(GEST_NONE);
+        }
+        else {
+            node.classList.remove(GEST_NONE);
+        }
     };
     return CardArea;
 }());
-var tplCardArea = function () { return "\n  <div id=\"gest_card_area\">\n    <div id=\"gest_decks\">\n      <div class=\"gest_card_row\">\n        <div id=\"gest_events_deck\" class=\"gest_card_stock gest_card_side\" data-card-id=\"EventBack\" style=\"box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.5);\"></div>\n        <div id=\"gest_events_discard\" class=\"gest_card_stock\"></div>\n      </div>\n      <div class=\"gest_card_row\">\n        <div id=\"gest_travellers_deck\" class=\"gest_card_stock gest_card_side\" data-card-id=\"TravellerBack\" style=\" box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.5);\"></div>\n        <div id=\"gest_travellers_discard\" class=\"gest_card_stock\"></div>\n        <div id=\"gest_travellers_vicitimsPile\" class=\"gest_card_stock\"></div>\n      </div>\n    </div>\n  </div>\n"; };
+var travellerCardIdMap = {
+    RichMerchant: 'Traveller01'
+};
+var travellersDeckCounter = function (traveller) { return "\n  <div class=\"travellers_deck_counter_container\">\n    <span id=\"travellers_deck_".concat(traveller, "_counter\"></span>\n    <div class=\"gest_card_side\" data-card-id=\"").concat(travellerCardIdMap[traveller], "\" style=\"width: 21px; height: 36px;\"></div>\n  </div>\n"); };
+var tplTravellers = function () { return "\n<div>\n  <span class=\"gest_title\">".concat(_('Travellers'), "</span>\n  <div class=\"gest_card_row\">\n    <div id=\"gest_travellers_decks_info\">\n      <div class=\"gest_traveller_counter_row\">\n        <span>").concat(_('Deck: '), "</span><span id=\"gest_travellers_deck_counter\" style=\"margin-left: auto;\"></span>\n      </div>\n      <div>\n        <div id=\"gest_travellers_deck_composition\">\n          ").concat(getTravellersConfig().map(function (config) { return "\n              <div id=\"gest_traveller_".concat(config.image, "_counter_row\" class=\"gest_traveller_counter_row\">\n                <div class=\"gest_traveller_image\" data-image=\"").concat(config.image, "\"></div>\n                <span>").concat(_(config.name), ": </span>\n                <span id=\"gest_traveller_").concat(config.image, "_counter\" style=\"margin-left: auto;\"></span>\n              </div>\n            "); }).join(''), "\n        </div>\n      </div>\n      <div class=\"gest_traveller_counter_row\">\n        <span>").concat(_('Discard Pile: '), "</span><span id=\"gest_travellers_discard_counter\" style=\"margin-left: auto;\"></span>\n      </div>\n      <div class=\"gest_traveller_counter_row\">\n        <span>").concat(_('Victims Pile: '), "</span><span id=\"gest_victims_pile_counter\" style=\"margin-left: auto;\"></span>\n      </div>\n    </div>\n    <div id=\"gest_traveller_robbed\" class=\"gest_card_stock\"></div>\n  </div>\n</div>"); };
+var tplCardArea = function () { return "\n  <div id=\"gest_card_area\">\n    <div id=\"gest_decks\">\n      <div class=\"gest_card_row\">\n        <div id=\"gest_events_deck\" class=\"gest_card_stock gest_card_side\" data-card-id=\"EventBack\" style=\"box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.5);\"></div>\n        <div id=\"gest_events_discard\" class=\"gest_card_stock\"></div>\n      </div>\n      ".concat(tplTravellers(), "\n    </div>\n  </div>\n"); };
 var GestCardManager = (function (_super) {
     __extends(GestCardManager, _super);
     function GestCardManager(game) {
@@ -3769,7 +3838,7 @@ var getTravellersConfig = function () { return [
         defense: 1,
         success: _('2 Shillings / 4 Shillings (Victim)'),
         failure: _('No effect / 2 Shillings to Sheriff'),
-        image: 'richMerchant',
+        image: 'RichMerchant',
     },
     {
         name: _('Noble Knight'),
@@ -3777,7 +3846,7 @@ var getTravellersConfig = function () { return [
         defense: 2,
         success: _('3 Shillings / 5 Shillings (Victim)'),
         failure: _('No effect / Captured'),
-        image: 'nobleKnight',
+        image: 'NobleKnight',
     },
     {
         name: _('Monks'),
@@ -3785,7 +3854,7 @@ var getTravellersConfig = function () { return [
         defense: 0,
         success: _('1 Shilling / 3 Shillings (Victim)'),
         failure: _('No effect / Submissive'),
-        image: 'monks',
+        image: 'Monks',
     },
     {
         name: _('The Potter'),
@@ -3793,7 +3862,7 @@ var getTravellersConfig = function () { return [
         defense: 1,
         success: _('3 Shillings / 2 from Sheriff and +1 Justice (Victim)'),
         failure: _('No effect / Robin Hood Captured (+1 Order)'),
-        image: 'potter',
+        image: 'ThePotter',
     },
     {
         name: _('The Miller\'s Son'),
@@ -3801,7 +3870,7 @@ var getTravellersConfig = function () { return [
         defense: 0,
         success: _('2 Shillings / 1 Shilling and Merry Man (Victim)'),
         failure: _('No effect / Henchman'),
-        image: 'millersSon',
+        image: 'TheMillersSon',
     },
     {
         name: _('Bishop of Hereford'),
@@ -3809,7 +3878,7 @@ var getTravellersConfig = function () { return [
         defense: 1,
         success: _('3 Shillings / 6 Shillings (Victim)'),
         failure: _('No effect / 3 Shillings to Sheriff and Submissive'),
-        image: 'bishopOfHereford',
+        image: 'BishopOfHereford',
     },
     {
         name: _('Guy of Gisborne'),
@@ -3817,7 +3886,7 @@ var getTravellersConfig = function () { return [
         defense: 3,
         success: _('Remove'),
         failure: _('Captured'),
-        image: 'guyOfGisborne',
+        image: 'GuyOfGisborne',
     },
     {
         name: _('Richard at the Lea'),
@@ -3826,7 +3895,7 @@ var getTravellersConfig = function () { return [
         success: _('2 Shillings'),
         failure: _('No Effect'),
         extraText: _('Or pay 3 Shillings for Camp and Revolt in Retford'),
-        image: 'richardAtTheLea',
+        image: 'RichardAtTheLea',
     },
 ]; };
 var robSummarySteps = function () {
@@ -3862,7 +3931,7 @@ var carriagesRobInfo = function () {
 };
 var InformationModal = (function () {
     function InformationModal(game) {
-        this.selectedTab = "royalInspectionRound";
+        this.selectedTab = "orderJustice";
         this.tabs = {
             orderJustice: {
                 text: _("Order & Justice"),
@@ -4152,6 +4221,7 @@ var NotificationManager = (function () {
             'placeMerryMenPublic',
             'placeMerryMenPrivate',
             'putCardInVictimsPile',
+            'putTravellerInDiscardPile',
             'redeploymentSheriff',
             'removeCardFromGame',
             'removeForceFromGamePrivate',
@@ -4374,13 +4444,11 @@ var NotificationManager = (function () {
                 switch (_a.label) {
                     case 0:
                         card = notif.args.card;
-                        card.location = TRAVELLERS_DECK;
-                        return [4, this.game.cardArea.stocks.travellersDeck.addCard(card)];
+                        card.location = TRAVELLER_ROBBED;
+                        this.game.cardArea.incTravellerInDeckCounterValue(card.id.split('_')[1], -1);
+                        this.game.cardArea.counters.travellersDeck.incValue(-1);
+                        return [4, this.game.cardArea.stocks.travellerRobbed.addCard(card)];
                     case 1:
-                        _a.sent();
-                        card.location = TRAVELLERS_DISCARD;
-                        return [4, this.game.cardArea.stocks.travellersDiscard.addCard(card)];
-                    case 2:
                         _a.sent();
                         return [2];
                 }
@@ -4654,9 +4722,26 @@ var NotificationManager = (function () {
                 switch (_a.label) {
                     case 0:
                         card = notif.args.card;
-                        return [4, this.game.cardArea.stocks.travellersVictimsPile.addCard(card)];
+                        return [4, this.game.cardArea.stocks.travellerRobbed.removeCard(card)];
                     case 1:
                         _a.sent();
+                        this.game.cardArea.counters.victimsPile.incValue(1);
+                        return [2];
+                }
+            });
+        });
+    };
+    NotificationManager.prototype.notif_putTravellerInDiscardPile = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var card;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        card = notif.args.card;
+                        return [4, this.game.cardArea.stocks.travellerRobbed.removeCard(card)];
+                    case 1:
+                        _a.sent();
+                        this.game.cardArea.counters.travellersDiscard.incValue(1);
                         return [2];
                 }
             });
@@ -4912,17 +4997,15 @@ var NotificationManager = (function () {
     NotificationManager.prototype.notif_returnTravellersDiscardToMainDeck = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
             var cards;
+            var _this = this;
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        cards = this.game.cardArea.stocks.travellersDiscard.getCards();
-                        cards = cards.map(function (card) { return (__assign(__assign({}, card), { location: TRAVELLERS_DECK })); });
-                        return [4, this.game.cardArea.stocks.travellersDeck.addCards(cards)];
-                    case 1:
-                        _a.sent();
-                        this.game.cardArea.stocks.travellersDeck.removeAll();
-                        return [2];
-                }
+                cards = notif.args.cards;
+                cards.forEach(function (card) {
+                    _this.game.cardArea.counters.travellersDiscard.incValue(-1);
+                    _this.game.cardArea.incTravellerInDeckCounterValue(card.id.split('_')[1], 1);
+                    _this.game.cardArea.counters.travellersDeck.incValue(1);
+                });
+                return [2];
             });
         });
     };

@@ -218,6 +218,8 @@
       flex-direction: row;
       gap: 8px;
       flex-wrap: wrap;
+      max-height: 75vh;
+      overflow-y: auto;
 
       .gest_traveller_info_row {
         // height: 50px;
@@ -231,50 +233,8 @@
         // background-color: yellow;
 
         .gest_traveller_image {
-          background-image: url('img/travellers.jpg');
-          background-size: 400% 200%;
           min-width: 151px;
           min-height: 139px;
-        }
-
-        .gest_traveller_image[data-image='richMerchant'] {
-          background-position-x: 66.66666667%;
-          background-position-y: 100%;
-        }
-
-        .gest_traveller_image[data-image='nobleKnight'] {
-          background-position-x: 0%;
-          background-position-y: 100%;
-        }
-
-        .gest_traveller_image[data-image='monks'] {
-          background-position-x: 100%;
-          background-position-y: 0%;
-        }
-
-        .gest_traveller_image[data-image='potter'] {
-          background-position-x: 33.3333333%;
-          background-position-y: 100%;
-        }
-
-        .gest_traveller_image[data-image='millersSon'] {
-          background-position-x: 66.66666667%;
-          background-position-y: 0%;
-        }
-
-        .gest_traveller_image[data-image='bishopOfHereford'] {
-          background-position-x: 0%;
-          background-position-y: 0%;
-        }
-
-        .gest_traveller_image[data-image='guyOfGisborne'] {
-          background-position-x: 33.3333333%;
-          background-position-y: 0%;
-        }
-
-        .gest_traveller_image[data-image='richardAtTheLea'] {
-          background-position-x: 100%;
-          background-position-y: 100%;
         }
 
         .gest_traveller_stats_container {
@@ -297,6 +257,51 @@
       }
     }
   }
+}
+
+.gest_traveller_image {
+  background-image: url('img/travellers.jpg');
+  background-size: 400% 200%;
+}
+
+.gest_traveller_image[data-image='RichMerchant'] {
+  background-position-x: 66.66666667%;
+  background-position-y: 100%;
+}
+
+.gest_traveller_image[data-image='NobleKnight'] {
+  background-position-x: 0%;
+  background-position-y: 100%;
+}
+
+.gest_traveller_image[data-image='Monks'] {
+  background-position-x: 100%;
+  background-position-y: 0%;
+}
+
+.gest_traveller_image[data-image='ThePotter'] {
+  background-position-x: 33.3333333%;
+  background-position-y: 100%;
+}
+
+.gest_traveller_image[data-image='TheMillersSon'] {
+  background-position-x: 66.66666667%;
+  background-position-y: 0%;
+}
+
+.gest_traveller_image[data-image='BishopOfHereford'] {
+  background-position-x: 0%;
+  background-position-y: 0%;
+}
+
+.gest_traveller_image[data-image='GuyOfGisborne'] {
+  background-position-x: 33.3333333%;
+  background-position-y: 0%;
+}
+
+.gest_traveller_image[data-image='RichardAtTheLea'] {
+  background-position-x: 100%;
+  background-position-y: 100%;
 }
 
 .gest_royal_inspection_info {

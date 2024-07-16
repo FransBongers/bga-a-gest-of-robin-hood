@@ -48,6 +48,11 @@ class Traveller09_ThePotter extends \AGestOfRobinHood\Models\TravellerCard
     if ($successful) {
       $player->incShillings(3);
     }
+    $ctx->insertAsBrother(new LeafNode([
+      'action' => PUT_TRAVELLER_IN_DISCARD_PILE,
+      'playerId' => $player->getId(),
+      'cardId' => $this->getId(),
+    ]));
   }
 
   public function performDarkEffect($player, $successful, $ctx = null, $space = null, $merryMenIds = null)
@@ -74,6 +79,11 @@ class Traveller09_ThePotter extends \AGestOfRobinHood\Models\TravellerCard
         // Send message that RH is already in Prison?
       }
       Players::moveRoyalFavour(Players::getSheriffPlayer(), 1, ORDER);
+      $ctx->insertAsBrother(new LeafNode([
+        'action' => PUT_TRAVELLER_IN_DISCARD_PILE,
+        'playerId' => $player->getId(),
+        'cardId' => $this->getId(),
+      ]));
     }
   }
 

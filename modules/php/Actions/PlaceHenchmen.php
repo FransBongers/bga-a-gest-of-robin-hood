@@ -97,9 +97,6 @@ class PlaceHenchmen extends \AGestOfRobinHood\Actions\Plot
 
     $options = $this->getOptions();
 
-    Notifications::log('options', $options);
-    Notifications::log('placedHenchmen', $placedHenchmen);
-
     if (count($placedHenchmen) > $options['maxNumber'] || count($placedHenchmen) > count($options['henchmen'])) {
       throw new \feException("ERROR 064");
     }

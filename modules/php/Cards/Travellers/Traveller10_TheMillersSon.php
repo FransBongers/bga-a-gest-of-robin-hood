@@ -42,6 +42,11 @@ class Traveller10_TheMillersSon extends \AGestOfRobinHood\Models\TravellerCard
         $henchman->setLocation($space->getId());
         Notifications::placeHenchmen(Players::getSheriffPlayer(), [$henchman], $space);
       }
+      $ctx->insertAsBrother(new LeafNode([
+        'action' => PUT_TRAVELLER_IN_DISCARD_PILE,
+        'playerId' => $player->getId(),
+        'cardId' => $this->getId(),
+      ]));
     }
   }
 
@@ -50,5 +55,10 @@ class Traveller10_TheMillersSon extends \AGestOfRobinHood\Models\TravellerCard
     if ($successful) {
       $player->incShillings(2);
     }
+    $ctx->insertAsBrother(new LeafNode([
+      'action' => PUT_TRAVELLER_IN_DISCARD_PILE,
+      'playerId' => $player->getId(),
+      'cardId' => $this->getId(),
+    ]));
   }
 }

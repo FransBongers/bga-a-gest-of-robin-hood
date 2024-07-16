@@ -161,6 +161,10 @@ interface NotifPutCardInVictimsPileArgs {
   card: GestCard;
 }
 
+interface NotifPutTravellerInDiscardPileArgs {
+  card: GestCard;
+}
+
 interface NotifRedeploymentSheriffArgs {
   forces: GestForce[];
   isTemporaryTruce: boolean;
@@ -198,7 +202,9 @@ interface NotifRevoltArgs extends NotifWithPlayerArgs {
   spaceId: string;
 }
 
-interface NotifReturnTravellersDiscardToMainDeckArgs {}
+interface NotifReturnTravellersDiscardToMainDeckArgs {
+  cards: GestCard[];
+}
 
 interface NotifRobTakeTwoShillingsFromTheSheriffArgs {
   playerId: number;

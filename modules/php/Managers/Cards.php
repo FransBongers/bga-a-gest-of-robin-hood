@@ -74,8 +74,8 @@ class Cards extends \AGestOfRobinHood\Helpers\Pieces
   {
     $cards = Cards::getAll();
     $staticData = [];
-    foreach($cards as $cardId => $card) {
-      $staticData[explode('_',$card->getId())[0]] = $card->getStaticData();
+    foreach ($cards as $cardId => $card) {
+      $staticData[explode('_', $card->getId())[0]] = $card->getStaticData();
     }
     return $staticData;
   }
@@ -157,12 +157,32 @@ class Cards extends \AGestOfRobinHood\Helpers\Pieces
     self::createEventsDeck();
   }
 
-  public static function getUiData() {
-    return [
+  public static function getUiData()
+  {
+    $travellersDeck = self::getInLocation(TRAVELLERS_DECK)->toArray();
+
+    $data = [
       EVENTS_DISCARD => self::getTopOf(EVENTS_DISCARD),
-      TRAVELLERS_DISCARD => self::getTopOf(TRAVELLERS_DISCARD),
-      TRAVELLERS_VICTIMS_PILE => self::getTopOf(TRAVELLERS_VICTIMS_PILE),
+      // TRAVELLERS_DISCARD => self::getTopOf(TRAVELLERS_DISCARD),
+      // TRAVELLERS_VICTIMS_PILE => self::getTopOf(TRAVELLERS_VICTIMS_PILE),
+      TRAVELLER_ROBBED => self::getTopOf(TRAVELLER_ROBBED),
+      'counts' => [
+        TRAVELLERS_DECK => count($travellersDeck),
+        TRAVELLERS_DISCARD => self::countInLocation(TRAVELLERS_DISCARD),
+        TRAVELLERS_VICTIMS_PILE => self::countInLocation(TRAVELLERS_VICTIMS_PILE)
+      ]
     ];
+
+    foreach(TRAVELLERS as $traveller) {
+      $data['counts']['travellers'][$traveller] = 0;
+    }
+
+    foreach($travellersDeck as $card) {
+      $traveller = explode('_', $card->getId())[1];
+      $data['counts']['travellers'][$traveller] += 1;
+    }
+
+    return $data;
   }
 
   // ..######......###....##.....##.########
@@ -181,27 +201,30 @@ class Cards extends \AGestOfRobinHood\Helpers\Pieces
   // .##.....##.##..........##....##.....##.##.....##.##.....##.##....##
   // .##.....##.########....##....##.....##..#######..########...######.
 
-  public static function drawAndRevealCard() {
+  public static function drawAndRevealCard()
+  {
     $card = self::getTopOf(EVENTS_DECK);
     Notifications::drawAndRevealCard($card);
     Cards::insertOnTop($card->getId(), EVENTS_DISCARD);
-    
+
     return Cards::get($card->getId());
   }
 
-  public static function drawAndRevealTravellerCard($player) {
+  public static function drawAndRevealTravellerCard($player)
+  {
     $card = self::getTopOf(TRAVELLERS_DECK);
-        // TODO: check what needs to be done? Probably shuffle?
+    // TODO: check what needs to be done? Probably shuffle?
     if ($card === null) {
       return null;
     }
     Notifications::drawAndRevealTravellerCard($player, $card);
-    Cards::insertOnTop($card->getId(), TRAVELLERS_DISCARD);
-    
+    Cards::insertOnTop($card->getId(), TRAVELLER_ROBBED);
+
     return Cards::get($card->getId());
   }
 
-  public static function getBalladAndEvent($beforeDraw = false) {
+  public static function getBalladAndEvent($beforeDraw = false)
+  {
     $deckCount = self::countInLocation(EVENTS_DECK);
     if ($beforeDraw) {
       $deckCount--;

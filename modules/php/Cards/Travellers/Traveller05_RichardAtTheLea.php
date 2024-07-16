@@ -3,6 +3,7 @@
 namespace AGestOfRobinHood\Cards\Travellers;
 
 use AGestOfRobinHood\Core\Notifications;
+use AGestOfRobinHood\Core\Engine\LeafNode;
 use AGestOfRobinHood\Managers\Forces;
 use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\Spaces;
@@ -43,6 +44,11 @@ class Traveller05_RichardAtTheLea extends \AGestOfRobinHood\Models\TravellerCard
     if ($successful) {
       $player->incShillings(2);
     }
+    $ctx->insertAsBrother(new LeafNode([
+      'action' => PUT_TRAVELLER_IN_DISCARD_PILE,
+      'playerId' => $player->getId(),
+      'cardId' => $this->getId(),
+    ]));
   }
 
   public function canPerformDarkEffect($player)

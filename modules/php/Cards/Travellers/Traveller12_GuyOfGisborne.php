@@ -26,7 +26,6 @@ class Traveller12_GuyOfGisborne extends \AGestOfRobinHood\Models\TravellerCard
     if ($successful) {
       $this->removeFromGame($player);
     } else {
-      Notifications::log('merryMenIds', $merryMenIds);
       $merryMen = Forces::getMany($merryMenIds)->toArray();
       $notifInput = GameMap::createMoves(array_map(function ($merryMan) {
         return [
@@ -39,6 +38,11 @@ class Traveller12_GuyOfGisborne extends \AGestOfRobinHood\Models\TravellerCard
       if (in_array(ROBIN_HOOD, $merryMenIds)) {
         Players::moveRoyalFavour($player, 1, ORDER);
       }
+      $ctx->insertAsBrother(new LeafNode([
+        'action' => PUT_TRAVELLER_IN_DISCARD_PILE,
+        'playerId' => $player->getId(),
+        'cardId' => $this->getId(),
+      ]));
     }
   }
 

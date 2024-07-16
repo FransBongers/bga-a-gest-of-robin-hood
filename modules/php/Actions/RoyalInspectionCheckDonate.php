@@ -46,7 +46,7 @@ class RoyalInspectionCheckDonate extends \AGestOfRobinHood\Models\AtomicAction
 
     $donate = AtomicActions::get(DONATE);
     $player = self::getPlayer();
-    Notifications::log('player', $player);
+
     if ($donate->canBePerformed($player)) {
       $this->ctx->insertAsBrother(new LeafNode([
         'action' => DONATE,

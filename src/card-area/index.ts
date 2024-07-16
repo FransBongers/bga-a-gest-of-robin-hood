@@ -12,9 +12,17 @@ class CardArea {
   public stocks: {
     eventsDeck: ManualPositionStock<GestCard>;
     eventsDiscard: ManualPositionStock<GestCard>;
-    travellersDeck: ManualPositionStock<GestCard>;
-    travellersDiscard: ManualPositionStock<GestCard>;
-    travellersVictimsPile: ManualPositionStock<GestCard>;
+    // travellersDeck: ManualPositionStock<GestCard>;
+    // travellersDiscard: ManualPositionStock<GestCard>;
+    // travellersVictimsPile: ManualPositionStock<GestCard>;
+    travellerRobbed: ManualPositionStock<GestCard>;
+  };
+
+  public counters: {
+    victimsPile: Counter;
+    travellersDeck: Counter;
+    travellersDiscard: Counter;
+    travellersInDeck: Record<string, Counter>;
   };
   // public stocks: {
   //   eventsDeck: LineStock<GestCard>;
@@ -42,7 +50,9 @@ class CardArea {
 
   clearInterface() {}
 
-  updateInterface({ gamedatas }: { gamedatas: AGestOfRobinHoodGamedatas }) {}
+  updateInterface({ gamedatas }: { gamedatas: AGestOfRobinHoodGamedatas }) {
+    this.updateCounters({ gamedatas });
+  }
 
   // ..######..########.########.##.....##.########.
   // .##....##.##..........##....##.....##.##.....##
@@ -66,52 +76,31 @@ class CardArea {
         {},
         this.game.cardManager.updateDisplay
       ),
-      travellersDeck: new ManualPositionStock(
+      // travellersDeck: new ManualPositionStock(
+      //   this.game.cardManager,
+      //   document.getElementById('gest_travellers_deck'),
+      //   {},
+      //   this.game.cardManager.updateDisplay
+      // ),
+      // travellersDiscard: new ManualPositionStock(
+      //   this.game.cardManager,
+      //   document.getElementById('gest_travellers_discard'),
+      //   {},
+      //   this.game.cardManager.updateDisplay
+      // ),
+      travellerRobbed: new ManualPositionStock(
         this.game.cardManager,
-        document.getElementById('gest_travellers_deck'),
+        document.getElementById('gest_traveller_robbed'),
         {},
         this.game.cardManager.updateDisplay
       ),
-      travellersDiscard: new ManualPositionStock(
-        this.game.cardManager,
-        document.getElementById('gest_travellers_discard'),
-        {},
-        this.game.cardManager.updateDisplay
-      ),
-      travellersVictimsPile: new ManualPositionStock(
-        this.game.cardManager,
-        document.getElementById('gest_travellers_vicitimsPile'),
-        {},
-        this.game.cardManager.updateDisplay
-      ),
+      // travellersVictimsPile: new ManualPositionStock(
+      //   this.game.cardManager,
+      //   document.getElementById('gest_travellers_vicitimsPile'),
+      //   {},
+      //   this.game.cardManager.updateDisplay
+      // ),
     };
-    // this.stocks = {
-    //   eventsDeck: new LineStock(
-    //     this.game.cardManager,
-    //     document.getElementById('gest_events_deck'),
-    //     {},
-    //   ),
-    //   eventsDiscard: new LineStock(
-    //     this.game.cardManager,
-    //     document.getElementById('gest_events_discard'),
-    //     {},
-    //   ),
-    //   travellersDeck: new LineStock(
-    //     this.game.cardManager,
-    //     document.getElementById('gest_travellers_deck'),
-    //     {},
-    //   ),
-    //   travellersDiscard: new LineStock(
-    //     this.game.cardManager,
-    //     document.getElementById('gest_travellers_discard'),
-    //     {},
-    //   ),
-    //   travellersVictimsPile: new LineStock(
-    //     this.game.cardManager,
-    //     document.getElementById('gest_travellers_vicitimsPile'),
-    //     {},
-    //   ),
-    // };
 
     this.updateCards({ gamedatas });
   }
@@ -120,14 +109,53 @@ class CardArea {
     if (gamedatas.cards.eventsDiscard) {
       this.stocks.eventsDiscard.addCard(gamedatas.cards.eventsDiscard);
     }
-    if (gamedatas.cards.travellersDiscard) {
-      this.stocks.travellersDiscard.addCard(gamedatas.cards.travellersDiscard);
+    if (gamedatas.cards.travellerRobbed) {
+      this.stocks.travellerRobbed.addCard(gamedatas.cards.travellerRobbed);
     }
-    if (gamedatas.cards.travellersVictimsPile) {
-      this.stocks.travellersVictimsPile.addCard(
-        gamedatas.cards.travellersVictimsPile
+    // if (gamedatas.cards.travellersVictimsPile) {
+    //   this.stocks.travellersVictimsPile.addCard(
+    //     gamedatas.cards.travellersVictimsPile
+    //   );
+    // }
+  }
+
+  setupCounters({ gamedatas }: { gamedatas: AGestOfRobinHoodGamedatas }) {
+    this.counters = {
+      travellersDeck: new ebg.counter(),
+      travellersDiscard: new ebg.counter(),
+      travellersInDeck: {},
+      victimsPile: new ebg.counter(),
+    };
+
+    this.counters.travellersDeck.create('gest_travellers_deck_counter');
+    this.counters.travellersDiscard.create('gest_travellers_discard_counter');
+    this.counters.victimsPile.create('gest_victims_pile_counter');
+    TRAVELLERS.forEach((traveller) => {
+      this.counters.travellersInDeck[traveller] = new ebg.counter();
+      this.counters.travellersInDeck[traveller].create(
+        `gest_traveller_${traveller}_counter`
       );
-    }
+    });
+
+    this.updateCounters({ gamedatas });
+  }
+
+  updateCounters({ gamedatas }: { gamedatas: AGestOfRobinHoodGamedatas }) {
+    this.counters.travellersDeck.setValue(
+      gamedatas.cards.counts.travellersDeck
+    );
+    this.counters.travellersDiscard.setValue(
+      gamedatas.cards.counts.travellersDiscard
+    );
+    this.counters.victimsPile.setValue(
+      gamedatas.cards.counts.travellersVictimsPile
+    );
+    Object.entries(gamedatas.cards.counts.travellers).forEach(
+      ([traveller, count]) => {
+        this.setTravellerInDeckCounterValue(traveller, count);
+        // this.counters.travellersInDeck[traveller].setValue(count);
+      }
+    );
   }
 
   // Setup functions
@@ -147,6 +175,7 @@ class CardArea {
     }
 
     this.setupStocks({ gamedatas });
+    this.setupCounters({ gamedatas });
     this.game.infoPanel.setupPlotsAndDeedsInfo();
   }
 
@@ -173,4 +202,36 @@ class CardArea {
   //  .##.....##....##.....##..##........##.....##.......##...
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
+
+  private setTravellerInDeckCounterValue(traveller: string, value: number) {
+    this.counters.travellersInDeck[traveller].setValue(value);
+    const node = document.getElementById(
+      `gest_traveller_${traveller}_counter_row`
+    );
+    if (!node) {
+      return;
+    }
+    if (value === 0) {
+      node.classList.add(GEST_NONE);
+    } else {
+      node.classList.remove(GEST_NONE);
+    }
+  }
+
+  public incTravellerInDeckCounterValue(traveller: string, value: number) {
+    const counter = this.counters.travellersInDeck[traveller];
+    counter.incValue(value);
+    const node = document.getElementById(
+      `gest_traveller_${traveller}_counter_row`
+    );
+    if (!node) {
+      return;
+    }
+    const counterValue = this.counters.travellersInDeck[traveller].getValue();
+    if (counterValue === 0) {
+      node.classList.add(GEST_NONE);
+    } else {
+      node.classList.remove(GEST_NONE);
+    }
+  }
 }

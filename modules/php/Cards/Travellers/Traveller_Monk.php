@@ -34,7 +34,11 @@ class Traveller_Monk extends \AGestOfRobinHood\Models\TravellerCard
       if ($space->isParish() && !$space->isSubmissive()) {
         $space->setToSubmissive($player);
       }
-
+      $ctx->insertAsBrother(new LeafNode([
+        'action' => PUT_TRAVELLER_IN_DISCARD_PILE,
+        'playerId' => $player->getId(),
+        'cardId' => $this->getId(),
+      ]));
     }
   }
 
@@ -43,5 +47,10 @@ class Traveller_Monk extends \AGestOfRobinHood\Models\TravellerCard
     if ($successful) {
       $player->incShillings(1);
     }
+    $ctx->insertAsBrother(new LeafNode([
+      'action' => PUT_TRAVELLER_IN_DISCARD_PILE,
+      'playerId' => $player->getId(),
+      'cardId' => $this->getId(),
+    ]));
   }
 }

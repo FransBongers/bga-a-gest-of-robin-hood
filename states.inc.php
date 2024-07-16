@@ -693,4 +693,11 @@ $machinestates = array(
         'action' => 'stAtomicAction',
         'transitions' => [],
     ],
+    ST_PUT_TRAVELLER_IN_DISCARD_PILE => [
+        'name' => 'putTravellerInDiscardPile',
+        'description' => '',
+        'type' => 'game',
+        'action' => 'stAtomicAction',
+        'transitions' => [],
+    ]
 );

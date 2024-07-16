@@ -79,6 +79,7 @@ class NotificationManager {
       'placeMerryMenPublic',
       'placeMerryMenPrivate',
       'putCardInVictimsPile',
+      'putTravellerInDiscardPile',
       'redeploymentSheriff',
       'removeCardFromGame',
       'removeForceFromGamePrivate',
@@ -340,10 +341,15 @@ class NotificationManager {
     notif: Notif<NotifDrawAndRevealTravellerCardArgs>
   ) {
     const { card } = notif.args;
-    card.location = TRAVELLERS_DECK;
-    await this.game.cardArea.stocks.travellersDeck.addCard(card);
-    card.location = TRAVELLERS_DISCARD;
-    await this.game.cardArea.stocks.travellersDiscard.addCard(card);
+    // card.location = TRAVELLERS_DECK;
+    // await this.game.cardArea.stocks.travellersDeck.addCard(card);
+    card.location = TRAVELLER_ROBBED;
+    this.game.cardArea.incTravellerInDeckCounterValue(
+      card.id.split('_')[1],
+      -1
+    );
+    this.game.cardArea.counters.travellersDeck.incValue(-1);
+    await this.game.cardArea.stocks.travellerRobbed.addCard(card);
   }
 
   async notif_gainShillings(notif: Notif<NotifGainShillingsArgs>) {
@@ -561,7 +567,17 @@ class NotificationManager {
   ) {
     const { card } = notif.args;
 
-    await this.game.cardArea.stocks.travellersVictimsPile.addCard(card);
+    await this.game.cardArea.stocks.travellerRobbed.removeCard(card);
+    this.game.cardArea.counters.victimsPile.incValue(1);
+  }
+
+  async notif_putTravellerInDiscardPile(
+    notif: Notif<NotifPutTravellerInDiscardPileArgs>
+  ) {
+    const { card } = notif.args;
+
+    await this.game.cardArea.stocks.travellerRobbed.removeCard(card);
+    this.game.cardArea.counters.travellersDiscard.incValue(1);
   }
 
   async notif_parishStatus(notif: Notif<NotifParishStatusArgs>) {
@@ -735,11 +751,15 @@ class NotificationManager {
   async notif_returnTravellersDiscardToMainDeck(
     notif: Notif<NotifReturnTravellersDiscardToMainDeckArgs>
   ) {
-    let cards = this.game.cardArea.stocks.travellersDiscard.getCards();
-    cards = cards.map((card) => ({ ...card, location: TRAVELLERS_DECK }));
-    await this.game.cardArea.stocks.travellersDeck.addCards(cards);
-    // TODO: replace with animation
-    this.game.cardArea.stocks.travellersDeck.removeAll();
+    const { cards } = notif.args;
+    cards.forEach((card) => {
+      this.game.cardArea.counters.travellersDiscard.incValue(-1);
+      this.game.cardArea.incTravellerInDeckCounterValue(
+        card.id.split('_')[1],
+        1
+      );
+      this.game.cardArea.counters.travellersDeck.incValue(1);
+    });
   }
 
   async notif_robTakeTwoShillingsFromTheSheriff(

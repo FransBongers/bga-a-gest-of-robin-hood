@@ -143,6 +143,7 @@ const TRAVELLERS_POOL = 'travellersPool';
 
 const EVENTS_DISCARD = 'eventsDiscard';
 const TRAVELLERS_DISCARD = 'travellersDiscard';
+const TRAVELLER_ROBBED = 'travellerRobbed';
 const TRAVELLERS_VICTIMS_PILE = 'travellersVictimsPile';
 
 const REMOVED_FROM_GAME = 'removedFromGame';
@@ -162,4 +163,15 @@ const MONK_IDS = [
   'Traveller06_Monks',
   'Traveller07_Monks',
   'Traveller08_Monks',
+];
+
+const TRAVELLERS = [
+  'RichMerchant',
+  'NobleKnight',
+  'Monks',
+  'ThePotter',
+  'TheMillersSon',
+  'BishopOfHereford',
+  'GuyOfGisborne',
+  'RichardAtTheLea',
 ];

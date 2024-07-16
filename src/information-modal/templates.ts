@@ -292,9 +292,6 @@ const tplInformationModalContent = ({
   game: AGestOfRobinHoodGame;
 }) => {
   const TRAVELLERS_CONFIG = getTravellersConfig();
-  // const OPERATIONS_INFO_CONFIG = getOperationsConfig();
-  // const ONE_SHOTS_INFO_CONFIG = getOneShotsConfig();
-  // const BATTLE_TABLE_CONFIG = getBattleTableConfig();
 
   return `<div id="information_modal_content">
     <div class="information_modal_tabs">

@@ -653,7 +653,6 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     callback: (event: PointerEvent) => void;
   }) {
     const container = document.getElementById('gest_map_spaces');
-    console.log('container', container);
     container.classList.add(GEST_SELECTABLE);
 
     const node = document.getElementById(`gest_map_space_${id}`);

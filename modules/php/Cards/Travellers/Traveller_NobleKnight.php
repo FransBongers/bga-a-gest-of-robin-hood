@@ -27,6 +27,11 @@ class Traveller_NobleKnight extends \AGestOfRobinHood\Models\TravellerCard
     if ($successful) {
       $player->incShillings(3);
     }
+    $ctx->insertAsBrother(new LeafNode([
+      'action' => PUT_TRAVELLER_IN_DISCARD_PILE,
+      'playerId' => $player->getId(),
+      'cardId' => $this->getId(),
+    ]));
   }
 
   public function performDarkEffect($player, $successful, $ctx = null, $space = null, $merryMenIds = [])
@@ -52,6 +57,11 @@ class Traveller_NobleKnight extends \AGestOfRobinHood\Models\TravellerCard
       if (in_array(ROBIN_HOOD, $merryMenIds)) {
         Players::moveRoyalFavour($player, 1, ORDER);
       }
+      $ctx->insertAsBrother(new LeafNode([
+        'action' => PUT_TRAVELLER_IN_DISCARD_PILE,
+        'playerId' => $player->getId(),
+        'cardId' => $this->getId(),
+      ]));
     }
   }
 }

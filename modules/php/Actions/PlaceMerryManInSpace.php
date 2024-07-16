@@ -41,7 +41,7 @@ class PlaceMerryManInSpace extends \AGestOfRobinHood\Actions\Plot
   public function stPlaceMerryManInSpace()
   {
 
-    $count = Forces::getInLocation(MERRY_MEN_SUPPLY);
+    $count = count(Forces::getInLocation(MERRY_MEN_SUPPLY)->toArray()) + count(Forces::getInLocation(ROBIN_HOOD_SUPPLY)->toArray());
 
     if ($count === 0) {
       $this->resolveAction(['automatic' => true]);
@@ -103,6 +103,12 @@ class PlaceMerryManInSpace extends \AGestOfRobinHood\Actions\Plot
 
     if (!isset($options['spaces'][$spaceId])) {
       throw new \feException("ERROR 032");
+    }
+
+    // TODO: remove: only here to fix stuck game
+    if (!$options['robinHoodInSupply'] && !$options['merryMenInSupply']) {
+      $this->resolveAction($args);
+      return;
     }
 
     if ($placeRobinHood && !$options['robinHoodInSupply']) {

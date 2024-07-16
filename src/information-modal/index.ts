@@ -3,7 +3,7 @@ class InformationModal {
 
   private modal: Modal;
 
-  private selectedTab: TabId = "royalInspectionRound";
+  private selectedTab: TabId = "orderJustice";
   private tabs: Record<TabId, {text: string;}> = {
     orderJustice: {
       text: _("Order & Justice"),

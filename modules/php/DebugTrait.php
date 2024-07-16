@@ -70,7 +70,7 @@ trait DebugTrait
     // Forces::get(ROBIN_HOOD)->setLocation(ROBIN_HOOD_SUPPLY);
     // Forces::get('carriage_2')->setLocation(NEWARK);
     // Forces::get('merryMen_4')->setHidden(1);
-    // Cards::get('Event30_RoyalInspection')->insertOnTop(EVENTS_DECK);
+    Cards::get('Event31_RoyalInspection')->insertOnTop(EVENTS_DECK);
     // Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_VICTIMS_PILE);
     // Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_DECK);
     // Globals::setOllertonHillAdjacency(true);

@@ -868,6 +868,17 @@ class Notifications
     ]);
   }
 
+  public static function putTravellerInDiscardPile($player, $card)
+  {
+    $text = clienttranslate('${player_name} puts ${tkn_cardName} in the discard pile');
+
+    self::notifyAll("putTravellerInDiscardPile", $text, [
+      'player' => $player,
+      'card' => $card,
+      'tkn_cardName' => self::tknCardNameArg($card),
+    ]);
+  }
+
   public static function recruitMerryMen($player, $originalNumber, $robinHood, $merryMenToPlace, $space)
   {
     $textPublic = $originalNumber === 1 ?
@@ -1100,9 +1111,11 @@ class Notifications
     ]);
   }
 
-  public static function returnTravellersDiscardToMainDeck()
+  public static function returnTravellersDiscardToMainDeck($cards)
   {
-    self::notifyAll("returnTravellersDiscardToMainDeck", clienttranslate('The Traveller deck discard pile is shuffled into the main deck'), []);
+    self::notifyAll("returnTravellersDiscardToMainDeck", clienttranslate('The Traveller deck discard pile is shuffled into the main deck'), [
+      'cards' => $cards,
+    ]);
   }
 
   public static function robResult($player, $dieColor, $dieResult, $success)

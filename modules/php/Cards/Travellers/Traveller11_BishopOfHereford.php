@@ -27,6 +27,11 @@ class Traveller11_BishopOfHereford extends \AGestOfRobinHood\Models\TravellerCar
     if ($successful) {
       $player->incShillings(3);
     }
+    $ctx->insertAsBrother(new LeafNode([
+      'action' => PUT_TRAVELLER_IN_DISCARD_PILE,
+      'playerId' => $player->getId(),
+      'cardId' => $this->getId(),
+    ]));
   }
 
   public function performDarkEffect($player, $successful, $ctx = null, $space = null, $merryMenIds = null)
@@ -44,6 +49,11 @@ class Traveller11_BishopOfHereford extends \AGestOfRobinHood\Models\TravellerCar
       if ($space !== null && $space->isParish() && $space->isRevolting()) {
         $space->setToSubmissive($sheriff);
       }
+      $ctx->insertAsBrother(new LeafNode([
+        'action' => PUT_TRAVELLER_IN_DISCARD_PILE,
+        'playerId' => $player->getId(),
+        'cardId' => $this->getId(),
+      ]));
     }
   }
 }

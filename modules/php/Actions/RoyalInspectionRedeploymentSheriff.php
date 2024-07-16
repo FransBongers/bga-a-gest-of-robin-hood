@@ -94,8 +94,6 @@ class RoyalInspectionRedeploymentSheriff extends \AGestOfRobinHood\Models\Atomic
     $requiredMoves = $args['requiredMoves'];
     $optionalMoves = $args['optionalMoves'];
 
-    Notifications::log('optional', $optionalMoves);
-
     $stateArgs = $this->getOptions();
 
     $forces = [];
