@@ -267,7 +267,7 @@ class Settings {
   }
 
   public onChangeCardInfoInTooltipSetting(value: string) {
-
+    this.game.cardArea.updateTooltips();
     this.game.updateLogTooltips();
   }
 

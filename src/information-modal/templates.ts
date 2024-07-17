@@ -191,7 +191,7 @@ const travellerInfoRow = (
             <span class="gest_traveller_name">${_(info.name)}</span>
             <span class="gest_traveller_deck_count">${_(info.inDeck)}</span>
             <span style="font-weight: bold;">: </span>
-            <span class="gest_traveller_defense">${info.defense} Defense</span>
+            <span class="gest_traveller_defense">${info.defense} ${_('Defense')}</span>
           </div>
           <div class="gest_row">
             <span class="gest_rob_result">${_('Success: ')}</span>

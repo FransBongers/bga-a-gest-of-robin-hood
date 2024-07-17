@@ -177,6 +177,7 @@ class CardArea {
     this.setupStocks({ gamedatas });
     this.setupCounters({ gamedatas });
     this.game.infoPanel.setupPlotsAndDeedsInfo();
+    this.game.tooltipManager.addTravellersTooltips();
   }
 
   // ..######...########.########.########.########.########...######.
@@ -202,6 +203,18 @@ class CardArea {
   //  .##.....##....##.....##..##........##.....##.......##...
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
+
+  public updateTooltips() {
+    const cards = [...this.stocks.eventsDiscard.getCards(), ...this.stocks.travellerRobbed.getCards()];
+    cards.forEach((card) => {
+      const cardId = card.id.split('_')[0];
+      this.game.tooltipManager.removeTooltip(cardId);
+      this.game.tooltipManager.addCardTooltip({
+        nodeId: cardId,
+        cardId: cardId,
+      });
+    });
+  }
 
   private setTravellerInDeckCounterValue(traveller: string, value: number) {
     this.counters.travellersInDeck[traveller].setValue(value);

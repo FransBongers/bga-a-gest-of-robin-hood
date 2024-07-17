@@ -53,8 +53,8 @@
  */
 .gest_card_side {
   box-sizing: border-box;
-  width: calc(var(--btCardScale) * 206px);
-  height: calc(var(--btCardScale) * 355px);
+  width: calc(var(--gestCardScale) * 206px);
+  height: calc(var(--gestCardScale) * 355px);
   background-repeat: no-repeat;
   border: calc(var(--gestCardScale) * 1px) black solid;
   border-radius: calc(var(--gestCardScale) * 5px);
@@ -447,6 +447,7 @@
   padding-right: calc(var(--gestCardScale) * 12px);
 }
 #gest_card_area #gest_decks .gest_card_row #gest_travellers_decks_info .gest_traveller_counter_row {
+  cursor: default;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -1269,7 +1270,9 @@
 }
 
 /* ------- LOG TOKENS ------- */
+#pagemaintitletext .gest_card_side,
 #pagemaintitletext .gest_card,
+#gameaction_status .gest_card_side,
 #gameaction_status .gest_card {
   display: none;
 }
@@ -1277,6 +1280,10 @@
 .log > .roundedbox .gest_card,
 .log > .roundedboxinner .gest_card {
   margin-top: calc(var(--logCardScale) * 6px);
+}
+.log > .roundedbox .gest_log_card,
+.log > .roundedboxinner .gest_log_card {
+  --gestCardScale: var(--logCardScale);
 }
 .log > .roundedbox .gest_log_die,
 .log > .roundedboxinner .gest_log_die {
@@ -1865,6 +1872,13 @@
   width: 440px;
   min-height: 372px;
 }
+.gest_card_tooltip .gest_card_side {
+  min-width: calc(var(--gestCardScale) * 206px);
+  min-height: calc(var(--gestCardScale) * 355px);
+  max-width: calc(var(--gestCardScale) * 206px);
+  max-height: calc(var(--gestCardScale) * 355px);
+  --gestCardScale: 1;
+}
 .gest_card_tooltip .gest_card_tooltip_inner_container {
   flex-grow: 1;
   min-height: 100%;
@@ -1908,15 +1922,91 @@
   margin-bottom: 8px;
 }
 
-.gest_card_in_tooltip {
-  margin-right: -100px;
+.gest_card_only_tooltip {
+  --gestCardScale: 1.5;
+}
+.gest_card_only_tooltip .gest_card_side {
+  min-width: calc(var(--gestCardScale) * 206px);
+  min-height: calc(var(--gestCardScale) * 355px);
+  max-width: calc(var(--gestCardScale) * 206px);
+  max-height: calc(var(--gestCardScale) * 355px);
+}
+
+.gest_traveller_tooltip {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 8px;
+}
+.gest_traveller_tooltip .gest_traveller_image {
+  min-width: 100px;
+  min-height: 92px;
+}
+.gest_traveller_tooltip .gest_traveller_stats_container .gest_traveller_name {
+  font-weight: bold;
+  font-size: large;
+}
+.gest_traveller_tooltip .gest_traveller_stats_container .gest_row {
+  font-size: medium;
+}
+.gest_traveller_tooltip .gest_traveller_stats_container .gest_row .gest_traveller_defense {
+  font-weight: bold;
+}
+.gest_traveller_tooltip .gest_traveller_stats_container .gest_row .gest_traveller_deck_count {
+  font-style: italic;
+}
+.gest_traveller_tooltip .gest_traveller_stats_container .gest_row .gest_rob_result {
+  font-weight: bold;
+  font-style: italic;
+}
+
+.gest_icon_tooltip {
+  display: flex;
+  flex-direction: row;
+  width: 250px;
+}
+.gest_icon_tooltip .gest_icon {
+  margin: 0px;
+}
+.gest_icon_tooltip .gest_tooltip_title {
+  font-size: medium;
+  font-style: italic;
+}
+.gest_icon_tooltip .gest_icon_tooltip_icon {
+  padding-top: 4px;
+}
+.gest_icon_tooltip .gest_icon_tooltip_icon .gest_supreme_religion_tokens_theocracies_icon_container {
+  --paxRenTokenScale: 0.75;
+  display: flex;
+  flex-direction: row;
+}
+.gest_icon_tooltip .gest_icon_tooltip_content {
+  display: flex;
+  flex-direction: column;
   margin-left: 8px;
-  align-self: center;
-  width: 240px;
-  height: 334px;
-  background-size: 240px 334px;
-  box-shadow: 5px 5px 5px 0px rgba(0, 0, 0, 0.4);
-  border-radius: 10px;
+}
+.gest_icon_tooltip .gest_tooltip_text {
+  text-align: left;
+  font-size: small;
+}
+
+.dijitTooltipContainer .gest_royal_inspection_info {
+  font-size: medium;
+}
+.dijitTooltipContainer .gest_carriage_tooltip {
+  font-size: medium;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 8px;
+  --gestForceScale: 1;
+}
+.dijitTooltipContainer .gest_carriage_tooltip .gest_title {
+  font-weight: 700;
+  font-size: large;
+}
+.dijitTooltipContainer .gest_carriage_tooltip .gest_section_title {
+  font-weight: 700;
 }
 
 body > .card {

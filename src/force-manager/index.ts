@@ -23,6 +23,10 @@ class ForceManager extends CardManager<GestForce> {
     // div.setAttribute('data-side', 'front');
     div.setAttribute('data-type', force.type);
     div.setAttribute('data-revealed', 'true');
+    
+    if (CARRIAGE_TYPES.includes(force.type)) {
+      this.game.tooltipManager.addCarriageTooltip({nodeId: force.id, type: force.type});
+    }
   }
 
   setupBackDiv(force: GestForce, div: HTMLElement) {
@@ -37,6 +41,9 @@ class ForceManager extends CardManager<GestForce> {
     // if (force.type === ROBIN_HOOD) {
     //   div.insertAdjacentHTML('beforeend', '<div>*</div>');
     // }
+    if (CARRIAGE_TYPES.includes(force.type)) {
+      this.game.tooltipManager.addCarriageTooltip({nodeId: force.id, type: force.type});
+    }
   }
 
   isCardVisible(force: GestForce) {

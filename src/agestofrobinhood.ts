@@ -983,10 +983,9 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
 
   // cardId will be PRENXXXX for tableau cards and full id for empire card / victory card
   addLogTooltip({ tooltipId, cardId }: { tooltipId: number; cardId: string }) {
-    const card = this.gamedatas.staticData.cards[cardId];
     this.tooltipManager.addCardTooltip({
       nodeId: `gest_tooltip_${tooltipId}`,
-      card,
+      cardId,
     });
   }
 

@@ -1692,6 +1692,12 @@ var CARRIAGE = 'Carriage';
 var TALLAGE_CARRIAGE = 'TallageCarriage';
 var TRIBUTE_CARRIAGE = 'TributeCarriage';
 var TRAP_CARRIAGE = 'TrapCarriage';
+var HIDDEN_CARRIAGE = 'HiddenCarriage';
+var CARRIAGE_TYPES = [
+    TALLAGE_CARRIAGE,
+    TRAP_CARRIAGE,
+    TRIBUTE_CARRIAGE,
+];
 var SINGLE_PLOT = 'singlePlot';
 var EVENT = 'event';
 var PLOTS_AND_DEEDS = 'plotsAndDeeds';
@@ -2305,10 +2311,9 @@ var AGestOfRobinHood = (function () {
     };
     AGestOfRobinHood.prototype.addLogTooltip = function (_a) {
         var tooltipId = _a.tooltipId, cardId = _a.cardId;
-        var card = this.gamedatas.staticData.cards[cardId];
         this.tooltipManager.addCardTooltip({
             nodeId: "gest_tooltip_".concat(tooltipId),
-            card: card,
+            cardId: cardId,
         });
     };
     AGestOfRobinHood.prototype.updateLogTooltips = function () {
@@ -2466,6 +2471,19 @@ var CardArea = (function () {
         this.setupStocks({ gamedatas: gamedatas });
         this.setupCounters({ gamedatas: gamedatas });
         this.game.infoPanel.setupPlotsAndDeedsInfo();
+        this.game.tooltipManager.addTravellersTooltips();
+    };
+    CardArea.prototype.updateTooltips = function () {
+        var _this = this;
+        var cards = __spreadArray(__spreadArray([], this.stocks.eventsDiscard.getCards(), true), this.stocks.travellerRobbed.getCards(), true);
+        cards.forEach(function (card) {
+            var cardId = card.id.split('_')[0];
+            _this.game.tooltipManager.removeTooltip(cardId);
+            _this.game.tooltipManager.addCardTooltip({
+                nodeId: cardId,
+                cardId: cardId,
+            });
+        });
     };
     CardArea.prototype.setTravellerInDeckCounterValue = function (traveller, value) {
         this.counters.travellersInDeck[traveller].setValue(value);
@@ -2529,6 +2547,11 @@ var GestCardManager = (function (_super) {
         div.style.height = 'calc(var(--gestCardScale) * 355px)';
         div.style.width = 'calc(var(--gestCardScale) * 206px)';
         div.setAttribute('data-card-id', card.id.split('_')[0]);
+        var cardId = card.id.split('_')[0];
+        this.game.tooltipManager.addCardTooltip({
+            nodeId: cardId,
+            cardId: cardId
+        });
     };
     GestCardManager.prototype.setupBackDiv = function (card, div) {
         div.classList.add('gest_card_side');
@@ -2580,6 +2603,9 @@ var ForceManager = (function (_super) {
         div.classList.add('gest_force_side');
         div.setAttribute('data-type', force.type);
         div.setAttribute('data-revealed', 'true');
+        if (CARRIAGE_TYPES.includes(force.type)) {
+            this.game.tooltipManager.addCarriageTooltip({ nodeId: force.id, type: force.type });
+        }
     };
     ForceManager.prototype.setupBackDiv = function (force, div) {
         div.classList.add('gest_force_side');
@@ -2587,6 +2613,9 @@ var ForceManager = (function (_super) {
         div.setAttribute('data-revealed', 'false');
         if (force.id.startsWith('fake')) {
             return;
+        }
+        if (CARRIAGE_TYPES.includes(force.type)) {
+            this.game.tooltipManager.addCarriageTooltip({ nodeId: force.id, type: force.type });
         }
     };
     ForceManager.prototype.isCardVisible = function (force) {
@@ -3307,6 +3336,7 @@ var GameMap = (function () {
         this.setupParishStatusMarkers({ gamedatas: gamedatas });
         this.setupForces({ gamedatas: gamedatas });
         this.updateTrackMarkers({ gamedatas: gamedatas });
+        this.game.tooltipManager.addGameMapTooltips();
     };
     GameMap.prototype.isRobinHoodForce = function (_a) {
         var type = _a.type;
@@ -3911,21 +3941,30 @@ var carriagesRobInfo = function () {
     return [
         {
             image: 'TallageCarriage',
+            name: _('Tallage Carriage'),
+            defense: 0,
             title: _('Tallage: 0 Defense'),
             success: _('${tkn_boldItalicText_success} 5 Shillings, send to Used Carriages'),
             failure: _('${tkn_boldItalicText_failure} No effect (Carriage stays revealed'),
+            nottingham: _('5 Shillings, +1 Order'),
         },
         {
             image: 'TributeCarriage',
+            name: _('Tribute Carriage'),
+            defense: 0,
             title: _('Tribute: 0 Defense'),
             success: _('${tkn_boldItalicText_success} 2 Shillings, +1 Justice, send to Used Carriages'),
             failure: _('${tkn_boldItalicText_failure} No effect (Carriage stays revealed'),
+            nottingham: _('2 Shillings, +2 Order'),
         },
         {
             image: 'TrapCarriage',
+            name: _('Trap Carriage'),
+            defense: 2,
             title: _('Trap: 2 Defense'),
             success: _('${tkn_boldItalicText_success} 2 Shillings, send to Used Carriages'),
             failure: _('${tkn_boldItalicText_failure} Captured (Carriage stays revealed'),
+            nottingham: _('2 Shillings, +1 Order'),
         }
     ];
 };
@@ -4045,7 +4084,7 @@ var robSummaryInfo = function (_a) {
     }), "</span></div>\n            </div>\n          </div>   \n          "); })
         .join(''), "\n    </div>\n  </div>\n");
 };
-var travellerInfoRow = function (info) { return "<div class=\"gest_traveller_info_row\">\n        <div class=\"gest_traveller_image\" data-image=\"".concat(info.image, "\"></div>\n        <div class=\"gest_traveller_stats_container\">\n          <div class=\"gest_row\">\n            <span class=\"gest_traveller_name\">").concat(_(info.name), "</span>\n            <span class=\"gest_traveller_deck_count\">").concat(_(info.inDeck), "</span>\n            <span style=\"font-weight: bold;\">: </span>\n            <span class=\"gest_traveller_defense\">").concat(info.defense, " Defense</span>\n          </div>\n          <div class=\"gest_row\">\n            <span class=\"gest_rob_result\">").concat(_('Success: '), "</span>\n            <span>").concat(_(info.success), "</span>\n          </div>\n          <div class=\"gest_row\">\n            <span class=\"gest_rob_result\">").concat(_('Failure: '), "</span>\n            <span>").concat(_(info.failure), "</span>\n          </div>\n  </div>\n</div>"); };
+var travellerInfoRow = function (info) { return "<div class=\"gest_traveller_info_row\">\n        <div class=\"gest_traveller_image\" data-image=\"".concat(info.image, "\"></div>\n        <div class=\"gest_traveller_stats_container\">\n          <div class=\"gest_row\">\n            <span class=\"gest_traveller_name\">").concat(_(info.name), "</span>\n            <span class=\"gest_traveller_deck_count\">").concat(_(info.inDeck), "</span>\n            <span style=\"font-weight: bold;\">: </span>\n            <span class=\"gest_traveller_defense\">").concat(info.defense, " ").concat(_('Defense'), "</span>\n          </div>\n          <div class=\"gest_row\">\n            <span class=\"gest_rob_result\">").concat(_('Success: '), "</span>\n            <span>").concat(_(info.success), "</span>\n          </div>\n          <div class=\"gest_row\">\n            <span class=\"gest_rob_result\">").concat(_('Failure: '), "</span>\n            <span>").concat(_(info.failure), "</span>\n          </div>\n  </div>\n</div>"); };
 var royalInspectionUnrest = function (_a) {
     var game = _a.game;
     return "\n  <div class=\"gest_royal_inspection_info\">\n    <div>    \n      <span>".concat(game.format_string_recursive(_('${tkn_boldText_unrest} Check the number of Submissive Parises:'), { tkn_boldText_unrest: _('Unrest: ') }), "</span>\n    </div>\n    <div class=\"gest_row\">    \n      <span class=\"gest_list_item\">\u2022</span>\n      <span>").concat(_('5-7 Submissive Parishes: +1 Order'), "</span>\n    </div>\n    <div class=\"gest_row\">    \n      <span class=\"gest_list_item\">\u2022</span>\n      <span>").concat(_('3-4 Submissive Parishes: +1 Justice'), "</span>\n    </div>\n    <div class=\"gest_row\">    \n      <span class=\"gest_list_item\">\u2022</span>\n      <span\">").concat(_('1-2 Submissive Parishes: +2 Justice'), "</span>\n    </div>\n    <div class=\"gest_row\">    \n      <span class=\"gest_list_item\">\u2022</span>\n      <span>").concat(_('5-7 Submissive Parishes: +3 Justice'), "</span>\n    </div>\n    <div><span>").concat(_('Then check for automatic victory (Royal Favour at 5 or more)'), "</span></div>\n  </div>\n");
@@ -4127,7 +4166,7 @@ var tplLogTokenPlayerName = function (_a) {
     return "<span class=\"playername\" style=\"color:#".concat(color, ";\">").concat(name, "</span>");
 };
 var tplLogTokenCard = function (id) {
-    return "<div class=\"gest_log_card gest_card\" data-card-id=\"".concat(id, "\"></div>");
+    return "<div class=\"gest_log_card gest_card gest_card_side\" data-card-id=\"".concat(id, "\"></div>");
 };
 var tplLogTokenDieResult = function (dieResult) {
     var _a = dieResult.split(':'), color = _a[0], result = _a[1];
@@ -5632,7 +5671,7 @@ var getSettingsConfig = function () {
                         padding: 0,
                         range: {
                             min: 0,
-                            max: 90,
+                            max: 110,
                         },
                     },
                     type: 'slider',
@@ -5879,6 +5918,7 @@ var Settings = (function () {
         this.checkAnmimationSpeedVisisble();
     };
     Settings.prototype.onChangeCardInfoInTooltipSetting = function (value) {
+        this.game.cardArea.updateTooltips();
         this.game.updateLogTooltips();
     };
     Settings.prototype.changeTab = function (_a) {
@@ -11280,11 +11320,11 @@ var tplCardTooltipContainer = function (_a) {
     var card = _a.card, content = _a.content;
     return "<div class=\"gest_card_tooltip\">\n  <div class=\"gest_card_tooltip_inner_container\">\n    ".concat(content, "\n  </div>\n  ").concat(card, "\n</div>");
 };
-var tplTableauCardTooltip = function (_a) {
+var tplGestCardTooltip = function (_a) {
     var card = _a.card, game = _a.game, _b = _a.imageOnly, imageOnly = _b === void 0 ? false : _b;
-    var cardHtml = "<div class=\"gest_card\" data-card-id=\"".concat(card.id.split('_')[0], "\"></div>");
+    var cardHtml = "<div class=\"gest_card_side\" data-card-id=\"".concat(card.id.split('_')[0], "\"></div>");
     if (imageOnly) {
-        return "<div style=\"--gestCardScale: 1.7;\">".concat(cardHtml, "</div>");
+        return "<div class=\"gest_card_only_tooltip\">".concat(cardHtml, "</div>");
     }
     return tplCardTooltipContainer({
         card: cardHtml,
@@ -11296,6 +11336,25 @@ var tplTableauCardTooltip = function (_a) {
                 carriages: card.carriageMoves,
             }), "</span>\n    <span class=\"gest_section_title\">").concat(_(card.titleLight), "</span>\n    <span class=\"gest_tooltip_text\">").concat(_(card.textLight), "</span>\n    <span class=\"gest_section_title\">").concat(_(card.titleDark), "</span>\n    <span class=\"gest_tooltip_text\">").concat(_(card.textDark), "</span>\n    "),
     });
+};
+var tplTravellerTooltip = function (info) {
+    return "\n  <div class=\"gest_traveller_tooltip\">\n    <div class=\"gest_traveller_image\" data-image=\"".concat(info.image, "\"></div>\n    <div class=\"gest_traveller_stats_container\">\n      <span class=\"gest_traveller_name\">").concat(_(info.name), "</span>\n      <div class=\"gest_row\">\n        <span class=\"gest_traveller_defense\">").concat(_('Defense'), ": ").concat(info.defense, "</span>\n      </div>\n      <div class=\"gest_row\">\n        <span class=\"gest_rob_result\">").concat(_('Success: '), "</span>\n        <span>").concat(_(info.success), "</span>\n      </div>\n      <div class=\"gest_row\">\n        <span class=\"gest_rob_result\">").concat(_('Failure: '), "</span>\n        <span>").concat(_(info.failure), "</span>\n      </div>\n    </div>\n  </div>");
+};
+var tplCarriageTooltip = function (game, type) {
+    var info = carriagesRobInfo().find(function (data) { return data.image === type; });
+    return "\n          <div class=\"gest_carriage_tooltip gest_row\">\n            <div class=\"gest_force_side\" data-type=\"".concat(info.image, "\" data-revealed=\"true\"></div>\n            <div>\n              <span class=\"gest_title\">").concat(_(info.name), "</span>\n              <div><span class=\"gest_section_title\">").concat(_('Defense'), ": ").concat(info.defense, "</span></div>\n              <div style=\"margin-top: 8px;\">\n                <span class=\"gest_section_title\">").concat(_('If reaches Nottingham:'), "</span>\n              </div>\n              <div>\n                <span>").concat(_(info.nottingham), "</span>\n              </div>\n              <div style=\"margin-top: 8px;\">\n                <span class=\"gest_section_title\">").concat(_('If Robbed:'), "</span>\n              </div>\n              <div><span>").concat(game.format_string_recursive(_(info.success), {
+        tkn_boldItalicText_success: _('Success: '),
+    }), "</span></div>\n              <div>\n                <span>").concat(game.format_string_recursive(_(info.failure), {
+        tkn_boldItalicText_failure: _('Failure: '),
+    }), "</span></div>\n            </div>\n          </div>   \n          \n          \n  ");
+};
+var tplTooltipWithIcon = function (_a) {
+    var title = _a.title, text = _a.text, iconHtml = _a.iconHtml, iconWidth = _a.iconWidth;
+    return "<div class=\"gest_icon_tooltip\">\n            <div class=\"gest_icon_tooltip_icon\"".concat(iconWidth ? "style=\"min-width: ".concat(iconWidth, "px;\"") : '', ">\n              ").concat(iconHtml, "\n            </div>\n            <div class=\"gest_icon_tooltip_content\">\n              ").concat(title ? "<span class=\"gest_tooltip_title\" >".concat(title, "</span>") : '', "\n              <span class=\"gest_tooltip_text\">").concat(text, "</span>\n            </div>\n          </div>");
+};
+var tplTextTooltip = function (_a) {
+    var text = _a.text;
+    return "<span class=\"gest_text_tooltip\">".concat(text, "</span>");
 };
 var TooltipManager = (function () {
     function TooltipManager(game) {
@@ -11309,16 +11368,48 @@ var TooltipManager = (function () {
     TooltipManager.prototype.removeTooltip = function (nodeId) {
         this.game.framework().removeTooltip(nodeId);
     };
-    TooltipManager.prototype.setupTooltips = function () {
-    };
+    TooltipManager.prototype.setupTooltips = function () { };
     TooltipManager.prototype.addCardTooltip = function (_a) {
-        var nodeId = _a.nodeId, card = _a.card;
-        var html = tplTableauCardTooltip({
+        var nodeId = _a.nodeId, cardId = _a.cardId;
+        var card = this.game.gamedatas.staticData.cards[cardId];
+        var html = tplGestCardTooltip({
             card: card,
             game: this.game,
             imageOnly: this.game.settings.get({ id: PREF_CARD_INFO_IN_TOOLTIP }) === DISABLED,
         });
         this.game.framework().addTooltipHtml(nodeId, html, 500);
+    };
+    TooltipManager.prototype.addCarriageTooltip = function (_a) {
+        var nodeId = _a.nodeId, type = _a.type;
+        this.game
+            .framework()
+            .addTooltipHtml(nodeId, tplCarriageTooltip(this.game, type), 500);
+    };
+    TooltipManager.prototype.addTravellersTooltips = function () {
+        var _this = this;
+        var config = getTravellersConfig();
+        TRAVELLERS.forEach(function (traveller) {
+            _this.game
+                .framework()
+                .addTooltipHtml("gest_traveller_".concat(traveller, "_counter_row"), tplTravellerTooltip(config.find(function (data) { return data.image === traveller; })), 500);
+        });
+    };
+    TooltipManager.prototype.addGameMapTooltips = function () {
+        this.game
+            .framework()
+            .addTooltipHtml('royalInspectionTrack_unrest', royalInspectionUnrest({ game: this.game }), 500);
+        this.game
+            .framework()
+            .addTooltipHtml('royalInspectionTrack_mischief', royalInspectionMischief({ game: this.game }), 500);
+        this.game
+            .framework()
+            .addTooltipHtml('royalInspectionTrack_governance', royalInspectionGovernance({ game: this.game }), 500);
+        this.game
+            .framework()
+            .addTooltipHtml('royalInspectionTrack_redeployment', royalInspectionRedployment({ game: this.game }), 500);
+        this.game
+            .framework()
+            .addTooltipHtml('royalInspectionTrack_reset', royalInspectionReset({ game: this.game }), 500);
     };
     return TooltipManager;
 }());

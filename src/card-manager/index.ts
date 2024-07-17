@@ -26,6 +26,12 @@ class GestCardManager extends CardManager<GestCard> {
     div.style.height = 'calc(var(--gestCardScale) * 355px)';
     div.style.width = 'calc(var(--gestCardScale) * 206px)';
     div.setAttribute('data-card-id', card.id.split('_')[0]);
+
+    const cardId = card.id.split('_')[0];
+    this.game.tooltipManager.addCardTooltip({
+      nodeId: cardId,
+      cardId: cardId
+    });
   }
 
   setupBackDiv(card: GestCard, div: HTMLElement) {

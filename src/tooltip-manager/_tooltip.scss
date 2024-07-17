@@ -15,6 +15,14 @@
   min-height: 372px;
   // background-color: purple;
 
+  .gest_card_side {
+    min-width: calc(var(--gestCardScale) * 206px);
+    min-height: calc(var(--gestCardScale) * 355px);
+    max-width: calc(var(--gestCardScale) * 206px);
+    max-height: calc(var(--gestCardScale) * 355px);
+    --gestCardScale: 1;
+  }
+
   .gest_card_tooltip_inner_container {
     flex-grow: 1;
     min-height: 100%;
@@ -67,18 +75,144 @@
   }
 }
 
-.gest_card_in_tooltip {
-  // position: absolute;
-  // bottom: 8px;
-  // left: 290px;
-  margin-right: -100px;
-  margin-left: 8px;
-  align-self: center;
-  width: 240px;
-  height: 334px;
-  background-size: 240px 334px;
-  box-shadow: 5px 5px 5px 0px rgba(0, 0, 0, 0.4);
-  border-radius: 10px;
-  // transform: perspective(60em) rotateY(-10deg)// scale(.93);
-  // animation: ea-wiggle 5s infinite alternate;
+.gest_card_only_tooltip {
+  --gestCardScale: 1.5;
+
+  .gest_card_side {
+    min-width: calc(var(--gestCardScale) * 206px);
+    min-height: calc(var(--gestCardScale) * 355px);
+    max-width: calc(var(--gestCardScale) * 206px);
+    max-height: calc(var(--gestCardScale) * 355px);
+  }
 }
+
+.gest_traveller_tooltip {
+  // height: 50px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 8px;
+  // min-width: 530px;
+  // max-width: 530px;
+
+  // background-color: yellow;
+
+  .gest_traveller_image {
+    min-width: 100px;
+    min-height: 92px;
+  }
+
+  .gest_traveller_stats_container {
+    .gest_traveller_name {
+      font-weight: bold;
+      font-size: large;
+    }
+
+    .gest_row {
+      font-size: medium;
+      .gest_traveller_defense {
+        font-weight: bold;
+      }
+
+      .gest_traveller_deck_count {
+        font-style: italic;
+      }
+
+      .gest_rob_result {
+        font-weight: bold;
+        font-style: italic;
+      }
+    }
+  }
+}
+
+.gest_icon_tooltip {
+  display: flex;
+  flex-direction: row;
+  width: 250px;
+
+  .gest_icon {
+    margin: 0px;
+  }
+
+  .gest_tooltip_title {
+    font-size: medium;
+    font-style: italic;
+  }
+
+  .gest_icon_tooltip_icon {
+    padding-top: 4px;
+
+    .gest_supreme_religion_tokens_theocracies_icon_container {
+      --paxRenTokenScale: 0.75;
+      display: flex;
+      flex-direction: row;
+    }
+  }
+
+  .gest_icon_tooltip_content {
+    display: flex;
+    flex-direction: column;
+    margin-left: 8px;
+  }
+
+  .gest_tooltip_text {
+    text-align: left;
+    font-size: small;
+  }
+}
+
+.dijitTooltipContainer {
+  .gest_royal_inspection_info {
+    font-size: medium;
+  }
+
+  .gest_carriage_tooltip {
+    font-size: medium;
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    // align-items: center;
+    gap: 8px;
+    --gestForceScale: 1;
+
+    .gest_title {
+      font-weight: 700;
+      font-size: large;
+    }
+
+    .gest_section_title {
+      font-weight: 700;
+    }
+  }
+}
+
+// #gest_robSummary {
+//   padding: 16px;
+//   --gestForceScale: 0.857;
+
+//   #gest_nottingham_image {
+//     background-image: url('img/nottingham.jpg');
+//     width: 60px;
+//     height: 60px;
+//     background-repeat: no-repeat;
+//     background-size: 100% 100%;
+//   }
+// }
+
+// .gest_card_in_tooltip {
+//   // position: absolute;
+//   // bottom: 8px;
+//   // left: 290px;
+//   margin-right: -100px;
+//   margin-left: 8px;
+//   align-self: center;
+//   width: 240px;
+//   height: 334px;
+//   background-size: 240px 334px;
+//   box-shadow: 5px 5px 5px 0px rgba(0, 0, 0, 0.4);
+//   border-radius: 10px;
+//   // transform: perspective(60em) rotateY(-10deg)// scale(.93);
+//   // animation: ea-wiggle 5s infinite alternate;
+// }

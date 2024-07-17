@@ -278,6 +278,7 @@ class GameMap {
     this.setupForces({ gamedatas });
     this.updateTrackMarkers({ gamedatas });
     // this.updateForces({ gamedatas });
+    this.game.tooltipManager.addGameMapTooltips();
   }
 
   // ..######...########.########.########.########.########...######.

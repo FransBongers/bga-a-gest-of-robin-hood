@@ -33,6 +33,7 @@
         padding-right: calc(var(--gestCardScale) * 12px);
 
         .gest_traveller_counter_row {
+          cursor: default;
           display: flex;
           flex-direction: row;
           flex-wrap: nowrap;

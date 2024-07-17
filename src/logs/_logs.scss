@@ -81,6 +81,7 @@
 
 #pagemaintitletext,
 #gameaction_status {
+  .gest_card_side,
   .gest_card {
     display: none;
   }
@@ -90,6 +91,10 @@
 .log > .roundedboxinner {
   .gest_card {
     margin-top: calc(var(--logCardScale) * 6px);
+  }
+
+  .gest_log_card {
+    --gestCardScale: var(--logCardScale);
   }
 
   .gest_log_die {

@@ -24,7 +24,7 @@ const tplLogTokenPlayerName = ({
 /* ------- GAME SPECIFIC LOG TOKENS ------- */
 
 const tplLogTokenCard = (id: string) => {
-  return `<div class="gest_log_card gest_card" data-card-id="${id}"></div>`;
+  return `<div class="gest_log_card gest_card gest_card_side" data-card-id="${id}"></div>`;
 };
 
 const tplLogTokenDieResult = (dieResult: string) => {

@@ -256,6 +256,9 @@ class Recruit extends \AGestOfRobinHood\Actions\Plot
       $merryMen = Utils::filter($forcesInSpace, function ($force) {
         return $force->isMerryMan();
       });
+      $merryMenNotRobinHood = Utils::filter($forcesInSpace, function ($force) {
+        return $force->isMerryManNotRobinHood();
+      });
 
       $recruitOptions = [];
       if ($hasCamp && $supplyCount >= 2) {
@@ -263,7 +266,7 @@ class Recruit extends \AGestOfRobinHood\Actions\Plot
       } else if (($hasCamp && $supplyCount === 1) || $supplyCount > 0) {
         $recruitOptions[] = PLACE_MERRY_MAN;
       }
-      if (!$hasCamp && count($merryMen) > 0) {
+      if (!$hasCamp && count($merryMenNotRobinHood) > 0) {
         $recruitOptions[] = REPLACE_MERRY_MAN_WITH_CAMP;
       }
       if ($hasCamp && Utils::array_some($merryMen, function ($merryMan) {
@@ -275,7 +278,7 @@ class Recruit extends \AGestOfRobinHood\Actions\Plot
       if (count($recruitOptions) > 0) {
         $options[$space->getId()] = [
           'space' => $space,
-          'merryMen' => $merryMen,
+          'merryMen' => $merryMenNotRobinHood,
           'recruitOptions' => $recruitOptions,
         ];
       }

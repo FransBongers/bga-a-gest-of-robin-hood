@@ -147,6 +147,12 @@ class Notifications
     }
   }
 
+  protected static function tknCardArg($card)
+  {
+    $cardId = $card->getId();
+    return explode('_', $cardId)[0];
+  }
+
   protected static function tknCardNameArg($card)
   {
     return explode('_', $card->getId())[0] . ':' . $card->getTitle();
@@ -296,18 +302,20 @@ class Notifications
 
   public static function drawAndRevealCard($card)
   {
-    self::notifyAll("drawAndRevealCard", clienttranslate('A new card is drawn from the Event deck: ${tkn_cardName}'), [
+    self::notifyAll("drawAndRevealCard", clienttranslate('A new card is drawn from the Event deck: ${tkn_cardName} ${tkn_card}'), [
       'card' => $card,
       'tkn_cardName' => self::tknCardNameArg($card),
+      'tkn_card' => self::tknCardArg($card),
     ]);
   }
 
   public static function drawAndRevealTravellerCard($player, $card)
   {
-    self::notifyAll("drawAndRevealTravellerCard", clienttranslate('${player_name} draws the top card of the Travellers deck: ${tkn_cardName}'), [
+    self::notifyAll("drawAndRevealTravellerCard", clienttranslate('${player_name} draws the top card of the Travellers deck: ${tkn_cardName} ${tkn_card}'), [
       'player' => $player,
       'card' => $card,
       'tkn_cardName' => self::tknCardNameArg($card),
+      'tkn_card' => self::tknCardArg($card),
     ]);
   }
 
@@ -539,10 +547,11 @@ class Notifications
 
   public static function placeCardInTravellersDeck($player, $card)
   {
-    self::notifyAll('placeCardInTravellersDeck', clienttranslate('${player_name} places ${tkn_cardName} in the Travellers Deck'), [
+    self::notifyAll('placeCardInTravellersDeck', clienttranslate('${player_name} places ${tkn_cardName} in the Travellers Deck  ${tkn_card}'), [
       'player' => $player,
       'card' => $card,
       'tkn_cardName' => self::tknCardNameArg($card),
+      'tkn_card' => self::tknCardArg($card),
     ]);
   }
 
@@ -854,8 +863,8 @@ class Notifications
 
     if ($fromLocation !== null) {
       $textMap = [
-        TRAVELLERS_DECK => clienttranslate('${player_name} removes ${tkn_cardName} from the Traveller Deck to the Victims Pile'),
-        TRAVELLERS_DISCARD => clienttranslate('${player_name} removes ${tkn_cardName} from the discard pile to the Victims Pile'),
+        TRAVELLERS_DECK => clienttranslate('${player_name} removes ${tkn_cardName} from the Traveller Deck to the Victims Pile ${tkn_card}'),
+        TRAVELLERS_DISCARD => clienttranslate('${player_name} removes ${tkn_cardName} from the discard pile to the Victims Pile ${tkn_card}'),
       ];
       $text = $textMap[$fromLocation];
     }
@@ -865,17 +874,19 @@ class Notifications
       'card' => $card,
       'fromLocation' => $fromLocation,
       'tkn_cardName' => self::tknCardNameArg($card),
+      'tkn_card' => self::tknCardArg($card),
     ]);
   }
 
   public static function putTravellerInDiscardPile($player, $card)
   {
-    $text = clienttranslate('${player_name} puts ${tkn_cardName} in the discard pile');
+    $text = clienttranslate('${player_name} puts ${tkn_cardName} in the discard pile ${tkn_card}');
 
     self::notifyAll("putTravellerInDiscardPile", $text, [
       'player' => $player,
       'card' => $card,
       'tkn_cardName' => self::tknCardNameArg($card),
+      'tkn_card' => self::tknCardArg($card),
     ]);
   }
 
@@ -921,8 +932,9 @@ class Notifications
 
     if ($fromLocation !== null) {
       $textMap = [
-        TRAVELLERS_DECK => clienttranslate('${player_name} removes ${tkn_cardName} from the Travellers Deck from the game'),
-        TRAVELLERS_DISCARD => clienttranslate('${player_name} removes ${tkn_cardName} from the discard pile from the game'),
+        TRAVELLER_ROBBED => clienttranslate('${player_name} removes ${tkn_cardName} from the game ${tkn_card}'),
+        TRAVELLERS_DECK => clienttranslate('${player_name} removes ${tkn_cardName} from the Travellers Deck from the game ${tkn_card}'),
+        TRAVELLERS_DISCARD => clienttranslate('${player_name} removes ${tkn_cardName} from the discard pile from the game ${tkn_card}'),
       ];
       $text = $textMap[$fromLocation];
     }
@@ -931,6 +943,7 @@ class Notifications
       'player' => $player,
       'card' => $card,
       'tkn_cardName' => self::tknCardNameArg($card),
+      'tkn_card' => self::tknCardArg($card),
     ]);
   }
 

@@ -106,6 +106,13 @@ const CARRIAGE = 'Carriage';
 const TALLAGE_CARRIAGE = 'TallageCarriage';
 const TRIBUTE_CARRIAGE = 'TributeCarriage';
 const TRAP_CARRIAGE = 'TrapCarriage';
+const HIDDEN_CARRIAGE = 'HiddenCarriage';
+
+const CARRIAGE_TYPES = [
+  TALLAGE_CARRIAGE,
+  TRAP_CARRIAGE,
+  TRIBUTE_CARRIAGE,
+];
 
 /**
  * Initiative track locations
