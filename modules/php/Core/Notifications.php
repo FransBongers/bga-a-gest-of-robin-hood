@@ -857,7 +857,7 @@ class Notifications
     ]);
   }
 
-  public static function putCardInVictimsPile($player, $card, $fromLocation = null)
+  public static function putCardInVictimsPile($player, $card, $fromLocation)
   {
     $text = clienttranslate('${player_name} puts ${tkn_cardName} in the Victims Pile');
 
@@ -926,7 +926,7 @@ class Notifications
     self::placeMerryMen($player, $robinHood, $merryMenToPlace, $textPublic, $textPrivate, $publicTextArgs, $privateTextArgs);
   }
 
-  public static function removeCardFromGame($player, $card, $fromLocation = null)
+  public static function removeCardFromGame($player, $card, $fromLocation)
   {
     $text = clienttranslate('${player_name} removes ${tkn_cardName} from the game');
 
@@ -942,6 +942,7 @@ class Notifications
     self::notifyAll("removeCardFromGame", $text, [
       'player' => $player,
       'card' => $card,
+      'fromLocation' => $fromLocation,
       'tkn_cardName' => self::tknCardNameArg($card),
       'tkn_card' => self::tknCardArg($card),
     ]);

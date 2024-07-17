@@ -159,6 +159,7 @@ interface NotifPlaceMerryMenPrivateArgs extends NotifWithPlayerArgs {
 
 interface NotifPutCardInVictimsPileArgs {
   card: GestCard;
+  fromLocation: string;
 }
 
 interface NotifPutTravellerInDiscardPileArgs {
@@ -172,6 +173,7 @@ interface NotifRedeploymentSheriffArgs {
 
 interface NotifRemoveCardFromGameArgs {
   card: GestCard;
+  fromLocation: string;
 }
 
 interface NotifRevealCarriageArgs extends NotifWithPlayerArgs {

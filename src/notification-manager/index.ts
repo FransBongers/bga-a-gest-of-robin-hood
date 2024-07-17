@@ -482,7 +482,12 @@ class NotificationManager {
     this.getPlayer({ playerId }).counters.shillings.incValue(-amount);
   }
 
-  async notif_placeCardInTravellersDeck(notif: Notif<NotifPayShillingsArgs>) {}
+  async notif_placeCardInTravellersDeck(
+    notif: Notif<NotifPlaceCardInTravellersDeckArgs>
+  ) {
+    const { card } = notif.args;
+    this.game.cardArea.incTravellerInDeckCounterValue(card.id.split('_')[1], 1);
+  }
 
   async notif_placeForce(notif: Notif<NotifPlaceForceArgs>) {
     const { force, spaceId, count, playerId } = notif.args;
@@ -565,8 +570,16 @@ class NotificationManager {
   async notif_putCardInVictimsPile(
     notif: Notif<NotifPutCardInVictimsPileArgs>
   ) {
-    const { card } = notif.args;
+    const { card, fromLocation } = notif.args;
 
+    if (fromLocation === TRAVELLERS_DECK) {
+      this.game.cardArea.incTravellerInDeckCounterValue(
+        card.id.split('_')[1],
+        -1
+      );
+    } else if (fromLocation === TRAVELLERS_DISCARD) {
+      this.game.cardArea.counters.travellersDiscard.incValue(-1);
+    }
     await this.game.cardArea.stocks.travellerRobbed.removeCard(card);
     this.game.cardArea.counters.victimsPile.incValue(1);
   }
@@ -603,8 +616,22 @@ class NotificationManager {
   }
 
   async notif_removeCardFromGame(notif: Notif<NotifRemoveCardFromGameArgs>) {
-    const { card } = notif.args;
+    const { card, fromLocation } = notif.args;
     await this.game.cardManager.removeCard(card);
+    switch (fromLocation) {
+      case TRAVELLERS_DECK:
+        this.game.cardArea.incTravellerInDeckCounterValue(
+          card.id.split('_')[1],
+          -1
+        );
+        return;
+      case TRAVELLERS_DISCARD:
+        this.game.cardArea.counters.travellersDiscard.incValue(-1);
+        return;
+      case TRAVELLERS_VICTIMS_PILE:
+        this.game.cardArea.counters.victimsPile.incValue(-1);
+        return;
+    }
   }
 
   async notif_removeForceFromGamePublic(notif: Notif<NotifReturnToSupplyArgs>) {

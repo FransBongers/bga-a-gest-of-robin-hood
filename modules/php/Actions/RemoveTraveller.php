@@ -59,8 +59,9 @@ class RemoveTraveller extends \AGestOfRobinHood\Actions\Plot
         $card->removeFromGame($player);
       }
       if ($to[0] === TRAVELLERS_VICTIMS_PILE) {
+        $from = $card->getLocation();
         $card->setLocation(TRAVELLERS_VICTIMS_PILE);
-        Notifications::putCardInVictimsPile(self::getPlayer(), $card);
+        Notifications::putCardInVictimsPile(self::getPlayer(), $card, $from);
       }
       $this->checkShuffle();
       $this->resolveAction(['automatic' => true]);

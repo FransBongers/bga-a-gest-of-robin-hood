@@ -4648,9 +4648,14 @@ var NotificationManager = (function () {
         });
     };
     NotificationManager.prototype.notif_placeCardInTravellersDeck = function (notif) {
-        return __awaiter(this, void 0, void 0, function () { return __generator(this, function (_a) {
-            return [2];
-        }); });
+        return __awaiter(this, void 0, void 0, function () {
+            var card;
+            return __generator(this, function (_a) {
+                card = notif.args.card;
+                this.game.cardArea.incTravellerInDeckCounterValue(card.id.split('_')[1], 1);
+                return [2];
+            });
+        });
     };
     NotificationManager.prototype.notif_placeForce = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
@@ -4756,14 +4761,20 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_putCardInVictimsPile = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var card;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var _a, card, fromLocation;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
-                        card = notif.args.card;
+                        _a = notif.args, card = _a.card, fromLocation = _a.fromLocation;
+                        if (fromLocation === TRAVELLERS_DECK) {
+                            this.game.cardArea.incTravellerInDeckCounterValue(card.id.split('_')[1], -1);
+                        }
+                        else if (fromLocation === TRAVELLERS_DISCARD) {
+                            this.game.cardArea.counters.travellersDiscard.incValue(-1);
+                        }
                         return [4, this.game.cardArea.stocks.travellerRobbed.removeCard(card)];
                     case 1:
-                        _a.sent();
+                        _b.sent();
                         this.game.cardArea.counters.victimsPile.incValue(1);
                         return [2];
                 }
@@ -4821,14 +4832,25 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_removeCardFromGame = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var card;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var _a, card, fromLocation;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
-                        card = notif.args.card;
+                        _a = notif.args, card = _a.card, fromLocation = _a.fromLocation;
                         return [4, this.game.cardManager.removeCard(card)];
                     case 1:
-                        _a.sent();
+                        _b.sent();
+                        switch (fromLocation) {
+                            case TRAVELLERS_DECK:
+                                this.game.cardArea.incTravellerInDeckCounterValue(card.id.split('_')[1], -1);
+                                return [2];
+                            case TRAVELLERS_DISCARD:
+                                this.game.cardArea.counters.travellersDiscard.incValue(-1);
+                                return [2];
+                            case TRAVELLERS_VICTIMS_PILE:
+                                this.game.cardArea.counters.victimsPile.incValue(-1);
+                                return [2];
+                        }
                         return [2];
                 }
             });

@@ -45,9 +45,10 @@ class PutCardInVictimsPile extends \AGestOfRobinHood\Actions\Plot
     $cardId = $this->ctx->getInfo()['cardId'];
 
     $card = Cards::get($cardId);
+    $from = $card->getLocation();
     $card->setLocation(TRAVELLERS_VICTIMS_PILE);
 
-    Notifications::putCardInVictimsPile(self::getPlayer(), $card);
+    Notifications::putCardInVictimsPile(self::getPlayer(), $card, $from);
     $this->resolveAction(['automatic' => true]);
   }
 
