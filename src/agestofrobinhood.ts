@@ -433,6 +433,10 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
 
     dojo.forEach(this._connections, dojo.disconnect);
     this._connections = [];
+    this._selectableNodes.forEach((node) => {
+      if ($(node)) dojo.removeClass(node, 'selectable selected');
+    });
+    this._selectableNodes = [];
 
     dojo.query(`.${GEST_SELECTABLE}`).removeClass(GEST_SELECTABLE);
     dojo.query(`.${GEST_SELECTED}`).removeClass(GEST_SELECTED);

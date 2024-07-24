@@ -1613,6 +1613,7 @@ var CardManager = (function () {
 }());
 var MIN_PLAY_AREA_WIDTH = 1500;
 var MIN_NOTIFICATION_MS = 1200;
+var ENABLED = 'enabled';
 var DISABLED = "disabled";
 var GEST_SELECTABLE = "gest_selectable";
 var GEST_SELECTED = "gest_selected";
@@ -1620,6 +1621,7 @@ var DISCARD = "discard";
 var PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY = "confirmEndOfTurnPlayerSwitchOnly";
 var PREF_SHOW_ANIMATIONS = "showAnimations";
 var PREF_ANIMATION_SPEED = "animationSpeed";
+var PREF_CARD_INFO_IN_TOOLTIP = 'cardInfoInTooltip';
 var PREF_CARD_SIZE_IN_LOG = "cardSizeInLog";
 var PREF_DISABLED = "disabled";
 var PREF_ENABLED = "enabled";
@@ -2076,9 +2078,23 @@ var AGestOfRobinHood = (function () {
         if ($('dockedlog_' + notif.mobileLogId)) {
             dojo.addClass('dockedlog_' + notif.mobileLogId, 'notif_' + type);
         }
+        while (this.tooltipsToMap.length) {
+            var tooltipToMap = this.tooltipsToMap.pop();
+            if (!tooltipToMap || !tooltipToMap[1]) {
+                console.error('error tooltipToMap', tooltipToMap);
+            }
+            else {
+                this.addLogTooltip({
+                    tooltipId: tooltipToMap[0],
+                    cardId: tooltipToMap[1],
+                });
+            }
+        }
     };
     AGestOfRobinHood.prototype.addLogTooltip = function (_a) {
         var tooltipId = _a.tooltipId, cardId = _a.cardId;
+    };
+    AGestOfRobinHood.prototype.updateLogTooltips = function () {
     };
     AGestOfRobinHood.prototype.setLoader = function (value, max) {
         this.framework().inherited(arguments);
@@ -2202,28 +2218,41 @@ var InfoPanel = (function () {
     return InfoPanel;
 }());
 var tplInfoPanel = function () { return "<div class='player-board' id=\"info_panel\"></div>"; };
-var LOG_TOKEN_BOLD_TEXT = "boldText";
-var LOG_TOKEN_NEW_LINE = "newLine";
-var LOG_TOKEN_CARD = "card";
+var LOG_TOKEN_BOLD_TEXT = 'boldText';
+var LOG_TOKEN_NEW_LINE = 'newLine';
+var LOG_TOKEN_CARD = 'card';
+var LOG_TOKEN_CARD_NAME = 'cardName';
 var tooltipIdCounter = 0;
 var getTokenDiv = function (_a) {
     var key = _a.key, value = _a.value, game = _a.game;
-    var splitKey = key.split("_");
+    var splitKey = key.split('_');
     var type = splitKey[1];
     switch (type) {
         case LOG_TOKEN_BOLD_TEXT:
             return tlpLogTokenBoldText({ text: value });
         case LOG_TOKEN_CARD:
             return tplLogTokenCard(value);
+        case LOG_TOKEN_CARD_NAME:
+            var cardNameTooltipId = undefined;
+            var withTooltip = value.includes(':');
+            if (withTooltip) {
+                cardNameTooltipId = "gest_tooltip_".concat(game._last_tooltip_id);
+                game.tooltipsToMap.push([game._last_tooltip_id, value.split(':')[0]]);
+                game._last_tooltip_id++;
+            }
+            return tlpLogTokenBoldText({
+                text: withTooltip ? value.split(':')[1] : value,
+                tooltipId: cardNameTooltipId,
+            });
         case LOG_TOKEN_NEW_LINE:
-            return "<br>";
+            return '<br>';
         default:
             return value;
     }
 };
 var tlpLogTokenBoldText = function (_a) {
-    var text = _a.text;
-    return "<span style=\"font-weight: 700;\">".concat(_(text), "</span>");
+    var text = _a.text, tooltipId = _a.tooltipId;
+    return "<span ".concat(tooltipId ? "id=\"".concat(tooltipId, "\"") : '', " style=\"font-weight: 700;\">").concat(_(text), "</span>");
 };
 var tplLogTokenPlayerName = function (_a) {
     var name = _a.name, color = _a.color;
@@ -2500,6 +2529,23 @@ var getSettingsConfig = function () {
                         },
                     },
                     type: "slider",
+                },
+                _a[PREF_CARD_INFO_IN_TOOLTIP] = {
+                    id: PREF_CARD_INFO_IN_TOOLTIP,
+                    onChangeInSetup: false,
+                    defaultValue: ENABLED,
+                    label: _("Show card info in tooltip"),
+                    type: "select",
+                    options: [
+                        {
+                            label: _("Enabled"),
+                            value: ENABLED,
+                        },
+                        {
+                            label: _("Disabled (card image only)"),
+                            value: DISABLED,
+                        },
+                    ],
                 },
                 _a),
         },
@@ -2820,6 +2866,17 @@ var tplCardTooltipContainer = function (_a) {
     var card = _a.card, content = _a.content;
     return "<div class=\"gest_card_tooltip\">\n  <div class=\"gest_card_tooltip_inner_container\">\n    ".concat(content, "\n  </div>\n  ").concat(card, "\n</div>");
 };
+var tplCardTooltip = function (_a) {
+    var card = _a.card, game = _a.game, _b = _a.imageOnly, imageOnly = _b === void 0 ? false : _b;
+    var cardHtml = "<div class=\"gest_card\" data-card-id=\"".concat(card.id.split('_')[0], "\"></div>");
+    if (imageOnly) {
+        return "<div style=\"--gestCardScale: 1.7;\">".concat(cardHtml, "</div>");
+    }
+    return tplCardTooltipContainer({
+        card: cardHtml,
+        content: "\n    <span class=\"gest_title\">".concat(_(card.title), "</span>\n    \n    "),
+    });
+};
 var TooltipManager = (function () {
     function TooltipManager(game) {
         this.idRegex = /id="[a-z]*_[0-9]*_[0-9]*"/;
@@ -2833,6 +2890,15 @@ var TooltipManager = (function () {
         this.game.framework().removeTooltip(nodeId);
     };
     TooltipManager.prototype.setupTooltips = function () {
+    };
+    TooltipManager.prototype.addCardTooltip = function (_a) {
+        var nodeId = _a.nodeId, card = _a.card;
+        var html = tplCardTooltip({
+            card: card,
+            game: this.game,
+            imageOnly: this.game.settings.get({ id: PREF_CARD_INFO_IN_TOOLTIP }) === DISABLED,
+        });
+        this.game.framework().addTooltipHtml(nodeId, html, 500);
     };
     return TooltipManager;
 }());
