@@ -42,9 +42,10 @@ class SetupRobinHoodState implements State {
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({
-      text: _('${you} must select a Space to place Robin Hood'),
+      text: _('${you} must select a Space to place ${tkn_merryMan}'),
       args: {
         you: '${you}',
+        tkn_merryMan: 'hidden:RobinHood',
       },
     });
 
@@ -60,9 +61,10 @@ class SetupRobinHoodState implements State {
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({
-      text: _('${you} must select a Space to place a Merry Man'),
+      text: _('${you} must select a Space to place ${tkn_merryMan}'),
       args: {
         you: '${you}',
+        tkn_merryMan: 'hidden:MerryMen',
       },
     });
 
@@ -93,17 +95,17 @@ class SetupRobinHoodState implements State {
       });
     };
 
-    if (
-      this.game.settings.get({
-        id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
-      }) === PREF_ENABLED
-    ) {
-      callback();
-    } else {
-      this.game.addConfirmButton({
-        callback,
-      });
-    }
+    // if (
+    //   this.game.settings.get({
+    //     id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+    //   }) === PREF_ENABLED
+    // ) {
+    callback();
+    // } else {
+    //   this.game.addConfirmButton({
+    //     callback,
+    //   });
+    // }
 
     this.addCancelButton();
   }

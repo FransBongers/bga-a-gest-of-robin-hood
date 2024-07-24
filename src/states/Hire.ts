@@ -79,9 +79,10 @@ class HireState implements State {
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({
-      text: _('${you} must select the number of Henchmen to place'),
+      text: _('${you} must select the number of ${tkn_henchman} to place'),
       args: {
         you: '${you}',
+        tkn_henchman: _('Henchmmen')
       },
     });
 

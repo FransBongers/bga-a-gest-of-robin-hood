@@ -137,7 +137,7 @@ class Patrol extends \AGestOfRobinHood\Actions\Plot
       $numberOfMerryMenToReveal = count($hiddenMerryMen);
     }
 
-    if ($numberOfMerryMenToReveal === 0) {
+    if ($numberOfMerryMenToReveal == 0) {
       $checkpoint = false;
     }
 
@@ -151,7 +151,7 @@ class Patrol extends \AGestOfRobinHood\Actions\Plot
     }
 
     $this->insertPlotAction($player);
-
+    Notifications::log('checkpoint arg', $checkpoint);
     $this->resolveAction($args, $checkpoint);
   }
 

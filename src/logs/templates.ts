@@ -9,9 +9,9 @@ const tlpLogTokenBoldText = ({
   tooltipId?: string;
   italic?: boolean;
 }) =>
-  `<span ${tooltipId ? `id="${tooltipId}"` : ''} style="font-weight: 700;${italic ? ' font-style: italic;' : ''}">${_(
-    text
-  )}</span>`;
+  `<span ${tooltipId ? `id="${tooltipId}"` : ''} style="font-weight: 700;${
+    italic ? ' font-style: italic;' : ''
+  }">${_(text)}</span>`;
 
 const tplLogTokenPlayerName = ({
   name,
@@ -34,3 +34,12 @@ const tplLogTokenDieResult = (dieResult: string) => {
     Number(result) > 0 ? '+' : ''
   }${result}</span></div>`;
 };
+
+const tplLogTokenForce = (forceInfo: string) => {
+  const [side, type] = forceInfo.split(':');
+  return `<div class="gest_force_side gest_log_token" data-revealed="${
+    side === 'revealed'
+  }" data-type="${type}"></div>`;
+};
+
+const tplLogTokenShilling = (): string => '<div class="gest_log_token gest_icon" data-icon="shilling"></div>'

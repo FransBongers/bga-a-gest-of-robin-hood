@@ -3,9 +3,15 @@ const LOG_TOKEN_BOLD_ITALIC_TEXT = 'boldItalicText';
 const LOG_TOKEN_NEW_LINE = 'newLine';
 // const LOG_TOKEN_PLAYER_NAME = "playerName";
 // Game specific
+const LOG_TOKEN_CAMP = 'camp';
 const LOG_TOKEN_CARD = 'card';
 const LOG_TOKEN_CARD_NAME = 'cardName';
+const LOG_TOKEN_CARRIAGE = 'carriage';
 const LOG_TOKEN_DIE_RESULT = 'dieResult';
+const LOG_TOKEN_FORCE = 'force';
+const LOG_TOKEN_HENCHMAN = 'henchman';
+const LOG_TOKEN_MERRY_MEN = 'merryMan';
+const LOG_TOKEN_SHILLING = 'shilling';
 
 let tooltipIdCounter = 0;
 
@@ -41,8 +47,16 @@ const getTokenDiv = ({
       });
     case LOG_TOKEN_DIE_RESULT:
       return tplLogTokenDieResult(value);
+    case LOG_TOKEN_CAMP:
+    case LOG_TOKEN_FORCE:
+    case LOG_TOKEN_CARRIAGE:
+    case LOG_TOKEN_HENCHMAN:
+    case LOG_TOKEN_MERRY_MEN:
+      return tplLogTokenForce(value);
     case LOG_TOKEN_NEW_LINE:
       return '<br>';
+    case LOG_TOKEN_SHILLING:
+      return tplLogTokenShilling();
     default:
       return value;
   }

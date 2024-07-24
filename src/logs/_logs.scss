@@ -79,33 +79,6 @@
 
 /* ------- LOG TOKENS ------- */
 
-#pagemaintitletext,
-#gameaction_status {
-  .gest_card_side,
-  .gest_card {
-    display: none;
-  }
-}
-
-.log > .roundedbox,
-.log > .roundedboxinner {
-  .gest_card {
-    margin-top: calc(var(--logCardScale) * 6px);
-  }
-
-  .gest_log_card {
-    --gestCardScale: var(--logCardScale);
-  }
-
-  .gest_log_die {
-    --gestTokenScale: 0.7;
-    position: relative;
-    top: -3px;
-    margin-top: 3px;
-    vertical-align: middle;
-  }
-}
-
 .gest_log_die {
   min-height: calc(var(--gestTokenScale) * 40px);
   min-width: calc(var(--gestTokenScale) * 40px);
@@ -123,6 +96,130 @@
     text-align: center;
     font-weight: 700;
     font-size: large;
+    margin-top: 3px;
+  }
+}
+
+#customActions {
+  .gest_log_token {
+    display: inline-block;
+    position: relative;
+    vertical-align: middle;
+  }
+
+  .gest_force_side[data-type='TallageCarriage'],
+  .gest_force_side[data-type='TrapCarriage'],
+  .gest_force_side[data-type='TributeCarriage'],
+  .gest_force_side[data-type='Carriage'] {
+    --gestForceScale: 0.55;
+    margin: -3px;
+  }
+
+  .gest_force_side[data-type='Camp'],
+  .gest_force_side[data-type='Henchmen'],
+  .gest_force_side[data-type='MerryMen'],
+  .gest_force_side[data-type='RobinHood'] {
+    --gestForceScale: 0.55;
+    top: -3px;
+    margin-top: 3px;
+  }
+}
+
+#pagemaintitletext,
+#gameaction_status {
+  .gest_card_side,
+  .gest_card {
+    display: none;
+  }
+
+  .gest_log_token {
+    display: inline-block;
+    position: relative;
+    vertical-align: middle;
+  }
+
+  .gest_log_die {
+    --gestTokenScale: 0.7;
+    position: relative;
+    top: -3px;
+    margin-top: 3px;
+    vertical-align: middle;
+
+    .gest_log_die_value {
+      margin-top: -1px;
+    }
+  }
+
+  .gest_force_side[data-type='TallageCarriage'],
+  .gest_force_side[data-type='TrapCarriage'],
+  .gest_force_side[data-type='TributeCarriage'],
+  .gest_force_side[data-type='Carriage'] {
+    --gestForceScale: 0.65;
+    top: -3px;
+    margin-top: 3px;
+  }
+
+  .gest_force_side[data-type='Camp'],
+  .gest_force_side[data-type='Henchmen'],
+  .gest_force_side[data-type='MerryMen'],
+  .gest_force_side[data-type='RobinHood'] {
+    --gestForceScale: 0.7;
+    top: -3px;
+    margin-top: 3px;
+  }
+
+  .gest_icon[data-icon='shilling'] {
+    --gestIconScale: 1.1;
+    top: -3px;
+    margin-top: 3px;
+  }
+}
+
+.log > .roundedbox,
+.log > .roundedboxinner {
+  .gest_card {
+    margin-top: calc(var(--logCardScale) * 6px);
+  }
+
+  .gest_log_token {
+    display: inline-block;
+    position: relative;
+    vertical-align: middle;
+  }
+
+  .gest_log_card {
+    --gestCardScale: var(--logCardScale);
+  }
+
+  .gest_log_die {
+    --gestTokenScale: 0.7;
+    position: relative;
+    top: -3px;
+    margin-top: 3px;
+    vertical-align: middle;
+  }
+
+  .gest_force_side[data-type='TallageCarriage'],
+  .gest_force_side[data-type='TrapCarriage'],
+  .gest_force_side[data-type='TributeCarriage'],
+  .gest_force_side[data-type='Carriage'] {
+    --gestForceScale: 0.65;
+    top: -3px;
+    margin-top: 3px;
+  }
+
+  .gest_force_side[data-type='Camp'],
+  .gest_force_side[data-type='Henchmen'],
+  .gest_force_side[data-type='MerryMen'],
+  .gest_force_side[data-type='RobinHood'] {
+    --gestForceScale: 0.6;
+    top: -3px;
+    margin-top: 3px;
+  }
+
+  .gest_icon[data-icon='shilling'] {
+    --gestIconScale: 0.9;
+    top: -3px;
     margin-top: 3px;
   }
 }

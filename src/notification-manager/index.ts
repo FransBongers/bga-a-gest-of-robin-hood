@@ -47,6 +47,7 @@ class NotificationManager {
     const notifs: string[] = [
       // Boilerplate
       'log',
+      'message',
       'clearTurn',
       'refreshUI',
       'refreshForcesPrivate',
@@ -223,6 +224,10 @@ class NotificationManager {
   async notif_log(notif: Notif<unknown>) {
     // this is for debugging php side
     debug('notif_log', notif.args);
+  }
+
+  async notif_message(notif: Notif<unknown>) {
+    // Only here so messages get displayed in title bar
   }
 
   async notif_clearTurn(notif: Notif<NotifClearTurnArgs>) {

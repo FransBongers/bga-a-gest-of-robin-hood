@@ -38,7 +38,7 @@ class CaptureState implements State {
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({
-      text: _('${you} must select a Space to Capture Merry Men in'),
+      text: _('${you} must select a Space to Capture in'),
       args: {
         you: '${you}',
       },

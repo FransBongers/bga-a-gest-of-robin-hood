@@ -1,14 +1,14 @@
 class ConfiscateState implements State {
   private game: AGestOfRobinHoodGame;
   private args: OnEnteringConfiscateStateArgs;
-  
+
   constructor(game: AGestOfRobinHoodGame) {
     this.game = game;
   }
 
   onEnteringState(args: OnEnteringConfiscateStateArgs) {
     debug('Entering ConfiscateState');
-      this.args = args;
+    this.args = args;
     this.updateInterfaceInitialStep();
   }
 
@@ -68,9 +68,11 @@ class ConfiscateState implements State {
     });
 
     this.args._private.availableCarriageTypes.forEach((carriageType) =>
-      this.game.addPrimaryActionButton({
+      this.game.addSecondaryActionButton({
         id: `${carriageType}_btn`,
-        text: carriageType,
+        text: this.game.format_string_recursive('${tkn_carriage}', {
+          tkn_carriage: `${REVEALED}:${carriageType}`,
+        }),
         callback: () => this.updateInterfaceConfirm({ space, carriageType }),
       })
     );
@@ -88,10 +90,10 @@ class ConfiscateState implements State {
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({
-      text: _('Place ${carriageType} in ${spaceName}?'),
+      text: _('Place ${tkn_carriage} in ${spaceName}?'),
       args: {
         spaceName: _(space.name),
-        carriageType: carriageType,
+        tkn_carriage: `${REVEALED}:${carriageType}`,
       },
     });
 
@@ -144,5 +146,4 @@ class ConfiscateState implements State {
   // .##.....##.#########.##..####.##.....##.##.......##.............##
   // .##.....##.##.....##.##...###.##.....##.##.......##.......##....##
   // .##.....##.##.....##.##....##.########..########.########..######.
-
 }

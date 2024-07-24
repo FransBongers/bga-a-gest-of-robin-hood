@@ -73,9 +73,19 @@ class RecruitState implements State {
     this.game.setSpaceSelected({ id: space.id });
 
     recruitOptions.forEach((option) => {
-      this.game.addPrimaryActionButton({
+      this.game.addSecondaryActionButton({
         id: `${option}_btn`,
-        text: this.getOptionName({ option }),
+        text: this.game.format_string_recursive(
+          this.getOptionName({ option }),
+          {
+            tkn_merryMan_1: `${HIDDEN}:${MERRY_MEN}`,
+            tkn_merryMan_2: `${HIDDEN}:${MERRY_MEN}`,
+            tkn_merryMan_revealed: `${REVEALED}:${MERRY_MEN}`,
+            tkn_camp: `${
+              FOREST_SPACES.includes(space.id) ? REVEALED : HIDDEN
+            }:${CAMP}`,
+          }
+        ),
         callback: () => {
           if (
             this.args._private.robinHoodInSupply &&
@@ -154,7 +164,7 @@ class RecruitState implements State {
       this.updateInterfaceConfirm({
         space,
         recruitOption,
-        merryManId: merryMen[0].id,
+        merryMan: merryMen[0],
       });
       return;
     }
@@ -175,7 +185,7 @@ class RecruitState implements State {
           this.updateInterfaceConfirm({
             space,
             recruitOption,
-            merryManId: merryMan.id,
+            merryMan,
           });
         },
       });
@@ -187,26 +197,90 @@ class RecruitState implements State {
   private updateInterfaceConfirm({
     space,
     recruitOption,
-    merryManId,
+    merryMan,
     recruitRobinHood,
   }: {
     space: GestSpace;
     recruitOption: string;
-    merryManId?: string;
+    merryMan?: GestForce;
     recruitRobinHood?: boolean;
   }) {
     this.game.clearPossible();
-    if (merryManId) {
-      this.game.setElementSelected({ id: merryManId });
+    if (merryMan) {
+      this.game.setElementSelected({ id: merryMan.id });
+    }
+
+    let text = _(
+      'Pay 1 ${tkn_shilling} to place ${merryMenLog} in ${spaceName}?'
+    );
+    if (recruitOption === REPLACE_MERRY_MAN_WITH_CAMP) {
+      text = _(
+        'Pay 1 ${tkn_shilling} to replace ${tkn_merryMan} in ${spaceName} with ${tkn_camp}?'
+      );
+    } else if (recruitOption === FLIP_ALL_MERRY_MAN_TO_HIDDEN) {
+      text = _(
+        'Pay 1 ${tkn_shilling} to flip all ${tkn_merryMan_revealed} in ${spaceName} to ${tkn_merryMan_hidden}?'
+      );
+    }
+
+    const args = {
+      tkn_shilling: _('Shilling'),
+      spaceName: _(space.name),
+    };
+    if (recruitOption === PLACE_MERRY_MAN) {
+      args['merryMenLog'] = {
+        log: '${tkn_merryMan_1}',
+        args: {
+          tkn_merryMan_1: `${HIDDEN}:${MERRY_MEN}`,
+        },
+      };
+    } else if (recruitOption === PLACE_TWO_MERRY_MEN) {
+      args['merryMenLog'] = {
+        log: '${tkn_merryMan_1}${tkn_merryMan_2}',
+        args: {
+          tkn_merryMan_1: `${HIDDEN}:${MERRY_MEN}`,
+          tkn_merryMan_2: `${HIDDEN}:${MERRY_MEN}`,
+        },
+      };
+    } else if (recruitOption === REPLACE_MERRY_MAN_WITH_CAMP) {
+      args['tkn_camp'] = `${
+        FOREST_SPACES.includes(space.id) ? REVEALED : HIDDEN
+      }:${CAMP}`;
+      args['tkn_merryMan'] = `${
+        merryMan?.hidden ? HIDDEN : REVEALED
+      }:${MERRY_MEN}`;
+    } else if (recruitOption === FLIP_ALL_MERRY_MAN_TO_HIDDEN) {
+      args['tkn_merryMan_revealed'] = `${REVEALED}:${MERRY_MEN}`;
+      args['tkn_merryMan_hidden'] = `${HIDDEN}:${MERRY_MEN}`;
     }
 
     this.game.clientUpdatePageTitle({
-      text: _('${recruitOption} in ${spaceName}?'),
-      args: {
-        recruitOption: this.getOptionName({ option: recruitOption }),
-        spaceName: _(space.name),
-      },
+      // text: _('${recruitOption} in ${spaceName}?'),
+      text,
+      args,
     });
+
+    // this.game.clientUpdatePageTitle({
+    //   // text: _('${recruitOption} in ${spaceName}?'),
+    //   text,
+    //   args: {
+    //     merryMenLog: {
+    //       recruitOption ===
+    //     },
+    //     recruitOption: {
+    //       log: this.getOptionName({ option: recruitOption }),
+    //       args: {
+    //         tkn_merryMan_1: `${HIDDEN}:${MERRY_MEN}`,
+    //         tkn_merryMan_2: `${HIDDEN}:${MERRY_MEN}`,
+    //         tkn_merryMan_revealed: `${REVEALED}:${MERRY_MEN}`,
+    //         tkn_camp: `${
+    //           FOREST_SPACES.includes(space.id) ? REVEALED : HIDDEN
+    //         }:${CAMP}`,
+    //       },
+    //     },
+    //     spaceName: _(space.name),
+    //   },
+    // });
     this.game.setSpaceSelected({ id: space.id });
 
     const callback = () => {
@@ -216,7 +290,7 @@ class RecruitState implements State {
         args: {
           spaceId: space.id,
           recruitOption,
-          merryManId,
+          merryManId: merryMan?.id,
           recruitRobinHood,
         },
       });
@@ -248,13 +322,15 @@ class RecruitState implements State {
   private getOptionName({ option }: { option: string }) {
     switch (option) {
       case PLACE_MERRY_MAN:
-        return _('Place one Merry Man');
+        return _('Place ${tkn_merryMan_1}');
       case PLACE_TWO_MERRY_MEN:
-        return _('Place two Merry Man');
+        return _('Place ${tkn_merryMan_1}${tkn_merryMan_2}');
       case REPLACE_MERRY_MAN_WITH_CAMP:
-        return _('Replace one Merry Man with a Camp');
+        return _(
+          'Replace ${tkn_merryMan_1} or ${tkn_merryMan_revealed} with ${tkn_camp}'
+        );
       case FLIP_ALL_MERRY_MAN_TO_HIDDEN:
-        return _('Flip all Merry Men to hidden');
+        return _('Flip all ${tkn_merryMan_revealed} to ${tkn_merryMan_1}');
       default:
         return ';';
     }

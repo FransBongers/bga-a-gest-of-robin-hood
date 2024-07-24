@@ -163,6 +163,17 @@ class Notifications
     return $color . ':' . $result;
   }
 
+  protected static function tknForcePrivateArg($force)
+  {
+    return implode(':', [$force->isHidden() ? HIDDEN : REVEALED, $force->getType()]);
+  }
+
+  protected static function tknForcePublicArg($force)
+  {
+    $isHidden = $force->isHidden();
+    return implode(':', [$isHidden ? HIDDEN : REVEALED, $isHidden ? $force->getPublicType() : $force->getType()]);
+  }
+
   //  .##.....##.########.####.##.......####.########.##....##
   //  .##.....##....##.....##..##........##.....##.....##..##.
   //  .##.....##....##.....##..##........##.....##......####..
@@ -355,9 +366,10 @@ class Notifications
 
   public static function gainShillings($player, $amount)
   {
-    self::notifyAll("gainShillings", clienttranslate('${player_name} gains ${amount} Shillings'), [
+    self::notifyAll("gainShillings", clienttranslate('${player_name} gains ${amount} ${tkn_shilling}'), [
       'player' => $player,
       'amount' => $amount,
+      'tkn_shilling' => clienttranslate('Shilling(s)'),
     ]);
   }
 
@@ -528,11 +540,12 @@ class Notifications
 
   public static function payShillings($player, $amount)
   {
-    $text = $amount === 1 ? clienttranslate('${player_name} pays ${amount} Shilling') : clienttranslate('${player_name} pays ${amount} Shillings');
+    $text = clienttranslate('${player_name} pays ${amount} ${tkn_shilling}');
 
     self::notifyAll("payShillings", $text, [
       'player' => $player,
       'amount' => $amount,
+      'tkn_shilling' => clienttranslate('Shilling(s)'),
     ]);
   }
 
@@ -558,25 +571,31 @@ class Notifications
 
   public static function placeForce($player, $force, $space)
   {
-    self::notify($player, 'placeForcePrivate', clienttranslate('${player_name} places ${tkn_boldText_forceName} in ${tkn_boldText_spaceName}'), [
+    $isHidden = $force->isHidden();
+    $privateTknForce = implode(':', [$isHidden ? HIDDEN : REVEALED, $force->getType()]);
+    if (in_array($force->getType(), CARRIAGE_TYPES)) {
+      $privateTknForce = implode(':', [REVEALED, $force->getType()]);
+    }
+
+    self::notify($player, 'placeForcePrivate', clienttranslate('${player_name} places ${tkn_force} in ${tkn_boldText_spaceName}'), [
       'player' => $player,
       'you' => '${you}',
       'forces' => [$force],
       'spaceId' => $space->getId(),
-      'tkn_boldText_forceName' => $force->getName(),
+      'tkn_force' => $privateTknForce,
       'tkn_boldText_spaceName' => $space->getName(),
       'i18n' => ['tkn_boldText_forceName', 'tkn_boldText_spaceName']
     ]);
 
-    $isHidden = $force->isHidden();
-    self::notifyAll('placeForce', clienttranslate('${player_name} places ${tkn_boldText_forceName} in ${tkn_boldText_spaceName}'), [
+
+    self::notifyAll('placeForce', clienttranslate('${player_name} places ${tkn_force} in ${tkn_boldText_spaceName}'), [
       'player' => $player,
       'force' => [
         'type' => $isHidden ? $force->getPublicType() : $force->getType(),
         'hidden' => $isHidden,
       ],
       'spaceId' => $space->getId(),
-      'tkn_boldText_forceName' => $force->getPublicName(),
+      'tkn_force' => implode(':', [$isHidden ? HIDDEN : REVEALED, $isHidden ? $force->getPublicType() : $force->getType()]),
       'tkn_boldText_spaceName' => $space->getName(),
       'count' => 1,
       'i18n' => ['tkn_boldText_forceName', 'tkn_boldText_spaceName'],
@@ -596,6 +615,7 @@ class Notifications
     ]);
   }
 
+  // TODO: simplify text logs for this
   public static function placeMerryMen($player, $robinHood, $merryMen, $textPublic, $textPrivate, $publicTextArgs = [],  $privateTextArgs = [])
   {
     self::notify($player, 'placeMerryMenPrivate', $textPrivate, array_merge($privateTextArgs, [
@@ -978,11 +998,11 @@ class Notifications
 
   public static function returnHenchmanSupply($player, $force, $space)
   {
-    self::notifyAll('returnToSupplyPrivate', clienttranslate('${player_name} returns ${tkn_boldText_forceName} from ${tkn_boldText_spaceName} to Available Forces'), [
+    self::notifyAll('returnToSupplyPrivate', clienttranslate('${player_name} returns ${tkn_force} from ${tkn_boldText_spaceName} to Available Forces'), [
       'player' => $player,
       'force' => $force,
       'spaceId' => $space->getId(),
-      'tkn_boldText_forceName' => $force->getName(),
+      'tkn_force' => self::tknForcePrivateArg($force),
       'tkn_boldText_spaceName' => $space->getName(),
       'i18n' => ['tkn_boldText_forceName', 'tkn_boldText_spaceName']
     ]);
@@ -992,23 +1012,23 @@ class Notifications
   {
     $actingPlayer = ($force->isMerryMan() || $force->isCamp()) && !$player->isRobinHood() ? Players::getRobinHoodPlayer() : $player;
 
-    self::notify($actingPlayer, 'returnToSupplyPrivate', clienttranslate('${player_name} returns ${tkn_boldText_forceName} from ${tkn_boldText_spaceName} to Available Forces'), [
+    self::notify($actingPlayer, 'returnToSupplyPrivate', clienttranslate('${player_name} returns ${tkn_force} from ${tkn_boldText_spaceName} to Available Forces'), [
       'player' => $actingPlayer,
       'force' => $force,
       'spaceId' => $fromPrison ? PRISON : $space->getId(),
-      'tkn_boldText_forceName' => $force->getName(),
+      'tkn_force' => self::tknForcePrivateArg($force),
       'tkn_boldText_spaceName' => $fromPrison ? clienttranslate('Prison') : $space->getName(),
       'i18n' => ['tkn_boldText_forceName', 'tkn_boldText_spaceName']
     ]);
 
-    self::notifyAll('returnToSupplyPublic', clienttranslate('${player_name} returns ${tkn_boldText_forceName} from ${tkn_boldText_spaceName} to Available Forces'), [
+    self::notifyAll('returnToSupplyPublic', clienttranslate('${player_name} returns ${tkn_force} from ${tkn_boldText_spaceName} to Available Forces'), [
       'player' => $actingPlayer,
       'force' => [
         'type' => $isHidden ? $force->getPublicType() : $force->getType(),
         'hidden' => $isHidden,
       ],
       'spaceId' => $fromPrison ? PRISON : $space->getId(),
-      'tkn_boldText_forceName' => $force->getPublicName(),
+      'tkn_force' => self::tknForcePublicArg($force),
       'tkn_boldText_spaceName' => $fromPrison ? clienttranslate('Prison') : $space->getName(),
       'i18n' => ['tkn_boldText_forceName', 'tkn_boldText_spaceName'],
       'preserve' => ['playerId']
@@ -1212,9 +1232,118 @@ class Notifications
 
   public static function setupRobinHood($player, $robinHood, $merryMen)
   {
-    $textPublic = clienttranslate('${player_name} places Forces');
-    $textPrivate = clienttranslate('Private: ${player_name} places forces');
-    self::placeMerryMen($player, $robinHood, $merryMen, $textPublic, $textPrivate);
+    $text = clienttranslate('${player_name} places ${forcesLog}');
+
+    $forcesLogText = '${tkn_merryMan_1}${tkn_merryMan_2}${tkn_merryMan_3}${tkn_merryMan_4}';
+
+    $publicArgs = [
+      'forcesLog' => [
+        'log' => $forcesLogText,
+        'args' => [
+          'tkn_merryMan_1' => 'hidden:' . MERRY_MEN,
+          'tkn_merryMan_2' => 'hidden:' . MERRY_MEN,
+          'tkn_merryMan_3' => 'hidden:' . MERRY_MEN,
+          'tkn_merryMan_4' => 'hidden:' . MERRY_MEN,
+        ]
+      ]
+    ];
+
+    $privateArgs = [
+      'forcesLog' => [
+        'log' => $forcesLogText,
+        'args' => [
+          'tkn_merryMan_1' => 'hidden:' . ROBIN_HOOD,
+          'tkn_merryMan_2' => 'hidden:' . MERRY_MEN,
+          'tkn_merryMan_3' => 'hidden:' . MERRY_MEN,
+          'tkn_merryMan_4' => 'hidden:' . MERRY_MEN,
+        ]
+      ]
+    ];
+
+    self::placeMerryMen($player, $robinHood, $merryMen, $text, $text, $publicArgs, $privateArgs);
+
+    // TODO: check if we want to get '${forces} in ${spaceName}' working
+    // $startingSpaces = Spaces::get([REMSTON, SHIRE_WOOD, SOUTHWELL_FOREST]);
+    // $countsPerSpace = [];
+    // foreach ($startingSpaces as $spaceId => $startingSpace) {
+    //   $countsPerSpace[$spaceId] = [
+    //     'space' => $startingSpace,
+    //     ROBIN_HOOD => $robinHood->getLocation() === $spaceId ? 1 : 0,
+    //     MERRY_MEN => count(Utils::filter($merryMen, function ($merryMan) use ($spaceId) {
+    //       return $merryMan->getLocation() === $spaceId;
+    //     })),
+    //   ];
+    // }
+
+    // $forcesInSpaceLog = '';
+    // $publicForcesInSpaceArgs = [];
+    // $privateForcesInSpaceArgs = [];
+
+
+    // $filteredCounts = Utils::filter($countsPerSpace, function ($counts) {
+    //   return $counts[ROBIN_HOOD] + $counts[MERRY_MEN] > 0;
+    // });
+
+    // foreach ($filteredCounts as $index => $counts) {
+    //   $log = '';
+    //   $publicArgs = [];
+    //   $privateArgs = [];
+    //   $forceIndex = 0;
+    //   if ($counts[ROBIN_HOOD] > 0) {
+    //     $key = '${tkn_merryMan_' . $forceIndex . '}';
+    //     $log = $log . $key;
+    //     $publicArgs[$key] = 'hidden:' . MERRY_MEN;
+    //     $privateArgs[$key] = 'hidden:' . ROBIN_HOOD;
+    //     $forceIndex++;
+    //   }
+
+    //   for ($i = 0; $i < $counts[MERRY_MEN]; $i++) {
+    //     $key = '${tkn_merryMan_' . $forceIndex . '}';
+    //     $log = $log . $key;
+    //     $publicArgs[$key] = 'hidden:' . MERRY_MEN;
+    //     $privateArgs[$key] = 'hidden:' . MERRY_MEN;
+    //     $forceIndex++;
+    //   }
+
+    //   $forcesInSpaceText = '${forces} in ${tkn_boldText_spaceName}';
+    //   if ($index > 0) {
+    //     $forcesInSpaceText = ', ${forces} in ${tkn_boldText_spaceName}';
+    //   }
+    //   $forcesInSpaceKey = '$forcesInSpaceLog_' . $index . '}';
+    //   $forcesInSpaceLog = $forcesInSpaceLog . $forcesInSpaceKey;
+    //   $publicForcesInSpaceArgs[$forcesInSpaceKey] = [
+    //     'log' => $forcesInSpaceText,
+    //     'args' => [
+    //       'forces' => [
+    //         'log' => $log,
+    //         'args' => $publicArgs,
+    //       ],
+    //       'tkn_boldText_spaceName' => $counts['space']->getName(),
+    //       'i18n' => ['tkn_boldText_spaceName'],
+    //     ]
+    //   ];
+    //   $privateForcesInSpaceArgs[$forcesInSpaceKey] = [
+    //     'log' => $forcesInSpaceText,
+    //     'args' => [
+    //       'forces' => [
+    //         'log' => $log,
+    //         'args' => $privateArgs,
+    //         'tkn_boldText_spaceName' => $counts['space']->getName(),
+    //         'i18n' => ['tkn_boldText_spaceName'],
+    //       ]
+    //     ]
+    //   ];
+    // }
+
+    // $text = clienttranslate('${player_name} places ${forcesInSpacesLog}');
+    // // $textPrivate = clienttranslate('${player_name} places forces');
+    // self::placeMerryMen($player, $robinHood, $merryMen, $text, $text, ['forcesInSpacesLog' => [
+    //   'log' => $forcesInSpaceLog,
+    //   'args' => $publicForcesInSpaceArgs
+    // ]], ['forcesInSpacesLog' => [
+    //   'log' => $forcesInSpaceLog,
+    //   'args' => $privateForcesInSpaceArgs
+    // ]]);
   }
 
   public static function shuffleTravellersDeck($player)

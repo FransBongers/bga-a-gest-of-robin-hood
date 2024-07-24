@@ -1670,6 +1670,7 @@ var SPACES = [
     SOUTHWELL_FOREST,
     TUXFORD,
 ];
+var FOREST_SPACES = [SHIRE_WOOD, SOUTHWELL_FOREST];
 var BLYTH_RETFORD_BORDER = 'Blyth_Retford_border';
 var BINGHAM_NEWARK_BORDER = 'Bingham_Newark_border';
 var BINGHAM_SOUTHWELL_FOREST_BORDER = 'Bingham_SouthwellForest_border';
@@ -1684,6 +1685,8 @@ var RIVER_BORDERS = (_a = {},
     _a);
 var USED_CARRIAGES = 'usedCarriages';
 var PRISON = 'prison';
+var REVEALED = 'revealed';
+var HIDDEN = 'hidden';
 var CAMP = 'Camp';
 var MERRY_MEN = 'MerryMen';
 var HENCHMEN = 'Henchmen';
@@ -4127,9 +4130,15 @@ var tplInformationModalContent = function (_a) {
 var LOG_TOKEN_BOLD_TEXT = 'boldText';
 var LOG_TOKEN_BOLD_ITALIC_TEXT = 'boldItalicText';
 var LOG_TOKEN_NEW_LINE = 'newLine';
+var LOG_TOKEN_CAMP = 'camp';
 var LOG_TOKEN_CARD = 'card';
 var LOG_TOKEN_CARD_NAME = 'cardName';
+var LOG_TOKEN_CARRIAGE = 'carriage';
 var LOG_TOKEN_DIE_RESULT = 'dieResult';
+var LOG_TOKEN_FORCE = 'force';
+var LOG_TOKEN_HENCHMAN = 'henchman';
+var LOG_TOKEN_MERRY_MEN = 'merryMan';
+var LOG_TOKEN_SHILLING = 'shilling';
 var tooltipIdCounter = 0;
 var getTokenDiv = function (_a) {
     var key = _a.key, value = _a.value, game = _a.game;
@@ -4156,8 +4165,16 @@ var getTokenDiv = function (_a) {
             });
         case LOG_TOKEN_DIE_RESULT:
             return tplLogTokenDieResult(value);
+        case LOG_TOKEN_CAMP:
+        case LOG_TOKEN_FORCE:
+        case LOG_TOKEN_CARRIAGE:
+        case LOG_TOKEN_HENCHMAN:
+        case LOG_TOKEN_MERRY_MEN:
+            return tplLogTokenForce(value);
         case LOG_TOKEN_NEW_LINE:
             return '<br>';
+        case LOG_TOKEN_SHILLING:
+            return tplLogTokenShilling();
         default:
             return value;
     }
@@ -4177,6 +4194,11 @@ var tplLogTokenDieResult = function (dieResult) {
     var _a = dieResult.split(':'), color = _a[0], result = _a[1];
     return "<div class=\"gest_log_die\" data-die-color=\"".concat(color, "\"><span class=\"gest_log_die_value\">").concat(Number(result) > 0 ? '+' : '').concat(result, "</span></div>");
 };
+var tplLogTokenForce = function (forceInfo) {
+    var _a = forceInfo.split(':'), side = _a[0], type = _a[1];
+    return "<div class=\"gest_force_side gest_log_token\" data-revealed=\"".concat(side === 'revealed', "\" data-type=\"").concat(type, "\"></div>");
+};
+var tplLogTokenShilling = function () { return '<div class="gest_log_token gest_icon" data-icon="shilling"></div>'; };
 var MarkerManager = (function (_super) {
     __extends(MarkerManager, _super);
     function MarkerManager(game) {
@@ -4234,6 +4256,7 @@ var NotificationManager = (function () {
         });
         var notifs = [
             'log',
+            'message',
             'clearTurn',
             'refreshUI',
             'refreshForcesPrivate',
@@ -4339,6 +4362,13 @@ var NotificationManager = (function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 debug('notif_log', notif.args);
+                return [2];
+            });
+        });
+    };
+    NotificationManager.prototype.notif_message = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
                 return [2];
             });
         });
@@ -6062,7 +6092,7 @@ var CaptureState = (function () {
         var _this = this;
         this.game.clearPossible();
         this.game.clientUpdatePageTitle({
-            text: _('${you} must select a Space to Capture Merry Men in'),
+            text: _('${you} must select a Space to Capture in'),
             args: {
                 you: '${you}',
             },
@@ -6333,9 +6363,11 @@ var ConfiscateState = (function () {
             },
         });
         this.args._private.availableCarriageTypes.forEach(function (carriageType) {
-            return _this.game.addPrimaryActionButton({
+            return _this.game.addSecondaryActionButton({
                 id: "".concat(carriageType, "_btn"),
-                text: carriageType,
+                text: _this.game.format_string_recursive('${tkn_carriage}', {
+                    tkn_carriage: "".concat(REVEALED, ":").concat(carriageType),
+                }),
                 callback: function () { return _this.updateInterfaceConfirm({ space: space, carriageType: carriageType }); },
             });
         });
@@ -6346,10 +6378,10 @@ var ConfiscateState = (function () {
         var carriageType = _a.carriageType, space = _a.space;
         this.game.clearPossible();
         this.game.clientUpdatePageTitle({
-            text: _('Place ${carriageType} in ${spaceName}?'),
+            text: _('Place ${tkn_carriage} in ${spaceName}?'),
             args: {
                 spaceName: _(space.name),
-                carriageType: carriageType,
+                tkn_carriage: "".concat(REVEALED, ":").concat(carriageType),
             },
         });
         var callback = function () {
@@ -8238,9 +8270,10 @@ var HireState = (function () {
         var max = _a.max, space = _a.space, action = _a.action;
         this.game.clearPossible();
         this.game.clientUpdatePageTitle({
-            text: _('${you} must select the number of Henchmen to place'),
+            text: _('${you} must select the number of ${tkn_henchman} to place'),
             args: {
                 you: '${you}',
+                tkn_henchman: _('Henchmmen')
             },
         });
         var _loop_4 = function (i) {
@@ -8997,9 +9030,14 @@ var RecruitState = (function () {
         });
         this.game.setSpaceSelected({ id: space.id });
         recruitOptions.forEach(function (option) {
-            _this.game.addPrimaryActionButton({
+            _this.game.addSecondaryActionButton({
                 id: "".concat(option, "_btn"),
-                text: _this.getOptionName({ option: option }),
+                text: _this.game.format_string_recursive(_this.getOptionName({ option: option }), {
+                    tkn_merryMan_1: "".concat(HIDDEN, ":").concat(MERRY_MEN),
+                    tkn_merryMan_2: "".concat(HIDDEN, ":").concat(MERRY_MEN),
+                    tkn_merryMan_revealed: "".concat(REVEALED, ":").concat(MERRY_MEN),
+                    tkn_camp: "".concat(FOREST_SPACES.includes(space.id) ? REVEALED : HIDDEN, ":").concat(CAMP),
+                }),
                 callback: function () {
                     if (_this.args._private.robinHoodInSupply &&
                         (option === PLACE_MERRY_MAN || option === PLACE_TWO_MERRY_MEN)) {
@@ -9064,7 +9102,7 @@ var RecruitState = (function () {
             this.updateInterfaceConfirm({
                 space: space,
                 recruitOption: recruitOption,
-                merryManId: merryMen[0].id,
+                merryMan: merryMen[0],
             });
             return;
         }
@@ -9083,7 +9121,7 @@ var RecruitState = (function () {
                     _this.updateInterfaceConfirm({
                         space: space,
                         recruitOption: recruitOption,
-                        merryManId: merryMan.id,
+                        merryMan: merryMan,
                     });
                 },
             });
@@ -9092,17 +9130,50 @@ var RecruitState = (function () {
     };
     RecruitState.prototype.updateInterfaceConfirm = function (_a) {
         var _this = this;
-        var space = _a.space, recruitOption = _a.recruitOption, merryManId = _a.merryManId, recruitRobinHood = _a.recruitRobinHood;
+        var space = _a.space, recruitOption = _a.recruitOption, merryMan = _a.merryMan, recruitRobinHood = _a.recruitRobinHood;
         this.game.clearPossible();
-        if (merryManId) {
-            this.game.setElementSelected({ id: merryManId });
+        if (merryMan) {
+            this.game.setElementSelected({ id: merryMan.id });
+        }
+        var text = _('Pay 1 ${tkn_shilling} to place ${merryMenLog} in ${spaceName}?');
+        if (recruitOption === REPLACE_MERRY_MAN_WITH_CAMP) {
+            text = _('Pay 1 ${tkn_shilling} to replace ${tkn_merryMan} in ${spaceName} with ${tkn_camp}?');
+        }
+        else if (recruitOption === FLIP_ALL_MERRY_MAN_TO_HIDDEN) {
+            text = _('Pay 1 ${tkn_shilling} to flip all ${tkn_merryMan_revealed} in ${spaceName} to ${tkn_merryMan_hidden}?');
+        }
+        var args = {
+            tkn_shilling: _('Shilling'),
+            spaceName: _(space.name),
+        };
+        if (recruitOption === PLACE_MERRY_MAN) {
+            args['merryMenLog'] = {
+                log: '${tkn_merryMan_1}',
+                args: {
+                    tkn_merryMan_1: "".concat(HIDDEN, ":").concat(MERRY_MEN),
+                },
+            };
+        }
+        else if (recruitOption === PLACE_TWO_MERRY_MEN) {
+            args['merryMenLog'] = {
+                log: '${tkn_merryMan_1}${tkn_merryMan_2}',
+                args: {
+                    tkn_merryMan_1: "".concat(HIDDEN, ":").concat(MERRY_MEN),
+                    tkn_merryMan_2: "".concat(HIDDEN, ":").concat(MERRY_MEN),
+                },
+            };
+        }
+        else if (recruitOption === REPLACE_MERRY_MAN_WITH_CAMP) {
+            args['tkn_camp'] = "".concat(FOREST_SPACES.includes(space.id) ? REVEALED : HIDDEN, ":").concat(CAMP);
+            args['tkn_merryMan'] = "".concat((merryMan === null || merryMan === void 0 ? void 0 : merryMan.hidden) ? HIDDEN : REVEALED, ":").concat(MERRY_MEN);
+        }
+        else if (recruitOption === FLIP_ALL_MERRY_MAN_TO_HIDDEN) {
+            args['tkn_merryMan_revealed'] = "".concat(REVEALED, ":").concat(MERRY_MEN);
+            args['tkn_merryMan_hidden'] = "".concat(HIDDEN, ":").concat(MERRY_MEN);
         }
         this.game.clientUpdatePageTitle({
-            text: _('${recruitOption} in ${spaceName}?'),
-            args: {
-                recruitOption: this.getOptionName({ option: recruitOption }),
-                spaceName: _(space.name),
-            },
+            text: text,
+            args: args,
         });
         this.game.setSpaceSelected({ id: space.id });
         var callback = function () {
@@ -9112,7 +9183,7 @@ var RecruitState = (function () {
                 args: {
                     spaceId: space.id,
                     recruitOption: recruitOption,
-                    merryManId: merryManId,
+                    merryManId: merryMan === null || merryMan === void 0 ? void 0 : merryMan.id,
                     recruitRobinHood: recruitRobinHood,
                 },
             });
@@ -9133,13 +9204,13 @@ var RecruitState = (function () {
         var option = _a.option;
         switch (option) {
             case PLACE_MERRY_MAN:
-                return _('Place one Merry Man');
+                return _('Place ${tkn_merryMan_1}');
             case PLACE_TWO_MERRY_MEN:
-                return _('Place two Merry Man');
+                return _('Place ${tkn_merryMan_1}${tkn_merryMan_2}');
             case REPLACE_MERRY_MAN_WITH_CAMP:
-                return _('Replace one Merry Man with a Camp');
+                return _('Replace ${tkn_merryMan_1} or ${tkn_merryMan_revealed} with ${tkn_camp}');
             case FLIP_ALL_MERRY_MAN_TO_HIDDEN:
-                return _('Flip all Merry Men to hidden');
+                return _('Flip all ${tkn_merryMan_revealed} to ${tkn_merryMan_1}');
             default:
                 return ';';
         }
@@ -10775,9 +10846,10 @@ var SetupRobinHoodState = (function () {
     SetupRobinHoodState.prototype.updateInterfaceInitialStep = function () {
         this.game.clearPossible();
         this.game.clientUpdatePageTitle({
-            text: _('${you} must select a Space to place Robin Hood'),
+            text: _('${you} must select a Space to place ${tkn_merryMan}'),
             args: {
                 you: '${you}',
+                tkn_merryMan: 'hidden:RobinHood',
             },
         });
         this.setSpacesSelectable();
@@ -10789,9 +10861,10 @@ var SetupRobinHoodState = (function () {
     SetupRobinHoodState.prototype.updateInterfacePlaceMerryMen = function () {
         this.game.clearPossible();
         this.game.clientUpdatePageTitle({
-            text: _('${you} must select a Space to place a Merry Man'),
+            text: _('${you} must select a Space to place ${tkn_merryMan}'),
             args: {
                 you: '${you}',
+                tkn_merryMan: 'hidden:MerryMen',
             },
         });
         this.setSpacesSelectable();
@@ -10817,16 +10890,7 @@ var SetupRobinHoodState = (function () {
                 },
             });
         };
-        if (this.game.settings.get({
-            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
-        }) === PREF_ENABLED) {
-            callback();
-        }
-        else {
-            this.game.addConfirmButton({
-                callback: callback,
-            });
-        }
+        callback();
         this.addCancelButton();
     };
     SetupRobinHoodState.prototype.addCancelButton = function () {

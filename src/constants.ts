@@ -77,6 +77,8 @@ const SPACES = [
   TUXFORD,
 ];
 
+const FOREST_SPACES = [SHIRE_WOOD, SOUTHWELL_FOREST];
+
 const BLYTH_RETFORD_BORDER = 'Blyth_Retford_border';
 const BINGHAM_NEWARK_BORDER = 'Bingham_Newark_border';
 const BINGHAM_SOUTHWELL_FOREST_BORDER = 'Bingham_SouthwellForest_border';
@@ -93,6 +95,10 @@ const RIVER_BORDERS = {
 
 const USED_CARRIAGES = 'usedCarriages';
 const PRISON = 'prison';
+
+// Used for log tokens
+const REVEALED = 'revealed';
+const HIDDEN = 'hidden';
 
 /**
  * Force types
