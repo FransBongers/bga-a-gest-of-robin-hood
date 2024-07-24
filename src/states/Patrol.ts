@@ -137,17 +137,17 @@ class PatrolState implements State {
       });
     };
 
-    if (
-      this.game.settings.get({
-        id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
-      }) === PREF_ENABLED
-    ) {
-      callback();
-    } else {
-      this.game.addConfirmButton({
-        callback,
-      });
-    }
+    // if (
+    //   this.game.settings.get({
+    //     id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+    //   }) === PREF_ENABLED
+    // ) {
+    //   callback();
+    // } else {
+    this.game.addConfirmButton({
+      callback,
+    });
+    // }
 
     this.game.addCancelButton();
   }

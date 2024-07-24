@@ -57,7 +57,8 @@ trait DebugTrait
     // $this->debugPlaceForces(CAMP,RETFORD,1);
     // Forces::get('merryMen_5')->setLocation(NEWARK);
     // Forces::get('henchmen_4')->setLocation(TUXFORD);
-    // Forces::get('henchmen_1')->setLocation(RETFORD);
+    Forces::get('merryMen_1')->setLocation(SHIRE_WOOD);
+    Forces::get(ROBIN_HOOD)->setLocation(SHIRE_WOOD);
 
     // Forces::get('merryMen_4')->setLocation(BLYTH);
     // Forces::get('merryMen_1')->setHidden(0);

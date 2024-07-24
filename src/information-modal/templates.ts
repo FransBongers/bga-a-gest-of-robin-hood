@@ -223,7 +223,7 @@ const royalInspectionUnrest = ({game}: {game: AGestOfRobinHoodGame}) => `
     </div>
     <div class="gest_row">    
       <span class="gest_list_item">•</span>
-      <span>${_('5-7 Submissive Parishes: +3 Justice')}</span>
+      <span>${_('0 Submissive Parishes: +3 Justice')}</span>
     </div>
     <div><span>${_('Then check for automatic victory (Royal Favour at 5 or more)')}</span></div>
   </div>

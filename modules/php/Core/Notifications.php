@@ -861,7 +861,7 @@ class Notifications
   {
     $text = clienttranslate('${player_name} puts ${tkn_cardName} in the Victims Pile');
 
-    if ($fromLocation !== null) {
+    if ($fromLocation === TRAVELLERS_DECK || $fromLocation === TRAVELLERS_DISCARD) {
       $textMap = [
         TRAVELLERS_DECK => clienttranslate('${player_name} removes ${tkn_cardName} from the Traveller Deck to the Victims Pile ${tkn_card}'),
         TRAVELLERS_DISCARD => clienttranslate('${player_name} removes ${tkn_cardName} from the discard pile to the Victims Pile ${tkn_card}'),

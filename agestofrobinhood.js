@@ -2015,6 +2015,11 @@ var AGestOfRobinHood = (function () {
         dojo.empty('customActions');
         dojo.forEach(this._connections, dojo.disconnect);
         this._connections = [];
+        this._selectableNodes.forEach(function (node) {
+            if ($(node))
+                dojo.removeClass(node, 'selectable selected');
+        });
+        this._selectableNodes = [];
         dojo.query(".".concat(GEST_SELECTABLE)).removeClass(GEST_SELECTABLE);
         dojo.query(".".concat(GEST_SELECTED)).removeClass(GEST_SELECTED);
         this.gameMap.clearSelectable();
@@ -4087,7 +4092,7 @@ var robSummaryInfo = function (_a) {
 var travellerInfoRow = function (info) { return "<div class=\"gest_traveller_info_row\">\n        <div class=\"gest_traveller_image\" data-image=\"".concat(info.image, "\"></div>\n        <div class=\"gest_traveller_stats_container\">\n          <div class=\"gest_row\">\n            <span class=\"gest_traveller_name\">").concat(_(info.name), "</span>\n            <span class=\"gest_traveller_deck_count\">").concat(_(info.inDeck), "</span>\n            <span style=\"font-weight: bold;\">: </span>\n            <span class=\"gest_traveller_defense\">").concat(info.defense, " ").concat(_('Defense'), "</span>\n          </div>\n          <div class=\"gest_row\">\n            <span class=\"gest_rob_result\">").concat(_('Success: '), "</span>\n            <span>").concat(_(info.success), "</span>\n          </div>\n          <div class=\"gest_row\">\n            <span class=\"gest_rob_result\">").concat(_('Failure: '), "</span>\n            <span>").concat(_(info.failure), "</span>\n          </div>\n  </div>\n</div>"); };
 var royalInspectionUnrest = function (_a) {
     var game = _a.game;
-    return "\n  <div class=\"gest_royal_inspection_info\">\n    <div>    \n      <span>".concat(game.format_string_recursive(_('${tkn_boldText_unrest} Check the number of Submissive Parises:'), { tkn_boldText_unrest: _('Unrest: ') }), "</span>\n    </div>\n    <div class=\"gest_row\">    \n      <span class=\"gest_list_item\">\u2022</span>\n      <span>").concat(_('5-7 Submissive Parishes: +1 Order'), "</span>\n    </div>\n    <div class=\"gest_row\">    \n      <span class=\"gest_list_item\">\u2022</span>\n      <span>").concat(_('3-4 Submissive Parishes: +1 Justice'), "</span>\n    </div>\n    <div class=\"gest_row\">    \n      <span class=\"gest_list_item\">\u2022</span>\n      <span\">").concat(_('1-2 Submissive Parishes: +2 Justice'), "</span>\n    </div>\n    <div class=\"gest_row\">    \n      <span class=\"gest_list_item\">\u2022</span>\n      <span>").concat(_('5-7 Submissive Parishes: +3 Justice'), "</span>\n    </div>\n    <div><span>").concat(_('Then check for automatic victory (Royal Favour at 5 or more)'), "</span></div>\n  </div>\n");
+    return "\n  <div class=\"gest_royal_inspection_info\">\n    <div>    \n      <span>".concat(game.format_string_recursive(_('${tkn_boldText_unrest} Check the number of Submissive Parises:'), { tkn_boldText_unrest: _('Unrest: ') }), "</span>\n    </div>\n    <div class=\"gest_row\">    \n      <span class=\"gest_list_item\">\u2022</span>\n      <span>").concat(_('5-7 Submissive Parishes: +1 Order'), "</span>\n    </div>\n    <div class=\"gest_row\">    \n      <span class=\"gest_list_item\">\u2022</span>\n      <span>").concat(_('3-4 Submissive Parishes: +1 Justice'), "</span>\n    </div>\n    <div class=\"gest_row\">    \n      <span class=\"gest_list_item\">\u2022</span>\n      <span\">").concat(_('1-2 Submissive Parishes: +2 Justice'), "</span>\n    </div>\n    <div class=\"gest_row\">    \n      <span class=\"gest_list_item\">\u2022</span>\n      <span>").concat(_('0 Submissive Parishes: +3 Justice'), "</span>\n    </div>\n    <div><span>").concat(_('Then check for automatic victory (Royal Favour at 5 or more)'), "</span></div>\n  </div>\n");
 };
 var royalInspectionMischief = function (_a) {
     var game = _a.game;
@@ -8689,16 +8694,9 @@ var PatrolState = (function () {
                 },
             });
         };
-        if (this.game.settings.get({
-            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
-        }) === PREF_ENABLED) {
-            callback();
-        }
-        else {
-            this.game.addConfirmButton({
-                callback: callback,
-            });
-        }
+        this.game.addConfirmButton({
+            callback: callback,
+        });
         this.game.addCancelButton();
     };
     PatrolState.prototype.handleHenchmenClick = function (_a) {

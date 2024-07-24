@@ -309,6 +309,8 @@ class Rob extends \AGestOfRobinHood\Actions\Plot
       $alreadyRobbedSpaceIds[] = $resArgs['spaceId'];
     }
 
+    $travellersDeckHasCards = Cards::countInLocation(TRAVELLERS_DECK) > 0;
+
     foreach ($spaces as $spaceId => $space) {
       if (in_array($spaceId, $alreadyRobbedSpaceIds)) {
         continue;
@@ -331,10 +333,12 @@ class Rob extends \AGestOfRobinHood\Actions\Plot
         TRIBUTE_CARRIAGE => 0,
       ];
 
+      $spaceHasCarriages = false;
       foreach ($forces as $force) {
         if (!$force->isCarriage() || $force->getLocation() !== $spaceId) {
           continue;
         }
+        $spaceHasCarriages = true;
         if ($force->isHidden()) {
           $carriagesInSpace[HIDDEN_CARRIAGE]++;
         } else {
@@ -342,13 +346,16 @@ class Rob extends \AGestOfRobinHood\Actions\Plot
         }
       }
 
-      $options[$spaceId] = [
-        'space' => $space,
-        'traveller' => true, // Do we need to check if there are cars in the deck?
-        'carriages' => $carriagesInSpace,
-        'merryMen' => $merryMenInSpaceThatCanRob,
-        'treasury' => $spaceId === NOTTINGHAM,
-      ];
+      $hasTreasury = $spaceId === NOTTINGHAM;
+      if ($travellersDeckHasCards || $spaceHasCarriages || $hasTreasury) {
+        $options[$spaceId] = [
+          'space' => $space,
+          'traveller' => $travellersDeckHasCards,
+          'carriages' => $carriagesInSpace,
+          'merryMen' => $merryMenInSpaceThatCanRob,
+          'treasury' => $hasTreasury,
+        ];
+      }
     }
 
     return $options;
