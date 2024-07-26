@@ -44,7 +44,7 @@ class Recruit extends \AGestOfRobinHood\Actions\Plot
 
     $player = self::getPlayer();
 
-    if (!$this->canBePerformed($player, $player->getShillings())) {
+    if (!$this->canBePerformed($player, $player->getShillings(), $this->getCost())) {
       $this->resolveAction(['automatic' => true]);
     }
   }
@@ -137,8 +137,7 @@ class Recruit extends \AGestOfRobinHood\Actions\Plot
       throw new \feException("ERROR 011");
     }
 
-    $info = $this->ctx->getInfo();
-    $cost = isset($info['cost']) ? $info['cost'] : 1;
+    $cost = $this->getCost();
 
     if ($cost > 0) {
       $player->payShillings($cost);
@@ -171,6 +170,11 @@ class Recruit extends \AGestOfRobinHood\Actions\Plot
   //  .##.....##....##.....##..##........##.....##.......##...
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
+
+  private function getCost() {
+    $info = $this->ctx->getInfo();
+    return isset($info['cost']) ? $info['cost'] : 1;
+  }
 
   public function canBePerformed($player, $availableShillings, $cost = null)
   {
