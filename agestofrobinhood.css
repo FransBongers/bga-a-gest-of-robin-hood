@@ -688,6 +688,11 @@
   background-position-x: 0%;
 }
 
+.gest_force.gest_selectable,
+.gest_force.gest_selected {
+  z-index: 1;
+}
+
 .gest_force.gest_selectable > .card-sides > .card-side {
   cursor: pointer;
   background-position-y: 50%;

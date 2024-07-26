@@ -145,6 +145,11 @@
 //   box-shadow: 0px 0px 0px calc(var(--gestForceScale) * 6px) base.$selected-color !important;
 // }
 
+.gest_force.gest_selectable,
+.gest_force.gest_selected {
+  z-index: 1;
+}
+
 .gest_force.gest_selectable > .card-sides > .card-side {
   cursor: pointer;
   background-position-y: 50%;
