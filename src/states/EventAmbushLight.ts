@@ -83,6 +83,7 @@ class EventAmbushLightState implements State {
         you: '${you}',
       },
     });
+    this.game.setSpaceSelected({ id: this.selectedSpaceId });
 
     this.args._private.merryMen.forEach((merryMan) => {
       this.game.setElementSelectable({
@@ -98,7 +99,18 @@ class EventAmbushLightState implements State {
       callback: () => this.updateInterfaceConfirm(),
     });
 
-    this.game.addCancelButton();
+    if (
+      this.args._private.spaceIds.length === 1 &&
+      this.merryMenIds.length === 0
+    ) {
+      // First step was skipped so we show undo buttons here
+      this.game.addPassButton({
+        optionalAction: this.args.optionalAction,
+      });
+      this.game.addUndoButtons(this.args);
+    } else {
+      this.game.addCancelButton();
+    }
   }
 
   private updateInterfaceConfirm() {
@@ -110,6 +122,7 @@ class EventAmbushLightState implements State {
         spaceName: this.game.gamedatas.spaces[this.selectedSpaceId].name,
       },
     });
+    this.game.setSpaceSelected({ id: this.selectedSpaceId });
     this.merryMenIds.forEach((id) => this.game.setElementSelected({ id }));
 
     const callback = () => {

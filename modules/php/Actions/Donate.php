@@ -95,14 +95,15 @@ class Donate extends \AGestOfRobinHood\Models\AtomicAction
 
     $maxSpaces = isset($info['maxSpaces']) ? $info['maxSpaces'] : 2;
 
+    $ignoreOutnumberHenchmen = isset($info['ignoreOutnumberHenchmen']) ?
+    $info['ignoreOutnumberHenchmen'] :
+    false;
+
     if (
       count(Engine::getResolvedActions([DONATE])) <= $maxSpaces - 2 &&
-      count($this->getPossibleSpaces()) > 0 &&
+      count($this->getPossibleSpaces($ignoreOutnumberHenchmen)) > 0 &&
       $player->getShillings() >= $cost
     ) {
-      $ignoreOutnumberHenchmen = isset($info['ignoreOutnumberHenchmen']) ?
-        $info['ignoreOutnumberHenchmen'] :
-        false;
 
       $this->ctx->insertAsBrother(new LeafNode([
         'action' => DONATE,

@@ -66,6 +66,7 @@ class DonateState implements State {
         spaceName: _(space.name),
       },
     });
+    this.game.setSpaceSelected({ id: space.id });
 
     const callback = () => {
       this.game.clearPossible();
@@ -115,5 +116,4 @@ class DonateState implements State {
   // .##.....##.#########.##..####.##.....##.##.......##.............##
   // .##.....##.##.....##.##...###.##.....##.##.......##.......##....##
   // .##.....##.##.....##.##....##.########..########.########..######.
-
 }

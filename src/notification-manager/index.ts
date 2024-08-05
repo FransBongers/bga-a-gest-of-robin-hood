@@ -453,6 +453,9 @@ class NotificationManager {
 
   async notif_moveForces(notif: Notif<NotifMoveForcesArgs>) {
     const { forces, toSpaceId, type } = notif.args;
+    // const element = this.game.forceManager.getCardElement(forces[0]);
+    // const fromRect = element?.getBoundingClientRect();
+    // console.log('fromRect in notif', fromRect);
     await this.game.gameMap.forces[`${type}_${toSpaceId}`].addCards(forces);
   }
 

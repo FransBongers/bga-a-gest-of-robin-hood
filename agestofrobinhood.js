@@ -2632,6 +2632,46 @@ var ForceManager = (function (_super) {
     return ForceManager;
 }(CardManager));
 var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
+var henchmenDisplay = function (element, cards, lastCard, stock) {
+    cards.forEach(function (force, index) {
+        var forceDiv = stock.getCardElement(force);
+        var positions = [
+            {
+                top: 0,
+                left: 0,
+                zIndex: 0,
+            },
+            {
+                top: 0,
+                left: 50,
+                zIndex: 0,
+            },
+            {
+                top: 33,
+                left: 25,
+                zIndex: 1,
+            },
+            {
+                top: 33,
+                left: 75,
+                zIndex: 1,
+            },
+            {
+                top: 66,
+                left: 100,
+                zIndex: 2,
+            },
+            {
+                top: 66,
+                left: 50,
+                zIndex: 2,
+            }
+        ];
+        forceDiv.style.top = "calc(var(--gestForceScale) * ".concat(positions[index].top, "px)");
+        forceDiv.style.left = "calc(var(--gestForceScale) * ".concat(positions[index].left, "px)");
+        forceDiv.style.zIndex = positions[index].zIndex + '';
+    });
+};
 var SPACES_CONFIG = (_a = {},
     _a[BINGHAM] = (_b = {},
         _b[HENCHMEN] = {
@@ -3195,6 +3235,14 @@ var GameMap = (function () {
             });
         });
         this.updateParishStatusMarkers({ gamedatas: gamedatas });
+    };
+    GameMap.prototype.tempSetupHenchmen = function () {
+        var _this = this;
+        [TUXFORD, RETFORD].forEach(function (spaceId) {
+            var id = "".concat(HENCHMEN, "_").concat(spaceId);
+            var element = document.getElementById(id);
+            _this.forces[id] = new ManualPositionStock(_this.game.forceManager, element, {}, henchmenDisplay);
+        });
     };
     GameMap.prototype.setupForces = function (_a) {
         var _this = this;
@@ -6643,6 +6691,7 @@ var DonateState = (function () {
                 spaceName: _(space.name),
             },
         });
+        this.game.setSpaceSelected({ id: space.id });
         var callback = function () {
             _this.game.clearPossible();
             _this.game.takeAction({
@@ -7148,6 +7197,7 @@ var EventAmbushLightState = (function () {
                 you: '${you}',
             },
         });
+        this.game.setSpaceSelected({ id: this.selectedSpaceId });
         this.args._private.merryMen.forEach(function (merryMan) {
             _this.game.setElementSelectable({
                 id: merryMan.id,
@@ -7160,7 +7210,16 @@ var EventAmbushLightState = (function () {
             text: _('Done'),
             callback: function () { return _this.updateInterfaceConfirm(); },
         });
-        this.game.addCancelButton();
+        if (this.args._private.spaceIds.length === 1 &&
+            this.merryMenIds.length === 0) {
+            this.game.addPassButton({
+                optionalAction: this.args.optionalAction,
+            });
+            this.game.addUndoButtons(this.args);
+        }
+        else {
+            this.game.addCancelButton();
+        }
     };
     EventAmbushLightState.prototype.updateInterfaceConfirm = function () {
         var _this = this;
@@ -7171,6 +7230,7 @@ var EventAmbushLightState = (function () {
                 spaceName: this.game.gamedatas.spaces[this.selectedSpaceId].name,
             },
         });
+        this.game.setSpaceSelected({ id: this.selectedSpaceId });
         this.merryMenIds.forEach(function (id) { return _this.game.setElementSelected({ id: id }); });
         var callback = function () {
             _this.game.clearPossible();

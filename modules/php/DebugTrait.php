@@ -22,77 +22,23 @@ trait DebugTrait
 
   function debug_test()
   {
-    // $playersSetup = Globals::getPlayers();
-
-    // $thereIsATableAdmin = Utils::array_some(array_values($playersSetup), function ($player) {
-    //   return isset($player['player_is_admin']) && intval($player['player_is_admin']) === 1;
-    // });
-    // Notifications::log('thereIsATableAdmin', $thereIsATableAdmin);
-
-    // Notifications::log('players', Globals::getPlayers());
-    // Notifications::log('options', Globals::getGameOptions());
-    // Notifications::log('roles option', Globals::getGameOptionRoles());
-    
-    // Notifications::log('adjacent',Spaces::get(BINGHAM)->getAdjacentSpaceIds());
-    // Players::getRobinHoodPlayer()->incShillings(-3);
-    // Players::getSheriffPlayer()->incShillings(2);
-    // $this->debugPlaceForces(MERRY_MEN,NEWARK,1);
-    // Notifications::log('players', Players::getPlayersPerFaction());
-    // Players::getRobinHoodPlayer()->incShillings(10);
-    // $merryMan = Forces::getTopOf(MERRY_MEN_SUPPLY);
-    // Spaces::get(NEWARK)->setStatus(PASSIVE);
-    // $merryMan = Forces::get(ROBIN_HOOD);
-    // $merryMan->setLocation(PRISON);
-    // $merryMan->setHidden(0);
     // Spaces::get(BLYTH)->revolt(Players::get());
     // Forces::get(ROBIN_HOOD)->setLocation(ROBIN_HOOD_SUPPLY);
     // Spaces::get(RETFORD)->setStatus(REVOLTING);
     // // Forces::get('camp_1')->setLocation(BLYTH);
     // $this->debugPlaceForces(ROBIN_HOOD,TUXFORD,1);
-    // $this->debugPlaceForces(MERRY_MEN,TUXFORD,1);
+    $this->debugPlaceForces(HENCHMEN,TUXFORD,3);
     // $this->debugPlaceForces(MERRY_MEN,BINGHAM,2);
-    // $this->debugPlaceForces(MERRY_MEN,RETFORD,2);
+    $this->debugPlaceForces(HENCHMEN,RETFORD,1);
     // $this->debugPlaceForces(HENCHMEN,SHIRE_WOOD,1);
     // $this->debugPlaceForces(TRAP_CARRIAGE,SHIRE_WOOD,1);
     // $this->debugPlaceForces(CAMP,RETFORD,1);
-    // Forces::get('merryMen_5')->setLocation(NEWARK);
-    // Forces::get('henchmen_4')->setLocation(TUXFORD);
-    Forces::get('merryMen_1')->setLocation(SHIRE_WOOD);
-    Forces::get(ROBIN_HOOD)->setLocation(SHIRE_WOOD);
 
-    // Forces::get('merryMen_4')->setLocation(BLYTH);
-    // Forces::get('merryMen_1')->setHidden(0);
-    // Forces::get('merryMen_5')->setLocation(SOUTHWELL_FOREST);
-    // Forces::get('merryMen_5')->setHidden(0);
-    // Forces::get('merryMen_8')->setLocation(PRISON);
-    // Forces::get(ROBIN_HOOD)->setHidden(0);
-    // Forces::get(ROBIN_HOOD)->setLocation(PRISON);
-    // Forces::get('henchmen_18')->setLocation(MANSFIELD);
-    // Forces::get(ROBIN_HOOD)->setLocation(ROBIN_HOOD_SUPPLY);
-    // Forces::get('carriage_2')->setLocation(NEWARK);
-    // Forces::get('merryMen_4')->setHidden(1);
-    Cards::get('Event02_BishopOfHereford')->insertOnTop(EVENTS_DECK);
+
+    // Cards::get('Event02_BishopOfHereford')->insertOnTop(EVENTS_DECK);
     // Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_VICTIMS_PILE);
     // Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_DECK);
-    // Globals::setOllertonHillAdjacency(true);
-    // Cards::get('Traveller07_Monks')->setLocation(TRAVELLERS_DISCARD);
-    // $this->debugPlaceForces(TALLAGE_CARRIAGE,TUXFORD,1);
-    // $this->debugPlaceMerryMen(SHIRE_WOOD, 2);
-    // $this->debugPlaceMerryMen(SOUTHWELL_FOREST, 1);
-    // Forces::get(ROBIN_HOOD)->setLocation(ROBIN_HOOD_SUPPLY);
-    // Forces::get('merryMen_9')->setLocation(NEWARK);
-    // Forces::getTopOf(CAMPS_SUPPLY)->setLocation(BINGHAM);
-    // AtomicActions::get(ROYAL_INSPECTION_REDEPLOYMENT_SHERIFF)->getOptions();
-    // $result = array_values(Spaces::getAll());
-    // $rh->hide(Players::get());
 
-    // Players::getRobinHoodPlayer()->incShillings(10);
-    // Forces::get(ROBIN_HOOD)->setHidden(0);
-    // $this->debugPlaceHenchmen(REMSTON, 2);
-
-    // $action = $node->getActionResolutionArgs()['action'];
-
-    // Notifications::log('ballad', Cards::getBalladAndRound());
   }
 
   public function debug_Deck()

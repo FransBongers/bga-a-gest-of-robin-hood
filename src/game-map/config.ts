@@ -1,3 +1,56 @@
+const henchmenDisplay = (
+  element: HTMLElement,
+  cards: GestForce[],
+  lastCard: GestForce,
+  stock: ManualPositionStock<GestForce>
+) => {
+  cards.forEach((force, index) => {
+    const forceDiv = stock.getCardElement(force);
+    // forceDiv.style.position = 'absolute';
+
+    const positions: {top: number; left: number; zIndex: number;}[] = [
+      {
+        top: 0,
+        left: 0,
+        zIndex: 0,
+      },
+      {
+        top: 0,
+        left: 50,
+        zIndex: 0,
+      },
+      {
+        top: 33,
+        left: 25,
+        zIndex: 1,
+      },
+      {
+        top: 33,
+        left: 75,
+        zIndex: 1,
+      },
+      {
+        top: 66,
+        left: 100,
+        zIndex: 2,
+      },
+      {
+        top: 66,
+        left: 50,
+        zIndex: 2,
+      }
+    ]
+
+    forceDiv.style.top = `calc(var(--gestForceScale) * ${
+      positions[index].top
+    }px)`;
+    forceDiv.style.left = `calc(var(--gestForceScale) * ${
+      positions[index].left
+    }px)`;
+    forceDiv.style.zIndex = positions[index].zIndex + '';
+  });
+}
+
 const SPACES_CONFIG: Record<
   string,
   {
