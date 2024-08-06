@@ -9124,6 +9124,14 @@ var RecruitState = (function () {
     RecruitState.prototype.updateInterfaceRecruitRobinHood = function (_a) {
         var _this = this;
         var space = _a.space, recruitOption = _a.recruitOption;
+        if (!this.args._private.merryMenInSupply) {
+            this.updateInterfaceConfirm({
+                space: space,
+                recruitOption: recruitOption,
+                recruitRobinHood: true,
+            });
+            return;
+        }
         this.game.clearPossible();
         this.game.clientUpdatePageTitle({
             text: _('Recruit Robin Hood?'),
@@ -9210,7 +9218,7 @@ var RecruitState = (function () {
             args['merryMenLog'] = {
                 log: '${tkn_merryMan_1}',
                 args: {
-                    tkn_merryMan_1: "".concat(HIDDEN, ":").concat(MERRY_MEN),
+                    tkn_merryMan_1: recruitRobinHood ? "".concat(HIDDEN, ":").concat(ROBIN_HOOD) : "".concat(HIDDEN, ":").concat(MERRY_MEN),
                 },
             };
         }
@@ -9218,7 +9226,7 @@ var RecruitState = (function () {
             args['merryMenLog'] = {
                 log: '${tkn_merryMan_1}${tkn_merryMan_2}',
                 args: {
-                    tkn_merryMan_1: "".concat(HIDDEN, ":").concat(MERRY_MEN),
+                    tkn_merryMan_1: recruitRobinHood ? "".concat(HIDDEN, ":").concat(ROBIN_HOOD) : "".concat(HIDDEN, ":").concat(MERRY_MEN),
                     tkn_merryMan_2: "".concat(HIDDEN, ":").concat(MERRY_MEN),
                 },
             };

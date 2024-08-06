@@ -118,6 +118,14 @@ class RecruitState implements State {
     space: GestSpace;
     recruitOption: string;
   }) {
+    if (!this.args._private.merryMenInSupply) {
+      this.updateInterfaceConfirm({
+        space,
+        recruitOption,
+        recruitRobinHood: true,
+      });
+      return;
+    }
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({
@@ -231,14 +239,14 @@ class RecruitState implements State {
       args['merryMenLog'] = {
         log: '${tkn_merryMan_1}',
         args: {
-          tkn_merryMan_1: `${HIDDEN}:${MERRY_MEN}`,
+          tkn_merryMan_1: recruitRobinHood ? `${HIDDEN}:${ROBIN_HOOD}` : `${HIDDEN}:${MERRY_MEN}`,
         },
       };
     } else if (recruitOption === PLACE_TWO_MERRY_MEN) {
       args['merryMenLog'] = {
         log: '${tkn_merryMan_1}${tkn_merryMan_2}',
         args: {
-          tkn_merryMan_1: `${HIDDEN}:${MERRY_MEN}`,
+          tkn_merryMan_1: recruitRobinHood ? `${HIDDEN}:${ROBIN_HOOD}` : `${HIDDEN}:${MERRY_MEN}`,
           tkn_merryMan_2: `${HIDDEN}:${MERRY_MEN}`,
         },
       };

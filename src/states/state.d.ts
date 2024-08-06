@@ -256,6 +256,7 @@ interface OnEnteringRecruitStateArgs extends CommonArgs {
   _private: {
     options: Record<string, RecruitOption>;
     robinHoodInSupply: boolean;
+    merryMenInSupply: boolean;
   };
 }
 
