@@ -115,9 +115,10 @@ class SelectTravellerCardOption extends \AGestOfRobinHood\Models\AtomicAction
       }));
       $source = isset($info['source']) ? $info['source'] : null;
       $modifier = $source === 'Event22_FastCarriages' ? 1 : 0;
-
-      $success = count($merryMenIds) + $dieResult + $modifier > $henchmenInSpace + $strength;
-      Notifications::robResult($player, $dieColor, $dieResult, $success);
+      $robinHoodResult = count($merryMenIds) + $dieResult + $modifier;
+      $sheriffResult = $henchmenInSpace + $strength;
+      $success = $robinHoodResult  > $sheriffResult;
+      Notifications::robResult($player, $dieColor, $dieResult, $success, $robinHoodResult, $sheriffResult);
     } else {
       $success = true;
       Notifications::resolveRobEffect($player, $option === 'dark' ? $card->getTitleDark() : $card->getTitleLight());

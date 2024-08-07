@@ -102,7 +102,6 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     royalInspectionReturnMerryMenFromPrison: RoyalInspectionReturnMerryMenFromPrisonState;
     royalInspectionSwapRobinHood: RoyalInspectionSwapRobinHoodState;
     selectDeed: SelectDeedState;
-    selectEventEffect: SelectEventEffectState;
     selectPlot: SelectPlotState;
     selectTravellerCardOption: SelectTravellerCardOptionState;
     setupRobinHood: SetupRobinHoodState;
@@ -189,7 +188,6 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
         new RoyalInspectionReturnMerryMenFromPrisonState(this),
       royalInspectionSwapRobinHood: new RoyalInspectionSwapRobinHoodState(this),
       selectDeed: new SelectDeedState(this),
-      selectEventEffect: new SelectEventEffectState(this),
       selectPlot: new SelectPlotState(this),
       selectTravellerCardOption: new SelectTravellerCardOptionState(this),
       setupRobinHood: new SetupRobinHoodState(this),

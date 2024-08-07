@@ -16,7 +16,18 @@ class MoveCarriageState implements State {
     debug('Leaving MoveCarriageState');
   }
 
-  setDescription(activePlayerId: number) {}
+  setDescription(activePlayerId: number) {
+    this.game.clientUpdatePageTitle({
+      text: _('${tkn_playerName} must move a ${tkn_carriage}'),
+      args: {
+        tkn_playerName: this.game.playerManager
+          .getPlayer({ playerId: activePlayerId })
+          .getName(),
+        tkn_carriage: `${HIDDEN}:${CARRIAGE}`,
+      },
+      nonActivePlayers: true,
+    });
+  }
 
   //  .####.##....##.########.########.########..########....###.....######..########
   //  ..##..###...##....##....##.......##.....##.##.........##.##...##....##.##......
@@ -37,12 +48,7 @@ class MoveCarriageState implements State {
   private updateInterfaceInitialStep() {
     this.game.clearPossible();
 
-    this.game.clientUpdatePageTitle({
-      text: _('${you} must select a Carriage to move'),
-      args: {
-        you: '${you}',
-      },
-    });
+    this.updatePageTitle();
 
     this.setCarriagesSelectable();
     // this.addActionButtons();
@@ -115,8 +121,11 @@ class MoveCarriageState implements State {
     this.game.setElementSelected({ id: carriage.id });
 
     this.game.clientUpdatePageTitle({
-      text: _('Bring one Henchman along with Carriage?'),
-      args: {},
+      text: _('Bring ${tkn_force_henchman} along with ${tkn_force_carriage}?'),
+      args: {
+        tkn_force_carriage: `${REVEALED}:${carriage.type}`,
+        tkn_force_henchman: `${REVEALED}:${HENCHMEN}`,
+      },
     });
 
     this.game.addPrimaryActionButton({
@@ -160,11 +169,15 @@ class MoveCarriageState implements State {
 
     this.game.clientUpdatePageTitle({
       text: bringHenchman
-        ? _('Move Carriage and Henchman from ${fromName} to ${toName}?')
-        : _('Move Carriage from ${fromName} to ${toName}?'),
+        ? _(
+            'Move ${tkn_force_carriage} and ${tkn_force_henchman} from ${fromName} to ${toName}?'
+          )
+        : _('Move ${tkn_force_carriage} from ${fromName} to ${toName}?'),
       args: {
         fromName: _(from.name),
         toName: _(to.name),
+        tkn_force_carriage: `${REVEALED}:${carriage.type}`,
+        tkn_force_henchman: `${REVEALED}:${HENCHMEN}`,
       },
     });
 
@@ -203,7 +216,27 @@ class MoveCarriageState implements State {
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
-  setCarriagesSelectable() {
+  private updatePageTitle() {
+    const args = {
+      you: '${you}',
+      remaining: this.args.remaining,
+      tkn_carriage: `${HIDDEN}:${CARRIAGE}`,
+    };
+
+    let text = _(
+      '${you} must select a ${tkn_carriage} to move (${remaining} remaining)'
+    );
+    if (this.args.remaining === null) {
+      text = _('${you} must select a ${tkn_carriage} to move');
+    }
+
+    this.game.clientUpdatePageTitle({
+      text,
+      args,
+    });
+  }
+
+  private setCarriagesSelectable() {
     if (!this.args._private?.options) {
       return;
     }

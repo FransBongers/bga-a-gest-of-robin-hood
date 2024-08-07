@@ -3,6 +3,7 @@
 namespace AGestOfRobinHood\Core;
 
 use AGestOfRobinHood\Helpers\Utils;
+use AGestOfRobinHood\Managers\Cards;
 use AGestOfRobinHood\Managers\Forces;
 use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\Spaces;
@@ -293,12 +294,26 @@ class Notifications
       clienttranslate('${player_name} passes and places eligibility cylinder on ${tkn_boldText_actionName} box') :
       clienttranslate('${player_name} chooses ${tkn_boldText_actionName}');
 
-    self::notifyAll("chooseAction", $text, [
+    $args = [
       'player' => $player,
       'tkn_boldText_actionName' => self::getActionName($action),
       'marker' => $marker,
       'i18n' => ['tkn_boldText_actionName']
-    ]);
+    ];
+
+    if ($action === EVENT) {
+      $card = Cards::getTopOf(EVENTS_DISCARD);
+      $text = clienttranslate('${player_name} chooses ${tkn_boldText_actionName} and executes ${tkn_boldText_eventTitle} from ${tkn_cardName}${tkn_card}');
+      
+      $args['i18n'][] = 'tkn_boldText_eventTitle';
+      $args = array_merge($args, [
+        'tkn_boldText_eventTitle' => $player->getId() === Players::getSheriffPlayerId() ? $card->getTitleDark() : $card->getTitleLight(),
+        'tkn_cardName' => self::tknCardNameArg($card),
+        'tkn_card' => self::tknCardArg($card),
+      ]);
+    }
+
+    self::notifyAll("chooseAction", $text, $args);
   }
 
   public static function disperse($player, $space, $merryMen, $camps)
@@ -1035,15 +1050,6 @@ class Notifications
     ]);
   }
 
-  public static function resolveEventEffect($player, $card, $effect)
-  {
-    self::message(clienttranslate('${player_name} choosed to execute ${tkn_boldText_effectName}'), [
-      'player' => $player,
-      'tkn_boldText_effectName' => $effect === 'dark' ? $card->getTitleDark() : $card->getTitleLight(),
-      'i18n' => ['tkn_boldText_effectName']
-    ]);
-  }
-
   public static function removeSubmissiveMarker($player, $space)
   {
     self::notifyAll("parishStatus", clienttranslate('${player_name} removes the Submissive marker from ${tkn_boldText_parishName} from the game'), [
@@ -1152,15 +1158,17 @@ class Notifications
     ]);
   }
 
-  public static function robResult($player, $dieColor, $dieResult, $success)
+  public static function robResult($player, $dieColor, $dieResult, $success, $robinHoodResult, $sheriffResult)
   {
     $text = $success ?
-      clienttranslate('${player_name} rolls ${tkn_dieResult} : the Rob attempt is a success') :
-      clienttranslate('${player_name} rolls ${tkn_dieResult} : the Rob attempt fails');
+      clienttranslate('${player_name} rolls ${tkn_dieResult} for a total score of ${tkn_boldText_robinHoodResult} vs ${tkn_boldText_sheriffResult}: the Rob attempt is a success') :
+      clienttranslate('${player_name} rolls ${tkn_dieResult} for a total score of ${tkn_boldText_robinHoodResult} vs ${tkn_boldText_sheriffResult}: the Rob attempt fails');
 
     self::message($text, [
       'player' => $player,
       'tkn_dieResult' => self::tknDieResultArg($dieColor, $dieResult),
+      'tkn_boldText_robinHoodResult' => $robinHoodResult,
+      'tkn_boldText_sheriffResult' => $sheriffResult,
     ]);
   }
 

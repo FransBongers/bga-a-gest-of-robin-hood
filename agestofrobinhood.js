@@ -1818,7 +1818,6 @@ var AGestOfRobinHood = (function () {
             royalInspectionReturnMerryMenFromPrison: new RoyalInspectionReturnMerryMenFromPrisonState(this),
             royalInspectionSwapRobinHood: new RoyalInspectionSwapRobinHoodState(this),
             selectDeed: new SelectDeedState(this),
-            selectEventEffect: new SelectEventEffectState(this),
             selectPlot: new SelectPlotState(this),
             selectTravellerCardOption: new SelectTravellerCardOptionState(this),
             setupRobinHood: new SetupRobinHoodState(this),
@@ -4178,6 +4177,7 @@ var tplInformationModalContent = function (_a) {
 var LOG_TOKEN_BOLD_TEXT = 'boldText';
 var LOG_TOKEN_BOLD_ITALIC_TEXT = 'boldItalicText';
 var LOG_TOKEN_NEW_LINE = 'newLine';
+var LOG_TOKEN_PLAYER_NAME = 'playerName';
 var LOG_TOKEN_CAMP = 'camp';
 var LOG_TOKEN_CARD = 'card';
 var LOG_TOKEN_CARD_NAME = 'cardName';
@@ -4223,6 +4223,16 @@ var getTokenDiv = function (_a) {
             return '<br>';
         case LOG_TOKEN_SHILLING:
             return tplLogTokenShilling();
+        case LOG_TOKEN_PLAYER_NAME:
+            var player = game.playerManager
+                .getPlayers()
+                .find(function (player) { return player.getName() === value; });
+            return player
+                ? tplLogTokenPlayerName({
+                    name: player.getName(),
+                    color: player.getColor(),
+                })
+                : value;
         default:
             return value;
     }
@@ -5667,9 +5677,6 @@ var GestPlayer = (function () {
     GestPlayer.prototype.clearInterface = function () { };
     GestPlayer.prototype.getColor = function () {
         return this.playerColor;
-    };
-    GestPlayer.prototype.getHexColor = function () {
-        return this.playerHexColor;
     };
     GestPlayer.prototype.getName = function () {
         return this.playerName;
@@ -8478,15 +8485,21 @@ var MoveCarriageState = (function () {
     MoveCarriageState.prototype.onLeavingState = function () {
         debug('Leaving MoveCarriageState');
     };
-    MoveCarriageState.prototype.setDescription = function (activePlayerId) { };
+    MoveCarriageState.prototype.setDescription = function (activePlayerId) {
+        this.game.clientUpdatePageTitle({
+            text: _('${tkn_playerName} must move a ${tkn_carriage}'),
+            args: {
+                tkn_playerName: this.game.playerManager
+                    .getPlayer({ playerId: activePlayerId })
+                    .getName(),
+                tkn_carriage: "".concat(HIDDEN, ":").concat(CARRIAGE),
+            },
+            nonActivePlayers: true,
+        });
+    };
     MoveCarriageState.prototype.updateInterfaceInitialStep = function () {
         this.game.clearPossible();
-        this.game.clientUpdatePageTitle({
-            text: _('${you} must select a Carriage to move'),
-            args: {
-                you: '${you}',
-            },
-        });
+        this.updatePageTitle();
         this.setCarriagesSelectable();
         this.game.addPassButton({
             optionalAction: this.args.optionalAction,
@@ -8543,8 +8556,11 @@ var MoveCarriageState = (function () {
         this.game.clearPossible();
         this.game.setElementSelected({ id: carriage.id });
         this.game.clientUpdatePageTitle({
-            text: _('Bring one Henchman along with Carriage?'),
-            args: {},
+            text: _('Bring ${tkn_force_henchman} along with ${tkn_force_carriage}?'),
+            args: {
+                tkn_force_carriage: "".concat(REVEALED, ":").concat(carriage.type),
+                tkn_force_henchman: "".concat(REVEALED, ":").concat(HENCHMEN),
+            },
         });
         this.game.addPrimaryActionButton({
             id: 'yes_btn',
@@ -8579,11 +8595,13 @@ var MoveCarriageState = (function () {
         this.game.setElementSelected({ id: carriage.id });
         this.game.clientUpdatePageTitle({
             text: bringHenchman
-                ? _('Move Carriage and Henchman from ${fromName} to ${toName}?')
-                : _('Move Carriage from ${fromName} to ${toName}?'),
+                ? _('Move ${tkn_force_carriage} and ${tkn_force_henchman} from ${fromName} to ${toName}?')
+                : _('Move ${tkn_force_carriage} from ${fromName} to ${toName}?'),
             args: {
                 fromName: _(from.name),
                 toName: _(to.name),
+                tkn_force_carriage: "".concat(REVEALED, ":").concat(carriage.type),
+                tkn_force_henchman: "".concat(REVEALED, ":").concat(HENCHMEN),
             },
         });
         var callback = function () {
@@ -8608,6 +8626,21 @@ var MoveCarriageState = (function () {
             });
         }
         this.game.addCancelButton();
+    };
+    MoveCarriageState.prototype.updatePageTitle = function () {
+        var args = {
+            you: '${you}',
+            remaining: this.args.remaining,
+            tkn_carriage: "".concat(HIDDEN, ":").concat(CARRIAGE),
+        };
+        var text = _('${you} must select a ${tkn_carriage} to move (${remaining} remaining)');
+        if (this.args.remaining === null) {
+            text = _('${you} must select a ${tkn_carriage} to move');
+        }
+        this.game.clientUpdatePageTitle({
+            text: text,
+            args: args,
+        });
     };
     MoveCarriageState.prototype.setCarriagesSelectable = function () {
         var _this = this;
@@ -10624,88 +10657,6 @@ var SelectDeedState = (function () {
         this.game.addCancelButton();
     };
     return SelectDeedState;
-}());
-var SelectEventEffectState = (function () {
-    function SelectEventEffectState(game) {
-        this.game = game;
-    }
-    SelectEventEffectState.prototype.onEnteringState = function (args) {
-        debug('Entering SelectEventEffectState');
-        this.args = args;
-        this.staticData = this.game.getStaticCardData({
-            cardId: this.args.card.id,
-        });
-        this.updateInterfaceInitialStep();
-    };
-    SelectEventEffectState.prototype.onLeavingState = function () {
-        debug('Leaving SelectEventEffectState');
-    };
-    SelectEventEffectState.prototype.setDescription = function (activePlayerId) { };
-    SelectEventEffectState.prototype.updateInterfaceInitialStep = function () {
-        this.game.clearPossible();
-        this.game.clientUpdatePageTitle({
-            text: _('${you} must select which effect on the current Event card to execute'),
-            args: {
-                you: '${you}',
-            },
-        });
-        this.addOptionButtons();
-        this.game.addPassButton({
-            optionalAction: this.args.optionalAction,
-        });
-        this.game.addUndoButtons(this.args);
-    };
-    SelectEventEffectState.prototype.updateInterfaceConfirm = function (_a) {
-        var _this = this;
-        var effect = _a.effect;
-        this.game.clearPossible();
-        this.game.clientUpdatePageTitle({
-            text: _('Execute ${option}?'),
-            args: {
-                option: effect === 'light'
-                    ? _(this.staticData.titleLight)
-                    : _(this.staticData.titleDark),
-            },
-        });
-        var callback = function () {
-            _this.game.clearPossible();
-            _this.game.takeAction({
-                action: 'actSelectEventEffect',
-                args: {
-                    effect: effect,
-                },
-            });
-        };
-        if (this.game.settings.get({
-            id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
-        }) === PREF_ENABLED) {
-            callback();
-        }
-        else {
-            this.game.addConfirmButton({
-                callback: callback,
-            });
-        }
-        this.game.addCancelButton();
-    };
-    SelectEventEffectState.prototype.addOptionButtons = function () {
-        var _this = this;
-        if (this.staticData.titleLight && this.args.canPerformLightEffect) {
-            this.game.addPrimaryActionButton({
-                id: "light_option_btn",
-                text: _(this.staticData.titleLight),
-                callback: function () { return _this.updateInterfaceConfirm({ effect: 'light' }); },
-            });
-        }
-        if (this.staticData.titleDark && this.args.canPerformDarkEffect) {
-            this.game.addPrimaryActionButton({
-                id: "darkt_option_btn",
-                text: _(this.staticData.titleDark),
-                callback: function () { return _this.updateInterfaceConfirm({ effect: 'dark' }); },
-            });
-        }
-    };
-    return SelectEventEffectState;
 }());
 var SelectPlotState = (function () {
     function SelectPlotState(game) {

@@ -1,7 +1,7 @@
 const LOG_TOKEN_BOLD_TEXT = 'boldText';
 const LOG_TOKEN_BOLD_ITALIC_TEXT = 'boldItalicText';
 const LOG_TOKEN_NEW_LINE = 'newLine';
-// const LOG_TOKEN_PLAYER_NAME = "playerName";
+const LOG_TOKEN_PLAYER_NAME = 'playerName';
 // Game specific
 const LOG_TOKEN_CAMP = 'camp';
 const LOG_TOKEN_CARD = 'card';
@@ -57,6 +57,16 @@ const getTokenDiv = ({
       return '<br>';
     case LOG_TOKEN_SHILLING:
       return tplLogTokenShilling();
+    case LOG_TOKEN_PLAYER_NAME:
+      const player = game.playerManager
+        .getPlayers()
+        .find((player) => player.getName() === value);
+      return player
+        ? tplLogTokenPlayerName({
+            name: player.getName(),
+            color: player.getColor(),
+          })
+        : value;
     default:
       return value;
   }

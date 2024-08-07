@@ -210,6 +210,7 @@ interface OnEnteringMoveCarriageStateArgs extends CommonArgs {
   _private?: {
     options: Record<string, MoveCarriageOption>;
   };
+  remaining: number | null;
 }
 
 interface OnEnteringPatrolStateArgs extends CommonArgs {

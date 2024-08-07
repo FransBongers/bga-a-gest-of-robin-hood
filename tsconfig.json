@@ -108,7 +108,6 @@
     "src/states/RoyalInspectionReturnMerryMenFromPrison.ts",
     "src/states/RoyalInspectionSwapRobinHood.ts",
     "src/states/SelectDeed.ts",
-    "src/states/SelectEventEffect.ts",
     "src/states/SelectPlot.ts",
     "src/states/SelectTravellerCardOption.ts",
     "src/states/SetupRobinHood.ts",

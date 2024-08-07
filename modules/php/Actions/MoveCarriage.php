@@ -32,12 +32,16 @@ class MoveCarriage extends \AGestOfRobinHood\Models\AtomicAction
 
   public function argsMoveCarriage()
   {
+    $info = $this->ctx->getInfo();
+    $remainingMoves = isset($info['remainingMoves']) ? $info['remainingMoves'] : null;
+
     $data = [
       '_private' => [
         self::getPlayer()->getId() => [
           'options' => $this->getOptions(),
-        ]
+        ],
       ],
+      'remaining' => $remainingMoves, 
     ];
 
     return $data;

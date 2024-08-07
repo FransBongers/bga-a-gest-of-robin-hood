@@ -203,9 +203,9 @@ class Rob extends \AGestOfRobinHood\Actions\Plot
     $dieColor = $space->isRevolting() || $space->isForest() ? GREEN : WHITE;
     $dieResult =  $dieColor === GREEN ? GestDice::rollGreenDie() : GestDice::rollWhiteDie();
     $modifier = $source === 'Event22_FastCarriages' ? 1 : 0;
-
-    $success = $dieResult + count($merryMenIds) + $modifier > $defenseValue;
-    Notifications::robResult($player, $dieColor, $dieResult, $success);
+    $robinHoodResult = $dieResult + count($merryMenIds) + $modifier;
+    $success = $robinHoodResult > $defenseValue;
+    Notifications::robResult($player, $dieColor, $dieResult, $success, $robinHoodResult, $defenseValue);
 
     if ($success) {
       switch ($carriage->getType()) {
@@ -263,15 +263,17 @@ class Rob extends \AGestOfRobinHood\Actions\Plot
 
   private function resolveTreasuryTarget($player, $space, $merryMenIds, $source = null)
   {
-    $henchmenInSpace = count(Utils::filter($space->getForces(), function ($force) {
+    $sheriffResult = count(Utils::filter($space->getForces(), function ($force) {
       return $force->isHenchman();
     }));
     $dieResult = GestDice::rollWhiteDie();
 
     $modifier = $source === 'Event22_FastCarriages' ? 1 : 0;
-    $success = count($merryMenIds) + $dieResult + $modifier > $henchmenInSpace;
+    $robinHoodResult = count($merryMenIds) + $dieResult + $modifier;
+
+    $success = $robinHoodResult > $sheriffResult;
     Notifications::robTargetSheriffsTreasury($player);
-    Notifications::robResult($player, WHITE, $dieResult, $success);
+    Notifications::robResult($player, WHITE, $dieResult, $success, $robinHoodResult, $sheriffResult);
     if ($success) {
       $this->takeShillingsFromTheSheriff($player);
     }

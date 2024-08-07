@@ -55,10 +55,12 @@ trait TurnTrait
     $carriageMoves = $card->getCarriageMoves();
     $numberOfCarriagesOnMap = GameMap::getNumberOfCarriages();
 
-    for ($i = 0; $i < min($carriageMoves, $numberOfCarriagesOnMap); $i++) {
+    $numberOfMoves = min($carriageMoves, $numberOfCarriagesOnMap);
+    for ($i = 0; $i < $numberOfMoves; $i++) {
       $node['children'][] = [
         'action' => MOVE_CARRIAGE,
         'playerId' => Players::getSheriffPlayerId(),
+        'remainingMoves' => $numberOfMoves - $i,
       ];
     }
 

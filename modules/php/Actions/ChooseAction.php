@@ -158,10 +158,6 @@ class ChooseAction extends \AGestOfRobinHood\Models\AtomicAction
         } else {
           $card->performDarkEffect($player, true, $this->ctx);
         }
-        // $parent->pushChild(new LeafNode([
-        //   'action' => SELECT_EVENT_EFFECT,
-        //   'playerId' => $this->ctx->getPlayerId(),
-        // ]));
         break;
     }
   }

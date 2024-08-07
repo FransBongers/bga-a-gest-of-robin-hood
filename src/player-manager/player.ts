@@ -9,7 +9,6 @@
 class GestPlayer {
   protected game: AGestOfRobinHoodGame;
   protected playerColor: string;
-  private playerHexColor: string;
   protected playerId: number;
   private playerName: string;
 
@@ -50,7 +49,6 @@ class GestPlayer {
     this.playerName = player.name;
     this.playerColor = player.color;
     this.side = player.side;
-    // this.playerHexColor = player.hexColor;
     const gamedatas = game.gamedatas;
 
     // if (this.playerId === this.game.getPlayerId()) {
@@ -411,10 +409,6 @@ class GestPlayer {
 
   getColor(): string {
     return this.playerColor;
-  }
-
-  getHexColor(): string {
-    return this.playerHexColor;
   }
 
   getName(): string {

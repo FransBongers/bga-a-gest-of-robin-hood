@@ -318,6 +318,8 @@ class NotificationManager {
     }
   }
 
+  // TODO: rename to move marker or something as it's also used to return markers
+  // at end of round?
   async notif_chooseAction(notif: Notif<NotifChooseActionArgs>) {
     const { marker } = notif.args;
 

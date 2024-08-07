@@ -27,15 +27,15 @@ trait DebugTrait
     // Spaces::get(RETFORD)->setStatus(REVOLTING);
     // // Forces::get('camp_1')->setLocation(BLYTH);
     // $this->debugPlaceForces(ROBIN_HOOD,TUXFORD,1);
-    $this->debugPlaceForces(HENCHMEN,TUXFORD,3);
+    // $this->debugPlaceForces(HENCHMEN,TUXFORD,3);
     // $this->debugPlaceForces(MERRY_MEN,BINGHAM,2);
-    $this->debugPlaceForces(HENCHMEN,RETFORD,1);
+    // $this->debugPlaceForces(HENCHMEN,RETFORD,1);
     // $this->debugPlaceForces(HENCHMEN,SHIRE_WOOD,1);
     // $this->debugPlaceForces(TRAP_CARRIAGE,SHIRE_WOOD,1);
     // $this->debugPlaceForces(CAMP,RETFORD,1);
 
 
-    // Cards::get('Event02_BishopOfHereford')->insertOnTop(EVENTS_DECK);
+    Cards::get('Event20_MajorOak')->insertOnTop(EVENTS_DECK);
     // Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_VICTIMS_PILE);
     // Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_DECK);
 
