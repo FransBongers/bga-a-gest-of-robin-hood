@@ -187,36 +187,35 @@
 .gest_track_marker {
   box-sizing: border-box;
   border-radius: 50%;
-  border: calc(var(--gestMapScale) * 1px) solid black;
+  background-image: url('img/markers.png');
+  background-size: 300% 100%;
+  min-height: calc(var(--gestMapScale) * 69px);
+  min-width: calc(var(--gestMapScale) * 62px);
+  max-height: calc(var(--gestMapScale) * 69px);
+  max-width: calc(var(--gestMapScale) * 62px);
 }
 
 #royalFavourMarker {
-  background-color: red;
-  height: calc(var(--gestMapScale) * 60px);
-  width: calc(var(--gestMapScale) * 60px);
+  background-position-x: 50%;
 }
 
 #royalInspectionMarker {
   background-image: url('img/tokens.png');
   background-size: 400% 100%;
-  // background-color: #ffd700;
   background-position-x: math.div(2, 3) * 100%;
   border-radius: 0%;
-  border: none;
-  height: calc(var(--gestMapScale) * 75px);
-  width: calc(var(--gestMapScale) * 75px);
+  min-height: calc(var(--gestMapScale) * 75px);
+  min-width: calc(var(--gestMapScale) * 75px);
+  max-height: calc(var(--gestMapScale) * 75px);
+  max-width: calc(var(--gestMapScale) * 75px);
 }
 
 #robinHoodEligibilityMarker {
-  background-color: #008000;
-  height: calc(var(--gestMapScale) * 50px);
-  width: calc(var(--gestMapScale) * 50px);
+  background-position-x: 0%;
 }
 
 #sheriffEligibilityMarker {
-  background-color: #c0c0c0;
-  height: calc(var(--gestMapScale) * 50px);
-  width: calc(var(--gestMapScale) * 50px);
+  background-position-x: 100%;
 }
 
 .gest_forces {
