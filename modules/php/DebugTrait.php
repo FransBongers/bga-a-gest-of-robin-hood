@@ -22,20 +22,33 @@ trait DebugTrait
 
   function debug_test()
   {
+    // Globals::setBridgeLocation('Blyth_Retford_border');
+    Forces::moveAllInLocation(CARRIAGE_SUPPLY,USED_CARRIAGES);
+    // Forces::moveAllInLocation(BLYTH,NOTTINGHAM);
+    // Forces::moveAllInLocation(BINGHAM,NOTTINGHAM);
+    // Forces::moveAllInLocation(MANSFIELD,NOTTINGHAM);
+    // Forces::moveAllInLocation(REMSTON,NOTTINGHAM);
+    // Forces::moveAllInLocation(OLLERTON_HILL,MANSFIELD);
+    // Forces::moveAllInLocation(BINGHAM,BLYTH);
+    // Forces::moveAllInLocation(NOTTINGHAM,BLYTH);
+    // Forces::moveAllInLocation(REMSTON,TUXFORD);
+    // Forces::move('camp_2', OLLERTON_HILL);
+
     // Spaces::get(BLYTH)->revolt(Players::get());
     // Forces::get(ROBIN_HOOD)->setLocation(ROBIN_HOOD_SUPPLY);
     // Spaces::get(RETFORD)->setStatus(REVOLTING);
     // // Forces::get('camp_1')->setLocation(BLYTH);
     // $this->debugPlaceForces(ROBIN_HOOD,TUXFORD,1);
-    // $this->debugPlaceForces(HENCHMEN,TUXFORD,3);
-    // $this->debugPlaceForces(MERRY_MEN,BINGHAM,2);
+    // $this->debugPlaceForces(TRAP_CARRIAGE,NOTTINGHAM,1);
+    // $this->debugPlaceForces(HENCHMEN,NOTTINGHAM,13);
+    // $this->debugPlaceForces(MERRY_MEN,PRISON,7);
     // $this->debugPlaceForces(HENCHMEN,RETFORD,1);
     // $this->debugPlaceForces(HENCHMEN,SHIRE_WOOD,1);
     // $this->debugPlaceForces(TRAP_CARRIAGE,SHIRE_WOOD,1);
-    // $this->debugPlaceForces(CAMP,RETFORD,1);
+    // $this->debugPlaceForces(CAMP,BLYTH,1);
 
 
-    Cards::get('Event20_MajorOak')->insertOnTop(EVENTS_DECK);
+    // Cards::get('Event20_MajorOak')->insertOnTop(EVENTS_DECK);
     // Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_VICTIMS_PILE);
     // Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_DECK);
 

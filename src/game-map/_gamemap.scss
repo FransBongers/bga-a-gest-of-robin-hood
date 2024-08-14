@@ -175,8 +175,8 @@
 
 #MerryMen_prison {
   position: absolute;
-  height: calc(var(--gestMapScale) * 184px);
-  width: calc(var(--gestMapScale) * 177px);
+  height: calc(var(--gestMapScale) * 10px);
+  width: calc(var(--gestMapScale) * 10px);
   display: flex;
   // align-items: center;
   // justify-content: center;
@@ -219,7 +219,7 @@
 }
 
 .gest_forces {
-  position: absolute;
+  position: absolute !important;
   display: flex;
   gap: calc(var(--gestMapScale) * 8px);
   justify-content: center;

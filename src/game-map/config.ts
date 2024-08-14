@@ -1,56 +1,3 @@
-const henchmenDisplay = (
-  element: HTMLElement,
-  cards: GestForce[],
-  lastCard: GestForce,
-  stock: ManualPositionStock<GestForce>
-) => {
-  cards.forEach((force, index) => {
-    const forceDiv = stock.getCardElement(force);
-    // forceDiv.style.position = 'absolute';
-
-    const positions: {top: number; left: number; zIndex: number;}[] = [
-      {
-        top: 0,
-        left: 0,
-        zIndex: 0,
-      },
-      {
-        top: 0,
-        left: 50,
-        zIndex: 0,
-      },
-      {
-        top: 33,
-        left: 25,
-        zIndex: 1,
-      },
-      {
-        top: 33,
-        left: 75,
-        zIndex: 1,
-      },
-      {
-        top: 66,
-        left: 100,
-        zIndex: 2,
-      },
-      {
-        top: 66,
-        left: 50,
-        zIndex: 2,
-      }
-    ]
-
-    forceDiv.style.top = `calc(var(--gestForceScale) * ${
-      positions[index].top
-    }px)`;
-    forceDiv.style.left = `calc(var(--gestForceScale) * ${
-      positions[index].left
-    }px)`;
-    forceDiv.style.zIndex = positions[index].zIndex + '';
-  });
-}
-
 const SPACES_CONFIG: Record<
   string,
   {
@@ -63,51 +10,51 @@ const SPACES_CONFIG: Record<
   [BINGHAM]: {
     [HENCHMEN]: {
       top: 1253,
-      left: 737,
+      left: 709,
       width: 89,
       height: 143,
     },
     [CAMP]: {
-      top: 1201,
-      left: 869,
+      top: 1368,
+      left: 944,
       width: 50,
       height: 50,
     },
     [MERRY_MEN]: {
-      top: 1237,
-      left: 931,
+      top: 1223,
+      left: 949,
       width: 82,
       height: 170,
     },
     [CARRIAGE]: {
-      top: 1401,
-      left: 805,
+      top: 1159,
+      left: 847,
       width: 100,
       height: 50,
     },
   },
   [BLYTH]: {
     [HENCHMEN]: {
-      top: 565,
-      left: 641,
-      width: 100,
-      height: 160,
+      top: 530,
+      left: 560,
+      width: 10,
+      height: 10,
     },
     [CAMP]: {
-      top: 470,
-      left: 585,
-      width: 50,
-      height: 50,
+      top: 452,
+      left: 591,
+      width: 10,
+      height: 10,
     },
     [MERRY_MEN]: {
-      top: 544,
-      left: 525,
-      width: 100,
-      height: 160,
+      top: 294,
+      left: 631,
+      width: 10,
+      height: 10,
     },
     [CARRIAGE]: {
-      top: 482,
-      left: 772,
+      top: 439,
+      left: 766,
       width: 50,
       height: 100,
     },
@@ -132,16 +79,16 @@ const SPACES_CONFIG: Record<
       height: 145,
     },
     [CARRIAGE]: {
-      top: 1010,
-      left: 253,
+      top: 938,
+      left: 280,
       width: 50,
       height: 100,
     },
   },
   [NEWARK]: {
     [HENCHMEN]: {
-      top: 688,
-      left: 1081,
+      top: 678,
+      left: 1111,
       width: 100,
       height: 145,
     },
@@ -152,63 +99,45 @@ const SPACES_CONFIG: Record<
       height: 50,
     },
     [MERRY_MEN]: {
-      top: 1017,
-      left: 977,
+      top: 978,
+      left: 995,
       width: 100,
       height: 170,
     },
     [CARRIAGE]: {
-      top: 632,
-      left: 1136,
+      top: 546,
+      left: 1131,
       width: 100,
       height: 50,
     },
   },
   [NOTTINGHAM]: {
     [HENCHMEN]: {
-      top: 1113,
-      left: 474,
+      top: 1039,
+      left: 535,
       width: 175,
       height: 100,
     },
-    // [CAMP]: {
-    //   top: 922,
-    //   left: 112,
-    //   width: 100,
-    //   height: 100,
-    // },
     [MERRY_MEN]: {
-      top: 1039,
-      left: 474,
+      top: 1044,
+      left: 508,
       width: 170,
       height: 79,
     },
     [CARRIAGE]: {
-      top: 1090,
-      left: 634,
+      top: 1030,
+      left: 597,
       width: 50,
       height: 100,
     },
   },
   [OLLERTON_HILL]: {
-    // [HENCHMEN]: {
-    //   top: 922,
-    //   left: 112,
-    //   width: 100,
-    //   height: 100,
-    // },
     [CAMP]: {
       top: 862,
-      left: 778,
+      left: 784,
       width: 50,
       height: 50,
     },
-    // [MERRY_MEN]: {
-    //   top: 922,
-    //   left: 112,
-    //   width: 100,
-    //   height: 100,
-    // },
   },
   [REMSTON]: {
     [HENCHMEN]: {
@@ -230,111 +159,111 @@ const SPACES_CONFIG: Record<
       height: 160,
     },
     [CARRIAGE]: {
-      top: 1519,
-      left: 511,
+      top: 1499,
+      left: 476,
       width: 100,
       height: 50,
     },
   },
   [RETFORD]: {
     [HENCHMEN]: {
-      top: 317,
-      left: 971,
+      top: 315,
+      left: 900,
       width: 100,
       height: 143,
     },
     [CAMP]: {
-      top: 244,
-      left: 766,
+      top: 154,
+      left: 879,
       width: 50,
       height: 50,
     },
     [MERRY_MEN]: {
-      top: 317,
-      left: 866,
+      top: 156,
+      left: 821,
       width: 100,
       height: 143,
     },
     [CARRIAGE]: {
-      top: 209,
-      left: 989,
+      top: 145,
+      left: 974,
       width: 50,
       height: 100,
     },
   },
   [SHIRE_WOOD]: {
     [HENCHMEN]: {
-      top: 769,
-      left: 467,
+      top: 878,
+      left: 456,
       width: 160,
       height: 68,
     },
     [CAMP]: {
-      top: 906,
-      left: 610,
-      width: 50,
-      height: 50,
+      top: 760,
+      left: 422,
+      width: 10,
+      height: 10,
     },
     [MERRY_MEN]: {
-      top: 886,
-      left: 467,
-      width: 140,
-      height: 100,
+      top: 722,
+      left: 481,
+      width: 10,
+      height: 10,
     },
     [CARRIAGE]: {
-      top: 837,
-      left: 467,
+      top: 814,
+      left: 604,
       width: 50,
       height: 50,
     },
   },
   [SOUTHWELL_FOREST]: {
     [HENCHMEN]: {
-      top: 937,
-      left: 671,
-      width: 84,
-      height: 124,
+      top: 918,
+      left: 688,
+      width: 10,
+      height: 10,
     },
     [CAMP]: {
-      top: 1135,
-      left: 762,
-      width: 50,
-      height: 50,
+      top: 1192,
+      left: 680,
+      width: 10,
+      height: 10,
     },
     [MERRY_MEN]: {
-      top: 987,
+      top: 1040,
       left: 762,
       width: 100,
       height: 100,
     },
     [CARRIAGE]: {
-      top: 931,
-      left: 771,
-      width: 50,
-      height: 50,
+      top: 984,
+      left: 801,
+      width: 10,
+      height: 10,
     },
   },
   [TUXFORD]: {
     [HENCHMEN]: {
-      top: 814,
-      left: 864,
+      top: 514,
+      left: 894,
       width: 100,
       height: 161,
     },
     [CAMP]: {
-      top: 627,
-      left: 864,
+      top: 780,
+      left: 991,
       width: 50,
       height: 50,
     },
     [MERRY_MEN]: {
-      top: 514,
-      left: 932,
+      top: 800,
+      left: 890,
       width: 100,
       height: 161,
     },
     [CARRIAGE]: {
-      top: 706,
+      top: 695,
       left: 823,
       width: 50,
       height: 100,
@@ -552,13 +481,13 @@ const INITIATIVE_TRACK: TrackConfig[] = [
 const UNIQUE_SPACES: TrackConfig[] = [
   {
     id: 'Carriage_usedCarriages',
-    top: 505,
-    left: 249,
+    top: 521,
+    left: 265,
   },
   {
     id: `${MERRY_MEN}_prison`,
-    top: 147,
-    left: 1182,
+    top: 167,
+    left: 1230,
   },
 ];
 

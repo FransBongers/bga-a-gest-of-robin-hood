@@ -10,7 +10,10 @@ class GameMap {
   protected game: AGestOfRobinHoodGame;
 
   public parishStatusMarkers: Record<string, LineStock<GestMarker>> = {};
-  public forces: Record<string, LineStock<GestForce> | ManualPositionStock<GestForce>> = {};
+  public forces: Record<
+    string,
+    LineStock<GestForce> | ManualPositionStock<GestForce>
+  > = {};
   private forceIdCounter = 1;
 
   constructor(game: AGestOfRobinHoodGame) {
@@ -36,16 +39,6 @@ class GameMap {
       stock.removeAll();
     });
 
-    // SPACES.forEach((spaceId) => {
-    //   [CAMP, MERRY_MEN, HENCHMEN, CARRIAGE].forEach((type) => {
-    //     const id = `${lowerCaseFirstLetter(type)}_${spaceId}`;
-    //     const node = document.getElementById(id);
-    //     if (!node) {
-    //       return;
-    //     }
-    //     node.replaceChildren();
-    //   });
-    // });
     [
       ROYAL_FAVOUR_MARKER,
       ROYAL_INSPECTION_MARKER,
@@ -100,21 +93,6 @@ class GameMap {
     this.updateParishStatusMarkers({ gamedatas });
   }
 
-  tempSetupHenchmen() {
-    [TUXFORD, RETFORD].forEach((spaceId) => {
-      const id = `${HENCHMEN}_${spaceId}`;
-      const element = document.getElementById(id);
-      this.forces[id] = new ManualPositionStock<GestForce>(
-        this.game.forceManager,
-        element,
-        {
-        },
-        henchmenDisplay
-      );
-    })
-
-  }
-
   setupForces({ gamedatas }: { gamedatas: AGestOfRobinHoodGamedatas }) {
     Object.entries(SPACES_CONFIG).forEach(([spaceId, config]) => {
       Object.keys(config).forEach((forceType) => {
@@ -123,36 +101,27 @@ class GameMap {
         if (!element) {
           return;
         }
-        // if ([RETFORD, TUXFORD].includes(spaceId) && forceType === HENCHMEN) {
-        //   return;
-        // }
-        this.forces[id] = new LineStock<GestForce>(
+        this.forces[id] = new ManualPositionStock<GestForce>(
           this.game.forceManager,
           element,
-          {
-            center: true,
-            gap: '0px',
-          }
+          {},
+          getDisplayFunction(spaceId, forceType)
         );
       });
     });
-    // this.tempSetupHenchmen();
 
-    this.forces['Carriage_usedCarriages'] = new LineStock<GestForce>(
+    this.forces['Carriage_usedCarriages'] = new ManualPositionStock<GestForce>(
       this.game.forceManager,
       document.getElementById('Carriage_usedCarriages'),
       {
-        center: true,
-        gap: '0px',
-      }
+      },
+      forceDisplay(defaultCarriageCoordinates, CARRIAGE_WIDTH, CARRIAGE_HEIGHT)
     );
-    this.forces[`${MERRY_MEN}_prison`] = new LineStock<GestForce>(
+    this.forces[`${MERRY_MEN}_prison`] = new ManualPositionStock<GestForce>(
       this.game.forceManager,
       document.getElementById(`${MERRY_MEN}_prison`),
-      {
-        center: true,
-        gap: '0px',
-      }
+      {},
+      forceDisplay(defaultMerryMenCoordinates, MERRY_MAN_WIDTH, MERRY_MAN_HEIGHT)
     );
 
     this.updateForces({ gamedatas });

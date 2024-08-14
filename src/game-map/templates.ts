@@ -79,7 +79,7 @@ const tplSpaces = () =>
     .map(([spaceId, config]) => {
       let html = '';
       Object.keys(config).forEach((forceType) => {
-        html += `<div id="${forceType}_${spaceId}" class="gest_forces" style="top: calc(var(--gestMapScale) * ${config[forceType].top}px); left: calc(var(--gestMapScale) * ${config[forceType].left}px); width: calc(var(--gestMapScale) * ${config[forceType].width}px); height: calc(var(--gestMapScale) * ${config[forceType].height}px);"></div>`;
+        html += `<div id="${forceType}_${spaceId}" class="gest_forces" style="top: calc(var(--gestMapScale) * ${config[forceType].top}px); left: calc(var(--gestMapScale) * ${config[forceType].left}px); width: calc(var(--gestMapScale) * 10px); height: calc(var(--gestMapScale) * 10px);"></div>`;
       });
 
       // if (config.camp) {

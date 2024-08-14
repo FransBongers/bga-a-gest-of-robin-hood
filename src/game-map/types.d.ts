@@ -11,3 +11,14 @@ interface TrackConfig {
   left: number;
   extraClasses?: string;
 }
+
+interface ForceCoordinates {
+  row: number;
+  column: number;
+}
+
+interface ForcePosition {
+  top: number;
+  left: number;
+  zIndex: number;
+}

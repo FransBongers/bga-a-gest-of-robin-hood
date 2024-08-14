@@ -10,21 +10,21 @@
 
 .gest_force[data-type='Henchmen'] {
   box-sizing: border-box;
-  width: calc(var(--gestForceScale) * 50px);
-  height: calc(var(--gestForceScale) * 62px);
+  width: calc(var(--gestForceScale) * 40px);
+  height: calc(var(--gestForceScale) * 50px);
 }
 
 .gest_force[data-type='MerryMen'],
 .gest_force[data-type='RobinHood'] {
   box-sizing: border-box;
-  width: calc(var(--gestForceScale) * 50px);
-  height: calc(var(--gestForceScale) * 57px);
+  width: calc(var(--gestForceScale) * 40px);
+  height: calc(var(--gestForceScale) * 46px);
 }
 
 .gest_force[data-type='Camp'] {
   box-sizing: border-box;
-  width: calc(var(--gestForceScale) * 70px);
-  height: calc(var(--gestForceScale) * 60px);
+  width: calc(var(--gestForceScale) * 56px);
+  height: calc(var(--gestForceScale) * 48px);
 }
 
 .gest_force[data-type='TallageCarriage'],
@@ -32,8 +32,8 @@
 .gest_force[data-type='TributeCarriage'],
 .gest_force[data-type='Carriage'] {
   box-sizing: border-box;
-  width: calc(var(--gestForceScale) * 70px);
-  height: calc(var(--gestForceScale) * 70px);
+  width: calc(var(--gestForceScale) * 56px);
+  height: calc(var(--gestForceScale) * 56px);
 }
 
 .gest_force_side {
@@ -51,8 +51,8 @@
   background-image: url('img/henchmen.png');
   background-size: 100% 300%;
   background-repeat: no-repeat;
-  width: calc(var(--gestForceScale) * 50px);
-  height: calc(var(--gestForceScale) * 62px);
+  width: calc(var(--gestForceScale) * 40px);
+  height: calc(var(--gestForceScale) * 50px);
 }
 
 .gest_force_side[data-type='Camp'] {
@@ -64,8 +64,8 @@
 .gest_force_side[data-type='RobinHood'] {
   background-image: url('img/merry_men.png');
   background-size: 1100% 300%;
-  width: calc(var(--gestForceScale) * 50px);
-  height: calc(var(--gestForceScale) * 57px);
+  width: calc(var(--gestForceScale) * 40px);
+  height: calc(var(--gestForceScale) * 46px);
 }
 
 .gest_force_side[data-type='RobinHood'][data-revealed='false'] {
@@ -74,6 +74,8 @@
 
 .gest_force_side[data-type='MerryMen'][data-revealed='false'] {
   background-position-x: 10%;
+  // background-image: url('img/noBorder_merryMenHidden.png');
+  // background-size: 100% 100%;
 }
 
 .gest_force_side[data-type='MerryMen'][data-revealed='true'] {
@@ -90,8 +92,8 @@
 .gest_force_side[data-type='Carriage'] {
   background-image: url('img/carriages.png');
   background-size: 400% 300%;
-  width: calc(var(--gestForceScale) * 70px);
-  height: calc(var(--gestForceScale) * 70px);
+  width: calc(var(--gestForceScale) * 56px);
+  height: calc(var(--gestForceScale) * 56px);
   border-radius: 50%;
 }
 
@@ -120,8 +122,8 @@
 .gest_force_side[data-type='Camp'] {
   background-image: url('img/camps.png');
   background-size: 200% 300%;
-  width: calc(var(--gestForceScale) * 70px);
-  height: calc(var(--gestForceScale) * 60px);
+  width: calc(var(--gestForceScale) * 56px);
+  height: calc(var(--gestForceScale) * 48px);
   // border-radius: 50%;
 }
 

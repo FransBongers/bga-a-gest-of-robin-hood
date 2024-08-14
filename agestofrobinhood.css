@@ -570,21 +570,21 @@
 
 .gest_force[data-type=Henchmen] {
   box-sizing: border-box;
-  width: calc(var(--gestForceScale) * 50px);
-  height: calc(var(--gestForceScale) * 62px);
+  width: calc(var(--gestForceScale) * 40px);
+  height: calc(var(--gestForceScale) * 50px);
 }
 
 .gest_force[data-type=MerryMen],
 .gest_force[data-type=RobinHood] {
   box-sizing: border-box;
-  width: calc(var(--gestForceScale) * 50px);
-  height: calc(var(--gestForceScale) * 57px);
+  width: calc(var(--gestForceScale) * 40px);
+  height: calc(var(--gestForceScale) * 46px);
 }
 
 .gest_force[data-type=Camp] {
   box-sizing: border-box;
-  width: calc(var(--gestForceScale) * 70px);
-  height: calc(var(--gestForceScale) * 60px);
+  width: calc(var(--gestForceScale) * 56px);
+  height: calc(var(--gestForceScale) * 48px);
 }
 
 .gest_force[data-type=TallageCarriage],
@@ -592,8 +592,8 @@
 .gest_force[data-type=TributeCarriage],
 .gest_force[data-type=Carriage] {
   box-sizing: border-box;
-  width: calc(var(--gestForceScale) * 70px);
-  height: calc(var(--gestForceScale) * 70px);
+  width: calc(var(--gestForceScale) * 56px);
+  height: calc(var(--gestForceScale) * 56px);
 }
 
 .gest_force_side {
@@ -608,8 +608,8 @@
   background-image: url("img/henchmen.png");
   background-size: 100% 300%;
   background-repeat: no-repeat;
-  width: calc(var(--gestForceScale) * 50px);
-  height: calc(var(--gestForceScale) * 62px);
+  width: calc(var(--gestForceScale) * 40px);
+  height: calc(var(--gestForceScale) * 50px);
 }
 
 .gest_force_side[data-type=Camp] {
@@ -620,8 +620,8 @@
 .gest_force_side[data-type=RobinHood] {
   background-image: url("img/merry_men.png");
   background-size: 1100% 300%;
-  width: calc(var(--gestForceScale) * 50px);
-  height: calc(var(--gestForceScale) * 57px);
+  width: calc(var(--gestForceScale) * 40px);
+  height: calc(var(--gestForceScale) * 46px);
 }
 
 .gest_force_side[data-type=RobinHood][data-revealed=false] {
@@ -646,8 +646,8 @@
 .gest_force_side[data-type=Carriage] {
   background-image: url("img/carriages.png");
   background-size: 400% 300%;
-  width: calc(var(--gestForceScale) * 70px);
-  height: calc(var(--gestForceScale) * 70px);
+  width: calc(var(--gestForceScale) * 56px);
+  height: calc(var(--gestForceScale) * 56px);
   border-radius: 50%;
 }
 
@@ -676,8 +676,8 @@
 .gest_force_side[data-type=Camp] {
   background-image: url("img/camps.png");
   background-size: 200% 300%;
-  width: calc(var(--gestForceScale) * 70px);
-  height: calc(var(--gestForceScale) * 60px);
+  width: calc(var(--gestForceScale) * 56px);
+  height: calc(var(--gestForceScale) * 48px);
 }
 
 .gest_force_side[data-type=Camp][data-revealed=false] {
@@ -838,8 +838,8 @@
 
 #MerryMen_prison {
   position: absolute;
-  height: calc(var(--gestMapScale) * 184px);
-  width: calc(var(--gestMapScale) * 177px);
+  height: calc(var(--gestMapScale) * 10px);
+  width: calc(var(--gestMapScale) * 10px);
   display: flex;
 }
 
@@ -878,7 +878,7 @@
 }
 
 .gest_forces {
-  position: absolute;
+  position: absolute !important;
   display: flex;
   gap: calc(var(--gestMapScale) * 8px);
   justify-content: center;
