@@ -12,7 +12,7 @@ class GameMap {
   public parishStatusMarkers: Record<string, LineStock<GestMarker>> = {};
   public forces: Record<
     string,
-    LineStock<GestForce> | ManualPositionStock<GestForce>
+    LineStock<GestForce> | GestManualPositionStock<GestForce>
   > = {};
   private forceIdCounter = 1;
 
@@ -101,7 +101,7 @@ class GameMap {
         if (!element) {
           return;
         }
-        this.forces[id] = new ManualPositionStock<GestForce>(
+        this.forces[id] = new GestManualPositionStock<GestForce>(
           this.game.forceManager,
           element,
           {},
@@ -110,14 +110,14 @@ class GameMap {
       });
     });
 
-    this.forces['Carriage_usedCarriages'] = new ManualPositionStock<GestForce>(
+    this.forces['Carriage_usedCarriages'] = new GestManualPositionStock<GestForce>(
       this.game.forceManager,
       document.getElementById('Carriage_usedCarriages'),
       {
       },
       forceDisplay(defaultCarriageCoordinates, CARRIAGE_WIDTH, CARRIAGE_HEIGHT)
     );
-    this.forces[`${MERRY_MEN}_prison`] = new ManualPositionStock<GestForce>(
+    this.forces[`${MERRY_MEN}_prison`] = new GestManualPositionStock<GestForce>(
       this.game.forceManager,
       document.getElementById(`${MERRY_MEN}_prison`),
       {},

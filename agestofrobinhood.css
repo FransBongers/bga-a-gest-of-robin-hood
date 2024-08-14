@@ -1947,23 +1947,23 @@
   font-size: 20px;
 }
 .gest_icon_counter_container .gest_force_side[data-type=Camp] {
-  --gestForceScale: 0.6;
+  --gestForceScale: 0.75;
 }
 .gest_icon_counter_container .gest_force_side[data-type=MerryMen] {
-  --gestForceScale: 0.6;
+  --gestForceScale: 0.75;
 }
 .gest_icon_counter_container .gest_force_side[data-type=RobinHood] {
-  --gestForceScale: 0.6;
+  --gestForceScale: 0.75;
 }
 .gest_icon_counter_container .gest_force_side[data-type=Henchmen] {
-  --gestForceScale: 0.6;
+  --gestForceScale: 0.75;
   margin-left: 3px;
 }
 .gest_icon_counter_container .gest_force_side[data-type=Carriage],
 .gest_icon_counter_container .gest_force_side[data-type=TallageCarriage],
 .gest_icon_counter_container .gest_force_side[data-type=TrapCarriage],
 .gest_icon_counter_container .gest_force_side[data-type=TributeCarriage] {
-  --gestForceScale: 0.5;
+  --gestForceScale: 0.63;
 }
 
 .gest_icon_counter_container.gest_none {

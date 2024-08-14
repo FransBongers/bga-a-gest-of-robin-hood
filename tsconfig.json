@@ -37,6 +37,7 @@
     "src/counter.d.ts",
     "src/templates.ts",
     "src/utility.ts",
+    "src/GestManualPositionStock/index.ts",
     "src/card-area/index.ts",
     "src/card-area/templates.ts",
     "src/card-manager/index.ts",
