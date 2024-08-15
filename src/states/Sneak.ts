@@ -128,7 +128,6 @@ class SneakState extends MoveForcesState implements State {
           } else {
             this.moves[space.id] = [merryMan.id];
           }
-          // this.moves[merryMan.id] = space.id;
           await this.game.gameMap.forces[`${MERRY_MEN}_${space.id}`].addCard(
             merryMan
           );

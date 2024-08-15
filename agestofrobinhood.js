@@ -2415,10 +2415,45 @@ var GestManualPositionStock = (function (_super) {
         element.classList.add('manual-position-stock');
         return _this;
     }
-    GestManualPositionStock.prototype.addCard = function (card, animation, settings) {
-        var promise = _super.prototype.addCard.call(this, card, animation, settings);
-        this.updateDisplay(this.element, this.getCards(), card, this);
+    GestManualPositionStock.prototype.moveFromOtherStock = function (card, cardElement, animation, settings) {
+        var promise;
+        var element = animation.fromStock.contains(card)
+            ? this.manager.getCardElement(card)
+            :
+                animation.fromStock.element;
+        var fromRect = element === null || element === void 0 ? void 0 : element.getBoundingClientRect();
+        this.updateDisplay(this.element, __spreadArray(__spreadArray([], this.getCards(), true), [card], false), card, this);
+        this.addCardElementToParent(cardElement, settings);
+        this.removeSelectionClassesFromElement(cardElement);
+        promise = fromRect
+            ? this.animationFromElement(cardElement, fromRect, {
+                originalSide: animation.originalSide,
+                rotationDelta: animation.rotationDelta,
+                animation: animation.animation,
+            })
+            : Promise.resolve(false);
+        if (animation.fromStock && animation.fromStock != this) {
+            animation.fromStock.removeCard(card);
+        }
+        if (!promise) {
+            console.warn("CardStock.moveFromOtherStock didn't return a Promise");
+            promise = Promise.resolve(false);
+        }
         return promise;
+    };
+    GestManualPositionStock.prototype.addCard = function (card, animation, settings) {
+        return __awaiter(this, void 0, void 0, function () {
+            var result;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4, _super.prototype.addCard.call(this, card, animation, settings)];
+                    case 1:
+                        result = _a.sent();
+                        this.updateDisplay(this.element, this.getCards(), card, this);
+                        return [2, result];
+                }
+            });
+        });
     };
     GestManualPositionStock.prototype.cardRemoved = function (card, settings) {
         _super.prototype.cardRemoved.call(this, card, settings);
@@ -3230,7 +3265,8 @@ var GameMap = (function () {
                 _this.forces[id] = new GestManualPositionStock(_this.game.forceManager, element, {}, getDisplayFunction(spaceId, forceType));
             });
         });
-        this.forces['Carriage_usedCarriages'] = new GestManualPositionStock(this.game.forceManager, document.getElementById('Carriage_usedCarriages'), {}, forceDisplay(defaultCarriageCoordinates, CARRIAGE_WIDTH, CARRIAGE_HEIGHT));
+        this.forces['Carriage_usedCarriages'] =
+            new GestManualPositionStock(this.game.forceManager, document.getElementById('Carriage_usedCarriages'), {}, forceDisplay(defaultCarriageCoordinates, CARRIAGE_WIDTH, CARRIAGE_HEIGHT));
         this.forces["".concat(MERRY_MEN, "_prison")] = new GestManualPositionStock(this.game.forceManager, document.getElementById("".concat(MERRY_MEN, "_prison")), {}, forceDisplay(defaultMerryMenCoordinates, MERRY_MAN_WIDTH, MERRY_MAN_HEIGHT));
         this.updateForces({ gamedatas: gamedatas });
     };

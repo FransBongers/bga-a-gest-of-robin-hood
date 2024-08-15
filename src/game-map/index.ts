@@ -110,18 +110,26 @@ class GameMap {
       });
     });
 
-    this.forces['Carriage_usedCarriages'] = new GestManualPositionStock<GestForce>(
-      this.game.forceManager,
-      document.getElementById('Carriage_usedCarriages'),
-      {
-      },
-      forceDisplay(defaultCarriageCoordinates, CARRIAGE_WIDTH, CARRIAGE_HEIGHT)
-    );
+    this.forces['Carriage_usedCarriages'] =
+      new GestManualPositionStock<GestForce>(
+        this.game.forceManager,
+        document.getElementById('Carriage_usedCarriages'),
+        {},
+        forceDisplay(
+          defaultCarriageCoordinates,
+          CARRIAGE_WIDTH,
+          CARRIAGE_HEIGHT
+        )
+      );
     this.forces[`${MERRY_MEN}_prison`] = new GestManualPositionStock<GestForce>(
       this.game.forceManager,
       document.getElementById(`${MERRY_MEN}_prison`),
       {},
-      forceDisplay(defaultMerryMenCoordinates, MERRY_MAN_WIDTH, MERRY_MAN_HEIGHT)
+      forceDisplay(
+        defaultMerryMenCoordinates,
+        MERRY_MAN_WIDTH,
+        MERRY_MAN_HEIGHT
+      )
     );
 
     this.updateForces({ gamedatas });
