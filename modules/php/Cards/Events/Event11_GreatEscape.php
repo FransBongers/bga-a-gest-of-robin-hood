@@ -165,7 +165,7 @@ class Event11_GreatEscape extends \AGestOfRobinHood\Cards\Events\RegularEvent
     if (count($spaces) > 1) {
       return false;
     }
-    $this->resolveDarkEffectAfterSelect($player, $spaces[0], $ctx);
+    $this->resolveDarkEffect($player, $ctx,  $spaces[0]);
     return true;
   }
 

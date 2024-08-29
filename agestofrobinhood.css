@@ -732,6 +732,24 @@
   --gestForceScale: var(--leftColumnScale) * var(--mapSizeMultiplier);
 }
 
+.gest_initiative_track_select {
+  transform: rotate(-5deg);
+  border-radius: 5%;
+}
+
+.gest_initiative_track_select.gest_selectable {
+  cursor: pointer;
+  border: calc(var(--gestMapScale) * 7px) solid #ffff00;
+  z-index: 1;
+}
+
+.gest_initiative_track_select.gest_selected,
+.gest_initiative_track_select.gest_selectable:hover {
+  cursor: pointer;
+  border: calc(var(--gestMapScale) * 7px) solid #0000ff;
+  z-index: 1;
+}
+
 #gest_map_spaces {
   position: absolute;
   left: calc(var(--leftColumnScale) * var(--mapSizeMultiplier) * 0px);

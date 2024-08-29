@@ -447,6 +447,24 @@ const PARISH_STATUS_BOXES: TrackConfig[] = [
 
 const INITIATIVE_TRACK: TrackConfig[] = [
   {
+    id: 'initiativeTrack_singlePlot_select',
+    top: 1589,
+    left: 1088,
+    extraClasses: 'gest_marker_space gest_initiative_track gest_initiative_track_select',
+  },
+  {
+    id: 'initiativeTrack_event_select',
+    top: 1581,
+    left: 1184,
+    extraClasses: 'gest_marker_space gest_initiative_track gest_initiative_track_select',
+  },
+  {
+    id: 'initiativeTrack_plotsAndDeeds_select',
+    top: 1573,
+    left: 1281,
+    extraClasses: 'gest_marker_space gest_initiative_track gest_initiative_track_select',
+  },
+  {
     id: 'initiativeTrack_singlePlot',
     top: 1596,
     left: 1094,

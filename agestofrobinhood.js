@@ -3123,6 +3123,24 @@ var PARISH_STATUS_BOXES = [
 ];
 var INITIATIVE_TRACK = [
     {
+        id: 'initiativeTrack_singlePlot_select',
+        top: 1589,
+        left: 1088,
+        extraClasses: 'gest_marker_space gest_initiative_track gest_initiative_track_select',
+    },
+    {
+        id: 'initiativeTrack_event_select',
+        top: 1581,
+        left: 1184,
+        extraClasses: 'gest_marker_space gest_initiative_track gest_initiative_track_select',
+    },
+    {
+        id: 'initiativeTrack_plotsAndDeeds_select',
+        top: 1573,
+        left: 1281,
+        extraClasses: 'gest_marker_space gest_initiative_track gest_initiative_track_select',
+    },
+    {
         id: 'initiativeTrack_singlePlot',
         top: 1596,
         left: 1094,
@@ -7539,6 +7557,9 @@ var ChooseActionState = (function () {
                 actionName: this.getActionName({ action: action }),
             },
         });
+        this.game.setLocationSelected({
+            id: "initiativeTrack_".concat(action, "_select"),
+        });
         var callback = function () {
             _this.game.clearPossible();
             _this.game.takeAction({
@@ -7587,6 +7608,10 @@ var ChooseActionState = (function () {
             _this.game.addPrimaryActionButton({
                 id: "".concat(action, "_select"),
                 text: _this.getActionName({ action: action }),
+                callback: function () { return _this.updateInterfaceConfirm({ action: action, pass: pass }); },
+            });
+            _this.game.setLocationSelectable({
+                id: "initiativeTrack_".concat(action, "_select"),
                 callback: function () { return _this.updateInterfaceConfirm({ action: action, pass: pass }); },
             });
         });

@@ -90,6 +90,10 @@ class ChooseActionState implements State {
       },
     });
 
+    this.game.setLocationSelected({
+      id: `initiativeTrack_${action}_select`,
+    });
+
     const callback = () => {
       this.game.clearPossible();
       this.game.takeAction({
@@ -148,6 +152,10 @@ class ChooseActionState implements State {
       this.game.addPrimaryActionButton({
         id: `${action}_select`,
         text: this.getActionName({ action }),
+        callback: () => this.updateInterfaceConfirm({ action, pass }),
+      });
+      this.game.setLocationSelectable({
+        id: `initiativeTrack_${action}_select`,
         callback: () => this.updateInterfaceConfirm({ action, pass }),
       });
     });
