@@ -1125,6 +1125,9 @@
   background-repeat: no-repeat;
   background-size: 100% 100%;
 }
+.information_modal #information_modal_content #gest_robSummary .gest_log_die {
+  --gestTokenScale: 0.7;
+}
 .information_modal #information_modal_content #gest_royalInspectionRound {
   padding: 16px;
   display: flex;

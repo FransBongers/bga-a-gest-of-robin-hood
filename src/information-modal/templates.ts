@@ -135,13 +135,13 @@ const robSummaryInfo = ({ game }: { game: AGestOfRobinHoodGame }) => `
       <div>
         <span class="gest_title">${_('Treasury')}</span>
           <div><span>${game.format_string_recursive(
-             _(
-               '${tkn_boldItalicText_success} 2 Shillings from Sheriff, +1 Justice'
-             ),
-             {
-               tkn_boldItalicText_success: _('Success: '),
-             }
-           )}</span></div>
+            _(
+              '${tkn_boldItalicText_success} 2 Shillings from Sheriff, +1 Justice'
+            ),
+            {
+              tkn_boldItalicText_success: _('Success: '),
+            }
+          )}</span></div>
       <div>
         <span>${game.format_string_recursive(
           _('${tkn_boldItalicText_failure} No effect'),
@@ -179,6 +179,32 @@ const robSummaryInfo = ({ game }: { game: AGestOfRobinHoodGame }) => `
           )
           .join('')}
     </div>
+    <div style="margin-top: 16px;">
+      <span class="gest_title"">${_(
+        'Green die faces'
+      )}</span>
+      <div class="gest_row" style="margin-top: 4px;">
+        ${tplLogTokenDieResult('green:-1')}
+        ${tplLogTokenDieResult('green:-1')}
+        ${tplLogTokenDieResult('green:0')}
+        ${tplLogTokenDieResult('green:1')}
+        ${tplLogTokenDieResult('green:2')}
+        ${tplLogTokenDieResult('green:3')}
+      </div>
+    </div>
+        <div style="margin-top: 16px;">
+      <span class="gest_title"">${_(
+        'White die faces'
+      )}</span>
+      <div class="gest_row" style="margin-top: 4px;">
+        ${tplLogTokenDieResult('white:-2')}  
+        ${tplLogTokenDieResult('white:-1')}
+        ${tplLogTokenDieResult('white:-1')}
+        ${tplLogTokenDieResult('white:0')}
+        ${tplLogTokenDieResult('white:1')}
+        ${tplLogTokenDieResult('white:2')}
+      </div>
+    </div>
   </div>
 `;
 
@@ -191,7 +217,9 @@ const travellerInfoRow = (
             <span class="gest_traveller_name">${_(info.name)}</span>
             <span class="gest_traveller_deck_count">${_(info.inDeck)}</span>
             <span style="font-weight: bold;">: </span>
-            <span class="gest_traveller_defense">${info.defense} ${_('Defense')}</span>
+            <span class="gest_traveller_defense">${info.defense} ${_(
+  'Defense'
+)}</span>
           </div>
           <div class="gest_row">
             <span class="gest_rob_result">${_('Success: ')}</span>
@@ -204,10 +232,13 @@ const travellerInfoRow = (
   </div>
 </div>`;
 
-const royalInspectionUnrest = ({game}: {game: AGestOfRobinHoodGame}) => `
+const royalInspectionUnrest = ({ game }: { game: AGestOfRobinHoodGame }) => `
   <div class="gest_royal_inspection_info">
     <div>    
-      <span>${game.format_string_recursive(_('${tkn_boldText_unrest} Check the number of Submissive Parises:'), {tkn_boldText_unrest: _('Unrest: ')})}</span>
+      <span>${game.format_string_recursive(
+        _('${tkn_boldText_unrest} Check the number of Submissive Parises:'),
+        { tkn_boldText_unrest: _('Unrest: ') }
+      )}</span>
     </div>
     <div class="gest_row">    
       <span class="gest_list_item">•</span>
@@ -225,64 +256,98 @@ const royalInspectionUnrest = ({game}: {game: AGestOfRobinHoodGame}) => `
       <span class="gest_list_item">•</span>
       <span>${_('0 Submissive Parishes: +3 Justice')}</span>
     </div>
-    <div><span>${_('Then check for automatic victory (Royal Favour at 5 or more)')}</span></div>
+    <div><span>${_(
+      'Then check for automatic victory (Royal Favour at 5 or more)'
+    )}</span></div>
   </div>
-`
+`;
 
-const royalInspectionMischief = ({game}: {game: AGestOfRobinHoodGame}) => `
+const royalInspectionMischief = ({ game }: { game: AGestOfRobinHoodGame }) => `
   <div class="gest_royal_inspection_info">
-    <span>${game.format_string_recursive(_('${tkn_boldText_mischief} Robin Hood gains 1 Shilling for each Camp in a Forest or Ollerton Hill, then performs a Single Rob Plot and may Donate in up to two Parishes. Return half (rounded down) Merry Men in Prison to Available.'), {tkn_boldText_mischief: _('Mischief: ')})}</span>
+    <span>${game.format_string_recursive(
+      _(
+        '${tkn_boldText_mischief} Robin Hood gains 1 Shilling for each Camp in a Forest or Ollerton Hill, then performs a Single Rob Plot and may Donate in up to two Parishes. Return half (rounded down) Merry Men in Prison to Available.'
+      ),
+      { tkn_boldText_mischief: _('Mischief: ') }
+    )}</span>
   </div>
-`
+`;
 
-const royalInspectionGovernance = ({game}: {game: AGestOfRobinHoodGame}) => `
+const royalInspectionGovernance = ({
+  game,
+}: {
+  game: AGestOfRobinHoodGame;
+}) => `
   <div class="gest_royal_inspection_info">
-    <span>${game.format_string_recursive(_('${tkn_boldText_governance} Sheriff gains 1 Shilling for each Submissive space (including Nottingham). Remove half (rounded down) Henchmen from each Revolting Parish. Set any Revolting Parish where Henchmen now outnumber Merry Men to Submissive.'), {tkn_boldText_governance: _('Governance: ')})}</span>
+    <span>${game.format_string_recursive(
+      _(
+        '${tkn_boldText_governance} Sheriff gains 1 Shilling for each Submissive space (including Nottingham). Remove half (rounded down) Henchmen from each Revolting Parish. Set any Revolting Parish where Henchmen now outnumber Merry Men to Submissive.'
+      ),
+      { tkn_boldText_governance: _('Governance: ') }
+    )}</span>
   </div>
-`
+`;
 
-const royalInspectionRedployment = ({game}: {game: AGestOfRobinHoodGame}) => `
+const royalInspectionRedployment = ({
+  game,
+}: {
+  game: AGestOfRobinHoodGame;
+}) => `
   <div class="gest_royal_inspection_info">
-    <div><span>${game.format_string_recursive(_('${tkn_boldText_redeployment} Sheriff then Robin Hood must redeploy their Henchmen and Merry Men:'), {tkn_boldText_redeployment: _('Redeployment: ')})}</span></div>
+    <div><span>${game.format_string_recursive(
+      _(
+        '${tkn_boldText_redeployment} Sheriff then Robin Hood must redeploy their Henchmen and Merry Men:'
+      ),
+      { tkn_boldText_redeployment: _('Redeployment: ') }
+    )}</span></div>
     <div class="gest_row">
       <span class="gest_list_item">•</span>
-      <span>${_('Henchmen must move from Revolting Parishes and Forests to Submissive spaces, any other may move to Nottingham. Used Carriages to Available.')}</span></li>
+      <span>${_(
+        'Henchmen must move from Revolting Parishes and Forests to Submissive spaces, any other may move to Nottingham. Used Carriages to Available.'
+      )}</span></li>
     </div>  
     <div class="gest_row">    
       <span class="gest_list_item">•</span>
-      <span>${_('Merry Men must move from Submissive spaces to Forests or Camps, any others may do the same, then flip all Hidden. Place Robin Hood from Available to any Forest, then may secretly swap him with any Merry Man.')}</span></li>
+      <span>${_(
+        'Merry Men must move from Submissive spaces to Forests or Camps, any others may do the same, then flip all Hidden. Place Robin Hood from Available to any Forest, then may secretly swap him with any Merry Man.'
+      )}</span></li>
     </div>
   </div>
-`
+`;
 
-const royalInspectionReset = ({game}: {game: AGestOfRobinHoodGame}) => `
+const royalInspectionReset = ({ game }: { game: AGestOfRobinHoodGame }) => `
   <div class="gest_royal_inspection_info">
-    <span>${game.format_string_recursive(_('${tkn_boldText_reset} Shuffle the Traveller deck discard pile back into the main Traveller deck. Set Robin Hood to First Eligible and the Sheriff to Second Eligible, then draw the next Event card and continue play.'), {tkn_boldText_reset: _('Reset: ')})}</span>
+    <span>${game.format_string_recursive(
+      _(
+        '${tkn_boldText_reset} Shuffle the Traveller deck discard pile back into the main Traveller deck. Set Robin Hood to First Eligible and the Sheriff to Second Eligible, then draw the next Event card and continue play.'
+      ),
+      { tkn_boldText_reset: _('Reset: ') }
+    )}</span>
   </div>
-`
+`;
 
-const royalInspectionRoundInfo = ({game}: {game: AGestOfRobinHoodGame}) => `
+const royalInspectionRoundInfo = ({ game }: { game: AGestOfRobinHoodGame }) => `
   <div class="gest_row">
     <div class="gest_arrow"></div>
-    ${royalInspectionUnrest({game})}
+    ${royalInspectionUnrest({ game })}
   </div>
   <div class="gest_row">
     <div class="gest_arrow"></div>
-    ${royalInspectionMischief({game})}
+    ${royalInspectionMischief({ game })}
   </div>  
   <div class="gest_row">
     <div class="gest_arrow"></div>
-    ${royalInspectionGovernance({game})}
+    ${royalInspectionGovernance({ game })}
   </div>
   <div class="gest_row">
     <div class="gest_arrow"></div>
-    ${royalInspectionRedployment({game})}
+    ${royalInspectionRedployment({ game })}
   </div>
   <div class="gest_row">
     <div class="gest_arrow"></div>
-    ${royalInspectionReset({game})}
+    ${royalInspectionReset({ game })}
   </div>  
-`
+`;
 
 const tplInformationModalContent = ({
   tabs,
