@@ -301,7 +301,7 @@ class Notifications
       'i18n' => ['tkn_boldText_actionName']
     ];
 
-    if ($action === EVENT) {
+    if ($action === EVENT && !$pass) {
       $card = Cards::getTopOf(EVENTS_DISCARD);
       $text = clienttranslate('${player_name} chooses ${tkn_boldText_actionName} and executes ${tkn_boldText_eventTitle} from ${tkn_cardName}${tkn_card}');
       

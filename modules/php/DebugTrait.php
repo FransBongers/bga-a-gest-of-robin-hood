@@ -22,8 +22,9 @@ trait DebugTrait
 
   function debug_test()
   {
+    Forces::get(ROBIN_HOOD)->setHidden(0);
     // Globals::setBridgeLocation('Blyth_Retford_border');
-    Forces::moveAllInLocation(CARRIAGE_SUPPLY,USED_CARRIAGES);
+    // Forces::moveAllInLocation(CARRIAGE_SUPPLY,USED_CARRIAGES);
     // Forces::moveAllInLocation(BLYTH,NOTTINGHAM);
     // Forces::moveAllInLocation(BINGHAM,NOTTINGHAM);
     // Forces::moveAllInLocation(MANSFIELD,NOTTINGHAM);
@@ -48,7 +49,7 @@ trait DebugTrait
     // $this->debugPlaceForces(CAMP,BLYTH,1);
 
 
-    // Cards::get('Event20_MajorOak')->insertOnTop(EVENTS_DECK);
+    // Cards::get('Event09_SocialBandit')->insertOnTop(EVENTS_DECK);
     // Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_VICTIMS_PILE);
     // Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_DECK);
 

@@ -207,4 +207,13 @@ class GameMap extends \APP_DbObject
       'hidden' => $force->isHidden(),
     ];
   }
+
+  public static function isHiddenMerryMenDataRevealed($numberRevealed)
+  {
+    if ($numberRevealed === 0) {
+      return false;
+    }
+    $robinHood = Forces::get(ROBIN_HOOD);
+    return $robinHood->isHidden() || $robinHood->getLocation() === ROBIN_HOOD_SUPPLY;
+  }
 }

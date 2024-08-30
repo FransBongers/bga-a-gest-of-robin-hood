@@ -3,6 +3,7 @@
 namespace AGestOfRobinHood\Cards\Events;
 
 use AGestOfRobinHood\Core\Engine\LeafNode;
+use AGestOfRobinHood\Core\Globals;
 use AGestOfRobinHood\Core\Notifications;
 use AGestOfRobinHood\Helpers\GameMap;
 use AGestOfRobinHood\Helpers\Utils;
@@ -119,6 +120,7 @@ class Event11_GreatEscape extends \AGestOfRobinHood\Cards\Events\RegularEvent
     $hiddenMerryMen = Utils::filter($space->getForces(), function ($force) {
       return $force->isMerryMan() && $force->isHidden();
     });
+    $checkpoint = GameMap::isHiddenMerryMenDataRevealed(count($hiddenMerryMen));
     foreach ($hiddenMerryMen as $merryMan) {
       $merryMan->reveal($player);
     }
@@ -127,6 +129,9 @@ class Event11_GreatEscape extends \AGestOfRobinHood\Cards\Events\RegularEvent
       return $optionSpace->getId() === $space->getId();
     })) {
       $capture->resolveCapture($player, $space->getId());
+    }
+    if ($checkpoint) {
+      Globals::setCheckpoint(true);
     }
   }
 

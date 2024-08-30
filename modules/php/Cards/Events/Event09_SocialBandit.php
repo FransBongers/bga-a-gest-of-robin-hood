@@ -3,7 +3,7 @@
 namespace AGestOfRobinHood\Cards\Events;
 
 use AGestOfRobinHood\Core\Engine\LeafNode;
-use AGestOfRobinHood\Core\Notifications;
+use AGestOfRobinHood\Core\Globals;
 use AGestOfRobinHood\Helpers\GameMap;
 use AGestOfRobinHood\Helpers\Utils;
 use AGestOfRobinHood\Managers\Cards;
@@ -55,12 +55,19 @@ class Event09_SocialBandit extends \AGestOfRobinHood\Cards\Events\RegularEvent
   public function performDarkEffect($player, $successful, $ctx = null, $space = null)
   {
     $robinHood = Forces::get(ROBIN_HOOD);
+    $checkpoint = $robinHood->isHidden() || $robinHood->getLocation() === ROBIN_HOOD_SUPPLY;
+
     $robinHood->eventRevealBySheriff($player);
     if (in_array($robinHood->getLocation(), PARISHES)) {
       $space = Spaces::get($robinHood->getLocation());
       if ($space->isRevolting()) {
         $space->setToSubmissive($player);
       }
+    }
+
+    if ($checkpoint) {
+      // Log::checkpoint();
+      Globals::setCheckpoint(true);
     }
   }
 
