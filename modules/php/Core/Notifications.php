@@ -1084,7 +1084,7 @@ class Notifications
     self::notifyAll("redeploymentSheriff", clienttranslate('${player_name} redeploys their Henchmen and returns all used Carriages to Available Forces'), [
       'player' => $player,
       'forces' => $forces,
-      'numberOfCarriages' => count($carriages),
+      'carriages' => $carriages,
       'isTemporaryTruce' => false,
     ]);
   }
@@ -1118,7 +1118,7 @@ class Notifications
 
   public static function resolveRobEffect($player, $effectTitle)
   {
-    self::message(clienttranslate('${player_name} resolved ${tkn_boldText_effect}'), [
+    self::message(clienttranslate('${player_name} resolves ${tkn_boldText_effect}'), [
       'player' => $player,
       'tkn_boldText_effect' => $effectTitle,
       'i18n' => ['tkn_boldText_effect']

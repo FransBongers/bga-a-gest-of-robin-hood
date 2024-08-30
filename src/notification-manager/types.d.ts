@@ -168,6 +168,7 @@ interface NotifPutTravellerInDiscardPileArgs {
 
 interface NotifRedeploymentSheriffArgs {
   forces: GestForce[];
+  carriages: GestForce[];
   isTemporaryTruce: boolean;
 }
 

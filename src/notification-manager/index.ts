@@ -609,7 +609,7 @@ class NotificationManager {
   }
 
   async notif_redeploymentSheriff(notif: Notif<NotifRedeploymentSheriffArgs>) {
-    const { forces, isTemporaryTruce } = notif.args;
+    const { forces, isTemporaryTruce, carriages } = notif.args;
 
     const promises = [];
     // TODO: check if already in destination for sheriff player?
@@ -622,6 +622,18 @@ class NotificationManager {
     await Promise.all(promises);
     if (!isTemporaryTruce) {
       this.game.gameMap.forces[`${CARRIAGE}_${USED_CARRIAGES}`].removeAll();
+      const isSheriff = this.currentPlayerIsSheriff();
+      if (isSheriff) {
+        carriages.forEach((carriage) => {
+          this.game.playerManager
+            .getSheriffPlayer()
+            .counters.Sheriff[carriage.type].incValue(1);
+        });
+      } else {
+        this.game.playerManager
+          .getSheriffPlayer()
+          .counters.Sheriff.Carriage.incValue(carriages.length);
+      }
     }
   }
 

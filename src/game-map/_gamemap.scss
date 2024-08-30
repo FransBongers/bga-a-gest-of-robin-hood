@@ -108,6 +108,7 @@
   position: absolute;
   height: calc(var(--gestMapScale) * 60px);
   width: calc(var(--gestMapScale) * 60px);
+  border-radius: 5%;
   // background-color: yellow;
   // opacity: 0.5;
 }

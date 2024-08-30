@@ -33,7 +33,7 @@ class Traveller05_RichardAtTheLea extends \AGestOfRobinHood\Models\TravellerCard
     $camp = Forces::getTopOf(CAMPS_SUPPLY);
     if ($camp !== null) {
       $camp->setLocation(RETFORD);
-      Notifications::placeForce($player, $camp, $space);
+      Notifications::placeForce($player, $camp, $retford);
       Players::moveRoyalFavour($player, 1, JUSTICE);
     }
     $this->removeFromGame($player);

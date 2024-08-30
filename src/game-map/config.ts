@@ -535,6 +535,12 @@ const BRIDGE_LOCATIONS: TrackConfig[] = [
     extraClasses: 'gest_bridge_location',
   },
   {
+    id: NEWARK_SOUTHWELL_FOREST_BORDER,
+    top: 1060,
+    left: 867,
+    extraClasses: 'gest_bridge_location',
+  },
+  {
     id: NOTTINGHAM_REMSTON_BORDER,
     top: 1246,
     left: 537,

@@ -121,7 +121,7 @@ class SelectTravellerCardOption extends \AGestOfRobinHood\Models\AtomicAction
       Notifications::robResult($player, $dieColor, $dieResult, $success, $robinHoodResult, $sheriffResult);
     } else {
       $success = true;
-      Notifications::resolveRobEffect($player, $option === 'dark' ? $card->getTitleDark() : $card->getTitleLight());
+      // Notifications::resolveRobEffect($player, $option === 'dark' ? $card->getTitleDark() : $card->getTitleLight());
     }
 
     if ($option === 'light') {

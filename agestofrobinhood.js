@@ -1676,12 +1676,14 @@ var BINGHAM_NEWARK_BORDER = 'Bingham_Newark_border';
 var BINGHAM_SOUTHWELL_FOREST_BORDER = 'Bingham_SouthwellForest_border';
 var BINGHAM_NOTTINGHAM_BORDER = 'Bingham_Nottingham_border';
 var NOTTINGHAM_REMSTON_BORDER = 'Nottingham_Remston_border';
+var NEWARK_SOUTHWELL_FOREST_BORDER = 'Newark_SouthwellForest_border';
 var RIVER_BORDERS = (_a = {},
     _a[BLYTH_RETFORD_BORDER] = [BLYTH, RETFORD],
     _a[BINGHAM_NEWARK_BORDER] = [BINGHAM, NEWARK],
     _a[BINGHAM_SOUTHWELL_FOREST_BORDER] = [BINGHAM, SOUTHWELL_FOREST],
     _a[BINGHAM_NOTTINGHAM_BORDER] = [BINGHAM, NOTTINGHAM],
     _a[NOTTINGHAM_REMSTON_BORDER] = [NOTTINGHAM, REMSTON],
+    _a[NEWARK_SOUTHWELL_FOREST_BORDER] = [NEWARK, SOUTHWELL_FOREST],
     _a);
 var USED_CARRIAGES = 'usedCarriages';
 var PRISON = 'prison';
@@ -3206,6 +3208,12 @@ var BRIDGE_LOCATIONS = [
         id: BINGHAM_NOTTINGHAM_BORDER,
         top: 1227,
         left: 613,
+        extraClasses: 'gest_bridge_location',
+    },
+    {
+        id: NEWARK_SOUTHWELL_FOREST_BORDER,
+        top: 1060,
+        left: 867,
         extraClasses: 'gest_bridge_location',
     },
     {
@@ -6204,12 +6212,12 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_redeploymentSheriff = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, forces, isTemporaryTruce, promises;
+            var _a, forces, isTemporaryTruce, carriages, promises, isSheriff;
             var _this = this;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        _a = notif.args, forces = _a.forces, isTemporaryTruce = _a.isTemporaryTruce;
+                        _a = notif.args, forces = _a.forces, isTemporaryTruce = _a.isTemporaryTruce, carriages = _a.carriages;
                         promises = [];
                         forces.forEach(function (force) {
                             promises.push(_this.game.gameMap.forces["".concat(HENCHMEN, "_").concat(force.location)].addCard(force));
@@ -6219,6 +6227,19 @@ var NotificationManager = (function () {
                         _b.sent();
                         if (!isTemporaryTruce) {
                             this.game.gameMap.forces["".concat(CARRIAGE, "_").concat(USED_CARRIAGES)].removeAll();
+                            isSheriff = this.currentPlayerIsSheriff();
+                            if (isSheriff) {
+                                carriages.forEach(function (carriage) {
+                                    _this.game.playerManager
+                                        .getSheriffPlayer()
+                                        .counters.Sheriff[carriage.type].incValue(1);
+                                });
+                            }
+                            else {
+                                this.game.playerManager
+                                    .getSheriffPlayer()
+                                    .counters.Sheriff.Carriage.incValue(carriages.length);
+                            }
                         }
                         return [2];
                 }

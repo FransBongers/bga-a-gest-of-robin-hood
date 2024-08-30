@@ -794,6 +794,7 @@
   position: absolute;
   height: calc(var(--gestMapScale) * 60px);
   width: calc(var(--gestMapScale) * 60px);
+  border-radius: 5%;
 }
 
 .gest_bridge_location.gest_selectable {

@@ -46,11 +46,11 @@ trait DebugTrait
     // $this->debugPlaceForces(HENCHMEN,RETFORD,1);
     // $this->debugPlaceForces(HENCHMEN,SHIRE_WOOD,1);
     // $this->debugPlaceForces(TRAP_CARRIAGE,SHIRE_WOOD,1);
-    $this->debugPlaceForces(CAMP,TUXFORD,1);
-    $this->debugPlaceForces(CAMP,NEWARK,1);
+    // $this->debugPlaceForces(CAMP,TUXFORD,1);
+    // $this->debugPlaceForces(CAMP,NEWARK,1);
 
 
-    // Cards::get('Event09_SocialBandit')->insertOnTop(EVENTS_DECK);
+    Cards::get('Event12_BoatsAndBridges')->insertOnTop(EVENTS_DECK);
     // Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_VICTIMS_PILE);
     // Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_DECK);
 
