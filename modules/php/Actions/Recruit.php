@@ -241,6 +241,8 @@ class Recruit extends \AGestOfRobinHood\Actions\Plot
 
     $merryMenSupply = Forces::getInLocation(MERRY_MEN_SUPPLY)->toArray();
     $supplyCount = count($merryMenSupply);
+    $campInSupply = Forces::countInLocation(CAMPS_SUPPLY) > 0;
+
     $robinHoodInSupply = Forces::get(ROBIN_HOOD)->getLocation() === ROBIN_HOOD_SUPPLY;
     if ($robinHoodInSupply) {
       $supplyCount += 1;
@@ -266,12 +268,13 @@ class Recruit extends \AGestOfRobinHood\Actions\Plot
       });
 
       $recruitOptions = [];
-      if ($hasCamp && $supplyCount >= 2) {
-        $recruitOptions[] = PLACE_TWO_MERRY_MEN;
-      } else if (($hasCamp && $supplyCount === 1) || $supplyCount > 0) {
+      if ($supplyCount > 0) {
         $recruitOptions[] = PLACE_MERRY_MAN;
       }
-      if (!$hasCamp && count($merryMenNotRobinHood) > 0) {
+      if ($hasCamp && $supplyCount >= 2) {
+        $recruitOptions[] = PLACE_TWO_MERRY_MEN;
+      } 
+      if (!$hasCamp && $campInSupply && count($merryMenNotRobinHood) > 0) {
         $recruitOptions[] = REPLACE_MERRY_MAN_WITH_CAMP;
       }
       if ($hasCamp && Utils::array_some($merryMen, function ($merryMan) {

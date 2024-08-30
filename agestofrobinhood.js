@@ -5301,8 +5301,8 @@ var carriagesRobInfo = function () {
             name: _('Tallage Carriage'),
             defense: 0,
             title: _('Tallage: 0 Defense'),
-            success: _('${tkn_boldItalicText_success} 5 Shillings, send to Used Carriages'),
-            failure: _('${tkn_boldItalicText_failure} No effect (Carriage stays revealed'),
+            success: _('${tkn_boldItalicText_success} 5 Shillings, +1 Justice, send to Used Carriages'),
+            failure: _('${tkn_boldItalicText_failure} No effect (Carriage stays revealed)'),
             nottingham: _('5 Shillings, +1 Order'),
         },
         {
@@ -5310,8 +5310,8 @@ var carriagesRobInfo = function () {
             name: _('Tribute Carriage'),
             defense: 0,
             title: _('Tribute: 0 Defense'),
-            success: _('${tkn_boldItalicText_success} 2 Shillings, +1 Justice, send to Used Carriages'),
-            failure: _('${tkn_boldItalicText_failure} No effect (Carriage stays revealed'),
+            success: _('${tkn_boldItalicText_success} 2 Shillings, +2 Justice, send to Used Carriages'),
+            failure: _('${tkn_boldItalicText_failure} No effect (Carriage stays revealed)'),
             nottingham: _('2 Shillings, +2 Order'),
         },
         {
@@ -5319,8 +5319,8 @@ var carriagesRobInfo = function () {
             name: _('Trap Carriage'),
             defense: 2,
             title: _('Trap: 2 Defense'),
-            success: _('${tkn_boldItalicText_success} 2 Shillings, send to Used Carriages'),
-            failure: _('${tkn_boldItalicText_failure} Captured (Carriage stays revealed'),
+            success: _('${tkn_boldItalicText_success} 2 Shillings, +1 Justice, send to Used Carriages'),
+            failure: _('${tkn_boldItalicText_failure} Captured (Carriage stays revealed)'),
             nottingham: _('2 Shillings, +1 Order'),
         }
     ];

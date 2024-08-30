@@ -47,7 +47,12 @@ class Event09_SocialBandit extends \AGestOfRobinHood\Cards\Events\RegularEvent
     $robinHood = Forces::get(ROBIN_HOOD);
     $robinHood->reveal($player);
 
-    GameMap::placeCamp($player, Spaces::get($robinHood->getLocation()));
+    $spaceId = $robinHood->getLocation();
+    $space = Spaces::get($spaceId);
+    
+    if (count($space->getForces(CAMP)) === 0) {
+      GameMap::placeCamp($player, $space);
+    }
 
     $player->incShillings(2);
   }
