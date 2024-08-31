@@ -21,6 +21,7 @@ class AtomicActions
     EVENT_AMBUSH_LIGHT => 'EventAmbushLight',
     EVENT_BOATS_BRIDGES_DARK => 'EventBoatsBridgesDark',
     EVENT_BOATS_BRIDGES_LIGHT => 'EventBoatsBridgesLight',
+    EVENT_GREAT_ESCAPE_LIGHT => 'EventGreatEscapeLight',
     EVENT_GUY_OF_GISBORNE => 'EventGuyOfGisborne',
     EVENT_MAID_MARIAN_DARK => 'EventMaidMarianDark',
     EVENT_REPLACE_HENCHMEN => 'EventReplaceHenchmen',

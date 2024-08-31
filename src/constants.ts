@@ -95,6 +95,16 @@ const RIVER_BORDERS = {
   [NEWARK_SOUTHWELL_FOREST_BORDER]: [NEWARK, SOUTHWELL_FOREST],
 };
 
+/**
+ * Supply locations
+ */
+const CAMPS_SUPPLY = 'camps_supply';
+const MERRY_MEN_SUPPLY = 'merryMen_supply';
+const ROBIN_HOOD_SUPPLY = 'robinHood_supply';
+const HENCHMEN_SUPPLY = 'henchmen_supply';
+const CARRIAGE_SUPPLY = 'carriage_supply';
+
+// Other Locations
 const USED_CARRIAGES = 'usedCarriages';
 const PRISON = 'prison';
 

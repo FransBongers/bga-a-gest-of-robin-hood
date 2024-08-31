@@ -1,6 +1,6 @@
 class MoveForcesState {
   protected game: AGestOfRobinHoodGame;
-  protected localMoves: Record<string, GestForce[]>;
+  protected localMoves: Record<string, (GestForce & { fromHidden: boolean })[]>;
 
   constructor(game: AGestOfRobinHoodGame) {
     this.game = game;
@@ -17,15 +17,17 @@ class MoveForcesState {
 
   protected addLocalMove({
     fromSpaceId,
+    fromHidden,
     force,
   }: {
     fromSpaceId: string;
+    fromHidden: boolean;
     force: GestForce;
   }) {
     if (this.localMoves[fromSpaceId]) {
-      this.localMoves[fromSpaceId].push(force);
+      this.localMoves[fromSpaceId].push({ ...force, fromHidden });
     } else {
-      this.localMoves[fromSpaceId] = [force];
+      this.localMoves[fromSpaceId] = [{ ...force, fromHidden }];
     }
   }
 
@@ -44,16 +46,26 @@ class MoveForcesState {
     const promises = [];
 
     Object.entries(this.localMoves).forEach(([spaceId, forces]) => {
-      promises.push(
-        this.game.gameMap.forces[`${MERRY_MEN}_${spaceId}`].addCards(
-          forces.map((force) => {
-            return {
-              ...force,
-              location: spaceId,
-            };
-          })
-        )
-      );
+      const forcesToMove: GestForce[] = [];
+      forces.forEach(({ fromHidden, ...force }) => {
+        const originalForce = {
+          ...force,
+          hidden: fromHidden,
+          location: spaceId,
+        };
+        if (spaceId.endsWith('supply')) {
+          promises.push(this.game.forceManager.removeCard(originalForce));
+        } else {
+          forcesToMove.push(originalForce);
+        }
+      });
+      if (forcesToMove.length > 0) {
+        promises.push(
+          this.game.gameMap.forces[`${MERRY_MEN}_${spaceId}`].addCards(
+            forcesToMove
+          )
+        );
+      }
     });
 
     await Promise.all(promises);

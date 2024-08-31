@@ -75,6 +75,7 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     eventAmbushLight: EventAmbushLightState;
     eventBoatsBridgesDark: EventBoatsBridgesDarkState;
     eventBoatsBridgesLight: EventBoatsBridgesLightState;
+    eventGreatEscapeLight: EventGreatEscapeLightState;
     eventGuyOfGisborne: EventGuyOfGisborneState;
     eventMaidMarianDark: EventMaidMarianDarkState;
     eventReplaceHenchmen: EventReplaceHenchmenState;
@@ -153,6 +154,7 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
       eventAmbushLight: new EventAmbushLightState(this),
       eventBoatsBridgesDark: new EventBoatsBridgesDarkState(this),
       eventBoatsBridgesLight: new EventBoatsBridgesLightState(this),
+      eventGreatEscapeLight: new EventGreatEscapeLightState(this),
       eventGuyOfGisborne: new EventGuyOfGisborneState(this),
       eventMaidMarianDark: new EventMaidMarianDarkState(this),
       eventReplaceHenchmen: new EventReplaceHenchmenState(this),

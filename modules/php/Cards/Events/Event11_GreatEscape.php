@@ -48,7 +48,7 @@ class Event11_GreatEscape extends \AGestOfRobinHood\Cards\Events\RegularEvent
   public function performLightEffect($player, $successful, $ctx = null, $space = null)
   {
     $ctx->insertAsBrother(new LeafNode([
-      'action' => EVENT_SELECT_SPACE,
+      'action' => EVENT_GREAT_ESCAPE_LIGHT,
       'playerId' => $player->getId(),
       'cardId' => $this->id,
       'effect' => LIGHT,

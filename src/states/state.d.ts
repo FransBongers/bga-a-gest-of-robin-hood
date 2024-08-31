@@ -84,6 +84,14 @@ interface OnEnteringEventBoatsBridgesLightStateArgs extends CommonArgs {
   >;
 }
 
+interface OnEnteringEventGreatEscapeLightStateArgs extends CommonArgs {
+  _private: {
+    merryMen: GestForce[];
+    robinHood: GestForce | null;
+    spaces: GestSpace[];
+  };
+}
+
 interface OnEnteringEventGuyOfGisborneStateArgs extends CommonArgs {
   _private: {
     merryMen: GestForce[];

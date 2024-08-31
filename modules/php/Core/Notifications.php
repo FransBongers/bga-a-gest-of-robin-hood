@@ -304,7 +304,7 @@ class Notifications
     if ($action === EVENT && !$pass) {
       $card = Cards::getTopOf(EVENTS_DISCARD);
       $text = clienttranslate('${player_name} chooses ${tkn_boldText_actionName} and executes ${tkn_boldText_eventTitle} from ${tkn_cardName}${tkn_card}');
-      
+
       $args['i18n'][] = 'tkn_boldText_eventTitle';
       $args = array_merge($args, [
         'tkn_boldText_eventTitle' => $player->getId() === Players::getSheriffPlayerId() ? $card->getTitleDark() : $card->getTitleLight(),
@@ -364,6 +364,29 @@ class Notifications
       'tkn_boldText_toSpace' => $toSpace->getName(),
       'i18n' => ['tkn_boldText_fromSpace', 'tkn_boldText_toSpace'],
       'preserve' => ['playerId'],
+    ]);
+  }
+
+  public static function eventGreatEscapeLight($player, $forces, $moves)
+  {
+    $text = clienttranslate('${player_name} places Merry Men adjacent to ${tkn_boldText_spaceName}');
+    $nottinghamName = Spaces::get(NOTTINGHAM)->getName();
+
+    self::notify($player, 'moveMerryMenPrivate', $text, [
+      'player' => $player,
+      'count' => count($moves),
+      'forces' => $forces,
+      'tkn_boldText_spaceName' => $nottinghamName,
+      'i18n' => ['tkn_boldText_spaceName']
+    ]);
+
+    self::notifyAll('moveMerryMenPublic', $text, [
+      'player' => $player,
+      'moves' => $moves,
+      'count' => count($moves),
+      'tkn_boldText_spaceName' => $nottinghamName,
+      'i18n' => ['tkn_boldText_spaceName'],
+      'preserve' => ['playerId']
     ]);
   }
 

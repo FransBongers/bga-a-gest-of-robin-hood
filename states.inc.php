@@ -591,6 +591,15 @@ $machinestates = array(
         'action' => 'stAtomicAction',
         'possibleactions' => ['actFortuneEventDayOfMarketRobinHood', 'actPassOptionalAction', 'actRestart'],
     ],
+    ST_EVENT_GREAT_ESCAPE_LIGHT => [
+        'name' => 'eventGreatEscapeLight',
+        'description' => clienttranslate('${actplayer} must place Merry Men from Prison adjacent to Nottingham'),
+        'descriptionmyturn' => clienttranslate('${you}'),
+        'type' => 'activeplayer',
+        'args' => 'argsAtomicAction',
+        'action' => 'stAtomicAction',
+        'possibleactions' => ['actEventGreatEscapeLight', 'actPassOptionalAction', 'actRestart'],
+    ],
     ST_EVENT_SELECT_SPACE => [
         'name' => 'eventSelectSpace',
         'description' => clienttranslate('${actplayer} must select a single space'),
