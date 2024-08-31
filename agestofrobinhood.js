@@ -5861,7 +5861,7 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_drawAndRevealCard = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var card;
+            var card, cardsCurrentlyInDiscard;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -5871,8 +5871,12 @@ var NotificationManager = (function () {
                     case 1:
                         _a.sent();
                         card.location = EVENTS_DISCARD;
+                        cardsCurrentlyInDiscard = this.game.cardArea.stocks.eventsDiscard.getCards();
                         return [4, this.game.cardArea.stocks.eventsDiscard.addCard(card)];
                     case 2:
+                        _a.sent();
+                        return [4, this.game.cardArea.stocks.eventsDiscard.removeCards(cardsCurrentlyInDiscard)];
+                    case 3:
                         _a.sent();
                         return [2];
                 }
@@ -8606,13 +8610,13 @@ var EventAmbushLightState = (function () {
 var EventMaidMarianDarkState = (function () {
     function EventMaidMarianDarkState(game) {
         this.game = game;
-        this.carriageId = '';
-        this.option = null;
-        this.merryMenSpaceId = '';
     }
     EventMaidMarianDarkState.prototype.onEnteringState = function (args) {
         debug('Entering EventMaidMarianDarkState');
         this.args = args;
+        this.carriageId = null;
+        this.option = null;
+        this.merryMenSpaceId = null;
         this.updateInterfaceInitialStep();
     };
     EventMaidMarianDarkState.prototype.onLeavingState = function () {
@@ -8728,6 +8732,7 @@ var EventMaidMarianDarkState = (function () {
                     : '',
             },
         });
+        this.game.setSpaceSelected({ id: this.option.space.id });
         var callback = function () {
             _this.game.clearPossible();
             _this.game.takeAction({

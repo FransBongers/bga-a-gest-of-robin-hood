@@ -341,7 +341,13 @@ class NotificationManager {
     card.location = EVENTS_DECK;
     await this.game.cardArea.stocks.eventsDeck.addCard(card);
     card.location = EVENTS_DISCARD;
+    const cardsCurrentlyInDiscard =
+      this.game.cardArea.stocks.eventsDiscard.getCards();
     await this.game.cardArea.stocks.eventsDiscard.addCard(card);
+    // TODO: move them to different stock for display?
+    await this.game.cardArea.stocks.eventsDiscard.removeCards(
+      cardsCurrentlyInDiscard
+    );
   }
 
   async notif_drawAndRevealTravellerCard(

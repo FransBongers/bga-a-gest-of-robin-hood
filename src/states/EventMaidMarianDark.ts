@@ -7,14 +7,14 @@ class EventMaidMarianDarkState implements State {
 
   constructor(game: AGestOfRobinHoodGame) {
     this.game = game;
-    this.carriageId = '';
-    this.option = null;
-    this.merryMenSpaceId = '';
   }
 
   onEnteringState(args: OnEnteringEventMaidMarianDarkStateArgs) {
     debug('Entering EventMaidMarianDarkState');
     this.args = args;
+    this.carriageId = null;
+    this.option = null;
+    this.merryMenSpaceId = null;
     this.updateInterfaceInitialStep();
   }
 
@@ -146,8 +146,8 @@ class EventMaidMarianDarkState implements State {
     this.game.setElementSelected({ id: this.carriageId });
     if (this.merryMenSpaceId) {
       this.game.gameMap.forces[`${MERRY_MEN}_${this.option.space.id}`]
-      .getCards()
-      .forEach(({ id }) => this.game.setElementSelected({ id }));
+        .getCards()
+        .forEach(({ id }) => this.game.setElementSelected({ id }));
     }
 
     this.game.clientUpdatePageTitle({
@@ -159,6 +159,8 @@ class EventMaidMarianDarkState implements State {
           : '',
       },
     });
+
+    this.game.setSpaceSelected({ id: this.option.space.id });
 
     const callback = () => {
       this.game.clearPossible();
