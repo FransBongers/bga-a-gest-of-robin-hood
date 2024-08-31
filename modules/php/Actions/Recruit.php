@@ -71,6 +71,7 @@ class Recruit extends \AGestOfRobinHood\Actions\Plot
           'options' => $options,
           'robinHoodInSupply' => $robinHoodInSupply,
           'merryMenInSupply' => count(Forces::getInLocation(MERRY_MEN_SUPPLY)) > 0,
+          'cost' => $this->getCost(),
         ],
       ]
     ];

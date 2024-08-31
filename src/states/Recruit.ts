@@ -219,21 +219,22 @@ class RecruitState implements State {
     }
 
     let text = _(
-      'Pay 1 ${tkn_shilling} to place ${merryMenLog} in ${spaceName}?'
+      'Pay ${cost} ${tkn_shilling} to place ${merryMenLog} in ${spaceName}?'
     );
     if (recruitOption === REPLACE_MERRY_MAN_WITH_CAMP) {
       text = _(
-        'Pay 1 ${tkn_shilling} to replace ${tkn_merryMan} in ${spaceName} with ${tkn_camp}?'
+        'Pay ${cost} ${tkn_shilling} to replace ${tkn_merryMan} in ${spaceName} with ${tkn_camp}?'
       );
     } else if (recruitOption === FLIP_ALL_MERRY_MAN_TO_HIDDEN) {
       text = _(
-        'Pay 1 ${tkn_shilling} to flip all ${tkn_merryMan_revealed} in ${spaceName} to ${tkn_merryMan_hidden}?'
+        'Pay ${cost} ${tkn_shilling} to flip all ${tkn_merryMan_revealed} in ${spaceName} to ${tkn_merryMan_hidden}?'
       );
     }
 
     const args = {
       tkn_shilling: _('Shilling'),
       spaceName: _(space.name),
+      cost: this.args._private.cost,
     };
     if (recruitOption === PLACE_MERRY_MAN) {
       args['merryMenLog'] = {

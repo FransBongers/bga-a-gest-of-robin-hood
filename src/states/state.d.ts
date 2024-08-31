@@ -258,6 +258,7 @@ interface OnEnteringRecruitStateArgs extends CommonArgs {
     options: Record<string, RecruitOption>;
     robinHoodInSupply: boolean;
     merryMenInSupply: boolean;
+    cost: number;
   };
 }
 

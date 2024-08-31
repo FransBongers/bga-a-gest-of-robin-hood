@@ -42,7 +42,6 @@ class RoyalInspectionRedeploymentSheriff extends \AGestOfRobinHood\Models\Atomic
 
   public function stRoyalInspectionRedeploymentSheriff()
   {
-
   }
 
 
@@ -184,7 +183,7 @@ class RoyalInspectionRedeploymentSheriff extends \AGestOfRobinHood\Models\Atomic
         continue;
       }
       $space = $spaces[$spaceId];
-      if ($space->isRevolting() || $space->isForest()) {
+      if ($space->isRevolting() || $space->isForest() || ($isTemporaryTruce && $space->isPassive())) {
         $henchmenMustMove[$henchman->getId()] = [
           'henchman' => $henchman,
           'spaceIds' => $submissiveSpaceIds,

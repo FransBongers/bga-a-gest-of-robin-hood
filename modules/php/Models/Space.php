@@ -137,6 +137,11 @@ class Space extends \AGestOfRobinHood\Helpers\DB_Model
     return in_array($this->id, PARISHES);
   }
 
+  public function isPassive()
+  {
+    return $this->status === PASSIVE;
+  }
+
   public function isRevolting()
   {
     return $this->status === REVOLTING;
