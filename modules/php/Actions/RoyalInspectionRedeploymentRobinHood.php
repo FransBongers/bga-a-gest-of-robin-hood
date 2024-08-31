@@ -107,6 +107,7 @@ class RoyalInspectionRedeploymentRobinHood extends \AGestOfRobinHood\Models\Atom
     $forces = [];
     $moves = [];
 
+    $moveInput = [];
 
     foreach ($stateArgs['merryMenMustMove'] as $merryManId => $option) {
       $merryMan = $option['merryMan'];
@@ -114,20 +115,10 @@ class RoyalInspectionRedeploymentRobinHood extends \AGestOfRobinHood\Models\Atom
       if (!in_array($destination, $option['spaceIds'])) {
         throw new \feException("ERROR 050");
       }
-      $currentLocation = $merryMan->getLocation();
-      $merryMan->setLocation($destination);
-      $forces[] = $merryMan;
-      $moves[] = [
-        'from' => [
-          'type' => MERRY_MEN,
-          'hidden' => true,
-          'spaceId' => $currentLocation,
-        ],
-        'to' => [
-          'type' => MERRY_MEN,
-          'hidden' => true,
-          'spaceId' => $destination,
-        ]
+      $moveInput[] = [
+        'force' => $merryMan,
+        'toSpaceId' => $destination,
+        'toHidden' => true,
       ];
     }
 
@@ -145,28 +136,21 @@ class RoyalInspectionRedeploymentRobinHood extends \AGestOfRobinHood\Models\Atom
       if (!in_array($destinationId, $option['spaceIds'])) {
         throw new \feException("ERROR 052");
       }
-      $currentLocation = $merryMan->getLocation();
-      $merryMan->setLocation($destinationId);
-      $forces[] = $merryMan;
-      $moves[] = [
-        'from' => [
-          'type' => MERRY_MEN,
-          'hidden' => true,
-          'spaceId' => $currentLocation,
-        ],
-        'to' => [
-          'type' => MERRY_MEN,
-          'hidden' => true,
-          'spaceId' => $destinationId,
-        ]
+
+      $moveInput[] = [
+        'force' => $merryMan,
+        'toSpaceId' => $destinationId,
+        'toHidden' => true,
       ];
     }
+
+    $moveOutput = GameMap::createMoves($moveInput);
 
     $info = $this->ctx->getInfo();
     $isTemporaryTruce = isset($info['source']) && $info['source'] === 'Event14_TemporaryTruce';
     $player = self::getPlayer();
 
-    Notifications::redeploymentRobinHood($player, $forces, $moves, $isTemporaryTruce);
+    Notifications::redeploymentRobinHood($player, $moveOutput['forces'], $moveOutput['moves'], $isTemporaryTruce);
     if ($isTemporaryTruce) {
       Players::moveRoyalFavour($player, 1, JUSTICE);
       $this->ctx->insertAsBrother(new LeafNode([
