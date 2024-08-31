@@ -104,9 +104,6 @@ class RoyalInspectionRedeploymentRobinHood extends \AGestOfRobinHood\Models\Atom
 
     $stateArgs = $this->getOptions();
 
-    $forces = [];
-    $moves = [];
-
     $moveInput = [];
 
     foreach ($stateArgs['merryMenMustMove'] as $merryManId => $option) {

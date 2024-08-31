@@ -116,36 +116,21 @@ class EventGuyOfGisborne extends \AGestOfRobinHood\Actions\Plot
       $merryMan->returnToSupply($player);
       GameMap::placeMerryMan($player, $space, true);
     } else {
-      $robinHood->setLocation($fromLocationMM);
-      $robinHood->setHidden(1);
-      $merryMan->setLocation($fromLocationRH);
-      $merryMan->setHidden(0);
-      $moves = [];
-      $moves[] = [
-        'from' => [
-          'type' => $robinHood->isHidden() ? MERRY_MEN : ROBIN_HOOD,
-          'hidden' => $robinHood->isHidden(),
-          'spaceId' => $fromLocationRH,
-        ],
-        'to' => [
-          'type' => MERRY_MEN,
-          'hidden' => true,
-          'spaceId' => $fromLocationMM,
-        ]
+      $moveInput = [];
+      $moveInput[] = [
+        'force' => $robinHood,
+        'toSpaceId' => $fromLocationMM,
+        'toHidden' => true,
       ];
-      $moves[] = [
-        'from' => [
-          'type' => MERRY_MEN,
-          'hidden' => $merryMan->isHidden(),
-          'spaceId' => $fromLocationMM,
-        ],
-        'to' => [
-          'type' => MERRY_MEN,
-          'hidden' => false,
-          'spaceId' => $fromLocationRH,
-        ]
+      $moveInput[] = [
+        'force' => $merryMan,
+        'toSpaceId' => $fromLocationRH,
+        'toHidden' => false,
       ];
-      Notifications::swapRobinHoodGuyOfGisborne(self::getPlayer(), [$robinHood, $merryMan], $moves, $space);
+
+      $moveOutput = GameMap::createMoves($moveInput);
+
+      Notifications::swapRobinHoodGuyOfGisborne(self::getPlayer(), $moveOutput['forces'], $moveOutput['moves'], $space);
     }
 
     $this->resolveAction($args);

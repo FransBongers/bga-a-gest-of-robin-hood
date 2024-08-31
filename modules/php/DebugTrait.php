@@ -51,7 +51,7 @@ trait DebugTrait
     // $this->debugPlaceForces(CAMP,NEWARK,1);
 
 
-    // Cards::get('Event14_TemporaryTruce')->insertOnTop(EVENTS_DECK);
+    // Cards::get('Event04_GuyOfGisborne')->insertOnTop(EVENTS_DECK);
     // Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_VICTIMS_PILE);
     // Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_DECK);
 
