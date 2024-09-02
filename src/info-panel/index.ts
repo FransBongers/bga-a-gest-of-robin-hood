@@ -1,6 +1,13 @@
 class InfoPanel {
   protected game: AGestOfRobinHoodGame;
 
+  // public travellers: {
+  //   [TRAVELLERS_DECK]?: TravellersRow;
+  //   [TRAVELLERS_DISCARD]?: TravellersRow;
+  //   [TRAVELLERS_VICTIMS_PILE]?: TravellersRow;
+  //   [TRAVELLERS_POOL]?: TravellersRow;
+  // } = {};
+
   constructor(game: AGestOfRobinHoodGame) {
     this.game = game;
     const gamedatas = game.gamedatas;
@@ -61,6 +68,7 @@ class InfoPanel {
     eventNode.replaceChildren(eventText);
   }
 
+  // TODO: move this to separate class?
   public setupPlotsAndDeedsInfo() {
     const cardArea = document.getElementById('gest_card_area');
     if ( this.game.getPlayerId() ===
@@ -87,8 +95,39 @@ class InfoPanel {
     }
     node.insertAdjacentHTML('afterbegin', tplInfoPanel());
     
-
     this.updateBalladInfo(gamedatas.ballad);
+
+    // this.travellers[TRAVELLERS_DECK] = new TravellersRow({
+    //   containerId: 'gest_travellers_info',
+    //   id: TRAVELLERS_DECK,
+    //   title: _('Deck'),
+    //   game: this.game,
+    //   cardsAtSetup: this.game.gamedatas.cards.travellers.travellersDeck
+    // });
+    // this.travellers[TRAVELLERS_DISCARD] = new TravellersRow({
+    //   containerId: 'gest_travellers_info',
+    //   id: TRAVELLERS_DISCARD,
+    //   title: _('Discard Pile'),
+    //   game: this.game,
+    //   cardsAtSetup: this.game.gamedatas.cards.travellers.travellersDiscard
+    // });
+    // this.travellers[TRAVELLERS_VICTIMS_PILE] = new TravellersRow({
+    //   containerId: 'gest_travellers_info',
+    //   id: TRAVELLERS_VICTIMS_PILE,
+    //   title: _('Victims Pile'),
+    //   game: this.game,
+    //   cardsAtSetup: this.game.gamedatas.cards.travellers.travellersVictimsPile
+    // });
+    // this.travellers[TRAVELLERS_POOL] = new TravellersRow({
+    //   containerId: 'gest_travellers_info',
+    //   id: TRAVELLERS_POOL,
+    //   title: _('Pool'),
+    //   game: this.game,
+    //   cardsAtSetup: this.game.gamedatas.cards.travellers.travellersPool
+    // });
+    // [TRAVELLERS_DECK].forEach((location) => {
+    //   this.travellers[location] = new Trave
+    // })
   }
 
   // ..######...########.########.########.########.########...######.

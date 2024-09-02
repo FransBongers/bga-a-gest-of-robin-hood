@@ -21,6 +21,7 @@ class Traveller05_RichardAtTheLea extends \AGestOfRobinHood\Models\TravellerCard
     $this->textDark = clienttranslate('Spend 3 Shillings without rolling to set Retford to Revolting and place a Camp there (shift one step towards Justice), then remove the card from the game.');
     $this->strength = 1;
     $this->setupLocation = TRAVELLERS_DECK;
+    $this->travellerOrder = 8;
   }
 
   public function performDarkEffect($player, $successful, $ctx = null, $space = null, $merryMenIds = null)

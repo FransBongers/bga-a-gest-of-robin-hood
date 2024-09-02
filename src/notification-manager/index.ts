@@ -357,11 +357,11 @@ class NotificationManager {
     // card.location = TRAVELLERS_DECK;
     // await this.game.cardArea.stocks.travellersDeck.addCard(card);
     card.location = TRAVELLER_ROBBED;
-    this.game.cardArea.incTravellerInDeckCounterValue(
-      card.id.split('_')[1],
-      -1
-    );
-    this.game.cardArea.counters.travellersDeck.incValue(-1);
+    // this.game.cardArea.incTravellerInDeckCounterValue(
+    //   card.id.split('_')[1],
+    //   -1
+    // );
+    // this.game.cardArea.counters.travellersDeck.incValue(-1);
     await this.game.cardArea.stocks.travellerRobbed.addCard(card);
   }
 
@@ -502,7 +502,7 @@ class NotificationManager {
     notif: Notif<NotifPlaceCardInTravellersDeckArgs>
   ) {
     const { card } = notif.args;
-    this.game.cardArea.incTravellerInDeckCounterValue(card.id.split('_')[1], 1);
+    this.game.travellersInfoPanel.travellers[TRAVELLERS_DECK].addCard(card);
   }
 
   async notif_placeForce(notif: Notif<NotifPlaceForceArgs>) {
@@ -588,16 +588,20 @@ class NotificationManager {
   ) {
     const { card, fromLocation } = notif.args;
 
-    if (fromLocation === TRAVELLERS_DECK) {
-      this.game.cardArea.incTravellerInDeckCounterValue(
-        card.id.split('_')[1],
-        -1
-      );
-    } else if (fromLocation === TRAVELLERS_DISCARD) {
-      this.game.cardArea.counters.travellersDiscard.incValue(-1);
-    }
-    await this.game.cardArea.stocks.travellerRobbed.removeCard(card);
-    this.game.cardArea.counters.victimsPile.incValue(1);
+    // if (fromLocation === TRAVELLERS_DECK) {
+    //   this.game.cardArea.incTravellerInDeckCounterValue(
+    //     card.id.split('_')[1],
+    //     -1
+    //   );
+    // } else if (fromLocation === TRAVELLERS_DISCARD) {
+    //   this.game.cardArea.counters.travellersDiscard.incValue(-1);
+    // }
+    await Promise.all([
+      this.game.cardArea.stocks.travellerRobbed.removeCard(card),
+      this.game.travellersInfoPanel.travellers[TRAVELLERS_VICTIMS_PILE].addCard(
+        card
+      ),
+    ]);
   }
 
   async notif_putTravellerInDiscardPile(
@@ -605,8 +609,12 @@ class NotificationManager {
   ) {
     const { card } = notif.args;
 
-    await this.game.cardArea.stocks.travellerRobbed.removeCard(card);
-    this.game.cardArea.counters.travellersDiscard.incValue(1);
+    await Promise.all([
+      this.game.cardArea.stocks.travellerRobbed.removeCard(card),
+      this.game.travellersInfoPanel.travellers[TRAVELLERS_DISCARD].addCard(
+        card
+      ),
+    ]);
   }
 
   async notif_parishStatus(notif: Notif<NotifParishStatusArgs>) {
@@ -648,16 +656,19 @@ class NotificationManager {
     await this.game.cardManager.removeCard(card);
     switch (fromLocation) {
       case TRAVELLERS_DECK:
-        this.game.cardArea.incTravellerInDeckCounterValue(
-          card.id.split('_')[1],
-          -1
-        );
+        await this.game.travellersInfoPanel.travellers[
+          TRAVELLERS_DECK
+        ].removeCard(card);
         return;
       case TRAVELLERS_DISCARD:
-        this.game.cardArea.counters.travellersDiscard.incValue(-1);
+        await this.game.travellersInfoPanel.travellers[
+          TRAVELLERS_DISCARD
+        ].removeCard(card);
         return;
       case TRAVELLERS_VICTIMS_PILE:
-        this.game.cardArea.counters.victimsPile.incValue(-1);
+        await this.game.travellersInfoPanel.travellers[
+          TRAVELLERS_VICTIMS_PILE
+        ].removeCard(card);
         return;
     }
   }
@@ -807,14 +818,17 @@ class NotificationManager {
     notif: Notif<NotifReturnTravellersDiscardToMainDeckArgs>
   ) {
     const { cards } = notif.args;
-    cards.forEach((card) => {
-      this.game.cardArea.counters.travellersDiscard.incValue(-1);
-      this.game.cardArea.incTravellerInDeckCounterValue(
-        card.id.split('_')[1],
-        1
-      );
-      this.game.cardArea.counters.travellersDeck.incValue(1);
-    });
+    await this.game.travellersInfoPanel.travellers[TRAVELLERS_DECK].addCards(
+      cards
+    );
+    // cards.forEach((card) => {
+    //   this.game.cardArea.counters.travellersDiscard.incValue(-1);
+    //   this.game.cardArea.incTravellerInDeckCounterValue(
+    //     card.id.split('_')[1],
+    //     1
+    //   );
+    //   this.game.cardArea.counters.travellersDeck.incValue(1);
+    // });
   }
 
   async notif_robTakeTwoShillingsFromTheSheriff(

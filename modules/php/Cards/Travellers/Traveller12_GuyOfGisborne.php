@@ -19,6 +19,7 @@ class Traveller12_GuyOfGisborne extends \AGestOfRobinHood\Models\TravellerCard
     $this->textLight = clienttranslate('If successful, remove the card from the game. If failed, place all Robbing Merry Men in Prison (+1 Order if Robin Hood is among them) and discard the card.');
     $this->strength = 3;
     $this->setupLocation = TRAVELLERS_POOL;
+    $this->travellerOrder = 7;
   }
 
   public function performLightEffect($player, $successful, $ctx = null, $space = null, $merryMenIds = null)

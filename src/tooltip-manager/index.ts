@@ -70,18 +70,29 @@ class TooltipManager {
   // .##....##.##..........##....##.....##.##.......
   // ..######..########....##.....#######..##.......
 
-  public addTravellersTooltips() {
+  public addTravellersTooltip(nodeId: string, imageId: string) {
     const config = getTravellersConfig();
-    TRAVELLERS.forEach((traveller) => {
-      this.game
-        .framework()
-        .addTooltipHtml(
-          `gest_traveller_${traveller}_counter_row`,
-          tplTravellerTooltip(config.find((data) => data.image === traveller)),
-          500
-        );
-    });
+    this.game
+      .framework()
+      .addTooltipHtml(
+        nodeId,
+        tplTravellerTooltip(config.find((data) => data.image === imageId)),
+        500
+      );
   }
+
+  // public addTravellersTooltips() {
+  //   const config = getTravellersConfig();
+  //   TRAVELLERS.forEach((traveller) => {
+  //     this.game
+  //       .framework()
+  //       .addTooltipHtml(
+  //         `gest_traveller_${traveller}_counter_row`,
+  //         tplTravellerTooltip(config.find((data) => data.image === traveller)),
+  //         500
+  //       );
+  //   });
+  // }
 
   public addGameMapTooltips() {
     this.game

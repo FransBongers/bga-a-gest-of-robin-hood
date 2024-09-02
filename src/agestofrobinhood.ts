@@ -60,6 +60,8 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
   public gameMap: GameMap;
   public informationModal: InformationModal;
   public markerManager: MarkerManager;
+  public travellerManager: TravellerManager;
+  public travellersInfoPanel: TravellersInfoPanel;
 
   public activeStates: {
     // Boiler plate
@@ -214,6 +216,8 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     this.cardManager = new GestCardManager(this);
     this.forceManager = new ForceManager(this);
     this.markerManager = new MarkerManager(this);
+    this.travellerManager = new TravellerManager(this);
+    this.travellersInfoPanel = new TravellersInfoPanel(this);
 
     this.gameMap = new GameMap(this);
     this.cardArea = new CardArea(this);

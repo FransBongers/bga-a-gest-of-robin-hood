@@ -17,6 +17,7 @@ class Traveller_RichMerchant extends \AGestOfRobinHood\Models\TravellerCard
     $this->textDark = clienttranslate('If successful, gain 4 Shillings and put the card in the Victims Pile. If failed, Sheriff gains 2 Shillings and put the card in the discard pile.');
     $this->strength = 1;
     $this->setupLocation = TRAVELLERS_DECK;
+    $this->travellerOrder = 1;
   }
 
   public function performDarkEffect($player, $successful, $ctx = null, $space = null, $merryMenIds = null)

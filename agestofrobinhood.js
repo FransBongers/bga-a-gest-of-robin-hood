@@ -1846,6 +1846,8 @@ var AGestOfRobinHood = (function () {
         this.cardManager = new GestCardManager(this);
         this.forceManager = new ForceManager(this);
         this.markerManager = new MarkerManager(this);
+        this.travellerManager = new TravellerManager(this);
+        this.travellersInfoPanel = new TravellersInfoPanel(this);
         this.gameMap = new GameMap(this);
         this.cardArea = new CardArea(this);
         if (this.notificationManager != undefined) {
@@ -2478,7 +2480,6 @@ var CardArea = (function () {
     CardArea.prototype.clearInterface = function () { };
     CardArea.prototype.updateInterface = function (_a) {
         var gamedatas = _a.gamedatas;
-        this.updateCounters({ gamedatas: gamedatas });
     };
     CardArea.prototype.setupStocks = function (_a) {
         var gamedatas = _a.gamedatas;
@@ -2494,38 +2495,9 @@ var CardArea = (function () {
         if (gamedatas.cards.eventsDiscard) {
             this.stocks.eventsDiscard.addCard(gamedatas.cards.eventsDiscard);
         }
-        if (gamedatas.cards.travellerRobbed) {
-            this.stocks.travellerRobbed.addCard(gamedatas.cards.travellerRobbed);
+        if (gamedatas.cards.travellers.travellerRobbed) {
+            this.stocks.travellerRobbed.addCard(gamedatas.cards.travellers.travellerRobbed);
         }
-    };
-    CardArea.prototype.setupCounters = function (_a) {
-        var _this = this;
-        var gamedatas = _a.gamedatas;
-        this.counters = {
-            travellersDeck: new ebg.counter(),
-            travellersDiscard: new ebg.counter(),
-            travellersInDeck: {},
-            victimsPile: new ebg.counter(),
-        };
-        this.counters.travellersDeck.create('gest_travellers_deck_counter');
-        this.counters.travellersDiscard.create('gest_travellers_discard_counter');
-        this.counters.victimsPile.create('gest_victims_pile_counter');
-        TRAVELLERS.forEach(function (traveller) {
-            _this.counters.travellersInDeck[traveller] = new ebg.counter();
-            _this.counters.travellersInDeck[traveller].create("gest_traveller_".concat(traveller, "_counter"));
-        });
-        this.updateCounters({ gamedatas: gamedatas });
-    };
-    CardArea.prototype.updateCounters = function (_a) {
-        var _this = this;
-        var gamedatas = _a.gamedatas;
-        this.counters.travellersDeck.setValue(gamedatas.cards.counts.travellersDeck);
-        this.counters.travellersDiscard.setValue(gamedatas.cards.counts.travellersDiscard);
-        this.counters.victimsPile.setValue(gamedatas.cards.counts.travellersVictimsPile);
-        Object.entries(gamedatas.cards.counts.travellers).forEach(function (_a) {
-            var traveller = _a[0], count = _a[1];
-            _this.setTravellerInDeckCounterValue(traveller, count);
-        });
     };
     CardArea.prototype.setupCardArea = function (_a) {
         var gamedatas = _a.gamedatas;
@@ -2540,9 +2512,7 @@ var CardArea = (function () {
             node.style.setProperty('--gestCardSizeScale', "".concat(Number(cardScale) / 100));
         }
         this.setupStocks({ gamedatas: gamedatas });
-        this.setupCounters({ gamedatas: gamedatas });
         this.game.infoPanel.setupPlotsAndDeedsInfo();
-        this.game.tooltipManager.addTravellersTooltips();
     };
     CardArea.prototype.updateTooltips = function () {
         var _this = this;
@@ -2556,41 +2526,13 @@ var CardArea = (function () {
             });
         });
     };
-    CardArea.prototype.setTravellerInDeckCounterValue = function (traveller, value) {
-        this.counters.travellersInDeck[traveller].setValue(value);
-        var node = document.getElementById("gest_traveller_".concat(traveller, "_counter_row"));
-        if (!node) {
-            return;
-        }
-        if (value === 0) {
-            node.classList.add(GEST_NONE);
-        }
-        else {
-            node.classList.remove(GEST_NONE);
-        }
-    };
-    CardArea.prototype.incTravellerInDeckCounterValue = function (traveller, value) {
-        var counter = this.counters.travellersInDeck[traveller];
-        counter.incValue(value);
-        var node = document.getElementById("gest_traveller_".concat(traveller, "_counter_row"));
-        if (!node) {
-            return;
-        }
-        var counterValue = this.counters.travellersInDeck[traveller].getValue();
-        if (counterValue === 0) {
-            node.classList.add(GEST_NONE);
-        }
-        else {
-            node.classList.remove(GEST_NONE);
-        }
-    };
     return CardArea;
 }());
 var travellerCardIdMap = {
     RichMerchant: 'Traveller01'
 };
 var travellersDeckCounter = function (traveller) { return "\n  <div class=\"travellers_deck_counter_container\">\n    <span id=\"travellers_deck_".concat(traveller, "_counter\"></span>\n    <div class=\"gest_card_side\" data-card-id=\"").concat(travellerCardIdMap[traveller], "\" style=\"width: 21px; height: 36px;\"></div>\n  </div>\n"); };
-var tplTravellers = function () { return "\n<div>\n  <span class=\"gest_title\">".concat(_('Travellers'), "</span>\n  <div class=\"gest_card_row\">\n    <div id=\"gest_travellers_decks_info\">\n      <div class=\"gest_traveller_counter_row\">\n        <span>").concat(_('Deck: '), "</span><span id=\"gest_travellers_deck_counter\" style=\"margin-left: auto;\"></span>\n      </div>\n      <div>\n        <div id=\"gest_travellers_deck_composition\">\n          ").concat(getTravellersConfig().map(function (config) { return "\n              <div id=\"gest_traveller_".concat(config.image, "_counter_row\" class=\"gest_traveller_counter_row\">\n                <div class=\"gest_traveller_image\" data-image=\"").concat(config.image, "\"></div>\n                <span>").concat(_(config.name), ": </span>\n                <span id=\"gest_traveller_").concat(config.image, "_counter\" style=\"margin-left: auto;\"></span>\n              </div>\n            "); }).join(''), "\n        </div>\n      </div>\n      <div class=\"gest_traveller_counter_row\">\n        <span>").concat(_('Discard Pile: '), "</span><span id=\"gest_travellers_discard_counter\" style=\"margin-left: auto;\"></span>\n      </div>\n      <div class=\"gest_traveller_counter_row\">\n        <span>").concat(_('Victims Pile: '), "</span><span id=\"gest_victims_pile_counter\" style=\"margin-left: auto;\"></span>\n      </div>\n    </div>\n    <div id=\"gest_traveller_robbed\" class=\"gest_card_stock\"></div>\n  </div>\n</div>"); };
+var tplTravellers = function () { return "\n<div>\n  <div class=\"gest_card_row\">\n    <div id=\"gest_traveller_robbed\" class=\"gest_card_stock\"></div>\n  </div>\n</div>"; };
 var tplCardArea = function () { return "\n  <div id=\"gest_card_area\">\n    <div id=\"gest_decks\">\n      <div class=\"gest_card_row\">\n        <div id=\"gest_events_deck\" class=\"gest_card_stock gest_card_side\" data-card-id=\"EventBack\" style=\"box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.5);\"></div>\n        <div id=\"gest_events_discard\" class=\"gest_card_stock\"></div>\n      </div>\n      ".concat(tplTravellers(), "\n    </div>\n  </div>\n"); };
 var GestCardManager = (function (_super) {
     __extends(GestCardManager, _super);
@@ -5052,6 +4994,23 @@ var tuxfordCarriageCoordinates = [
         column: -1,
     },
 ];
+var GestLineStock = (function (_super) {
+    __extends(GestLineStock, _super);
+    function GestLineStock(manager, element, settings, onCardRemoved) {
+        var _this = _super.call(this, manager, element, settings) || this;
+        _this.manager = manager;
+        _this.element = element;
+        _this.onCardRemoved = onCardRemoved;
+        return _this;
+    }
+    GestLineStock.prototype.cardRemoved = function (card, settings) {
+        _super.prototype.cardRemoved.call(this, card, settings);
+        if (this.onCardRemoved) {
+            this.onCardRemoved(card);
+        }
+    };
+    return GestLineStock;
+}(LineStock));
 var getRobinHoodPlotsAndDeeds = function () { return ({
     plots: [
         {
@@ -5217,7 +5176,7 @@ var InfoPanel = (function () {
     };
     return InfoPanel;
 }());
-var tplInfoPanel = function () { return "<div class='player-board' id=\"info_panel\">\n  <div id=\"gest_ballad_info\">\n    <span id=\"gest_ballad_info_ballad_number\"></span>\n    <span id=\"gest_ballad_info_event_number\"></span>\n  </div>\n  <div id=\"info_panel_buttons\">\n    \n  </div>\n</div>"; };
+var tplInfoPanel = function () { return "<div class='player-board' id=\"info_panel\">\n  <div id=\"gest_ballad_info\">\n    <span id=\"gest_ballad_info_ballad_number\"></span>\n    <span id=\"gest_ballad_info_event_number\"></span>\n  </div>\n  <div id=\"info_panel_buttons\">\n    \n  </div>\n\n</div>"; };
 var tplPlotDeedInfo = function (_a) {
     var title = _a.title, cost = _a.cost, location = _a.location, procedure = _a.procedure;
     return "\n<div class=\"gest_plot_deed_item\">\n  <span class=\"gest_plot_deed_title\">".concat(_(title), "</span>\n  <div class=\"gest_plot_deed_info_row\">\n    <span class=\"gest_plot_deed_info_label\">").concat(_('Cost: '), "</span><span>").concat(_(cost), "</span>\n  </div>\n      <div class=\"gest_plot_deed_info_row\"?\n    <span class=\"gest_plot_deed_info_label\">").concat(_('Location: '), "</span><span>").concat(_(location), "</span>\n  </div>\n      <div class=\"gest_plot_deed_info_row\">\n    <span class=\"gest_plot_deed_info_label\">").concat(_('Procedure: '), "</span><span>").concat(_(procedure), "</span>\n  </div>\n</div>");
@@ -5897,8 +5856,6 @@ var NotificationManager = (function () {
                     case 0:
                         card = notif.args.card;
                         card.location = TRAVELLER_ROBBED;
-                        this.game.cardArea.incTravellerInDeckCounterValue(card.id.split('_')[1], -1);
-                        this.game.cardArea.counters.travellersDeck.incValue(-1);
                         return [4, this.game.cardArea.stocks.travellerRobbed.addCard(card)];
                     case 1:
                         _a.sent();
@@ -6065,7 +6022,7 @@ var NotificationManager = (function () {
             var card;
             return __generator(this, function (_a) {
                 card = notif.args.card;
-                this.game.cardArea.incTravellerInDeckCounterValue(card.id.split('_')[1], 1);
+                this.game.travellersInfoPanel.travellers[TRAVELLERS_DECK].addCard(card);
                 return [2];
             });
         });
@@ -6179,16 +6136,12 @@ var NotificationManager = (function () {
                 switch (_b.label) {
                     case 0:
                         _a = notif.args, card = _a.card, fromLocation = _a.fromLocation;
-                        if (fromLocation === TRAVELLERS_DECK) {
-                            this.game.cardArea.incTravellerInDeckCounterValue(card.id.split('_')[1], -1);
-                        }
-                        else if (fromLocation === TRAVELLERS_DISCARD) {
-                            this.game.cardArea.counters.travellersDiscard.incValue(-1);
-                        }
-                        return [4, this.game.cardArea.stocks.travellerRobbed.removeCard(card)];
+                        return [4, Promise.all([
+                                this.game.cardArea.stocks.travellerRobbed.removeCard(card),
+                                this.game.travellersInfoPanel.travellers[TRAVELLERS_VICTIMS_PILE].addCard(card),
+                            ])];
                     case 1:
                         _b.sent();
-                        this.game.cardArea.counters.victimsPile.incValue(1);
                         return [2];
                 }
             });
@@ -6201,10 +6154,12 @@ var NotificationManager = (function () {
                 switch (_a.label) {
                     case 0:
                         card = notif.args.card;
-                        return [4, this.game.cardArea.stocks.travellerRobbed.removeCard(card)];
+                        return [4, Promise.all([
+                                this.game.cardArea.stocks.travellerRobbed.removeCard(card),
+                                this.game.travellersInfoPanel.travellers[TRAVELLERS_DISCARD].addCard(card),
+                            ])];
                     case 1:
                         _a.sent();
-                        this.game.cardArea.counters.travellersDiscard.incValue(1);
                         return [2];
                 }
             });
@@ -6258,26 +6213,34 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_removeCardFromGame = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, card, fromLocation;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var _a, card, fromLocation, _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
                     case 0:
                         _a = notif.args, card = _a.card, fromLocation = _a.fromLocation;
                         return [4, this.game.cardManager.removeCard(card)];
                     case 1:
-                        _b.sent();
-                        switch (fromLocation) {
-                            case TRAVELLERS_DECK:
-                                this.game.cardArea.incTravellerInDeckCounterValue(card.id.split('_')[1], -1);
-                                return [2];
-                            case TRAVELLERS_DISCARD:
-                                this.game.cardArea.counters.travellersDiscard.incValue(-1);
-                                return [2];
-                            case TRAVELLERS_VICTIMS_PILE:
-                                this.game.cardArea.counters.victimsPile.incValue(-1);
-                                return [2];
+                        _c.sent();
+                        _b = fromLocation;
+                        switch (_b) {
+                            case TRAVELLERS_DECK: return [3, 2];
+                            case TRAVELLERS_DISCARD: return [3, 4];
+                            case TRAVELLERS_VICTIMS_PILE: return [3, 6];
                         }
+                        return [3, 8];
+                    case 2: return [4, this.game.travellersInfoPanel.travellers[TRAVELLERS_DECK].removeCard(card)];
+                    case 3:
+                        _c.sent();
                         return [2];
+                    case 4: return [4, this.game.travellersInfoPanel.travellers[TRAVELLERS_DISCARD].removeCard(card)];
+                    case 5:
+                        _c.sent();
+                        return [2];
+                    case 6: return [4, this.game.travellersInfoPanel.travellers[TRAVELLERS_VICTIMS_PILE].removeCard(card)];
+                    case 7:
+                        _c.sent();
+                        return [2];
+                    case 8: return [2];
                 }
             });
         });
@@ -6484,15 +6447,15 @@ var NotificationManager = (function () {
     NotificationManager.prototype.notif_returnTravellersDiscardToMainDeck = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
             var cards;
-            var _this = this;
             return __generator(this, function (_a) {
-                cards = notif.args.cards;
-                cards.forEach(function (card) {
-                    _this.game.cardArea.counters.travellersDiscard.incValue(-1);
-                    _this.game.cardArea.incTravellerInDeckCounterValue(card.id.split('_')[1], 1);
-                    _this.game.cardArea.counters.travellersDeck.incValue(1);
-                });
-                return [2];
+                switch (_a.label) {
+                    case 0:
+                        cards = notif.args.cards;
+                        return [4, this.game.travellersInfoPanel.travellers[TRAVELLERS_DECK].addCards(cards)];
+                    case 1:
+                        _a.sent();
+                        return [2];
+                }
             });
         });
     };
@@ -13006,14 +12969,11 @@ var TooltipManager = (function () {
             .framework()
             .addTooltipHtml(nodeId, tplCarriageTooltip(this.game, type), 500);
     };
-    TooltipManager.prototype.addTravellersTooltips = function () {
-        var _this = this;
+    TooltipManager.prototype.addTravellersTooltip = function (nodeId, imageId) {
         var config = getTravellersConfig();
-        TRAVELLERS.forEach(function (traveller) {
-            _this.game
-                .framework()
-                .addTooltipHtml("gest_traveller_".concat(traveller, "_counter_row"), tplTravellerTooltip(config.find(function (data) { return data.image === traveller; })), 500);
-        });
+        this.game
+            .framework()
+            .addTooltipHtml(nodeId, tplTravellerTooltip(config.find(function (data) { return data.image === imageId; })), 500);
     };
     TooltipManager.prototype.addGameMapTooltips = function () {
         this.game
@@ -13034,3 +12994,185 @@ var TooltipManager = (function () {
     };
     return TooltipManager;
 }());
+var TravellerManager = (function (_super) {
+    __extends(TravellerManager, _super);
+    function TravellerManager(game) {
+        var _this = _super.call(this, game, {
+            getId: function (card) { return "".concat(card.id); },
+            setupDiv: function (card, div) { return _this.setupDiv(card, div); },
+            setupFrontDiv: function (card, div) { return _this.setupFrontDiv(card, div); },
+            setupBackDiv: function (card, div) { return _this.setupBackDiv(card, div); },
+            isCardVisible: function (card) { return _this.isCardVisible(card); },
+            animationManager: game.animationManager,
+        }) || this;
+        _this.game = game;
+        return _this;
+    }
+    TravellerManager.prototype.clearInterface = function () { };
+    TravellerManager.prototype.setupDiv = function (token, div) {
+        div.classList.add('gest_traveller_image_container');
+    };
+    TravellerManager.prototype.setupFrontDiv = function (token, div) {
+        div.classList.add('gest_traveller_image');
+        div.setAttribute('data-image', this.getImageId(token));
+        div.setAttribute('data-image', this.getImageId(token));
+        this.game.tooltipManager.addTravellersTooltip("".concat(this.getId(token), "-front"), this.getImageId(token));
+    };
+    TravellerManager.prototype.setupBackDiv = function (token, div) {
+        div.classList.add('gest_traveller_image');
+        div.setAttribute('data-image', this.getImageId(token));
+    };
+    TravellerManager.prototype.isCardVisible = function (token) {
+        return true;
+    };
+    TravellerManager.prototype.getImageId = function (card) {
+        return card.id.split('_')[1];
+    };
+    return TravellerManager;
+}(CardManager));
+var TravellersInfoPanel = (function () {
+    function TravellersInfoPanel(game) {
+        this.travellers = {};
+        this.game = game;
+        var gamedatas = game.gamedatas;
+        this.setup({ gamedatas: gamedatas });
+    }
+    TravellersInfoPanel.prototype.clearInterface = function () { };
+    TravellersInfoPanel.prototype.updateInterface = function (_a) {
+        var gamedatas = _a.gamedatas;
+    };
+    TravellersInfoPanel.prototype.setup = function (_a) {
+        var gamedatas = _a.gamedatas;
+        var node = document.getElementById('player_boards');
+        if (!node) {
+            return;
+        }
+        node.insertAdjacentHTML('beforeend', tplTravellersInfoPanel());
+        var deckAtSetup = this.game.gamedatas.cards.travellers.travellersDeck;
+        var robbedTraveller = this.game.gamedatas.cards.travellers.travellerRobbed;
+        if (robbedTraveller) {
+            deckAtSetup.push(robbedTraveller);
+        }
+        this.travellers[TRAVELLERS_DECK] = new TravellersRow({
+            containerId: 'travellers_info_panel',
+            id: TRAVELLERS_DECK,
+            title: _('Deck'),
+            game: this.game,
+            cardsAtSetup: deckAtSetup,
+        });
+        this.travellers[TRAVELLERS_DISCARD] = new TravellersRow({
+            containerId: 'travellers_info_panel',
+            id: TRAVELLERS_DISCARD,
+            title: _('Discard Pile'),
+            game: this.game,
+            cardsAtSetup: this.game.gamedatas.cards.travellers.travellersDiscard,
+        });
+        this.travellers[TRAVELLERS_VICTIMS_PILE] = new TravellersRow({
+            containerId: 'travellers_info_panel',
+            id: TRAVELLERS_VICTIMS_PILE,
+            title: _('Victims Pile'),
+            game: this.game,
+            cardsAtSetup: this.game.gamedatas.cards.travellers.travellersVictimsPile,
+        });
+        this.travellers[TRAVELLERS_POOL] = new TravellersRow({
+            containerId: 'travellers_info_panel',
+            id: TRAVELLERS_POOL,
+            title: _('Pool'),
+            game: this.game,
+            cardsAtSetup: this.game.gamedatas.cards.travellers.travellersPool,
+        });
+    };
+    return TravellersInfoPanel;
+}());
+var tplTravellersInfoPanel = function () { return "<div id=\"travellers_info_panel\" class='player-board'>\n<span class=\"gest_title\">".concat(_('Travellers'), "</span>\n</div>"); };
+var TravellersRow = (function () {
+    function TravellersRow(config) {
+        var containerId = config.containerId, game = config.game;
+        this.rowId = "gest_info_".concat(config.id);
+        this.game = game;
+        this.containerId = containerId;
+        this.setup(config);
+    }
+    TravellersRow.prototype.setup = function (_a) {
+        var _this = this;
+        var id = _a.id, title = _a.title, cardsAtSetup = _a.cardsAtSetup;
+        var container = document.getElementById(this.containerId);
+        if (!container) {
+            return;
+        }
+        container.insertAdjacentHTML("beforeend", tplTravellersRow({ id: id, title: title }));
+        this.counter = new ebg.counter();
+        this.counter.create("gest_travellers_row_".concat(id, "_counter"));
+        this.counter.setValue(cardsAtSetup.length);
+        this.stock = new GestLineStock(this.game.travellerManager, document.getElementById("gest_travellers_".concat(id)), {
+            gap: '4px',
+            center: false,
+            sort: sortFunction('travellerOrder'),
+        }, function (card) { return _this.onCardRemoved(card); });
+        this.stock.addCards(cardsAtSetup);
+        this.updateVisibility(cardsAtSetup.length);
+    };
+    TravellersRow.prototype.updateVisibility = function (count) {
+        var node = document.getElementById(this.rowId);
+        if (!node) {
+            return;
+        }
+        if (count === 0) {
+            node.classList.add(GEST_NONE);
+        }
+        else {
+            node.classList.remove(GEST_NONE);
+        }
+    };
+    TravellersRow.prototype.addCard = function (card) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        this.counter.incValue(1);
+                        this.updateVisibility(1);
+                        return [4, this.stock.addCard(card)];
+                    case 1:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    TravellersRow.prototype.addCards = function (cards) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        this.counter.incValue(cards.length);
+                        this.updateVisibility(this.stock.getCards().length + cards.length);
+                        return [4, this.stock.addCards(cards)];
+                    case 1:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    TravellersRow.prototype.removeCard = function (card) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4, this.stock.removeCard(card)];
+                    case 1:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    TravellersRow.prototype.onCardRemoved = function (card) {
+        this.counter.incValue(-1);
+        this.updateVisibility(this.counter.getValue());
+    };
+    return TravellersRow;
+}());
+var tplTravellersRow = function (_a) {
+    var id = _a.id, title = _a.title;
+    return "\n  <div id=\"gest_info_".concat(id, "\" class=\"gest_traveller_row\">\n    <div style=\"margin-bottom: 2px;\">\n      <span class=\"gest_row_title\">").concat(_(title), ": </span>\n      \n      <span id=\"gest_travellers_row_").concat(id, "_counter\" class=\"gest_row_title\"></span>\n      \n    </div>\n      \n    <div id=\"gest_travellers_").concat(id, "\">\n      \n    </div>\n  </div>");
+};

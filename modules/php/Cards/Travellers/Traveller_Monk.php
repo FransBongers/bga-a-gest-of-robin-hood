@@ -19,6 +19,7 @@ class Traveller_Monk extends \AGestOfRobinHood\Models\TravellerCard
     $this->textDark = clienttranslate('If successful, gain 3 Shillings and put the card in the Victims Pile. If failed, set the space to Submissive (if possible) and put the card in the discard pile.');
     $this->strength = 0;
     $this->setupLocation = TRAVELLERS_DECK;
+    $this->travellerOrder = 3;
   }
 
   public function performDarkEffect($player, $successful, $ctx = null, $space = null, $merryMenIds = null)

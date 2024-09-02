@@ -20,6 +20,7 @@ class Traveller11_BishopOfHereford extends \AGestOfRobinHood\Models\TravellerCar
     $this->textDark = clienttranslate('If successful, gain 6 Shillings and put the card in the Victims Pile. If failed, the Sheriff gains 3 Shillings and sets the space to Submissive (if possible), then put the card in the discard pile.');
     $this->strength = 1;
     $this->setupLocation = TRAVELLERS_POOL;
+    $this->travellerOrder = 6;
   }
 
   public function performLightEffect($player, $successful, $ctx = null, $space = null, $merryMenIds = null)

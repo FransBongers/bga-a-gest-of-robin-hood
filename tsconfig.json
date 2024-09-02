@@ -58,6 +58,7 @@
     "src/game-map/update-display/shireWood.ts",
     "src/game-map/update-display/southwellForest.ts",
     "src/game-map/update-display/tuxford.ts",
+    "src/GestLineStock/index.ts",
     "src/info-panel/config.ts",
     "src/info-panel/index.ts",
     "src/info-panel/templates.ts",
@@ -130,6 +131,12 @@
     "src/states/Turncoat.ts",
     "src/states/state.d.ts",
     "src/tooltip-manager/templates.ts",
-    "src/tooltip-manager/index.ts"
+    "src/tooltip-manager/index.ts",
+    "src/traveller-manager/index.ts",
+    "src/travellers-info-panel/index.ts",
+    "src/travellers-info-panel/templates.ts",
+    "src/travellers-info-panel/TravellersRow/index.ts",
+    "src/travellers-info-panel/TravellersRow/templates.ts",
+    "src/travellers-info-panel/TravellersRow/types.d.ts"
   ]
 }

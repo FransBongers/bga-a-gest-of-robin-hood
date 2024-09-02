@@ -1247,8 +1247,10 @@
   background-color: #ef9a9a;
 }
 
-[style*="color: #c0c0c0"],
-[style*="color:#c0c0c0"] {
+a[style*="color: #c0c0c0"],
+a[style*="color:#c0c0c0"],
+span[style*="color: #c0c0c0"],
+span[style*="color:#c0c0c0"] {
   text-shadow: 1px 0 0 black, 0 1px 0 black, -1px 0 0 black, 0 -1px 0 black, 1px 1px 0 black, -1px 1px 0 black, 1px -1px 0 black, -1px -1px 0 black !important;
 }
 
@@ -2139,6 +2141,31 @@
 }
 .dijitTooltipContainer .gest_carriage_tooltip .gest_section_title {
   font-weight: 700;
+}
+
+#travellers_info_panel .gest_title {
+  font-weight: 700;
+}
+
+#travellers_info_panel {
+  --gestTravellerScale: 0.14;
+}
+#travellers_info_panel .gest_traveller_row {
+  margin-bottom: 4px;
+}
+#travellers_info_panel .gest_traveller_row .gest_traveller_image_container {
+  width: calc(var(--gestTravellerScale) * 302px);
+  height: calc(var(--gestTravellerScale) * 277px);
+}
+#travellers_info_panel .gest_traveller_row .gest_traveller_image_container .gest_traveller_image {
+  width: calc(var(--gestTravellerScale) * 302px);
+  height: calc(var(--gestTravellerScale) * 277px);
+  border: 1px solid black;
+  border-radius: 5%;
+  box-shadow: none;
+}
+#travellers_info_panel .gest_traveller_row.gest_none {
+  display: none;
 }
 
 body > .card {

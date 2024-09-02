@@ -6,7 +6,12 @@ const tplInfoPanel = () => `<div class='player-board' id="info_panel">
   <div id="info_panel_buttons">
     
   </div>
+
 </div>`;
+// <div id="gest_travellers_info">
+// <span class="gest_title">${_('Travellers')}</span>
+// <div></div>
+// </div>
 
 const tplPlotDeedInfo = ({
   title,

@@ -23,8 +23,8 @@ trait DebugTrait
 
   function debug_test()
   {
-    $deckCount = Cards::countInLocation(EVENTS_DECK);
-    Notifications::log('deckCount', 3 - floor($deckCount / 8));
+    // $deckCount = Cards::countInLocation(EVENTS_DECK);
+    Notifications::log('Traveller01_RichMerchant', Cards::get('Traveller01_RichMerchant'));
 
     // Stats::checkExistence();
     // Players::getRobinHoodPlayer()->incShillings(-7);

@@ -29,6 +29,8 @@
 @use 'player-manager/playerPanels';
 @use 'player-manager/icon-counter/icon-counter';
 @use 'tooltip-manager/tooltip';
+@use 'travellers-info-panel/travellersInfoPanel';
+@use 'travellers-info-panel/TravellersRow/travellersRow';
 @import '../node_modules/bga-cards/bga-cards';
 
 html {

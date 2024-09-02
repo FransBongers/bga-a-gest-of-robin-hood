@@ -9,32 +9,39 @@ const travellersDeckCounter = (traveller: string) => `
   </div>
 `
 
+// const tplTravellers= () => `
+// <div>
+//   <span class="gest_title">${_('Travellers')}</span>
+//   <div class="gest_card_row">
+//     <div id="gest_travellers_decks_info">
+//       <div class="gest_traveller_counter_row">
+//         <span>${_('Deck: ')}</span><span id="gest_travellers_deck_counter" style="margin-left: auto;"></span>
+//       </div>
+//       <div>
+//         <div id="gest_travellers_deck_composition">
+//           ${getTravellersConfig().map((config) => `
+//               <div id="gest_traveller_${config.image}_counter_row" class="gest_traveller_counter_row">
+//                 <div class="gest_traveller_image" data-image="${config.image}"></div>
+//                 <span>${ _(config.name)}: </span>
+//                 <span id="gest_traveller_${config.image}_counter" style="margin-left: auto;"></span>
+//               </div>
+//             `).join('')}
+//         </div>
+//       </div>
+//       <div class="gest_traveller_counter_row">
+//         <span>${_('Discard Pile: ')}</span><span id="gest_travellers_discard_counter" style="margin-left: auto;"></span>
+//       </div>
+//       <div class="gest_traveller_counter_row">
+//         <span>${_('Victims Pile: ')}</span><span id="gest_victims_pile_counter" style="margin-left: auto;"></span>
+//       </div>
+//     </div>
+//     <div id="gest_traveller_robbed" class="gest_card_stock"></div>
+//   </div>
+// </div>`
+
 const tplTravellers= () => `
 <div>
-  <span class="gest_title">${_('Travellers')}</span>
   <div class="gest_card_row">
-    <div id="gest_travellers_decks_info">
-      <div class="gest_traveller_counter_row">
-        <span>${_('Deck: ')}</span><span id="gest_travellers_deck_counter" style="margin-left: auto;"></span>
-      </div>
-      <div>
-        <div id="gest_travellers_deck_composition">
-          ${getTravellersConfig().map((config) => `
-              <div id="gest_traveller_${config.image}_counter_row" class="gest_traveller_counter_row">
-                <div class="gest_traveller_image" data-image="${config.image}"></div>
-                <span>${ _(config.name)}: </span>
-                <span id="gest_traveller_${config.image}_counter" style="margin-left: auto;"></span>
-              </div>
-            `).join('')}
-        </div>
-      </div>
-      <div class="gest_traveller_counter_row">
-        <span>${_('Discard Pile: ')}</span><span id="gest_travellers_discard_counter" style="margin-left: auto;"></span>
-      </div>
-      <div class="gest_traveller_counter_row">
-        <span>${_('Victims Pile: ')}</span><span id="gest_victims_pile_counter" style="margin-left: auto;"></span>
-      </div>
-    </div>
     <div id="gest_traveller_robbed" class="gest_card_stock"></div>
   </div>
 </div>`

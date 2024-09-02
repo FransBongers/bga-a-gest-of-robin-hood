@@ -165,11 +165,18 @@ class Cards extends \AGestOfRobinHood\Helpers\Pieces
       EVENTS_DISCARD => self::getTopOf(EVENTS_DISCARD),
       // TRAVELLERS_DISCARD => self::getTopOf(TRAVELLERS_DISCARD),
       // TRAVELLERS_VICTIMS_PILE => self::getTopOf(TRAVELLERS_VICTIMS_PILE),
-      TRAVELLER_ROBBED => self::getTopOf(TRAVELLER_ROBBED),
-      'counts' => [
-        TRAVELLERS_DECK => count($travellersDeck),
-        TRAVELLERS_DISCARD => self::countInLocation(TRAVELLERS_DISCARD),
-        TRAVELLERS_VICTIMS_PILE => self::countInLocation(TRAVELLERS_VICTIMS_PILE)
+      // TRAVELLER_ROBBED => self::getTopOf(TRAVELLER_ROBBED),
+      // 'counts' => [
+      //   TRAVELLERS_DECK => count($travellersDeck),
+      //   TRAVELLERS_DISCARD => self::countInLocation(TRAVELLERS_DISCARD),
+      //   TRAVELLERS_VICTIMS_PILE => self::countInLocation(TRAVELLERS_VICTIMS_PILE)
+      // ],
+      'travellers' => [
+        TRAVELLERS_DECK => Cards::getInLocation(TRAVELLERS_DECK)->toArray(),
+        TRAVELLERS_DISCARD => Cards::getInLocation(TRAVELLERS_DISCARD)->toArray(),
+        TRAVELLERS_VICTIMS_PILE => Cards::getInLocation(TRAVELLERS_VICTIMS_PILE)->toArray(),
+        TRAVELLERS_POOL => Cards::getInLocation(TRAVELLERS_POOL)->toArray(),
+        TRAVELLER_ROBBED => Cards::getTopOf(TRAVELLER_ROBBED),
       ]
     ];
 

@@ -82,6 +82,8 @@ interface AGestOfRobinHoodGame extends Game {
   tooltipManager: TooltipManager;
   _last_tooltip_id: number; // generic
   tooltipsToMap: [tooltipId: number, card_id: string][]; // generic
+  travellerManager: TravellerManager;
+  travellersInfoPanel: TravellersInfoPanel;
 }
 
 interface GestCardStaticData {
@@ -102,6 +104,10 @@ interface GestCard {
   id: string;
   location: string;
   title: string;
+}
+
+interface GestTravellerCard extends GestCard {
+  travellerOrder: number;
 }
 
 interface GestForce {
@@ -140,12 +146,19 @@ interface AGestOfRobinHoodGamedatas extends Gamedatas {
     eventsDiscard: GestCard | null;
     // travellersDiscard: GestCard | null;
     // travellersVictimsPile: GestCard | null;
-    travellerRobbed: GestCard | null;
-    counts: {
-      travellersDeck: number;
-      travellersDiscard: number;
-      travellersVictimsPile: number;
-      travellers: Record<string, number>;
+    // travellerRobbed: GestCard | null;
+    // counts: {
+    //   travellersDeck: number;
+    //   travellersDiscard: number;
+    //   travellersVictimsPile: number;
+    //   travellers: Record<string, number>;
+    // }
+    travellers: {
+      travellersDeck: GestTravellerCard[];
+      travellersDiscard: GestTravellerCard[];
+      travellersVictimsPile: GestTravellerCard[];
+      travellersPool: GestTravellerCard[];
+      travellerRobbed: GestTravellerCard | null;
     }
   };
   forces: Record<

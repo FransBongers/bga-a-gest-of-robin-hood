@@ -130,7 +130,7 @@ interface NotifPayShillingsArgs extends NotifWithPlayerArgs {
 }
 
 interface NotifPlaceCardInTravellersDeckArgs extends NotifWithPlayerArgs {
-  card: GestCard;
+  card: GestTravellerCard;
 }
 
 interface NotifPlaceForceArgs extends NotifWithPlayerArgs {
@@ -158,12 +158,12 @@ interface NotifPlaceMerryMenPrivateArgs extends NotifWithPlayerArgs {
 }
 
 interface NotifPutCardInVictimsPileArgs {
-  card: GestCard;
+  card: GestTravellerCard
   fromLocation: string;
 }
 
 interface NotifPutTravellerInDiscardPileArgs {
-  card: GestCard;
+  card: GestTravellerCard;
 }
 
 interface NotifRedeploymentSheriffArgs {
@@ -173,7 +173,7 @@ interface NotifRedeploymentSheriffArgs {
 }
 
 interface NotifRemoveCardFromGameArgs {
-  card: GestCard;
+  card: GestTravellerCard;
   fromLocation: string;
 }
 
@@ -206,7 +206,7 @@ interface NotifRevoltArgs extends NotifWithPlayerArgs {
 }
 
 interface NotifReturnTravellersDiscardToMainDeckArgs {
-  cards: GestCard[];
+  cards: GestTravellerCard[];
 }
 
 interface NotifRobTakeTwoShillingsFromTheSheriffArgs {
