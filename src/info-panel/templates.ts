@@ -1,7 +1,13 @@
 const tplInfoPanel = () => `<div class='player-board' id="info_panel">
   <div id="gest_ballad_info">
-    <span id="gest_ballad_info_ballad_number"></span>
-    <span id="gest_ballad_info_event_number"></span>
+    <div class="gest_ballad_info_side_column"></div>
+    <div id="gest_ballad_info_events">
+      <span id="gest_ballad_info_ballad_number"></span>
+      <span id="gest_ballad_info_event_number"></span>
+    </div>
+    <div class="gest_ballad_info_side_column">
+      <div id="gest_fortune_event_icon"></div>
+    </div>
   </div>
   <div id="info_panel_buttons">
     

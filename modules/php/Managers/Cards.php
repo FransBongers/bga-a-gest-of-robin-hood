@@ -162,7 +162,7 @@ class Cards extends \AGestOfRobinHood\Helpers\Pieces
     $travellersDeck = self::getInLocation(TRAVELLERS_DECK)->toArray();
 
     $data = [
-      EVENTS_DISCARD => self::getTopOf(EVENTS_DISCARD),
+      EVENTS_DISCARD => self::getInLocationOrdered(EVENTS_DISCARD)->toArray(),
       // TRAVELLERS_DISCARD => self::getTopOf(TRAVELLERS_DISCARD),
       // TRAVELLERS_VICTIMS_PILE => self::getTopOf(TRAVELLERS_VICTIMS_PILE),
       // TRAVELLER_ROBBED => self::getTopOf(TRAVELLER_ROBBED),

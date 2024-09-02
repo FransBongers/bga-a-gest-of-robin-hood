@@ -2493,8 +2493,9 @@ var CardArea = (function () {
     };
     CardArea.prototype.updateCards = function (_a) {
         var gamedatas = _a.gamedatas;
-        if (gamedatas.cards.eventsDiscard) {
-            this.stocks.eventsDiscard.addCard(gamedatas.cards.eventsDiscard);
+        var numberOfCardsInDiscard = gamedatas.cards.eventsDiscard.length;
+        if (numberOfCardsInDiscard > 0) {
+            this.stocks.eventsDiscard.addCard(gamedatas.cards.eventsDiscard[numberOfCardsInDiscard - 1]);
         }
         if (gamedatas.cards.travellers.travellerRobbed) {
             this.stocks.travellerRobbed.addCard(gamedatas.cards.travellers.travellerRobbed);
@@ -5114,6 +5115,10 @@ var InfoPanel = (function () {
     };
     InfoPanel.prototype.updateBalladInfo = function (_a) {
         var balladNumber = _a.balladNumber, eventNumber = _a.eventNumber;
+        this.ballad = {
+            balladNumber: balladNumber,
+            eventNumber: eventNumber,
+        };
         var node = document.getElementById('gest_ballad_info_ballad_number');
         if (!node) {
             return;
@@ -5134,6 +5139,28 @@ var InfoPanel = (function () {
         }
         eventNode.replaceChildren(eventText);
     };
+    InfoPanel.prototype.updateFortuneEventRevealed = function (revealed) {
+        var nodeId = 'gest_fortune_event_icon';
+        var node = document.getElementById(nodeId);
+        if (!node) {
+            return;
+        }
+        this.game.tooltipManager.removeTooltip(nodeId);
+        if (revealed) {
+            node.classList.add(GEST_NONE);
+            this.game.tooltipManager.addTextToolTip({
+                nodeId: nodeId,
+                text: _('Fortune Event has been resolved this Ballad'),
+            });
+        }
+        else {
+            node.classList.remove(GEST_NONE);
+            this.game.tooltipManager.addTextToolTip({
+                nodeId: nodeId,
+                text: _('Fortune Event has not been resolved this Ballad'),
+            });
+        }
+    };
     InfoPanel.prototype.setupPlotsAndDeedsInfo = function () {
         var _this = this;
         var cardArea = document.getElementById('gest_card_area');
@@ -5147,6 +5174,7 @@ var InfoPanel = (function () {
         });
     };
     InfoPanel.prototype.setup = function (_a) {
+        var _this = this;
         var gamedatas = _a.gamedatas;
         var node = document.getElementById('player_boards');
         if (!node) {
@@ -5154,6 +5182,11 @@ var InfoPanel = (function () {
         }
         node.insertAdjacentHTML('afterbegin', tplInfoPanel());
         this.updateBalladInfo(gamedatas.ballad);
+        var fortuneEvents = gamedatas.cards.eventsDiscard.filter(function (card) {
+            return _this.game.getStaticCardData({ cardId: card.id }).eventType ===
+                'fortuneEvent';
+        });
+        this.updateFortuneEventRevealed(fortuneEvents.length < this.ballad.balladNumber);
     };
     InfoPanel.prototype.getBalladName = function (_a) {
         var balladNumber = _a.balladNumber;
@@ -5172,7 +5205,7 @@ var InfoPanel = (function () {
     };
     return InfoPanel;
 }());
-var tplInfoPanel = function () { return "<div class='player-board' id=\"info_panel\">\n  <div id=\"gest_ballad_info\">\n    <span id=\"gest_ballad_info_ballad_number\"></span>\n    <span id=\"gest_ballad_info_event_number\"></span>\n  </div>\n  <div id=\"info_panel_buttons\">\n    \n  </div>\n\n</div>"; };
+var tplInfoPanel = function () { return "<div class='player-board' id=\"info_panel\">\n  <div id=\"gest_ballad_info\">\n    <div class=\"gest_ballad_info_side_column\"></div>\n    <div id=\"gest_ballad_info_events\">\n      <span id=\"gest_ballad_info_ballad_number\"></span>\n      <span id=\"gest_ballad_info_event_number\"></span>\n    </div>\n    <div class=\"gest_ballad_info_side_column\">\n      <div id=\"gest_fortune_event_icon\"></div>\n    </div>\n  </div>\n  <div id=\"info_panel_buttons\">\n    \n  </div>\n\n</div>"; };
 var tplPlotDeedInfo = function (_a) {
     var title = _a.title, cost = _a.cost, location = _a.location, procedure = _a.procedure;
     return "\n<div class=\"gest_plot_deed_item\">\n  <span class=\"gest_plot_deed_title\">".concat(_(title), "</span>\n  <div class=\"gest_plot_deed_info_row\">\n    <span class=\"gest_plot_deed_info_label\">").concat(_('Cost: '), "</span><span>").concat(_(cost), "</span>\n  </div>\n      <div class=\"gest_plot_deed_info_row\"?\n    <span class=\"gest_plot_deed_info_label\">").concat(_('Location: '), "</span><span>").concat(_(location), "</span>\n  </div>\n      <div class=\"gest_plot_deed_info_row\">\n    <span class=\"gest_plot_deed_info_label\">").concat(_('Procedure: '), "</span><span>").concat(_(procedure), "</span>\n  </div>\n</div>");
@@ -5839,6 +5872,10 @@ var NotificationManager = (function () {
                         return [4, this.game.cardArea.stocks.eventsDiscard.removeCards(cardsCurrentlyInDiscard)];
                     case 3:
                         _a.sent();
+                        if (this.game.getStaticCardData({ cardId: card.id }).eventType ===
+                            'fortuneEvent') {
+                            this.game.infoPanel.updateFortuneEventRevealed(true);
+                        }
                         return [2];
                 }
             });

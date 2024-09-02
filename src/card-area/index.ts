@@ -106,11 +106,16 @@ class CardArea {
   }
 
   updateCards({ gamedatas }: { gamedatas: AGestOfRobinHoodGamedatas }) {
-    if (gamedatas.cards.eventsDiscard) {
-      this.stocks.eventsDiscard.addCard(gamedatas.cards.eventsDiscard);
+    const numberOfCardsInDiscard = gamedatas.cards.eventsDiscard.length;
+    if (numberOfCardsInDiscard > 0) {
+      this.stocks.eventsDiscard.addCard(
+        gamedatas.cards.eventsDiscard[numberOfCardsInDiscard - 1]
+      );
     }
     if (gamedatas.cards.travellers.travellerRobbed) {
-      this.stocks.travellerRobbed.addCard(gamedatas.cards.travellers.travellerRobbed);
+      this.stocks.travellerRobbed.addCard(
+        gamedatas.cards.travellers.travellerRobbed
+      );
     }
     // if (gamedatas.cards.travellersVictimsPile) {
     //   this.stocks.travellersVictimsPile.addCard(
@@ -205,7 +210,10 @@ class CardArea {
   //  ..#######.....##....####.########.####....##.......##...
 
   public updateTooltips() {
-    const cards = [...this.stocks.eventsDiscard.getCards(), ...this.stocks.travellerRobbed.getCards()];
+    const cards = [
+      ...this.stocks.eventsDiscard.getCards(),
+      ...this.stocks.travellerRobbed.getCards(),
+    ];
     cards.forEach((card) => {
       const cardId = card.id.split('_')[0];
       this.game.tooltipManager.removeTooltip(cardId);

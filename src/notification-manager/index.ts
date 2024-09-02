@@ -344,10 +344,15 @@ class NotificationManager {
     const cardsCurrentlyInDiscard =
       this.game.cardArea.stocks.eventsDiscard.getCards();
     await this.game.cardArea.stocks.eventsDiscard.addCard(card);
-    // TODO: move them to different stock for display?
     await this.game.cardArea.stocks.eventsDiscard.removeCards(
       cardsCurrentlyInDiscard
     );
+    if (
+      this.game.getStaticCardData({ cardId: card.id }).eventType ===
+      'fortuneEvent'
+    ) {
+      this.game.infoPanel.updateFortuneEventRevealed(true);
+    }
   }
 
   async notif_drawAndRevealTravellerCard(

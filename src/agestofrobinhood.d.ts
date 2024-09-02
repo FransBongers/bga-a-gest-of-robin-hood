@@ -144,7 +144,7 @@ interface AGestOfRobinHoodGamedatas extends Gamedatas {
   };
   bridgeLocation: string;
   cards: {
-    eventsDiscard: GestCard | null;
+    eventsDiscard: GestCard[];
     // travellersDiscard: GestCard | null;
     // travellersVictimsPile: GestCard | null;
     // travellerRobbed: GestCard | null;

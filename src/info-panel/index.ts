@@ -1,6 +1,11 @@
 class InfoPanel {
   protected game: AGestOfRobinHoodGame;
 
+  private ballad: {
+    balladNumber: number;
+    eventNumber: number;
+  };
+
   // public travellers: {
   //   [TRAVELLERS_DECK]?: TravellersRow;
   //   [TRAVELLERS_DISCARD]?: TravellersRow;
@@ -42,6 +47,11 @@ class InfoPanel {
     balladNumber: number;
     eventNumber: number;
   }) {
+    this.ballad = {
+      balladNumber,
+      eventNumber,
+    };
+
     const node = document.getElementById('gest_ballad_info_ballad_number');
     if (!node) {
       return;
@@ -66,6 +76,28 @@ class InfoPanel {
     }
 
     eventNode.replaceChildren(eventText);
+  }
+
+  public updateFortuneEventRevealed(revealed: boolean) {
+    const nodeId = 'gest_fortune_event_icon';
+    const node = document.getElementById(nodeId);
+    if (!node) {
+      return;
+    }
+    this.game.tooltipManager.removeTooltip(nodeId);
+    if (revealed) {
+      node.classList.add(GEST_NONE);
+      this.game.tooltipManager.addTextToolTip({
+        nodeId,
+        text: _('Fortune Event has been resolved this Ballad'),
+      });
+    } else {
+      node.classList.remove(GEST_NONE);
+      this.game.tooltipManager.addTextToolTip({
+        nodeId,
+        text: _('Fortune Event has not been resolved this Ballad'),
+      });
+    }
   }
 
   // TODO: move this to separate class?
@@ -108,37 +140,12 @@ class InfoPanel {
 
     this.updateBalladInfo(gamedatas.ballad);
 
-    // this.travellers[TRAVELLERS_DECK] = new TravellersRow({
-    //   containerId: 'gest_travellers_info',
-    //   id: TRAVELLERS_DECK,
-    //   title: _('Deck'),
-    //   game: this.game,
-    //   cardsAtSetup: this.game.gamedatas.cards.travellers.travellersDeck
-    // });
-    // this.travellers[TRAVELLERS_DISCARD] = new TravellersRow({
-    //   containerId: 'gest_travellers_info',
-    //   id: TRAVELLERS_DISCARD,
-    //   title: _('Discard Pile'),
-    //   game: this.game,
-    //   cardsAtSetup: this.game.gamedatas.cards.travellers.travellersDiscard
-    // });
-    // this.travellers[TRAVELLERS_VICTIMS_PILE] = new TravellersRow({
-    //   containerId: 'gest_travellers_info',
-    //   id: TRAVELLERS_VICTIMS_PILE,
-    //   title: _('Victims Pile'),
-    //   game: this.game,
-    //   cardsAtSetup: this.game.gamedatas.cards.travellers.travellersVictimsPile
-    // });
-    // this.travellers[TRAVELLERS_POOL] = new TravellersRow({
-    //   containerId: 'gest_travellers_info',
-    //   id: TRAVELLERS_POOL,
-    //   title: _('Pool'),
-    //   game: this.game,
-    //   cardsAtSetup: this.game.gamedatas.cards.travellers.travellersPool
-    // });
-    // [TRAVELLERS_DECK].forEach((location) => {
-    //   this.travellers[location] = new Trave
-    // })
+    const fortuneEvents = gamedatas.cards.eventsDiscard.filter(
+      (card) =>
+        this.game.getStaticCardData({ cardId: card.id }).eventType ===
+        'fortuneEvent'
+    );
+    this.updateFortuneEventRevealed(fortuneEvents.length < this.ballad.balladNumber);
   }
 
   // ..######...########.########.########.########.########...######.

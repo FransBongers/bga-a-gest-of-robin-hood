@@ -929,18 +929,41 @@
 #info_panel #gest_ballad_info {
   width: 100%;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   padding-bottom: 8px;
   margin-bottom: 8px;
   border-bottom: 1px solid black;
 }
-#info_panel #gest_ballad_info #gest_ballad_info_ballad_number {
+#info_panel #gest_ballad_info #gest_ballad_info_events {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-grow: 1;
+}
+#info_panel #gest_ballad_info #gest_ballad_info_events #gest_ballad_info_ballad_number {
   font-size: x-large;
   font-weight: bold;
 }
-#info_panel #gest_ballad_info #gest_ballad_info_event_number {
+#info_panel #gest_ballad_info #gest_ballad_info_events #gest_ballad_info_event_number {
   font-size: medium;
+}
+#info_panel #gest_ballad_info .gest_ballad_info_side_column {
+  display: flex;
+  align-items: center;
+  width: 50px;
+  height: 100%;
+}
+#info_panel #gest_ballad_info #gest_fortune_event_icon {
+  background-image: url("img/fortune_event.jpg");
+  background-size: 100% 100%;
+  width: 48px;
+  height: 35px;
+  border: 1px solid black;
+  border-radius: 5%;
+}
+#info_panel #gest_ballad_info #gest_fortune_event_icon.gest_none {
+  opacity: 0.3;
 }
 
 .gest_plots_and_deeds_container {
