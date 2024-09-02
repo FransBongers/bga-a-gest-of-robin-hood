@@ -203,8 +203,8 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     this.tooltipManager = new TooltipManager(this);
     this.playerManager = new PlayerManager(this);
     this.infoPanel = new InfoPanel(this);
-    this.informationModal = new InformationModal(this);
     this.settings = new Settings(this);
+    this.informationModal = new InformationModal(this);
 
     this.animationManager = new AnimationManager(this, {
       duration:
@@ -719,7 +719,7 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     node.classList.remove(GEST_SELECTED);
   }
   Ì;
-  getStaticCardData({ cardId }: { cardId: string }): GestCardStaticData {
+  getStaticCardData(cardId: string): GestCardStaticData {
     return this.gamedatas.staticData.cards[cardId.split('_')[0]];
   }
 

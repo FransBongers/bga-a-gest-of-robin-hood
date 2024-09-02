@@ -1,4 +1,4 @@
-type TabId = 'orderJustice' | 'robSummary' | 'travellers' | 'royalInspectionRound';
+type TabId = 'cardsInfo' | 'orderJustice' | 'robSummary' | 'travellers' | 'royalInspectionRound';
 
 interface TravellerInfo {
   name: string;

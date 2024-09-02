@@ -1837,8 +1837,8 @@ var AGestOfRobinHood = (function () {
         this.tooltipManager = new TooltipManager(this);
         this.playerManager = new PlayerManager(this);
         this.infoPanel = new InfoPanel(this);
-        this.informationModal = new InformationModal(this);
         this.settings = new Settings(this);
+        this.informationModal = new InformationModal(this);
         this.animationManager = new AnimationManager(this, {
             duration: this.settings.get({ id: PREF_SHOW_ANIMATIONS }) === DISABLED
                 ? 0
@@ -2147,8 +2147,7 @@ var AGestOfRobinHood = (function () {
         }
         node.classList.remove(GEST_SELECTED);
     };
-    AGestOfRobinHood.prototype.getStaticCardData = function (_a) {
-        var cardId = _a.cardId;
+    AGestOfRobinHood.prototype.getStaticCardData = function (cardId) {
         return this.gamedatas.staticData.cards[cardId.split('_')[0]];
     };
     AGestOfRobinHood.prototype.connect = function (node, action, callback) {
@@ -5145,6 +5144,12 @@ var InfoPanel = (function () {
         if (!node) {
             return;
         }
+        if (this.ballad.balladNumber === 0) {
+            node.style.display = 'none';
+        }
+        else {
+            node.style.display = '';
+        }
         this.game.tooltipManager.removeTooltip(nodeId);
         if (revealed) {
             node.classList.add(GEST_NONE);
@@ -5183,10 +5188,11 @@ var InfoPanel = (function () {
         node.insertAdjacentHTML('afterbegin', tplInfoPanel());
         this.updateBalladInfo(gamedatas.ballad);
         var fortuneEvents = gamedatas.cards.eventsDiscard.filter(function (card) {
-            return _this.game.getStaticCardData({ cardId: card.id }).eventType ===
+            return _this.game.getStaticCardData(card.id).eventType ===
                 'fortuneEvent';
         });
-        this.updateFortuneEventRevealed(fortuneEvents.length < this.ballad.balladNumber);
+        console.log('fortuneEvents', fortuneEvents.length >= this.ballad.balladNumber);
+        this.updateFortuneEventRevealed(fortuneEvents.length >= this.ballad.balladNumber);
     };
     InfoPanel.prototype.getBalladName = function (_a) {
         var balladNumber = _a.balladNumber;
@@ -5329,19 +5335,22 @@ var carriagesRobInfo = function () {
 };
 var InformationModal = (function () {
     function InformationModal(game) {
-        this.selectedTab = "orderJustice";
+        this.selectedTab = 'cardsInfo';
         this.tabs = {
+            cardsInfo: {
+                text: _('Cards'),
+            },
             orderJustice: {
-                text: _("Order & Justice"),
+                text: _('Order & Justice'),
             },
             robSummary: {
-                text: _("Rob Summary"),
+                text: _('Rob Summary'),
             },
             travellers: {
-                text: _("Travellers"),
+                text: _('Travellers'),
             },
             royalInspectionRound: {
-                text: _("Royal Inspection Round"),
+                text: _('Royal Inspection Round'),
             },
         };
         this.game = game;
@@ -5354,22 +5363,22 @@ var InformationModal = (function () {
     };
     InformationModal.prototype.addButton = function (_a) {
         var gamedatas = _a.gamedatas;
-        var configPanel = document.getElementById("info_panel_buttons");
+        var configPanel = document.getElementById('info_panel_buttons');
         if (configPanel) {
-            configPanel.insertAdjacentHTML("beforeend", tplInformationButton());
+            configPanel.insertAdjacentHTML('beforeend', tplInformationButton());
         }
     };
     InformationModal.prototype.setupModal = function (_a) {
         var gamedatas = _a.gamedatas;
         this.modal = new Modal("information_modal", {
-            class: "information_modal",
-            closeIcon: "fa-times",
+            class: 'information_modal',
+            closeIcon: 'fa-times',
             contents: tplInformationModalContent({
                 tabs: this.tabs,
                 game: this.game,
             }),
-            closeAction: "hide",
-            verticalAlign: "flex-start",
+            closeAction: 'hide',
+            verticalAlign: 'flex-start',
             breakpoint: 740,
         });
     };
@@ -5381,12 +5390,18 @@ var InformationModal = (function () {
         this.informationModalContent();
         this.changeTab({ id: this.selectedTab });
         Object.keys(this.tabs).forEach(function (id) {
-            dojo.connect($("information_modal_tab_".concat(id)), "onclick", function () {
+            dojo.connect($("information_modal_tab_".concat(id)), 'onclick', function () {
                 return _this.changeTab({ id: id });
             });
         });
-        dojo.connect($("information_button"), "onclick", function () {
-            return _this.modal.show();
+        dojo.connect($("information_button"), 'onclick', function () { return _this.modal.show(); });
+        Object.values(this.game.gamedatas.staticData.cards).forEach(function (card) {
+            if (card.eventType !== null) {
+                _this.game.tooltipManager.addCardTooltip({
+                    nodeId: "cardsInfo_".concat(card.id),
+                    cardId: card.id.split('_')[0],
+                });
+            }
         });
     };
     InformationModal.prototype.informationModalContent = function () { };
@@ -5394,16 +5409,16 @@ var InformationModal = (function () {
         var id = _a.id;
         var currentTab = document.getElementById("information_modal_tab_".concat(this.selectedTab));
         var currentTabContent = document.getElementById("gest_".concat(this.selectedTab));
-        currentTab.removeAttribute("data-state");
+        currentTab.removeAttribute('data-state');
         if (currentTabContent) {
-            currentTabContent.style.display = "none";
+            currentTabContent.style.display = 'none';
         }
         this.selectedTab = id;
         var tab = document.getElementById("information_modal_tab_".concat(id));
         var tabContent = document.getElementById("gest_".concat(this.selectedTab));
-        tab.setAttribute("data-state", "selected");
+        tab.setAttribute('data-state', 'selected');
         if (tabContent) {
-            tabContent.style.display = "";
+            tabContent.style.display = '';
         }
     };
     return InformationModal;
@@ -5412,6 +5427,13 @@ var tplInformationButton = function () { return "<button id=\"information_button
 var tplInfoModalTab = function (_a) {
     var id = _a.id, text = _a.text;
     return "\n  <div id=\"information_modal_tab_".concat(id, "\" class=\"information_modal_tab\">\n    <span>").concat(_(text), "</span>\n  </div>");
+};
+var cardInfo = function (_a) {
+    var game = _a.game;
+    return "\n\n  ".concat(Object.values(game.gamedatas.staticData.cards)
+        .filter(function (card) { return card.eventType !== null; })
+        .map(function (card) { return tplLogTokenCard(card.id.split('_')[0], "cardsInfo_".concat(card.id)); })
+        .join(''), "\n");
 };
 var orderJusticeInfo = function (_a) {
     var game = _a.game;
@@ -5476,7 +5498,7 @@ var tplInformationModalContent = function (_a) {
         var id = _a[0], info = _a[1];
         return tplInfoModalTab({ id: id, text: info.text });
     })
-        .join(''), "\n    </div>\n      <div id=\"gest_orderJustice\" style=\"display: none;\">\n        ").concat(orderJusticeInfo({ game: game }), "\n      </div>\n      <div id=\"gest_robSummary\" style=\"display: none;\">\n      ").concat(robSummaryInfo({ game: game }), "\n    </div>\n    <div id=\"gest_travellers\" style=\"display: none;\">\n    ").concat(TRAVELLERS_CONFIG.map(travellerInfoRow).join(''), "\n    </div>\n    <div id=\"gest_royalInspectionRound\" style=\"display: none;\">\n    ").concat(royalInspectionRoundInfo({ game: game }), "\n    </div>\n  </div>");
+        .join(''), "\n    </div>\n      <div id=\"gest_cardsInfo\" style=\"display: none;\">\n        ").concat(cardInfo({ game: game }), "\n      </div>\n      <div id=\"gest_orderJustice\" style=\"display: none;\">\n        ").concat(orderJusticeInfo({ game: game }), "\n      </div>\n      <div id=\"gest_robSummary\" style=\"display: none;\">\n      ").concat(robSummaryInfo({ game: game }), "\n    </div>\n    <div id=\"gest_travellers\" style=\"display: none;\">\n    ").concat(TRAVELLERS_CONFIG.map(travellerInfoRow).join(''), "\n    </div>\n    <div id=\"gest_royalInspectionRound\" style=\"display: none;\">\n    ").concat(royalInspectionRoundInfo({ game: game }), "\n    </div>\n  </div>");
 };
 var LOG_TOKEN_BOLD_TEXT = 'boldText';
 var LOG_TOKEN_BOLD_ITALIC_TEXT = 'boldItalicText';
@@ -5549,8 +5571,8 @@ var tplLogTokenPlayerName = function (_a) {
     var name = _a.name, color = _a.color;
     return "<span class=\"playername\" style=\"color:#".concat(color, ";\">").concat(name, "</span>");
 };
-var tplLogTokenCard = function (id) {
-    return "<div class=\"gest_log_card gest_card gest_card_side\" data-card-id=\"".concat(id, "\"></div>");
+var tplLogTokenCard = function (cardId, nodeId) {
+    return "<div ".concat(nodeId ? "id=\"".concat(nodeId, "\"") : '', " class=\"gest_log_card gest_card gest_card_side\" data-card-id=\"").concat(cardId, "\"></div>");
 };
 var tplLogTokenDieResult = function (dieResult) {
     var _a = dieResult.split(':'), color = _a[0], result = _a[1];
@@ -5560,7 +5582,9 @@ var tplLogTokenForce = function (forceInfo) {
     var _a = forceInfo.split(':'), side = _a[0], type = _a[1];
     return "<div class=\"gest_force_side gest_log_token\" data-revealed=\"".concat(side === 'revealed', "\" data-type=\"").concat(type, "\"></div>");
 };
-var tplLogTokenShilling = function () { return '<div class="gest_log_token gest_icon" data-icon="shilling"></div>'; };
+var tplLogTokenShilling = function () {
+    return '<div class="gest_log_token gest_icon" data-icon="shilling"></div>';
+};
 var MarkerManager = (function (_super) {
     __extends(MarkerManager, _super);
     function MarkerManager(game) {
@@ -5872,7 +5896,7 @@ var NotificationManager = (function () {
                         return [4, this.game.cardArea.stocks.eventsDiscard.removeCards(cardsCurrentlyInDiscard)];
                     case 3:
                         _a.sent();
-                        if (this.game.getStaticCardData({ cardId: card.id }).eventType ===
+                        if (this.game.getStaticCardData(card.id).eventType ===
                             'fortuneEvent') {
                             this.game.infoPanel.updateFortuneEventRevealed(true);
                         }
@@ -6599,6 +6623,9 @@ var NotificationManager = (function () {
             return __generator(this, function (_b) {
                 _a = notif.args, balladNumber = _a.balladNumber, eventNumber = _a.eventNumber;
                 this.game.infoPanel.updateBalladInfo({ balladNumber: balladNumber, eventNumber: eventNumber });
+                if (balladNumber === 1 && eventNumber === 1) {
+                    this.game.infoPanel.updateFortuneEventRevealed(false);
+                }
                 return [2];
             });
         });

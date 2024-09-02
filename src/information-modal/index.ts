@@ -3,19 +3,22 @@ class InformationModal {
 
   private modal: Modal;
 
-  private selectedTab: TabId = "orderJustice";
-  private tabs: Record<TabId, {text: string;}> = {
+  private selectedTab: TabId = 'cardsInfo';
+  private tabs: Record<TabId, { text: string }> = {
+    cardsInfo: {
+      text: _('Cards'),
+    },
     orderJustice: {
-      text: _("Order & Justice"),
+      text: _('Order & Justice'),
     },
     robSummary: {
-      text: _("Rob Summary"),
+      text: _('Rob Summary'),
     },
     travellers: {
-      text: _("Travellers"),
+      text: _('Travellers'),
     },
     royalInspectionRound: {
-      text: _("Royal Inspection Round"),
+      text: _('Royal Inspection Round'),
     },
   };
 
@@ -47,16 +50,16 @@ class InformationModal {
   // ..######..########....##.....#######..##.......
 
   private addButton({ gamedatas }: { gamedatas: AGestOfRobinHoodGamedatas }) {
-    const configPanel = document.getElementById("info_panel_buttons");
+    const configPanel = document.getElementById('info_panel_buttons');
     if (configPanel) {
-      configPanel.insertAdjacentHTML("beforeend", tplInformationButton());
+      configPanel.insertAdjacentHTML('beforeend', tplInformationButton());
     }
   }
 
   private setupModal({ gamedatas }: { gamedatas: AGestOfRobinHoodGamedatas }) {
     this.modal = new Modal(`information_modal`, {
-      class: "information_modal",
-      closeIcon: "fa-times",
+      class: 'information_modal',
+      closeIcon: 'fa-times',
       // titleTpl:
       //   '<h2 id="popin_${id}_title" class="${class}_title">${title}</h2>',
       // title: _("Info"),
@@ -64,8 +67,8 @@ class InformationModal {
         tabs: this.tabs,
         game: this.game,
       }),
-      closeAction: "hide",
-      verticalAlign: "flex-start",
+      closeAction: 'hide',
+      verticalAlign: 'flex-start',
       breakpoint: 740,
     });
   }
@@ -77,14 +80,21 @@ class InformationModal {
     this.informationModalContent();
     this.changeTab({ id: this.selectedTab });
     Object.keys(this.tabs).forEach((id: TabId) => {
-      dojo.connect($(`information_modal_tab_${id}`), "onclick", () =>
+      dojo.connect($(`information_modal_tab_${id}`), 'onclick', () =>
         this.changeTab({ id })
       );
     });
 
-    dojo.connect($(`information_button`), "onclick", () =>
-      this.modal.show()
-    );
+    dojo.connect($(`information_button`), 'onclick', () => this.modal.show());
+
+    Object.values(this.game.gamedatas.staticData.cards).forEach((card) => {
+      if (card.eventType !== null) {
+        this.game.tooltipManager.addCardTooltip({
+          nodeId: `cardsInfo_${card.id}`,
+          cardId: card.id.split('_')[0],
+        });
+      }
+    });
   }
 
   // .##.....##.########..########.....###....########.########
@@ -117,18 +127,20 @@ class InformationModal {
     const currentTab = document.getElementById(
       `information_modal_tab_${this.selectedTab}`
     );
-    const currentTabContent = document.getElementById(`gest_${this.selectedTab}`);
-    currentTab.removeAttribute("data-state");
+    const currentTabContent = document.getElementById(
+      `gest_${this.selectedTab}`
+    );
+    currentTab.removeAttribute('data-state');
     if (currentTabContent) {
-      currentTabContent.style.display = "none";
+      currentTabContent.style.display = 'none';
     }
 
     this.selectedTab = id;
     const tab = document.getElementById(`information_modal_tab_${id}`);
     const tabContent = document.getElementById(`gest_${this.selectedTab}`);
-    tab.setAttribute("data-state", "selected");
+    tab.setAttribute('data-state', 'selected');
     if (tabContent) {
-      tabContent.style.display = "";
+      tabContent.style.display = '';
     }
   }
 }

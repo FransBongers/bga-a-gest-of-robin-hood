@@ -348,7 +348,7 @@ class NotificationManager {
       cardsCurrentlyInDiscard
     );
     if (
-      this.game.getStaticCardData({ cardId: card.id }).eventType ===
+      this.game.getStaticCardData(card.id).eventType ===
       'fortuneEvent'
     ) {
       this.game.infoPanel.updateFortuneEventRevealed(true);
@@ -932,5 +932,8 @@ class NotificationManager {
   async notif_startOfRound(notif: Notif<NotifStartOfRoundArgs>) {
     const { balladNumber, eventNumber } = notif.args;
     this.game.infoPanel.updateBalladInfo({ balladNumber, eventNumber });
+    if (balladNumber === 1 && eventNumber === 1) {
+      this.game.infoPanel.updateFortuneEventRevealed(false);
+    }
   }
 }

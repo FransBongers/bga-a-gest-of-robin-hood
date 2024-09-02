@@ -1080,7 +1080,7 @@
 }
 .information_modal #information_modal_content .information_modal_tabs .information_modal_tab {
   flex-grow: 1;
-  width: 25%;
+  width: 20%;
   background-color: rgba(30, 20, 17, 0.5);
   border-bottom: 1px solid black;
   border-left: 1px solid black;
@@ -1114,6 +1114,16 @@
   max-height: 7.33px;
   background-repeat: no-repeat;
   margin-top: 6px;
+}
+.information_modal #information_modal_content #gest_cardsInfo {
+  max-height: 75vh;
+  overflow-y: auto;
+  padding: 16px;
+  --gestCardScale: 0.9;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 .information_modal #information_modal_content #gest_orderJustice {
   padding: 16px;
@@ -2165,6 +2175,9 @@ span[style*="color:#c0c0c0"] {
   font-weight: 700;
 }
 
+#travellers_info_panel {
+  padding: 6px;
+}
 #travellers_info_panel .gest_title {
   font-weight: 700;
 }

@@ -8,6 +8,14 @@ const tplInfoModalTab = ({ id, text }: { id: string; text: string }) => `
     <span>${_(text)}</span>
   </div>`;
 
+const cardInfo = ({ game }: { game: AGestOfRobinHoodGame }) => `
+
+  ${Object.values(game.gamedatas.staticData.cards)
+    .filter((card) => card.eventType !== null)
+    .map((card) => tplLogTokenCard(card.id.split('_')[0], `cardsInfo_${card.id}`))
+    .join('')}
+`;
+
 const orderJusticeInfo = ({ game }: { game: AGestOfRobinHoodGame }) => `
   <div>
     <div style="margin-bottom: 2px;">
@@ -180,9 +188,7 @@ const robSummaryInfo = ({ game }: { game: AGestOfRobinHoodGame }) => `
           .join('')}
     </div>
     <div style="margin-top: 16px;">
-      <span class="gest_title"">${_(
-        'Green die faces'
-      )}</span>
+      <span class="gest_title"">${_('Green die faces')}</span>
       <div class="gest_row" style="margin-top: 4px;">
         ${tplLogTokenDieResult('green:-1')}
         ${tplLogTokenDieResult('green:-1')}
@@ -193,9 +199,7 @@ const robSummaryInfo = ({ game }: { game: AGestOfRobinHoodGame }) => `
       </div>
     </div>
         <div style="margin-top: 16px;">
-      <span class="gest_title"">${_(
-        'White die faces'
-      )}</span>
+      <span class="gest_title"">${_('White die faces')}</span>
       <div class="gest_row" style="margin-top: 4px;">
         ${tplLogTokenDieResult('white:-2')}  
         ${tplLogTokenDieResult('white:-1')}
@@ -364,6 +368,9 @@ const tplInformationModalContent = ({
         .map(([id, info]) => tplInfoModalTab({ id, text: info.text }))
         .join('')}
     </div>
+      <div id="gest_cardsInfo" style="display: none;">
+        ${cardInfo({ game })}
+      </div>
       <div id="gest_orderJustice" style="display: none;">
         ${orderJusticeInfo({ game })}
       </div>

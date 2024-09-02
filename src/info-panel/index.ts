@@ -84,6 +84,12 @@ class InfoPanel {
     if (!node) {
       return;
     }
+    // Do not show during setup
+    if (this.ballad.balladNumber === 0) {
+      node.style.display = 'none';
+    } else {
+      node.style.display = '';
+    }
     this.game.tooltipManager.removeTooltip(nodeId);
     if (revealed) {
       node.classList.add(GEST_NONE);
@@ -142,10 +148,11 @@ class InfoPanel {
 
     const fortuneEvents = gamedatas.cards.eventsDiscard.filter(
       (card) =>
-        this.game.getStaticCardData({ cardId: card.id }).eventType ===
+        this.game.getStaticCardData(card.id).eventType ===
         'fortuneEvent'
     );
-    this.updateFortuneEventRevealed(fortuneEvents.length < this.ballad.balladNumber);
+    console.log('fortuneEvents', fortuneEvents.length >= this.ballad.balladNumber);
+    this.updateFortuneEventRevealed(fortuneEvents.length >= this.ballad.balladNumber);
   }
 
   // ..######...########.########.########.########.########...######.

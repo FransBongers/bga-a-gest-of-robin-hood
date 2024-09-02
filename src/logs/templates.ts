@@ -23,8 +23,10 @@ const tplLogTokenPlayerName = ({
 
 /* ------- GAME SPECIFIC LOG TOKENS ------- */
 
-const tplLogTokenCard = (id: string) => {
-  return `<div class="gest_log_card gest_card gest_card_side" data-card-id="${id}"></div>`;
+const tplLogTokenCard = (cardId: string, nodeId?: string) => {
+  return `<div ${
+    nodeId ? `id="${nodeId}"` : ''
+  } class="gest_log_card gest_card gest_card_side" data-card-id="${cardId}"></div>`;
 };
 
 const tplLogTokenDieResult = (dieResult: string) => {
@@ -42,4 +44,5 @@ const tplLogTokenForce = (forceInfo: string) => {
   }" data-type="${type}"></div>`;
 };
 
-const tplLogTokenShilling = (): string => '<div class="gest_log_token gest_icon" data-icon="shilling"></div>'
+const tplLogTokenShilling = (): string =>
+  '<div class="gest_log_token gest_icon" data-icon="shilling"></div>';
