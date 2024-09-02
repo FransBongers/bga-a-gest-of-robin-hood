@@ -18,7 +18,7 @@ class InformationModal {
       text: _('Travellers'),
     },
     royalInspectionRound: {
-      text: _('Royal Inspection Round'),
+      text: _('Royal Inspection'),
     },
   };
 

@@ -723,7 +723,7 @@ class Notifications
       3 => clienttranslate('3rd Ballad'),
     ];
     $eventNumberMap = [
-      0 => clienttranslate('Royal Inspection Round'),
+      0 => clienttranslate('Royal Inspection'),
       1 => clienttranslate('1st Event'),
       2 => clienttranslate('2nd Event'),
       3 => clienttranslate('3rd Event'),
@@ -731,7 +731,7 @@ class Notifications
       5 => clienttranslate('5th Event'),
       6 => clienttranslate('6th Event'),
       7 => clienttranslate('7th Event'),
-      8 => clienttranslate('Royal Inspection Round'),
+      8 => clienttranslate('Royal Inspection'),
     ];
 
     self::notifyAll('startOfRound', clienttranslate('${balladNumberText}, ${eventNumberText}'), [
@@ -1197,7 +1197,7 @@ class Notifications
 
   public static function royalInspectionUnrestPhase($marker)
   {
-    self::notifyAll("moveRoyalInspectionMarker", clienttranslate('Royal Inspection Round'), [
+    self::notifyAll("moveRoyalInspectionMarker", clienttranslate('Royal Inspection'), [
       'marker' => $marker->jsonSerialize(),
     ]);
   }

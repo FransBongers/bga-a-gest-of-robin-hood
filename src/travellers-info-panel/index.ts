@@ -73,7 +73,7 @@ class TravellersInfoPanel {
     this.travellers[TRAVELLERS_POOL] = new TravellersRow({
       containerId: 'travellers_info_panel',
       id: TRAVELLERS_POOL,
-      title: _('Pool'),
+      title: _('Out of play'),
       game: this.game,
       cardsAtSetup: this.game.gamedatas.cards.travellers.travellersPool,
     });

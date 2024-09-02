@@ -927,6 +927,7 @@
   align-items: center;
 }
 #info_panel #gest_ballad_info {
+  cursor: pointer;
   width: 100%;
   display: flex;
   flex-direction: row;
@@ -947,6 +948,7 @@
 }
 #info_panel #gest_ballad_info #gest_ballad_info_events #gest_ballad_info_event_number {
   font-size: medium;
+  text-align: center;
 }
 #info_panel #gest_ballad_info .gest_ballad_info_side_column {
   display: flex;
@@ -1003,6 +1005,98 @@
 
 .gest_plots_and_deeds_container[data-side=sheriff] {
   background-color: #c0c0c0;
+}
+
+#popin_ballad_modal_underlay {
+  background-color: #000 !important;
+}
+
+.ballad_modal {
+  background-color: white;
+  background-size: cover;
+  border-radius: 8px;
+  box-shadow: rgb(0, 0, 0) 1px 1px 5px;
+  border: 1px solid black;
+  max-width: 1200px;
+  min-width: 640px;
+}
+.ballad_modal .gest_ballad_info {
+  max-height: 75vh;
+  overflow-y: auto;
+  padding: 16px;
+  --gestCardScale: 0.77;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ballad_modal .ballad_modal_closeicon {
+  background-color: #a47a77;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: -18px;
+  right: -18px;
+  font-size: 90%;
+  color: white !important;
+  border: 1px solid #dfbda8;
+  cursor: pointer;
+}
+.ballad_modal .ballad_modal_closeicon:hover {
+  text-decoration: none;
+  color: #ccc !important;
+  transform: scale(1.1);
+}
+.ballad_modal .ballad_modal_closeicon i {
+  margin-top: -2px;
+}
+.ballad_modal h2 {
+  text-align: center;
+  font-size: large;
+  font-weight: bold;
+  margin: 0px;
+  padding: 7px 0px;
+  border-bottom: 1px solid black;
+}
+.ballad_modal #ballad_modal_content {
+  min-height: 200px;
+}
+.ballad_modal #ballad_modal_content .ballad_modal_tabs {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+.ballad_modal #ballad_modal_content .ballad_modal_tabs .ballad_modal_tab {
+  flex-grow: 1;
+  width: 20%;
+  background-color: rgba(30, 20, 17, 0.5);
+  border-bottom: 1px solid black;
+  border-left: 1px solid black;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+.ballad_modal #ballad_modal_content .ballad_modal_tabs .ballad_modal_tab span {
+  font-weight: bold;
+  font-size: large;
+  text-align: center;
+}
+.ballad_modal #ballad_modal_content .ballad_modal_tabs .ballad_modal_tab[data-state=selected] {
+  background-color: transparent;
+  border-bottom: none;
+  cursor: auto;
+}
+.ballad_modal #ballad_modal_content .ballad_modal_tab:first-child {
+  border-left: none !important;
+}
+.ballad_modal #ballad_modal_content .ballad_modal_tab:last-child {
+  border-right: none;
 }
 
 #information_button {

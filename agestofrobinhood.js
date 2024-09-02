@@ -1838,6 +1838,7 @@ var AGestOfRobinHood = (function () {
         this.playerManager = new PlayerManager(this);
         this.infoPanel = new InfoPanel(this);
         this.settings = new Settings(this);
+        this.infoPanel.setupAddCardTooltips();
         this.informationModal = new InformationModal(this);
         this.animationManager = new AnimationManager(this, {
             duration: this.settings.get({ id: PREF_SHOW_ANIMATIONS }) === DISABLED
@@ -5104,6 +5105,18 @@ var getSheriffPlotsAndDeeds = function () { return ({
 }); };
 var InfoPanel = (function () {
     function InfoPanel(game) {
+        this.selectedTab = 'ballad1';
+        this.tabs = {
+            ballad1: {
+                text: _('1st Ballad'),
+            },
+            ballad2: {
+                text: _('2nd Ballad'),
+            },
+            ballad3: {
+                text: _('3rd Ballad'),
+            },
+        };
         this.game = game;
         var gamedatas = game.gamedatas;
         this.setup({ gamedatas: gamedatas });
@@ -5131,12 +5144,27 @@ var InfoPanel = (function () {
             eventNumber: eventNumber,
         });
         if (eventNumber === 8 && balladNumber !== 0) {
-            eventText = _('Royal Inspection Round');
+            eventText = _('Royal Inspection');
         }
         else if (balladNumber === 0) {
             eventText = '';
         }
         eventNode.replaceChildren(eventText);
+    };
+    InfoPanel.prototype.setupModal = function (_a) {
+        var gamedatas = _a.gamedatas;
+        this.modal = new Modal("ballad_modal", {
+            class: 'ballad_modal',
+            closeIcon: 'fa-times',
+            contents: tplBalladModalContent({
+                tabs: this.tabs,
+                game: this.game,
+                cards: this.discard,
+            }),
+            closeAction: 'hide',
+            verticalAlign: 'flex-start',
+            breakpoint: 740,
+        });
     };
     InfoPanel.prototype.updateFortuneEventRevealed = function (revealed) {
         var nodeId = 'gest_fortune_event_icon';
@@ -5162,7 +5190,7 @@ var InfoPanel = (function () {
             node.classList.remove(GEST_NONE);
             this.game.tooltipManager.addTextToolTip({
                 nodeId: nodeId,
-                text: _('Fortune Event has not been resolved this Ballad'),
+                text: _('Fortune Event has not happened this Ballad'),
             });
         }
     };
@@ -5181,18 +5209,49 @@ var InfoPanel = (function () {
     InfoPanel.prototype.setup = function (_a) {
         var _this = this;
         var gamedatas = _a.gamedatas;
+        this.discard = gamedatas.cards.eventsDiscard;
         var node = document.getElementById('player_boards');
         if (!node) {
             return;
         }
         node.insertAdjacentHTML('afterbegin', tplInfoPanel());
         this.updateBalladInfo(gamedatas.ballad);
+        var tabId = "ballad".concat(gamedatas.ballad.balladNumber || 1);
+        console.log('tabId', tabId);
+        this.selectedTab = tabId;
         var fortuneEvents = gamedatas.cards.eventsDiscard.filter(function (card) {
-            return _this.game.getStaticCardData(card.id).eventType ===
-                'fortuneEvent';
+            return _this.game.getStaticCardData(card.id).eventType === 'fortuneEvent';
         });
-        console.log('fortuneEvents', fortuneEvents.length >= this.ballad.balladNumber);
         this.updateFortuneEventRevealed(fortuneEvents.length >= this.ballad.balladNumber);
+        this.setupModal({ gamedatas: gamedatas });
+        this.changeTab({ id: this.selectedTab });
+        Object.keys(this.tabs).forEach(function (id) {
+            dojo.connect($("ballad_modal_tab_".concat(id)), 'onclick', function () {
+                return _this.changeTab({ id: id });
+            });
+        });
+        dojo.connect($("gest_ballad_info"), 'onclick', function () { return _this.modal.show(); });
+    };
+    InfoPanel.prototype.setupAddCardTooltips = function () {
+        var _this = this;
+        this.discard.forEach(function (card) {
+            _this.game.tooltipManager.addCardTooltip({
+                nodeId: "balladInfo_".concat(card.id),
+                cardId: card.id.split('_')[0],
+            });
+        });
+    };
+    InfoPanel.prototype.updateModalContent = function (card) {
+        this.discard.push(card);
+        if (this.game.getStaticCardData(card.id).eventType === 'royalInspection') {
+            return;
+        }
+        var nodeId = document.getElementById("gest_ballad".concat(this.ballad.balladNumber));
+        nodeId.insertAdjacentHTML('beforeend', tplLogTokenCard(card.id.split('_')[0], "balladInfo_".concat(card.id)));
+        this.game.tooltipManager.addCardTooltip({
+            nodeId: "balladInfo_".concat(card.id),
+            cardId: card.id.split('_')[0],
+        });
     };
     InfoPanel.prototype.getBalladName = function (_a) {
         var balladNumber = _a.balladNumber;
@@ -5207,6 +5266,22 @@ var InfoPanel = (function () {
                 return _('3rd Ballad');
             default:
                 return '';
+        }
+    };
+    InfoPanel.prototype.changeTab = function (_a) {
+        var id = _a.id;
+        var currentTab = document.getElementById("ballad_modal_tab_".concat(this.selectedTab));
+        var currentTabContent = document.getElementById("gest_".concat(this.selectedTab));
+        currentTab.removeAttribute('data-state');
+        if (currentTabContent) {
+            currentTabContent.style.display = 'none';
+        }
+        this.selectedTab = id;
+        var tab = document.getElementById("ballad_modal_tab_".concat(id));
+        var tabContent = document.getElementById("gest_".concat(this.selectedTab));
+        tab.setAttribute('data-state', 'selected');
+        if (tabContent) {
+            tabContent.style.display = '';
         }
     };
     return InfoPanel;
@@ -5226,6 +5301,24 @@ var tplSheriffPlotsAndDeeds = function () { return "\n  <div class=\"gest_plots_
     .join(''), "\n    </div>\n    <span class=\"gest_plot_title\" style=\"margin-top: 8px;\">").concat(_('Deeds'), "</span>\n    <div class=\"gest_plots_row\">\n        ").concat(getSheriffPlotsAndDeeds()
     .deeds.map(function (info) { return tplPlotDeedInfo(info); })
     .join(''), "\n    </div>\n  </div>\n"); };
+var tplBalladModalTab = function (_a) {
+    var id = _a.id, text = _a.text;
+    return "\n  <div id=\"ballad_modal_tab_".concat(id, "\" class=\"ballad_modal_tab\">\n    <span>").concat(_(text), "</span>\n  </div>");
+};
+var tplBalladModalBalladInfo = function (game, cards) { return "\n  ".concat(cards
+    .map(function (card) {
+    return tplLogTokenCard(card.id.split('_')[0], "balladInfo_".concat(card.id));
+})
+    .join(''), "\n"); };
+var tplBalladModalContent = function (_a) {
+    var tabs = _a.tabs, game = _a.game, cards = _a.cards;
+    return "<div id=\"ballad_modal_content\">\n    <div class=\"ballad_modal_tabs\">\n      ".concat(Object.entries(tabs)
+        .map(function (_a) {
+        var id = _a[0], info = _a[1];
+        return tplBalladModalTab({ id: id, text: info.text });
+    })
+        .join(''), "\n    </div>\n      <div id=\"gest_ballad1\" class=\"gest_ballad_info\" style=\"display: none;\">\n        ").concat(tplBalladModalBalladInfo(game, cards.filter(function (card, index) { return index <= 6; })), "\n      </div>\n      <div id=\"gest_ballad2\" class=\"gest_ballad_info\" style=\"display: none;\">\n      ").concat(tplBalladModalBalladInfo(game, cards.filter(function (card, index) { return index > 7 && index <= 14; })), "\n      </div>\n      <div id=\"gest_ballad3\" class=\"gest_ballad_info\" style=\"display: none;\">\n      ").concat(tplBalladModalBalladInfo(game, cards.filter(function (card, index) { return index > 15 && index <= 23; })), "\n    </div>\n  </div>");
+};
 var getTravellersConfig = function () { return [
     {
         name: _('Rich Merchant'),
@@ -5350,7 +5443,7 @@ var InformationModal = (function () {
                 text: _('Travellers'),
             },
             royalInspectionRound: {
-                text: _('Royal Inspection Round'),
+                text: _('Royal Inspection'),
             },
         };
         this.game = game;
@@ -5896,6 +5989,7 @@ var NotificationManager = (function () {
                         return [4, this.game.cardArea.stocks.eventsDiscard.removeCards(cardsCurrentlyInDiscard)];
                     case 3:
                         _a.sent();
+                        this.game.infoPanel.updateModalContent(card);
                         if (this.game.getStaticCardData(card.id).eventType ===
                             'fortuneEvent') {
                             this.game.infoPanel.updateFortuneEventRevealed(true);
@@ -6275,29 +6369,26 @@ var NotificationManager = (function () {
                 switch (_c.label) {
                     case 0:
                         _a = notif.args, card = _a.card, fromLocation = _a.fromLocation;
-                        return [4, this.game.cardManager.removeCard(card)];
-                    case 1:
-                        _c.sent();
                         _b = fromLocation;
                         switch (_b) {
-                            case TRAVELLERS_DECK: return [3, 2];
-                            case TRAVELLERS_DISCARD: return [3, 4];
-                            case TRAVELLERS_VICTIMS_PILE: return [3, 6];
+                            case TRAVELLERS_DECK: return [3, 1];
+                            case TRAVELLERS_DISCARD: return [3, 3];
+                            case TRAVELLERS_VICTIMS_PILE: return [3, 5];
                         }
-                        return [3, 8];
-                    case 2: return [4, this.game.travellersInfoPanel.travellers[TRAVELLERS_DECK].removeCard(card)];
-                    case 3:
+                        return [3, 7];
+                    case 1: return [4, this.game.travellersInfoPanel.travellers[TRAVELLERS_DECK].removeCard(card)];
+                    case 2:
                         _c.sent();
                         return [2];
-                    case 4: return [4, this.game.travellersInfoPanel.travellers[TRAVELLERS_DISCARD].removeCard(card)];
-                    case 5:
+                    case 3: return [4, this.game.travellersInfoPanel.travellers[TRAVELLERS_DISCARD].removeCard(card)];
+                    case 4:
                         _c.sent();
                         return [2];
-                    case 6: return [4, this.game.travellersInfoPanel.travellers[TRAVELLERS_VICTIMS_PILE].removeCard(card)];
-                    case 7:
+                    case 5: return [4, this.game.travellersInfoPanel.travellers[TRAVELLERS_VICTIMS_PILE].removeCard(card)];
+                    case 6:
                         _c.sent();
                         return [2];
-                    case 8: return [2];
+                    case 7: return [2];
                 }
             });
         });
@@ -6623,7 +6714,7 @@ var NotificationManager = (function () {
             return __generator(this, function (_b) {
                 _a = notif.args, balladNumber = _a.balladNumber, eventNumber = _a.eventNumber;
                 this.game.infoPanel.updateBalladInfo({ balladNumber: balladNumber, eventNumber: eventNumber });
-                if (balladNumber === 1 && eventNumber === 1) {
+                if (eventNumber === 1) {
                     this.game.infoPanel.updateFortuneEventRevealed(false);
                 }
                 return [2];
@@ -12311,9 +12402,7 @@ var SelectTravellerCardOptionState = (function () {
     SelectTravellerCardOptionState.prototype.onEnteringState = function (args) {
         debug('Entering SelectTravellerCardOptionState');
         this.args = args;
-        this.staticData = this.game.getStaticCardData({
-            cardId: this.args.card.id,
-        });
+        this.staticData = this.game.getStaticCardData(this.args.card.id);
         this.updateInterfaceInitialStep();
     };
     SelectTravellerCardOptionState.prototype.onLeavingState = function () {
@@ -13137,7 +13226,7 @@ var TravellersInfoPanel = (function () {
         this.travellers[TRAVELLERS_POOL] = new TravellersRow({
             containerId: 'travellers_info_panel',
             id: TRAVELLERS_POOL,
-            title: _('Pool'),
+            title: _('Out of play'),
             game: this.game,
             cardsAtSetup: this.game.gamedatas.cards.travellers.travellersPool,
         });

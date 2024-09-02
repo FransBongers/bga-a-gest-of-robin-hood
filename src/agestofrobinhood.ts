@@ -204,6 +204,7 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     this.playerManager = new PlayerManager(this);
     this.infoPanel = new InfoPanel(this);
     this.settings = new Settings(this);
+    this.infoPanel.setupAddCardTooltips();
     this.informationModal = new InformationModal(this);
 
     this.animationManager = new AnimationManager(this, {

@@ -77,3 +77,55 @@ const tplSheriffPlotsAndDeeds = () => `
     </div>
   </div>
 `;
+
+const tplBalladModalTab = ({ id, text }: { id: string; text: string }) => `
+  <div id="ballad_modal_tab_${id}" class="ballad_modal_tab">
+    <span>${_(text)}</span>
+  </div>`;
+
+const tplBalladModalBalladInfo = (
+  game: AGestOfRobinHoodGame,
+  cards: GestCard[]
+) => `
+  ${cards
+    .map((card) =>
+      tplLogTokenCard(card.id.split('_')[0], `balladInfo_${card.id}`)
+    )
+    .join('')}
+`;
+
+const tplBalladModalContent = ({
+  tabs,
+  game,
+  cards,
+}: {
+  tabs: Record<string, { text: string }>;
+  game: AGestOfRobinHoodGame;
+  cards: GestCard[];
+}) => {
+  return `<div id="ballad_modal_content">
+    <div class="ballad_modal_tabs">
+      ${Object.entries(tabs)
+        .map(([id, info]) => tplBalladModalTab({ id, text: info.text }))
+        .join('')}
+    </div>
+      <div id="gest_ballad1" class="gest_ballad_info" style="display: none;">
+        ${tplBalladModalBalladInfo(
+          game,
+          cards.filter((card, index) => index <= 6)
+        )}
+      </div>
+      <div id="gest_ballad2" class="gest_ballad_info" style="display: none;">
+      ${tplBalladModalBalladInfo(
+        game,
+        cards.filter((card, index) => index > 7 && index <= 14)
+      )}
+      </div>
+      <div id="gest_ballad3" class="gest_ballad_info" style="display: none;">
+      ${tplBalladModalBalladInfo(
+        game,
+        cards.filter((card, index) => index > 15 && index <= 23)
+      )}
+    </div>
+  </div>`;
+};

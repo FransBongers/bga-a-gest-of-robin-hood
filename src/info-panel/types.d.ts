@@ -4,3 +4,5 @@ interface PlotOrDeedInfo {
   location: string;
   procedure: string;
 }
+
+type BalladModalTabId = 'ballad1' | 'ballad2' | 'ballad3';

@@ -347,6 +347,7 @@ class NotificationManager {
     await this.game.cardArea.stocks.eventsDiscard.removeCards(
       cardsCurrentlyInDiscard
     );
+    this.game.infoPanel.updateModalContent(card);
     if (
       this.game.getStaticCardData(card.id).eventType ===
       'fortuneEvent'
@@ -658,7 +659,7 @@ class NotificationManager {
 
   async notif_removeCardFromGame(notif: Notif<NotifRemoveCardFromGameArgs>) {
     const { card, fromLocation } = notif.args;
-    await this.game.cardManager.removeCard(card);
+    // await this.game.cardManager.removeCard(card); 
     switch (fromLocation) {
       case TRAVELLERS_DECK:
         await this.game.travellersInfoPanel.travellers[
@@ -932,7 +933,7 @@ class NotificationManager {
   async notif_startOfRound(notif: Notif<NotifStartOfRoundArgs>) {
     const { balladNumber, eventNumber } = notif.args;
     this.game.infoPanel.updateBalladInfo({ balladNumber, eventNumber });
-    if (balladNumber === 1 && eventNumber === 1) {
+    if (eventNumber === 1) {
       this.game.infoPanel.updateFortuneEventRevealed(false);
     }
   }

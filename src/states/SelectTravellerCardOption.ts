@@ -10,9 +10,7 @@ class SelectTravellerCardOptionState implements State {
   onEnteringState(args: OnEnteringSelectTravellerCardOptionStateArgs) {
     debug('Entering SelectTravellerCardOptionState');
     this.args = args;
-    this.staticData = this.game.getStaticCardData({
-      cardId: this.args.card.id,
-    });
+    this.staticData = this.game.getStaticCardData(this.args.card.id);
     this.updateInterfaceInitialStep();
   }
 
