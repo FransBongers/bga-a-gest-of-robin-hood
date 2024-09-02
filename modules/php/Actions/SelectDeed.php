@@ -86,9 +86,10 @@ class SelectDeed extends \AGestOfRobinHood\Models\AtomicAction
     $info = $this->ctx->getInfo();
     $source = isset($info['source']) ? $info['source'] : null;
 
+    $playerId = $player->getId();
     $node = [
       'action' => $deedId,
-      'playerId' => $player->getId(),
+      'playerId' => $playerId,
     ];
 
     if ($source !== null) {
@@ -96,6 +97,32 @@ class SelectDeed extends \AGestOfRobinHood\Models\AtomicAction
     }
 
     $this->ctx->getParent()->pushChild(new LeafNode($node));
+
+    switch ($deedId) {
+      case TURNCOAT:
+        Stats::incTurncoat($playerId, 1);
+        break;
+      case DONATE:
+        Stats::incDonate($playerId, 1);
+        break;
+      case SWASHBUCKLE:
+        Stats::incSwashbuckle($playerId, 1);
+        break;
+      case INSPIRE:
+        Stats::incInspire($playerId, 1);
+        break;
+      case RIDE:
+        Stats::incRide($playerId, 1);
+        break;
+      case CONFISCATE:
+        Stats::incConfiscate($playerId, 1);
+        break;
+      case DISPERSE:
+        Stats::incDisperse($playerId, 1);
+        break;
+      default:
+        break;
+    }
 
     $this->resolveAction($args);
   }

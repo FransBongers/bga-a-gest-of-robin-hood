@@ -1,1 +1,167 @@
-{}
+{
+  "table": {
+    "winner": {
+      "id": 14,
+      "name": "Winning side",
+      "type": "int"
+    },
+    "balladGameEnd": {
+      "id": 18,
+      "name": "Ballad the game ended",
+      "type": "int"
+    },
+    "singlePlot": {
+      "id": 10,
+      "name": "Single Plots",
+      "type": "int"
+    },
+    "event": {
+      "id": 11,
+      "name": "Events",
+      "type": "int"
+    },
+    "plotsAndDeeds": {
+      "id": 12,
+      "name": "Plots & Deeds",
+      "type": "int"
+    },
+    "pass": {
+      "id": 13,
+      "name": "Pass",
+      "type": "int"
+    },
+    "robCarriage": {
+      "id": 15,
+      "name": "Robbed Carriage",
+      "type": "int"
+    },
+    "robSheriff": {
+      "id": 16,
+      "name": "Robbed Sheriff",
+      "type": "int"
+    },
+    "robTraveller": {
+      "id": 17,
+      "name": "Robbed Traveller",
+      "type": "int"
+    }
+  },
+  "player": {
+    "winPercentageAsRobinHood": {
+      "id": 28,
+      "name": "Win % as Robin Hood",
+      "type": "int"
+    },
+    "winPercentageAsSheriff": {
+      "id": 29,
+      "name": "Win % as Sheriff",
+      "type": "int"
+    },
+    "playerSinglePlot": {
+      "id": 30,
+      "name": "Single Plots",
+      "type": "int"
+    },
+    "playerEvent": {
+      "id": 31,
+      "name": "Events",
+      "type": "int"
+    },
+    "playerPlotsAndDeeds": {
+      "id": 32,
+      "name": "Plots & Deeds",
+      "type": "int"
+    },
+    "playerPass": {
+      "id": 33,
+      "name": "Pass",
+      "type": "int"
+    },
+    "recruit": {
+      "id": 34,
+      "name": "Recruit",
+      "type": "int"
+    },
+    "sneak": {
+      "id": 35,
+      "name": "Sneak",
+      "type": "int"
+    },
+    "rob": {
+      "id": 36,
+      "name": "Rob",
+      "type": "int"
+    },
+    "hire": {
+      "id": 37,
+      "name": "Hire",
+      "type": "int"
+    },
+    "patrol": {
+      "id": 38,
+      "name": "Patrol",
+      "type": "int"
+    },
+    "capture": {
+      "id": 39,
+      "name": "Capture",
+      "type": "int"
+    },
+    "turncoat": {
+      "id": 40,
+      "name": "Turncoat",
+      "type": "int"
+    },
+    "donate": {
+      "id": 41,
+      "name": "Donate",
+      "type": "int"
+    },
+    "swashbuckle": {
+      "id": 42,
+      "name": "Swashbuckle",
+      "type": "int"
+    },
+    "inspire": {
+      "id": 43,
+      "name": "Inspire",
+      "type": "int"
+    },
+    "ride": {
+      "id": 44,
+      "name": "Ride",
+      "type": "int"
+    },
+    "confiscate": {
+      "id": 45,
+      "name": "Confiscate",
+      "type": "int"
+    },
+    "disperse": {
+      "id": 46,
+      "name": "Disperse",
+      "type": "int"
+    },
+    "playerRobCarriage": {
+      "id": 47,
+      "name": "Robbed Carriage",
+      "type": "int"
+    },
+    "playerRobSheriff": {
+      "id": 48,
+      "name": "Robbed Sheriff",
+      "type": "int"
+    },
+    "playerRobTraveller": {
+      "id": 49,
+      "name": "Robbed Traveller",
+      "type": "int"
+    }
+  },
+  "value_labels": {
+    "14": [
+      "Robin Hood",
+      "Sheriff"
+    ]
+  }
+}

@@ -2,10 +2,102 @@
 require_once 'gameoptions.inc.php';
 
 /**
+ * Force types
+ */
+const CAMP = 'Camp';
+const MERRY_MEN = 'MerryMen';
+const HENCHMEN = 'Henchmen';
+const ROBIN_HOOD = 'RobinHood'; // also used for side
+const CARRIAGE = 'Carriage';
+
+const TALLAGE_CARRIAGE = 'TallageCarriage';
+const TRIBUTE_CARRIAGE = 'TributeCarriage';
+const TRAP_CARRIAGE = 'TrapCarriage';
+const HIDDEN_CARRIAGE = 'HiddenCarriage';
+
+const CARRIAGE_TYPES = [
+  TALLAGE_CARRIAGE,
+  TRAP_CARRIAGE,
+  TRIBUTE_CARRIAGE,
+];
+
+/**
+ * Sides
+ */
+const SHERIFF = 'Sheriff';
+
+const ORDER = 'order';
+const JUSTICE = 'justice';
+
+/**
  * STATS
  */
 
-const STAT_TURN = 12;
+// const STAT_TURN = 12;
+const STAT_SINGLE_PLOT = 10;
+const STAT_EVENT = 11;
+const STAT_PLOTS_AND_DEEDS = 12;
+const STAT_PASS = 13;
+const STAT_WINNER = 14;
+const STAT_WINNER_ROBIN_HOOD = 0;
+const STAT_WINNER_SHERIFF = 1;
+const STAT_ROB_CARRIAGE = 15;
+const STAT_ROB_SHERIFF = 16;
+const STAT_ROB_TRAVELLER = 17;
+const STAT_BALLAD_GAME_END = 18;
+
+const STAT_PLAYER_WINS_AS_ROBIN_HOOD = 28;
+const STAT_PLAYER_WINS_AS_ROBIN_HOOD_NO = 0;
+const STAT_PLAYER_WINS_AS_ROBIN_HOOD_YES = 1;
+const STAT_PLAYER_WINS_AS_SHERIFF = 29;
+const STAT_PLAYER_WINS_AS_SHERIFF_NO = 0;
+const STAT_PLAYER_WINS_AS_SHERIFF_YES = 1;
+const STAT_PLAYER_SINGLE_PLOT = 30;
+const STAT_PLAYER_EVENT = 31;
+const STAT_PLAYER_PLOTS_AND_DEEDS = 32;
+const STAT_PLAYER_PASS = 33;
+const STAT_PLAYER_RECRUIT = 34;
+const STAT_PLAYER_SNEAK = 35;
+const STAT_PLAYER_ROB = 36;
+const STAT_PLAYER_HIRE = 37;
+const STAT_PLAYER_PATROl = 38;
+const STAT_PLAYER_CAPTURE = 39;
+const STAT_PLAYER_TURNCOAT = 40;
+const STAT_PLAYER_DONATE = 41;
+const STAT_PLAYER_SWASHBUCKLE = 42;
+const STAT_PLAYER_INSPIRE = 43;
+const STAT_PLAYER_RIDE = 44;
+const STAT_PLAYER_CONFISCATE = 45;
+const STAT_PLAYER_DISPERSE = 46;
+const STAT_PLAYER_ROB_CARRIAGE = 47;
+const STAT_PLAYER_ROB_SHERIFF = 48;
+const STAT_PLAYER_ROB_TRAVELLER = 49;
+
+const STATS_SIDE_SPECIFIC = [
+  ROBIN_HOOD => [
+    STAT_PLAYER_WINS_AS_ROBIN_HOOD,
+    STAT_PLAYER_RECRUIT,
+    STAT_PLAYER_SNEAK,
+    STAT_PLAYER_ROB,
+    STAT_PLAYER_TURNCOAT,
+    STAT_PLAYER_DONATE,
+    STAT_PLAYER_SWASHBUCKLE,
+    STAT_PLAYER_INSPIRE,
+    STAT_PLAYER_ROB_CARRIAGE,
+    STAT_PLAYER_ROB_SHERIFF,
+    STAT_PLAYER_ROB_TRAVELLER,
+  ],
+  SHERIFF => [
+    STAT_PLAYER_WINS_AS_SHERIFF,
+    STAT_PLAYER_HIRE,
+    STAT_PLAYER_PATROl,
+    STAT_PLAYER_CAPTURE,
+    STAT_PLAYER_RIDE,
+    STAT_PLAYER_CONFISCATE,
+    STAT_PLAYER_DISPERSE,
+  ]
+];
+
 
 /**
  * Carc locations
@@ -176,34 +268,6 @@ const WHITE = 'white';
 
 const GREEN_DIE_FACES = [-1, -1, 0, 1, 2, 3];
 const WHITE_DIE_FACES = [-2, -1, -1, 0, 1, 2];
-
-/**
- * Force types
- */
-const CAMP = 'Camp';
-const MERRY_MEN = 'MerryMen';
-const HENCHMEN = 'Henchmen';
-const ROBIN_HOOD = 'RobinHood'; // also used for side
-const CARRIAGE = 'Carriage';
-
-const TALLAGE_CARRIAGE = 'TallageCarriage';
-const TRIBUTE_CARRIAGE = 'TributeCarriage';
-const TRAP_CARRIAGE = 'TrapCarriage';
-const HIDDEN_CARRIAGE = 'HiddenCarriage';
-
-const CARRIAGE_TYPES = [
-  TALLAGE_CARRIAGE,
-  TRAP_CARRIAGE,
-  TRIBUTE_CARRIAGE,
-];
-
-/**
- * Sides
- */
-const SHERIFF = 'Sheriff';
-
-const ORDER = 'order';
-const JUSTICE = 'justice';
 
 
 const COLOR_SIDE_MAP = [

@@ -145,18 +145,25 @@ class Rob extends \AGestOfRobinHood\Actions\Plot
 
     $space = $option['space'];
     $source = isset($info['source']) ? $info['source'] : null;
+    $playerId = $player->getId();
 
     switch ($target) {
       case 'traveller':
+        Stats::incRobTraveller(1);
+        Stats::incPlayerRobTraveller($playerId, 1);
         $this->resolveTravellerTarget($player, $space, $merryMenIds, $source);
         break;
       case 'treasury':
+        Stats::incRobSheriff(1);
+        Stats::incPlayerRobSheriff($playerId, 1);
         $this->resolveTreasuryTarget($player, $space, $merryMenIds, $source);
         break;
       case HIDDEN_CARRIAGE:
       case TALLAGE_CARRIAGE:
       case TRIBUTE_CARRIAGE:
       case TRAP_CARRIAGE:
+        Stats::incRobCarriage(1);
+        Stats::incPlayerRobCarriage($playerId, 1);
         $this->resolveCarriageTarget($player, $space, $merryMenIds, $target, $source);
         break;
     };
@@ -279,7 +286,8 @@ class Rob extends \AGestOfRobinHood\Actions\Plot
     }
   }
 
-  public function takeShillingsFromTheSheriff($player) {
+  public function takeShillingsFromTheSheriff($player)
+  {
     $sheriffPlayer = Players::getSheriffPlayer();
     $amount = min(2, $sheriffPlayer->getShillings());
     $sheriffPlayer->incShillings(-$amount, false);

@@ -130,28 +130,38 @@ class ChooseAction extends \AGestOfRobinHood\Models\AtomicAction
       }
     }
 
+    Stats::incPass(1);
+    Stats::incPlayerPass($player->getId(), 1);
+
     $player->incShillings($shillings);
   }
 
   private function handleAction($player, $action)
   {
+    $playerId = $this->ctx->getPlayerId();
     $parent = $this->ctx->getParent();
 
     switch ($action) {
       case SINGLE_PLOT:
+        Stats::incSinglePlot(1);
+        Stats::incPlayerSinglePlot($playerId, 1);
         $parent->pushChild(new LeafNode([
           'action' => SELECT_PLOT,
-          'playerId' => $this->ctx->getPlayerId(),
+          'playerId' => $playerId,
         ]));
         break;
       case PLOTS_AND_DEEDS:
+        Stats::incPlotsAndDeeds(1);
+        Stats::incPlayerPlotsAndDeeds($playerId, 1);
         $parent->pushChild(new LeafNode([
           'action' => SELECT_PLOT,
-          'playerId' => $this->ctx->getPlayerId(),
+          'playerId' => $playerId,
           'optional' => true,
         ]));
         break;
       case EVENT:
+        Stats::incEvent(1);
+        Stats::incPlayerEvent($playerId, 1);
         $card = Cards::getTopOf(EVENTS_DISCARD);
         if ($player->isRobinHood()) {
           $card->performLightEffect($player, true, $this->ctx);

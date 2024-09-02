@@ -6,6 +6,7 @@ use AGestOfRobinHood\Core\Engine;
 use AGestOfRobinHood\Core\Game;
 use AGestOfRobinHood\Core\Globals;
 use AGestOfRobinHood\Core\Notifications;
+use AGestOfRobinHood\Core\Stats;
 use AGestOfRobinHood\Helpers\GameMap;
 use AGestOfRobinHood\Helpers\Locations;
 use AGestOfRobinHood\Managers\AtomicActions;
@@ -22,9 +23,13 @@ trait DebugTrait
 
   function debug_test()
   {
+    $deckCount = Cards::countInLocation(EVENTS_DECK);
+    Notifications::log('deckCount', 3 - floor($deckCount / 8));
+
+    // Stats::checkExistence();
     // Players::getRobinHoodPlayer()->incShillings(-7);
     // Spaces::get(RETFORD)->revolt(Players::get());
-    Forces::get(ROBIN_HOOD)->setLocation(PRISON);
+    // Forces::get(ROBIN_HOOD)->setLocation(PRISON);
     // Forces::get(ROBIN_HOOD)->setHidden(0);
     // Globals::setBridgeLocation('Blyth_Retford_border');
     // Forces::moveAllInLocation(CARRIAGE_SUPPLY,USED_CARRIAGES);

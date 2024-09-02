@@ -129,15 +129,38 @@ class SelectPlot extends \AGestOfRobinHood\Actions\Plot
 
       $this->ctx->insertAsBrother(new LeafNode($node));
 
-
+      $playerId = $this->ctx->getPlayerId();
       if ($this->getSelectedAction() === PLOTS_AND_DEEDS) {
         $parent->pushChild(new LeafNode([
           'action' => SELECT_DEED,
-          'playerId' => $this->ctx->getPlayerId(),
+          'playerId' => $playerId,
           'optional' => true,
         ]));
       }
+      switch ($plotId) {
+        case RECRUIT:
+          Stats::incRecruit($playerId, 1);
+          break;
+        case SNEAK:
+          Stats::incSneak($playerId, 1);
+          break;
+        case ROB:
+          Stats::incRob($playerId, 1);
+          break;
+        case HIRE:
+          Stats::incHire($playerId, 1);
+          break;
+        case PATROL:
+          Stats::incPatrol($playerId, 1);
+          break;
+        case CAPTURE:
+          Stats::incCapture($playerId, 1);
+          break;
+        default:
+          break;
+      }
     } else if ($extraOptionId !== null) {
+      // used for heavy raind event where player has the option to gain shillings
       $this->resolveExtraOption($extraOptionId);
     }
 
