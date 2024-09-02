@@ -137,7 +137,7 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     this.gamedatas = gamedatas;
     // this.gameOptions = gamedatas.gameOptions;
     debug('gamedatas', gamedatas);
-    //  this.setupPlayerOrder({ playerOrder: gamedatas.playerOrder });
+    this.setupPlayerOrder({ playerOrder: gamedatas.playerOrder });
 
     this._connections = [];
 

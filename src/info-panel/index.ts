@@ -71,20 +71,31 @@ class InfoPanel {
   // TODO: move this to separate class?
   public setupPlotsAndDeedsInfo() {
     const cardArea = document.getElementById('gest_card_area');
-    if ( this.game.getPlayerId() ===
-    this.game.playerManager.getRobinHoodPlayerId()) {
-      cardArea.insertAdjacentHTML('afterbegin', tplRobinHoodPlotsAndDeeds());  
-    } else {
-      cardArea.insertAdjacentHTML('beforeend', tplRobinHoodPlotsAndDeeds());
-    }
-    // cardArea.insertAdjacentHTML('afterbegin', tplRobinHoodPlotsAndDeeds());
-    if ( this.game.getPlayerId() ===
-    this.game.playerManager.getSheriffPlayerId()) {
-      cardArea.insertAdjacentHTML('afterbegin', tplSheriffPlotsAndDeeds());
-    } else {
-      cardArea.insertAdjacentHTML('beforeend', tplSheriffPlotsAndDeeds());
-    }
-    
+    this.game.playerOrder.forEach((playerId) => {
+      if (this.game.playerManager.getPlayer({ playerId }).isRobinHood()) {
+        cardArea.insertAdjacentHTML('beforeend', tplRobinHoodPlotsAndDeeds());
+      } else {
+        cardArea.insertAdjacentHTML('beforeend', tplSheriffPlotsAndDeeds());
+      }
+    });
+
+    // if ( this.game.getPlayerId() ===
+    // this.game.playerManager.getRobinHoodPlayerId()) {
+
+    // } else if ( this.game.getPlayerId() ===
+    // this.game.playerManager.getSheriffPlayerId()) {
+    //   cardArea.insertAdjacentHTML('beforeend', tplSheriffPlotsAndDeeds());
+    //   cardArea.insertAdjacentHTML('beforeend', tplRobinHoodPlotsAndDeeds());
+    // } else {
+
+    // }
+    // // cardArea.insertAdjacentHTML('afterbegin', tplRobinHoodPlotsAndDeeds());
+    // if ( this.game.getPlayerId() ===
+    // this.game.playerManager.getSheriffPlayerId()) {
+
+    // } else {
+    //   cardArea.insertAdjacentHTML('beforeend', tplSheriffPlotsAndDeeds());
+    // }
   }
 
   // Setup functions
@@ -94,7 +105,7 @@ class InfoPanel {
       return;
     }
     node.insertAdjacentHTML('afterbegin', tplInfoPanel());
-    
+
     this.updateBalladInfo(gamedatas.ballad);
 
     // this.travellers[TRAVELLERS_DECK] = new TravellersRow({

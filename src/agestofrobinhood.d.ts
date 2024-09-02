@@ -78,6 +78,7 @@ interface AGestOfRobinHoodGame extends Game {
   markerManager: MarkerManager;
   notificationManager: NotificationManager;
   playerManager: PlayerManager;
+  playerOrder: number[]
   settings: Settings;
   tooltipManager: TooltipManager;
   _last_tooltip_id: number; // generic

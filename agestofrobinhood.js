@@ -1785,6 +1785,7 @@ var AGestOfRobinHood = (function () {
         this.setupDontPreloadImages();
         this.gamedatas = gamedatas;
         debug('gamedatas', gamedatas);
+        this.setupPlayerOrder({ playerOrder: gamedatas.playerOrder });
         this._connections = [];
         this.activeStates = {
             confirmPartialTurn: new ConfirmPartialTurnState(this),
@@ -5134,21 +5135,16 @@ var InfoPanel = (function () {
         eventNode.replaceChildren(eventText);
     };
     InfoPanel.prototype.setupPlotsAndDeedsInfo = function () {
+        var _this = this;
         var cardArea = document.getElementById('gest_card_area');
-        if (this.game.getPlayerId() ===
-            this.game.playerManager.getRobinHoodPlayerId()) {
-            cardArea.insertAdjacentHTML('afterbegin', tplRobinHoodPlotsAndDeeds());
-        }
-        else {
-            cardArea.insertAdjacentHTML('beforeend', tplRobinHoodPlotsAndDeeds());
-        }
-        if (this.game.getPlayerId() ===
-            this.game.playerManager.getSheriffPlayerId()) {
-            cardArea.insertAdjacentHTML('afterbegin', tplSheriffPlotsAndDeeds());
-        }
-        else {
-            cardArea.insertAdjacentHTML('beforeend', tplSheriffPlotsAndDeeds());
-        }
+        this.game.playerOrder.forEach(function (playerId) {
+            if (_this.game.playerManager.getPlayer({ playerId: playerId }).isRobinHood()) {
+                cardArea.insertAdjacentHTML('beforeend', tplRobinHoodPlotsAndDeeds());
+            }
+            else {
+                cardArea.insertAdjacentHTML('beforeend', tplSheriffPlotsAndDeeds());
+            }
+        });
     };
     InfoPanel.prototype.setup = function (_a) {
         var gamedatas = _a.gamedatas;

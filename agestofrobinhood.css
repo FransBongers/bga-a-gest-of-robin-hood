@@ -438,7 +438,6 @@
   flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 8px;
-  padding-bottom: calc(var(--gestCardScale) * 16px);
 }
 #gest_card_area #gest_decks .gest_card_row #gest_travellers_decks_info {
   display: flex;
