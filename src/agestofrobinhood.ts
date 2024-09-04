@@ -800,7 +800,7 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     const RIGHT_COLUMN = 634;
 
     if (this.settings.get({ id: 'twoColumnsLayout' }) === PREF_ENABLED) {
-      WIDTH = WIDTH - 8; // grid gap
+      WIDTH = WIDTH - 8; // grid gap + padding
       const size = Number(this.settings.get({ id: 'columnSizes' }));
       const proportions = [size, 100 - size];
       const LEFT_SIZE = (proportions[0] * WIDTH) / 100;

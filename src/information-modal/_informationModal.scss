@@ -160,10 +160,18 @@
       overflow-y: auto;
       padding: 16px;
       --gestCardScale: 0.9;
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      gap: 8px;
+
+      .gest_section_title {
+        font-weight: bold;
+        margin-bottom: 4px;
+      }
+
+      .gest_row {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
     }
 
     #gest_orderJustice {

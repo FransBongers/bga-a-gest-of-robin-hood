@@ -1,4 +1,5 @@
 interface PlotOrDeedInfo {
+  id: string;
   title: string;
   cost: string;
   location: string;

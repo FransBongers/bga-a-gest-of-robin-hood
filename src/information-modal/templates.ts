@@ -9,11 +9,34 @@ const tplInfoModalTab = ({ id, text }: { id: string; text: string }) => `
   </div>`;
 
 const cardInfo = ({ game }: { game: AGestOfRobinHoodGame }) => `
-
-  ${Object.values(game.gamedatas.staticData.cards)
-    .filter((card) => card.eventType !== null)
+  <div class="gest_section_title">
+   <span>${_('Fortune Events')}</span>
+  </div>
+  <div class="gest_row">
+      ${Object.values(game.gamedatas.staticData.cards)
+    .filter((card) => card.eventType === 'fortuneEvent')
     .map((card) => tplLogTokenCard(card.id.split('_')[0], `cardsInfo_${card.id}`))
     .join('')}
+  </div>
+  <span>
+  <div class="gest_section_title" style="margin-top: 16px;">
+    ${_('Regular Events')}</span>
+  </div>
+  <div class="gest_row">
+      ${Object.values(game.gamedatas.staticData.cards)
+    .filter((card) => card.eventType === 'regularEvent')
+    .map((card) => tplLogTokenCard(card.id.split('_')[0], `cardsInfo_${card.id}`))
+    .join('')}
+  </div>
+  <div class="gest_section_title" style="margin-top: 16px;">
+    ${_('Royal Inspections')}</span>
+  </div>
+  <div class="gest_row">
+      ${Object.values(game.gamedatas.staticData.cards)
+    .filter((card) => card.eventType === 'royalInspection')
+    .map((card) => tplLogTokenCard(card.id.split('_')[0], `cardsInfo_${card.id}`))
+    .join('')}
+  </div>
 `;
 
 const orderJusticeInfo = ({ game }: { game: AGestOfRobinHoodGame }) => `

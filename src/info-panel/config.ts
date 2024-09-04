@@ -5,6 +5,7 @@ const getRobinHoodPlotsAndDeeds = (): {
 } => ({
   plots: [
     {
+      id: 'recruit',
       title: _('Recruit'),
       cost: _('1 Shilling per space.'),
       location: _('Up to 3 non-Submissive spaces.'),
@@ -13,6 +14,7 @@ const getRobinHoodPlotsAndDeeds = (): {
       ),
     },
     {
+      id: 'sneak',
       title: _('Sneak'),
       cost: _('1 Shilling per origin.'),
       location: _('Up to 3 origin spaces with Merry Men.'),
@@ -21,6 +23,7 @@ const getRobinHoodPlotsAndDeeds = (): {
       ),
     },
     {
+      id: 'rob',
       title: _('Rob'),
       cost: _('0 Shillings.'),
       location: _('Up to 3 spaces with Hidden Merry Men and/or Robin Hood.'),
@@ -31,12 +34,14 @@ const getRobinHoodPlotsAndDeeds = (): {
   ],
   deeds: [
     {
+      id: 'turncoat',
       title: _('Turncoat'),
       cost: _('1 Shilling.'),
       location: _('1 Revolting Parish with a Merry Man.'),
       procedure: _('Replace 1 Henchman with a Merry Man.'),
     },
     {
+      id: 'donate',
       title: _('Donate'),
       cost: _('2 Shillings per Parish.'),
       location: _(
@@ -45,6 +50,7 @@ const getRobinHoodPlotsAndDeeds = (): {
       procedure: _('Set each Parish to Revolting.'),
     },
     {
+      id: 'swashbuckle',
       title: _('Swashbuckle'),
       cost: _('0 Shillings.'),
       location: _('1 space with Robin Hood.'),
@@ -53,6 +59,7 @@ const getRobinHoodPlotsAndDeeds = (): {
       ),
     },
     {
+      id: 'inspire',
       title: _('Inspire'),
       cost: _('0 Shillings.'),
       location: _('1 Parish with Hidden Robin Hood.'),
@@ -69,6 +76,7 @@ const getSheriffPlotsAndDeeds = (): {
 } => ({
   plots: [
     {
+      id: 'hire',
       title: _('Hire'),
       cost: _('2 Shilling per space.'),
       location: _('Up to 3 spaces (see Procedure for details).'),
@@ -77,6 +85,7 @@ const getSheriffPlotsAndDeeds = (): {
       ),
     },
     {
+      id: 'patrol',
       title: _('Patrol'),
       cost: _('2 Shillings per destination.'),
       location: _('Up to 3 destination spaces.'),
@@ -85,6 +94,7 @@ const getSheriffPlotsAndDeeds = (): {
       ),
     },
     {
+      id: 'capture',
       title: _('Capture'),
       cost: _('0 Shillings.'),
       location: _('Up to 3 spaces with Henchmen.'),
@@ -95,12 +105,14 @@ const getSheriffPlotsAndDeeds = (): {
   ],
   deeds: [
     {
+      id: 'ride',
       title: _('Ride'),
       cost: _('0 Shilling.'),
       location: _('Nottingham and 1 Parish.'),
       procedure: _('Move up to 4 Henchmen from Nottingham to any one Parish.'),
     },
     {
+      id: 'confiscate',
       title: _('Confiscate'),
       cost: _('0 Shillings.'),
       location: _('Up to 2 Submissive Parishes with Henchmen.'),
@@ -109,6 +121,7 @@ const getSheriffPlotsAndDeeds = (): {
       ),
     },
     {
+      id: 'disperse',
       title: _('Disperse'),
       cost: _('3 Shillings.'),
       location: _('1 Parish with Henchmen.'),

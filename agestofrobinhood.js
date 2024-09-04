@@ -5016,18 +5016,21 @@ var GestLineStock = (function (_super) {
 var getRobinHoodPlotsAndDeeds = function () { return ({
     plots: [
         {
+            id: 'recruit',
             title: _('Recruit'),
             cost: _('1 Shilling per space.'),
             location: _('Up to 3 non-Submissive spaces.'),
             procedure: _('Place 1 Merry Man, or replace a Merry Man with a Camp (+1 Justice). If there is already a Camp, instead place up to 2 Merry Men or flip all Hidden.'),
         },
         {
+            id: 'sneak',
             title: _('Sneak'),
             cost: _('1 Shilling per origin.'),
             location: _('Up to 3 origin spaces with Merry Men.'),
             procedure: _('Move any Merry Men to adjacent spaces. If a destination is Submissive and moving Merry Men plus Henchmen there exceeds 3, Reveal them; otherwise Hide all moving Merry Men.'),
         },
         {
+            id: 'rob',
             title: _('Rob'),
             cost: _('0 Shillings.'),
             location: _('Up to 3 spaces with Hidden Merry Men and/or Robin Hood.'),
@@ -5036,24 +5039,28 @@ var getRobinHoodPlotsAndDeeds = function () { return ({
     ],
     deeds: [
         {
+            id: 'turncoat',
             title: _('Turncoat'),
             cost: _('1 Shilling.'),
             location: _('1 Revolting Parish with a Merry Man.'),
             procedure: _('Replace 1 Henchman with a Merry Man.'),
         },
         {
+            id: 'donate',
             title: _('Donate'),
             cost: _('2 Shillings per Parish.'),
             location: _('Up to 2 Submissive Parishes with any Merry Men equal or greater than Henchmen.'),
             procedure: _('Set each Parish to Revolting.'),
         },
         {
+            id: 'swashbuckle',
             title: _('Swashbuckle'),
             cost: _('0 Shillings.'),
             location: _('1 space with Robin Hood.'),
             procedure: _('Hide Robin Hood and up to 1 Merry Man, then move them to any adjacent spaces; or place Robin Hood from Prison in or adjacent to Nottingham, Revealed.'),
         },
         {
+            id: 'inspire',
             title: _('Inspire'),
             cost: _('0 Shillings.'),
             location: _('1 Parish with Hidden Robin Hood.'),
@@ -5064,18 +5071,21 @@ var getRobinHoodPlotsAndDeeds = function () { return ({
 var getSheriffPlotsAndDeeds = function () { return ({
     plots: [
         {
+            id: 'hire',
             title: _('Hire'),
             cost: _('2 Shilling per space.'),
             location: _('Up to 3 spaces (see Procedure for details).'),
             procedure: _('Place up to 2 Henchmen in Submissive Parishes, up to 4 Henchmen in Nottingham, and set Revolting Parishes with more Henchmen than Merry Men to Submissive.'),
         },
         {
+            id: 'patrol',
             title: _('Patrol'),
             cost: _('2 Shillings per destination.'),
             location: _('Up to 3 destination spaces.'),
             procedure: _('Move in any number of Henchmen from adjacent spaces, then reveal 1 Merry Man per Henchmen now there (or per 2 Henchmen in Forest).'),
         },
         {
+            id: 'capture',
             title: _('Capture'),
             cost: _('0 Shillings.'),
             location: _('Up to 3 spaces with Henchmen.'),
@@ -5084,18 +5094,21 @@ var getSheriffPlotsAndDeeds = function () { return ({
     ],
     deeds: [
         {
+            id: 'ride',
             title: _('Ride'),
             cost: _('0 Shilling.'),
             location: _('Nottingham and 1 Parish.'),
             procedure: _('Move up to 4 Henchmen from Nottingham to any one Parish.'),
         },
         {
+            id: 'confiscate',
             title: _('Confiscate'),
             cost: _('0 Shillings.'),
             location: _('Up to 2 Submissive Parishes with Henchmen.'),
             procedure: _('Place an Available Carriage in each Parish, then set each Parish where a Carriage was placed to Revolting.'),
         },
         {
+            id: 'disperse',
             title: _('Disperse'),
             cost: _('3 Shillings.'),
             location: _('1 Parish with Henchmen.'),
@@ -5288,19 +5301,19 @@ var InfoPanel = (function () {
 }());
 var tplInfoPanel = function () { return "<div class='player-board' id=\"info_panel\">\n  <div id=\"gest_ballad_info\">\n    <div class=\"gest_ballad_info_side_column\"></div>\n    <div id=\"gest_ballad_info_events\">\n      <span id=\"gest_ballad_info_ballad_number\"></span>\n      <span id=\"gest_ballad_info_event_number\"></span>\n    </div>\n    <div class=\"gest_ballad_info_side_column\">\n      <div id=\"gest_fortune_event_icon\"></div>\n    </div>\n  </div>\n  <div id=\"info_panel_buttons\">\n    \n  </div>\n\n</div>"; };
 var tplPlotDeedInfo = function (_a) {
-    var title = _a.title, cost = _a.cost, location = _a.location, procedure = _a.procedure;
-    return "\n<div class=\"gest_plot_deed_item\">\n  <span class=\"gest_plot_deed_title\">".concat(_(title), "</span>\n  <div class=\"gest_plot_deed_info_row\">\n    <span class=\"gest_plot_deed_info_label\">").concat(_('Cost: '), "</span><span>").concat(_(cost), "</span>\n  </div>\n      <div class=\"gest_plot_deed_info_row\"?\n    <span class=\"gest_plot_deed_info_label\">").concat(_('Location: '), "</span><span>").concat(_(location), "</span>\n  </div>\n      <div class=\"gest_plot_deed_info_row\">\n    <span class=\"gest_plot_deed_info_label\">").concat(_('Procedure: '), "</span><span>").concat(_(procedure), "</span>\n  </div>\n</div>");
+    var id = _a.id, title = _a.title, cost = _a.cost, location = _a.location, procedure = _a.procedure;
+    return "\n<div class=\"gest_plot_deed_item\" id=\"gest_plot_deed_info_".concat(id, "\">\n  <span class=\"gest_plot_deed_title\">").concat(_(title), "</span>\n  <div class=\"gest_plot_deed_info_row\">\n    <span class=\"gest_plot_deed_info_label\">").concat(_('Cost: '), "</span><span>").concat(_(cost), "</span>\n  </div>\n      <div class=\"gest_plot_deed_info_row\">\n    <span class=\"gest_plot_deed_info_label\">").concat(_('Location: '), "</span><span>").concat(_(location), "</span>\n  </div>\n      <div class=\"gest_plot_deed_info_row\">\n    <span class=\"gest_plot_deed_info_label\">").concat(_('Procedure: '), "</span><span>").concat(_(procedure), "</span>\n  </div>\n</div>");
 };
-var tplRobinHoodPlotsAndDeeds = function () { return "\n  <div class=\"gest_plots_and_deeds_container\" data-side=\"robinHood\">\n    <span class=\"gest_plot_title\">".concat(_('Plots'), "</span>\n    <div class=\"gest_plots_row\">\n        ").concat(getRobinHoodPlotsAndDeeds()
+var tplRobinHoodPlotsAndDeeds = function () { return "\n<div class=\"gest_plots_and_deeds_wrapper\">\n  <div class=\"gest_plots_and_deeds_container\" data-side=\"robinHood\">\n    <div class=\"gest_title_container\" data-row=\"plots\">\n      <span class=\"gest_plot_title\">".concat(_('Plots'), "</span>\n    </div>\n    ").concat(getRobinHoodPlotsAndDeeds()
     .plots.map(function (info) { return tplPlotDeedInfo(info); })
-    .join(''), "\n    </div>\n    <span class=\"gest_plot_title\" style=\"margin-top: 8px;\">").concat(_('Deeds'), "</span>\n    <div class=\"gest_plots_row\" data-items=\"4\">\n        ").concat(getRobinHoodPlotsAndDeeds()
+    .join(''), "\n    <div class=\"gest_title_container\" data-row=\"deeds\">\n      <span class=\"gest_plot_title\">").concat(_('Deeds'), "</span>\n    </div>\n    ").concat(getRobinHoodPlotsAndDeeds()
     .deeds.map(function (info) { return tplPlotDeedInfo(info); })
-    .join(''), "\n    </div>\n  </div>\n"); };
-var tplSheriffPlotsAndDeeds = function () { return "\n  <div class=\"gest_plots_and_deeds_container\" data-side=\"sheriff\">\n    <span class=\"gest_plot_title\">".concat(_('Plots'), "</span>\n    <div class=\"gest_plots_row\">\n        ").concat(getSheriffPlotsAndDeeds()
+    .join(''), "    \n  </div>\n</div>\n"); };
+var tplSheriffPlotsAndDeeds = function () { return "\n  <div class=\"gest_plots_and_deeds_wrapper\">\n    <div class=\"gest_plots_and_deeds_container\" data-side=\"sheriff\">\n      <div class=\"gest_title_container\" data-row=\"plots\">\n        <span class=\"gest_plot_title\">".concat(_('Plots'), "</span>\n      </div>\n      ").concat(getSheriffPlotsAndDeeds()
     .plots.map(function (info) { return tplPlotDeedInfo(info); })
-    .join(''), "\n    </div>\n    <span class=\"gest_plot_title\" style=\"margin-top: 8px;\">").concat(_('Deeds'), "</span>\n    <div class=\"gest_plots_row\">\n        ").concat(getSheriffPlotsAndDeeds()
+    .join(''), "\n      <div class=\"gest_title_container\" data-row=\"deeds\">\n        <span class=\"gest_plot_title\">").concat(_('Deeds'), "</span>\n      </div>\n      ").concat(getSheriffPlotsAndDeeds()
     .deeds.map(function (info) { return tplPlotDeedInfo(info); })
-    .join(''), "\n    </div>\n  </div>\n"); };
+    .join(''), "\n      \n    </div>\n  </div>\n"); };
 var tplBalladModalTab = function (_a) {
     var id = _a.id, text = _a.text;
     return "\n  <div id=\"ballad_modal_tab_".concat(id, "\" class=\"ballad_modal_tab\">\n    <span>").concat(_(text), "</span>\n  </div>");
@@ -5402,7 +5415,7 @@ var carriagesRobInfo = function () {
             name: _('Tallage Carriage'),
             defense: 0,
             title: _('Tallage: 0 Defense'),
-            success: _('${tkn_boldItalicText_success} 5 Shillings, +1 Justice, send to Used Carriages'),
+            success: _('${tkn_boldItalicText_success} 5 Shillings, send to Used Carriages'),
             failure: _('${tkn_boldItalicText_failure} No effect (Carriage stays revealed)'),
             nottingham: _('5 Shillings, +1 Order'),
         },
@@ -5411,7 +5424,7 @@ var carriagesRobInfo = function () {
             name: _('Tribute Carriage'),
             defense: 0,
             title: _('Tribute: 0 Defense'),
-            success: _('${tkn_boldItalicText_success} 2 Shillings, +2 Justice, send to Used Carriages'),
+            success: _('${tkn_boldItalicText_success} 2 Shillings, +1 Justice, send to Used Carriages'),
             failure: _('${tkn_boldItalicText_failure} No effect (Carriage stays revealed)'),
             nottingham: _('2 Shillings, +2 Order'),
         },
@@ -5420,7 +5433,7 @@ var carriagesRobInfo = function () {
             name: _('Trap Carriage'),
             defense: 2,
             title: _('Trap: 2 Defense'),
-            success: _('${tkn_boldItalicText_success} 2 Shillings, +1 Justice, send to Used Carriages'),
+            success: _('${tkn_boldItalicText_success} 2 Shillings, send to Used Carriages'),
             failure: _('${tkn_boldItalicText_failure} Captured (Carriage stays revealed)'),
             nottingham: _('2 Shillings, +1 Order'),
         }
@@ -5523,10 +5536,16 @@ var tplInfoModalTab = function (_a) {
 };
 var cardInfo = function (_a) {
     var game = _a.game;
-    return "\n\n  ".concat(Object.values(game.gamedatas.staticData.cards)
-        .filter(function (card) { return card.eventType !== null; })
+    return "\n  <div class=\"gest_section_title\">\n   <span>".concat(_('Fortune Events'), "</span>\n  </div>\n  <div class=\"gest_row\">\n      ").concat(Object.values(game.gamedatas.staticData.cards)
+        .filter(function (card) { return card.eventType === 'fortuneEvent'; })
         .map(function (card) { return tplLogTokenCard(card.id.split('_')[0], "cardsInfo_".concat(card.id)); })
-        .join(''), "\n");
+        .join(''), "\n  </div>\n  <span>\n  <div class=\"gest_section_title\" style=\"margin-top: 16px;\">\n    ").concat(_('Regular Events'), "</span>\n  </div>\n  <div class=\"gest_row\">\n      ").concat(Object.values(game.gamedatas.staticData.cards)
+        .filter(function (card) { return card.eventType === 'regularEvent'; })
+        .map(function (card) { return tplLogTokenCard(card.id.split('_')[0], "cardsInfo_".concat(card.id)); })
+        .join(''), "\n  </div>\n  <div class=\"gest_section_title\" style=\"margin-top: 16px;\">\n    ").concat(_('Royal Inspections'), "</span>\n  </div>\n  <div class=\"gest_row\">\n      ").concat(Object.values(game.gamedatas.staticData.cards)
+        .filter(function (card) { return card.eventType === 'royalInspection'; })
+        .map(function (card) { return tplLogTokenCard(card.id.split('_')[0], "cardsInfo_".concat(card.id)); })
+        .join(''), "\n  </div>\n");
 };
 var orderJusticeInfo = function (_a) {
     var game = _a.game;
