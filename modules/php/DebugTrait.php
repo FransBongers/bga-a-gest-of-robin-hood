@@ -23,8 +23,13 @@ trait DebugTrait
 
   function debug_test()
   {
+    $parishes = Spaces::get(PARISHES);
+    $player = Players::get();
+    foreach($parishes as $spaceId => $space) {
+      $space->revolt($player);
+    }
     // $deckCount = Cards::countInLocation(EVENTS_DECK);
-    Notifications::log('Traveller01_RichMerchant', Cards::get('Traveller01_RichMerchant'));
+    // Notifications::log('Traveller01_RichMerchant', Cards::get('Traveller01_RichMerchant'));
 
     // Stats::checkExistence();
     // Players::getRobinHoodPlayer()->incShillings(-7);
@@ -58,7 +63,7 @@ trait DebugTrait
     // $this->debugPlaceForces(CAMP,NEWARK,1);
 
 
-    // Cards::get('Event11_GreatEscape')->insertOnTop(EVENTS_DECK);
+    // Cards::get('Event25_WeaponsOfTheWeak')->insertOnTop(EVENTS_DECK);
     // Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_VICTIMS_PILE);
     // Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_DECK);
 

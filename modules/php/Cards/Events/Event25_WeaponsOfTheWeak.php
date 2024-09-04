@@ -65,7 +65,7 @@ class Event25_WeaponsOfTheWeak extends \AGestOfRobinHood\Cards\Events\RegularEve
 
   public function canPerformLightEffect($player)
   {
-    return Forces::countInLocation(CAMPS_SUPPLY) > 0;
+    return count($this->getLightOptions()) > 0;
   }
 
   public function canPerformDarkEffect($player)
