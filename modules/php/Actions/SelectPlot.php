@@ -210,7 +210,7 @@ class SelectPlot extends \AGestOfRobinHood\Actions\Plot
   public function getOptions($player)
   {
     $side = $player->getSide();
-    $plots = $side === ROBIN_HOOD ? [RECRUIT, ROB, SNEAK] : [HIRE, PATROL, CAPTURE];
+    $plots = $side === ROBIN_HOOD ? [RECRUIT, SNEAK, ROB] : [HIRE, PATROL, CAPTURE];
     $info = $this->ctx->getInfo();
     $cost = isset($info['cost']) ? $info['cost'] : null;
 

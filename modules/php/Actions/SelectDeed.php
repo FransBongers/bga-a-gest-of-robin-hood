@@ -138,7 +138,7 @@ class SelectDeed extends \AGestOfRobinHood\Models\AtomicAction
   public function getOptions($player)
   {
     $side = $player->getSide();
-    $deeds = $side === ROBIN_HOOD ? [DONATE, INSPIRE, SWASHBUCKLE, TURNCOAT] : [RIDE, CONFISCATE, DISPERSE];
+    $deeds = $side === ROBIN_HOOD ? [TURNCOAT, DONATE, SWASHBUCKLE, INSPIRE] : [RIDE, CONFISCATE, DISPERSE];
 
     $info = $this->ctx->getInfo();
     $allowedDeeds = isset($info['allowedDeeds']) ? $info['allowedDeeds'] : null;

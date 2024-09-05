@@ -101,3 +101,8 @@ html {
 .notif_playerstatus {
   display: none !important;
 }
+
+body.chatbar_ontop {
+  /* Prevent the game from scrolling while the game log or chat is visible on mobile. */
+  overflow: hidden;
+}

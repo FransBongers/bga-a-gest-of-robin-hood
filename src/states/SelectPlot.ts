@@ -52,6 +52,10 @@ class SelectPlotState implements State {
         text: _(plotName),
         callback: () => this.updateInterfaceConfirm({ plotId, plotName }),
       });
+      this.game.setElementSelectable({
+        id: `gest_plot_deed_info_${plotId.toLowerCase()}`,
+        callback: () => this.updateInterfaceConfirm({ plotId, plotName }),
+      });
     });
     if (this.args.extraOptionId) {
       this.addExtraOptionButton();
@@ -59,62 +63,10 @@ class SelectPlotState implements State {
 
     this.game.addPassButton({
       optionalAction: this.args.optionalAction,
-      text: _('Skip Plot')
+      text: _('Skip Plot'),
     });
     this.game.addUndoButtons(this.args);
   }
-
-  // private updateInterfaceSelectSpaces({
-  //   plotId,
-  //   data,
-  // }: {
-  //   plotId: string;
-  //   data: {
-  //     spaces: GestSpace[];
-  //     numberOfSpaces: number;
-  //     plotName: string;
-  //   };
-  // }) {
-  //   this.game.clearPossible();
-
-  //   this.game.clientUpdatePageTitle({
-  //     text:
-  //       data.numberOfSpaces === 1
-  //         ? _('${you} must select a Space to target')
-  //         : _('${you} must select a Space to target (${number} remaining)'),
-  //     args: {
-  //       you: '${you}',
-  //       number: data.numberOfSpaces - this.selectedSpaces.length,
-  //     },
-  //   });
-
-  //   this.args.options[plotId].spaces
-  //     .filter((space) => {
-  //       return !this.selectedSpaces.some((selectedSpace) => {
-  //         return selectedSpace.id === space.id;
-  //       });
-  //     })
-  //     .forEach((space) => {
-  //       this.game.addPrimaryActionButton({
-  //         id: `${space.id}_btn`,
-  //         text: _(space.name),
-  //         callback: () => {
-  //           this.selectedSpaces.push(space);
-  //           if (this.selectedSpaces.length >= data.numberOfSpaces) {
-  //             this.updateInterfaceConfirm({ plotId, data });
-  //           } else {
-  //             this.updateInterfaceSelectSpaces({ plotId, data });
-  //           }
-  //         },
-  //       });
-  //     });
-  //   this.game.addSecondaryActionButton({
-  //     id: 'done_btn',
-  //     text: _('Done'),
-  //     callback: () => this.updateInterfaceConfirm({ plotId, data }),
-  //   });
-  //   this.game.addCancelButton();
-  // }
 
   private updateInterfaceConfirm({
     plotId,
@@ -133,6 +85,9 @@ class SelectPlotState implements State {
         args: {
           plotName: _(plotName),
         },
+      });
+      this.game.setElementSelected({
+        id: `gest_plot_deed_info_${plotId.toLowerCase()}`,
       });
     } else if (extraOptionId) {
       this.game.clientUpdatePageTitle({

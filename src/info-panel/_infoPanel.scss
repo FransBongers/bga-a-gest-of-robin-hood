@@ -1,3 +1,5 @@
+@use '../base';
+
 #info_panel {
   display: flex;
   flex-direction: column;
@@ -87,7 +89,9 @@
     // background-color: yellow;
     // opacity: 0.5;
     width: 136px;
+    height: 131px;
     font-size: 9px;
+    border-radius: 1%;
   }
 
   .gest_plot_deed_title {
@@ -169,6 +173,10 @@
 .gest_plots_and_deeds_container[data-side=robinHood] {
   background-image: url('img/robin_hood_player_aid_back.jpg');
 
+  .gest_plot_deed_item {
+    height: 141px;
+  }
+
   .gest_title_container[data-row=plots] {
     width: 439px;
     top: 16px;
@@ -198,17 +206,17 @@
 
   #gest_plot_deed_info_turncoat {
     top: 248px;
-    left: 22px;
+    left: 21px;
   }
 
   #gest_plot_deed_info_donate {
     top: 248px;
-    left: 174px;
+    left: 172px;
   }
 
   #gest_plot_deed_info_swashbuckle {
     top: 248px;
-    left: 325px;
+    left: 324px;
   }
 
   #gest_plot_deed_info_inspire {
@@ -217,8 +225,13 @@
   }
 }
 
-.gest_plots_and_deeds_container[data-side=sheriff] {
-  // background-color: #c0c0c0;
+.gest_plot_deed_item.gest_selectable {
+  box-shadow: 0px 0px 0px 4px base.$selectable-color;
+}
+
+.gest_plot_deed_item.gest_selectable:hover,
+.gest_plot_deed_item.gest_selected {
+  box-shadow: 0px 0px 0px 4px base.$selected-color;
 }
 
 #popin_ballad_modal_underlay {

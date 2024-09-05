@@ -913,6 +913,20 @@
   background-position-x: 66.666667%;
 }
 
+/**
+ *------
+ * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
+ * A Gest of Robin Hood implementation : © Frans Bongers <fjmbongers@gmail.com>
+ *
+ * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
+ * See http://en.boardgamearena.com/#!doc/Studio for more information.
+ * -----
+ *
+ * agestofrobinhood.css
+ *
+ * agestofrobinhood stylesheet
+ *
+ */
 #info_panel {
   display: flex;
   flex-direction: column;
@@ -988,7 +1002,9 @@
 .gest_plots_and_deeds_container .gest_plot_deed_item {
   position: absolute;
   width: 136px;
+  height: 131px;
   font-size: 9px;
+  border-radius: 1%;
 }
 .gest_plots_and_deeds_container .gest_plot_deed_title {
   font-weight: bold;
@@ -1053,6 +1069,9 @@
 .gest_plots_and_deeds_container[data-side=robinHood] {
   background-image: url("img/robin_hood_player_aid_back.jpg");
 }
+.gest_plots_and_deeds_container[data-side=robinHood] .gest_plot_deed_item {
+  height: 141px;
+}
 .gest_plots_and_deeds_container[data-side=robinHood] .gest_title_container[data-row=plots] {
   width: 439px;
   top: 16px;
@@ -1077,19 +1096,28 @@
 }
 .gest_plots_and_deeds_container[data-side=robinHood] #gest_plot_deed_info_turncoat {
   top: 248px;
-  left: 22px;
+  left: 21px;
 }
 .gest_plots_and_deeds_container[data-side=robinHood] #gest_plot_deed_info_donate {
   top: 248px;
-  left: 174px;
+  left: 172px;
 }
 .gest_plots_and_deeds_container[data-side=robinHood] #gest_plot_deed_info_swashbuckle {
   top: 248px;
-  left: 325px;
+  left: 324px;
 }
 .gest_plots_and_deeds_container[data-side=robinHood] #gest_plot_deed_info_inspire {
   top: 248px;
   left: 475px;
+}
+
+.gest_plot_deed_item.gest_selectable {
+  box-shadow: 0px 0px 0px 4px #ffff00;
+}
+
+.gest_plot_deed_item.gest_selectable:hover,
+.gest_plot_deed_item.gest_selected {
+  box-shadow: 0px 0px 0px 4px #0000ff;
 }
 
 #popin_ballad_modal_underlay {
@@ -2689,6 +2717,11 @@ html {
 /* Hide player is now online, player is now offline messages */
 .notif_playerstatus {
   display: none !important;
+}
+
+body.chatbar_ontop {
+  /* Prevent the game from scrolling while the game log or chat is visible on mobile. */
+  overflow: hidden;
 }
 
 /*# sourceMappingURL=agestofrobinhood.css.map */

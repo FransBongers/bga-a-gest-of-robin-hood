@@ -12270,6 +12270,10 @@ var SelectDeedState = (function () {
                     _this.updateInterfaceConfirm({ deedId: deedId, name: name });
                 },
             });
+            _this.game.setElementSelectable({
+                id: "gest_plot_deed_info_".concat(deedId.toLowerCase()),
+                callback: function () { return _this.updateInterfaceConfirm({ deedId: deedId, name: name }); },
+            });
         });
         this.game.addPassButton({
             optionalAction: this.args.optionalAction,
@@ -12285,6 +12289,9 @@ var SelectDeedState = (function () {
             args: {
                 deedName: _(name),
             },
+        });
+        this.game.setElementSelected({
+            id: "gest_plot_deed_info_".concat(deedId.toLowerCase()),
         });
         var callback = function () {
             _this.game.clearPossible();
@@ -12340,13 +12347,17 @@ var SelectPlotState = (function () {
                 text: _(plotName),
                 callback: function () { return _this.updateInterfaceConfirm({ plotId: plotId, plotName: plotName }); },
             });
+            _this.game.setElementSelectable({
+                id: "gest_plot_deed_info_".concat(plotId.toLowerCase()),
+                callback: function () { return _this.updateInterfaceConfirm({ plotId: plotId, plotName: plotName }); },
+            });
         });
         if (this.args.extraOptionId) {
             this.addExtraOptionButton();
         }
         this.game.addPassButton({
             optionalAction: this.args.optionalAction,
-            text: _('Skip Plot')
+            text: _('Skip Plot'),
         });
         this.game.addUndoButtons(this.args);
     };
@@ -12360,6 +12371,9 @@ var SelectPlotState = (function () {
                 args: {
                     plotName: _(plotName),
                 },
+            });
+            this.game.setElementSelected({
+                id: "gest_plot_deed_info_".concat(plotId.toLowerCase()),
             });
         }
         else if (extraOptionId) {

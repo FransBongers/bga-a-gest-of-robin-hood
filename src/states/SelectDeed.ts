@@ -52,6 +52,10 @@ class SelectDeedState implements State {
           this.updateInterfaceConfirm({ deedId, name });
         },
       });
+      this.game.setElementSelectable({
+        id: `gest_plot_deed_info_${deedId.toLowerCase()}`,
+        callback: () => this.updateInterfaceConfirm({ deedId, name }),
+      });
     });
 
     this.game.addPassButton({
@@ -74,6 +78,9 @@ class SelectDeedState implements State {
       args: {
         deedName: _(name),
       },
+    });
+    this.game.setElementSelected({
+      id: `gest_plot_deed_info_${deedId.toLowerCase()}`,
     });
 
     const callback = () => {

@@ -87,10 +87,11 @@ $gameinfos = array(
 // If you want to disable this, set this to true
 'disable_player_order_swap_on_rematch' => false,
 
+
 // Game interface width range (pixels)
 // Note: game interface = space on the left side, without the column on the right
 'game_interface_width' => array(
-
+    'autoscale' => false,
     // Minimum width
     //  default: 740
     //  maximum possible value: 740 (ie: your game interface should fit with a 740px width (correspond to a 1024px screen)
