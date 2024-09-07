@@ -1338,6 +1338,9 @@
   flex-wrap: wrap;
   gap: 8px;
 }
+.information_modal #information_modal_content #gest_cardsInfo .gest_card_side[data-resolved=true] {
+  opacity: 0.7;
+}
 .information_modal #information_modal_content #gest_orderJustice {
   padding: 16px;
 }

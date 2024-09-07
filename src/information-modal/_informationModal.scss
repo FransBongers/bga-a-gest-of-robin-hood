@@ -172,6 +172,10 @@
         flex-wrap: wrap;
         gap: 8px;
       }
+
+      .gest_card_side[data-resolved=true] {
+        opacity: 0.7;
+      }
     }
 
     #gest_orderJustice {

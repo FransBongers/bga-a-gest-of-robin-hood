@@ -354,6 +354,10 @@ class NotificationManager {
     ) {
       this.game.infoPanel.updateFortuneEventRevealed(true);
     }
+    const cardInfoNode = document.getElementById(`cardsInfo_${card.id}`);
+    if (cardInfoNode) {
+      cardInfoNode.setAttribute('data-resolved', 'true');
+    }
   }
 
   async notif_drawAndRevealTravellerCard(

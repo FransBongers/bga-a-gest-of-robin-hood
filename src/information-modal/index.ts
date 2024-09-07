@@ -95,6 +95,13 @@ class InformationModal {
         });
       }
     });
+
+    gamedatas.cards.eventsDiscard.forEach((card) => {
+      const node = document.getElementById(`cardsInfo_${card.id}`);
+      if (node) {
+        node.setAttribute('data-resolved', 'true');
+      }
+    })
   }
 
   // .##.....##.########..########.....###....########.########

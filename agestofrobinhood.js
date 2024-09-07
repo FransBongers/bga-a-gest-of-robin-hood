@@ -5509,6 +5509,12 @@ var InformationModal = (function () {
                 });
             }
         });
+        gamedatas.cards.eventsDiscard.forEach(function (card) {
+            var node = document.getElementById("cardsInfo_".concat(card.id));
+            if (node) {
+                node.setAttribute('data-resolved', 'true');
+            }
+        });
     };
     InformationModal.prototype.informationModalContent = function () { };
     InformationModal.prototype.changeTab = function (_a) {
@@ -5991,7 +5997,7 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_drawAndRevealCard = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var card, cardsCurrentlyInDiscard;
+            var card, cardsCurrentlyInDiscard, cardInfoNode;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -6012,6 +6018,10 @@ var NotificationManager = (function () {
                         if (this.game.getStaticCardData(card.id).eventType ===
                             'fortuneEvent') {
                             this.game.infoPanel.updateFortuneEventRevealed(true);
+                        }
+                        cardInfoNode = document.getElementById("cardsInfo_".concat(card.id));
+                        if (cardInfoNode) {
+                            cardInfoNode.setAttribute('data-resolved', 'true');
                         }
                         return [2];
                 }

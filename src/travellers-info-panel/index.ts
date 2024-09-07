@@ -37,6 +37,10 @@ class TravellersInfoPanel {
 
   // Setup functions
   setup({ gamedatas }: { gamedatas: AGestOfRobinHoodGamedatas }) {
+    // const body = document.getElementById('ebd-body');
+    // const mobileVersion = body && body.classList.contains('mobile_version');
+
+    // const node = document.getElementById(mobileVersion ? 'overall_player_board_2371052' : 'player_boards');
     const node = document.getElementById('player_boards');
     if (!node) {
       return;
