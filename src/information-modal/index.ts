@@ -52,7 +52,7 @@ class InformationModal {
   private addButton({ gamedatas }: { gamedatas: AGestOfRobinHoodGamedatas }) {
     const configPanel = document.getElementById('info_panel_buttons');
     if (configPanel) {
-      configPanel.insertAdjacentHTML('beforeend', tplInformationButton());
+      configPanel.insertAdjacentHTML('afterbegin', tplInformationButton());
     }
   }
 

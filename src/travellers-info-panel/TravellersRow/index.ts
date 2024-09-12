@@ -75,7 +75,9 @@ class TravellersRow {
 
   private onCardRemoved(card: GestTravellerCard) {
     // console.log('onCardRemoved', this.onCardRemoved);
-    this.counter.incValue(-1);
+    if (this.stock.getCards().some((cardInStock) => cardInStock.id === card.id)) {
+      this.counter.incValue(-1);
+    }
     this.updateVisibility(this.counter.getValue());
   }
 

@@ -598,16 +598,8 @@ class NotificationManager {
   ) {
     const { card, fromLocation } = notif.args;
 
-    // if (fromLocation === TRAVELLERS_DECK) {
-    //   this.game.cardArea.incTravellerInDeckCounterValue(
-    //     card.id.split('_')[1],
-    //     -1
-    //   );
-    // } else if (fromLocation === TRAVELLERS_DISCARD) {
-    //   this.game.cardArea.counters.travellersDiscard.incValue(-1);
-    // }
     await Promise.all([
-      this.game.cardArea.stocks.travellerRobbed.removeCard(card),
+      this.game.cardArea.stocks.gestDiscard.addCard(card),
       this.game.travellersInfoPanel.travellers[TRAVELLERS_VICTIMS_PILE].addCard(
         card
       ),
@@ -620,7 +612,7 @@ class NotificationManager {
     const { card } = notif.args;
 
     await Promise.all([
-      this.game.cardArea.stocks.travellerRobbed.removeCard(card),
+      this.game.cardArea.stocks.gestDiscard.addCard(card),
       this.game.travellersInfoPanel.travellers[TRAVELLERS_DISCARD].addCard(
         card
       ),
@@ -662,25 +654,14 @@ class NotificationManager {
   }
 
   async notif_removeCardFromGame(notif: Notif<NotifRemoveCardFromGameArgs>) {
-    const { card, fromLocation } = notif.args;
-    // await this.game.cardManager.removeCard(card); 
-    switch (fromLocation) {
-      case TRAVELLERS_DECK:
-        await this.game.travellersInfoPanel.travellers[
-          TRAVELLERS_DECK
-        ].removeCard(card);
-        return;
-      case TRAVELLERS_DISCARD:
-        await this.game.travellersInfoPanel.travellers[
-          TRAVELLERS_DISCARD
-        ].removeCard(card);
-        return;
-      case TRAVELLERS_VICTIMS_PILE:
-        await this.game.travellersInfoPanel.travellers[
-          TRAVELLERS_VICTIMS_PILE
-        ].removeCard(card);
-        return;
-    }
+    const { card } = notif.args;
+
+    const currentStock = this.game.travellerManager.getCardStock(card);
+
+    await Promise.all([
+      currentStock.removeCard(card),
+      this.game.cardArea.stocks.gestDiscard.addCard(card),
+    ])
   }
 
   async notif_removeForceFromGamePublic(notif: Notif<NotifReturnToSupplyArgs>) {

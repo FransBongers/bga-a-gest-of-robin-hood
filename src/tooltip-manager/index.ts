@@ -24,7 +24,13 @@ class TooltipManager {
   }
 
   public addTextToolTip({ nodeId, text }: { nodeId: string; text: string }) {
-    this.game.framework().addTooltip(nodeId, _(text), '', 500);
+    this.game.framework().addTooltipHtml(
+      nodeId,
+      tplTextTooltip({
+        text,
+      }),
+      500
+    );
   }
 
   public removeTooltip(nodeId: string) {

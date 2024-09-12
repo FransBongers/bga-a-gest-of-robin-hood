@@ -2489,6 +2489,7 @@ var CardArea = (function () {
             eventsDiscard: new ManualPositionStock(this.game.cardManager, document.getElementById('gest_events_discard'), {}, this.game.cardManager.updateDisplay),
             travellersDeck: new ManualPositionStock(this.game.cardManager, document.getElementById('gest_travellers_deck'), {}, this.game.cardManager.updateDisplay),
             travellerRobbed: new ManualPositionStock(this.game.cardManager, document.getElementById('gest_traveller_robbed'), {}, this.game.cardManager.updateDisplay),
+            gestDiscard: new VoidStock(this.game.cardManager, document.getElementById('gest_discard')),
         };
         this.updateCards({ gamedatas: gamedatas });
     };
@@ -2514,6 +2515,14 @@ var CardArea = (function () {
         if (node) {
             node.style.setProperty('--gestCardSizeScale', "".concat(Number(cardScale) / 100));
         }
+        this.game.tooltipManager.addTextToolTip({
+            nodeId: 'gest_events_deck',
+            text: _('Events deck'),
+        });
+        this.game.tooltipManager.addTextToolTip({
+            nodeId: 'gest_travellers_deck',
+            text: _('Travellers deck'),
+        });
         this.setupStocks({ gamedatas: gamedatas });
         this.game.infoPanel.setupPlotsAndDeedsInfo();
     };
@@ -5007,10 +5016,10 @@ var GestLineStock = (function (_super) {
         return _this;
     }
     GestLineStock.prototype.cardRemoved = function (card, settings) {
-        _super.prototype.cardRemoved.call(this, card, settings);
         if (this.onCardRemoved) {
             this.onCardRemoved(card);
         }
+        _super.prototype.cardRemoved.call(this, card, settings);
     };
     return GestLineStock;
 }(LineStock));
@@ -5472,7 +5481,7 @@ var InformationModal = (function () {
         var gamedatas = _a.gamedatas;
         var configPanel = document.getElementById('info_panel_buttons');
         if (configPanel) {
-            configPanel.insertAdjacentHTML('beforeend', tplInformationButton());
+            configPanel.insertAdjacentHTML('afterbegin', tplInformationButton());
         }
     };
     InformationModal.prototype.setupModal = function (_a) {
@@ -6322,7 +6331,7 @@ var NotificationManager = (function () {
                     case 0:
                         _a = notif.args, card = _a.card, fromLocation = _a.fromLocation;
                         return [4, Promise.all([
-                                this.game.cardArea.stocks.travellerRobbed.removeCard(card),
+                                this.game.cardArea.stocks.gestDiscard.addCard(card),
                                 this.game.travellersInfoPanel.travellers[TRAVELLERS_VICTIMS_PILE].addCard(card),
                             ])];
                     case 1:
@@ -6340,7 +6349,7 @@ var NotificationManager = (function () {
                     case 0:
                         card = notif.args.card;
                         return [4, Promise.all([
-                                this.game.cardArea.stocks.travellerRobbed.removeCard(card),
+                                this.game.cardArea.stocks.gestDiscard.addCard(card),
                                 this.game.travellersInfoPanel.travellers[TRAVELLERS_DISCARD].addCard(card),
                             ])];
                     case 1:
@@ -6398,31 +6407,19 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_removeCardFromGame = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, card, fromLocation, _b;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
+            var card, currentStock;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        _a = notif.args, card = _a.card, fromLocation = _a.fromLocation;
-                        _b = fromLocation;
-                        switch (_b) {
-                            case TRAVELLERS_DECK: return [3, 1];
-                            case TRAVELLERS_DISCARD: return [3, 3];
-                            case TRAVELLERS_VICTIMS_PILE: return [3, 5];
-                        }
-                        return [3, 7];
-                    case 1: return [4, this.game.travellersInfoPanel.travellers[TRAVELLERS_DECK].removeCard(card)];
-                    case 2:
-                        _c.sent();
+                        card = notif.args.card;
+                        currentStock = this.game.travellerManager.getCardStock(card);
+                        return [4, Promise.all([
+                                currentStock.removeCard(card),
+                                this.game.cardArea.stocks.gestDiscard.addCard(card),
+                            ])];
+                    case 1:
+                        _a.sent();
                         return [2];
-                    case 3: return [4, this.game.travellersInfoPanel.travellers[TRAVELLERS_DISCARD].removeCard(card)];
-                    case 4:
-                        _c.sent();
-                        return [2];
-                    case 5: return [4, this.game.travellersInfoPanel.travellers[TRAVELLERS_VICTIMS_PILE].removeCard(card)];
-                    case 6:
-                        _c.sent();
-                        return [2];
-                    case 7: return [2];
                 }
             });
         });
@@ -13144,7 +13141,9 @@ var TooltipManager = (function () {
     }
     TooltipManager.prototype.addTextToolTip = function (_a) {
         var nodeId = _a.nodeId, text = _a.text;
-        this.game.framework().addTooltip(nodeId, _(text), '', 500);
+        this.game.framework().addTooltipHtml(nodeId, tplTextTooltip({
+            text: text,
+        }), 500);
     };
     TooltipManager.prototype.removeTooltip = function (nodeId) {
         this.game.framework().removeTooltip(nodeId);
@@ -13364,7 +13363,9 @@ var TravellersRow = (function () {
         });
     };
     TravellersRow.prototype.onCardRemoved = function (card) {
-        this.counter.incValue(-1);
+        if (this.stock.getCards().some(function (cardInStock) { return cardInStock.id === card.id; })) {
+            this.counter.incValue(-1);
+        }
         this.updateVisibility(this.counter.getValue());
     };
     return TravellersRow;

@@ -62,6 +62,15 @@ html {
   grid-gap: 8px;
 }
 
+#gest_discard {
+  position: absolute;
+  top: -600px;
+  left: 150px;
+  --gestCardScale: 1;
+  // width: 150px;
+  // height: 230px;
+}
+
 #page-title {
   min-height: 52px;
   display: flex;

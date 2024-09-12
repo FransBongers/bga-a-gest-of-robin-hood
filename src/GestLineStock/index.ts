@@ -12,9 +12,9 @@ class GestLineStock<T> extends LineStock<T> {
   }
 
   public cardRemoved(card: T, settings?: RemoveCardSettings) {
-    super.cardRemoved(card, settings);
     if (this.onCardRemoved) {
       this.onCardRemoved(card);
     }
+    super.cardRemoved(card, settings);
   }
 }
