@@ -83,6 +83,9 @@
   border: 1px solid black;
   border-radius: 5px;
 
+  // .gest_title_container {
+  //   font-family: 'MedievalSharp';
+  // }
 
   .gest_plot_deed_item {
     position: absolute;
@@ -96,6 +99,7 @@
 
   .gest_plot_deed_title {
     font-weight: bold;
+    // font-family: 'MedievalSharp';
   }
 
   .gest_plot_deed_info_row {
@@ -128,12 +132,12 @@
 
   .gest_title_container[data-row=plots] {
     width: 438px;
-    top: 25px;
+    top: 22px;
     left: 27px;
   }
 
   .gest_title_container[data-row=deeds] {
-    width: 438px;
+    width: 436px;
     top: 224px;
     left: 27px;
   }
@@ -179,13 +183,13 @@
 
   .gest_title_container[data-row=plots] {
     width: 439px;
-    top: 16px;
+    top: 15px;
     left: 22px;
   }
 
   .gest_title_container[data-row=deeds] {
     width: 588px;
-    top: 220px;
+    top: 219px;
     left: 22px;
   }
 

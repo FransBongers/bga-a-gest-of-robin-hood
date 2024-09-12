@@ -5020,7 +5020,7 @@ var getRobinHoodPlotsAndDeeds = function () { return ({
             title: _('Recruit'),
             cost: _('1 Shilling per space.'),
             location: _('Up to 3 non-Submissive spaces.'),
-            procedure: _('Place 1 Merry Man, or replace a Merry Man with a Camp (+1 Justice). If there is already a Camp, instead place up to 2 Merry Men or flip all Hidden.'),
+            procedure: _('Place 1 Merry Man, or replace a Merry Man (not Robin Hood) with a Camp (+1 Justice). If there is already a Camp, instead place up to 2 Merry Men or flip all Hidden.'),
         },
         {
             id: 'sneak',

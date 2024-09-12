@@ -1023,7 +1023,7 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
   /* @Override */
   updatePlayerOrdering() {
     this.framework().inherited(arguments);
-
+    // TODO: Update for mobile mode
     const container = document.getElementById('player_boards');
     const infoPanel = document.getElementById('info_panel');
     if (!container) {
