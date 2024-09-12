@@ -16,11 +16,11 @@
   // background-color: purple;
 
   .gest_card_side {
-    min-width: calc(var(--gestCardScale) * 206px);
-    min-height: calc(var(--gestCardScale) * 355px);
-    max-width: calc(var(--gestCardScale) * 206px);
-    max-height: calc(var(--gestCardScale) * 355px);
-    --gestCardScale: 1;
+    min-width: calc(var(--gestCardScale) * 150px);
+    min-height: calc(var(--gestCardScale) * 259px);
+    max-width: calc(var(--gestCardScale) * 150px);
+    max-height: calc(var(--gestCardScale) * 259px);
+    --gestCardScale: 1.37;
   }
 
   .gest_card_tooltip_inner_container {
@@ -79,10 +79,10 @@
   --gestCardScale: 1.5;
 
   .gest_card_side {
-    min-width: calc(var(--gestCardScale) * 206px);
-    min-height: calc(var(--gestCardScale) * 355px);
-    max-width: calc(var(--gestCardScale) * 206px);
-    max-height: calc(var(--gestCardScale) * 355px);
+    min-width: calc(var(--gestCardScale) * 150px);
+    min-height: calc(var(--gestCardScale) * 259px);
+    max-width: calc(var(--gestCardScale) * 150px);
+    max-height: calc(var(--gestCardScale) * 259px);
   }
 }
 

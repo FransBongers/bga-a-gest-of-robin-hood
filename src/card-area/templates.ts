@@ -42,6 +42,7 @@ const travellersDeckCounter = (traveller: string) => `
 const tplTravellers= () => `
 <div>
   <div class="gest_card_row">
+    <div id="gest_travellers_deck" class="gest_card_stock gest_card_side" data-card-id="TravellerBack" style="box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.5);"></div>
     <div id="gest_traveller_robbed" class="gest_card_stock"></div>
   </div>
 </div>`

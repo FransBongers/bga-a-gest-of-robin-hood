@@ -2487,6 +2487,7 @@ var CardArea = (function () {
         this.stocks = {
             eventsDeck: new ManualPositionStock(this.game.cardManager, document.getElementById('gest_events_deck'), {}, this.game.cardManager.updateDisplay),
             eventsDiscard: new ManualPositionStock(this.game.cardManager, document.getElementById('gest_events_discard'), {}, this.game.cardManager.updateDisplay),
+            travellersDeck: new ManualPositionStock(this.game.cardManager, document.getElementById('gest_travellers_deck'), {}, this.game.cardManager.updateDisplay),
             travellerRobbed: new ManualPositionStock(this.game.cardManager, document.getElementById('gest_traveller_robbed'), {}, this.game.cardManager.updateDisplay),
         };
         this.updateCards({ gamedatas: gamedatas });
@@ -2534,7 +2535,7 @@ var travellerCardIdMap = {
     RichMerchant: 'Traveller01'
 };
 var travellersDeckCounter = function (traveller) { return "\n  <div class=\"travellers_deck_counter_container\">\n    <span id=\"travellers_deck_".concat(traveller, "_counter\"></span>\n    <div class=\"gest_card_side\" data-card-id=\"").concat(travellerCardIdMap[traveller], "\" style=\"width: 21px; height: 36px;\"></div>\n  </div>\n"); };
-var tplTravellers = function () { return "\n<div>\n  <div class=\"gest_card_row\">\n    <div id=\"gest_traveller_robbed\" class=\"gest_card_stock\"></div>\n  </div>\n</div>"; };
+var tplTravellers = function () { return "\n<div>\n  <div class=\"gest_card_row\">\n    <div id=\"gest_travellers_deck\" class=\"gest_card_stock gest_card_side\" data-card-id=\"TravellerBack\" style=\"box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.5);\"></div>\n    <div id=\"gest_traveller_robbed\" class=\"gest_card_stock\"></div>\n  </div>\n</div>"; };
 var tplCardArea = function () { return "\n  <div id=\"gest_card_area\">\n    <div id=\"gest_decks\">\n      <div class=\"gest_card_row\">\n        <div id=\"gest_events_deck\" class=\"gest_card_stock gest_card_side\" data-card-id=\"EventBack\" style=\"box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.5);\"></div>\n        <div id=\"gest_events_discard\" class=\"gest_card_stock\"></div>\n      </div>\n      ".concat(tplTravellers(), "\n    </div>\n  </div>\n"); };
 var GestCardManager = (function (_super) {
     __extends(GestCardManager, _super);
@@ -2552,15 +2553,15 @@ var GestCardManager = (function (_super) {
     }
     GestCardManager.prototype.clearInterface = function () { };
     GestCardManager.prototype.setupDiv = function (card, div) {
-        div.style.height = 'calc(var(--gestCardScale) * 355px)';
-        div.style.width = 'calc(var(--gestCardScale) * 206px)';
+        div.style.height = 'calc(var(--gestCardScale) * 259px)';
+        div.style.width = 'calc(var(--gestCardScale) * 150px)';
         div.style.position = 'relative';
         div.classList.add('gest_card');
     };
     GestCardManager.prototype.setupFrontDiv = function (card, div) {
         div.classList.add('gest_card_side');
-        div.style.height = 'calc(var(--gestCardScale) * 355px)';
-        div.style.width = 'calc(var(--gestCardScale) * 206px)';
+        div.style.height = 'calc(var(--gestCardScale) * 259px)';
+        div.style.width = 'calc(var(--gestCardScale) * 150px)';
         div.setAttribute('data-card-id', card.id.split('_')[0]);
         var cardId = card.id.split('_')[0];
         this.game.tooltipManager.addCardTooltip({
@@ -2570,8 +2571,8 @@ var GestCardManager = (function (_super) {
     };
     GestCardManager.prototype.setupBackDiv = function (card, div) {
         div.classList.add('gest_card_side');
-        div.style.height = 'calc(var(--gestCardScale) * 355px)';
-        div.style.width = 'calc(var(--gestCardScale) * 206px)';
+        div.style.height = 'calc(var(--gestCardScale) * 259px)';
+        div.style.width = 'calc(var(--gestCardScale) * 150px)';
         var cardId = card.id.split('_')[0];
         div.setAttribute('data-card-id', this.game.gamedatas.staticData.cards[cardId].type === 'eventCard'
             ? 'EventBack'
@@ -6035,9 +6036,13 @@ var NotificationManager = (function () {
                 switch (_a.label) {
                     case 0:
                         card = notif.args.card;
+                        card.location = TRAVELLERS_DECK;
+                        return [4, this.game.cardArea.stocks.travellersDeck.addCard(card)];
+                    case 1:
+                        _a.sent();
                         card.location = TRAVELLER_ROBBED;
                         return [4, this.game.cardArea.stocks.travellerRobbed.addCard(card)];
-                    case 1:
+                    case 2:
                         _a.sent();
                         return [2];
                 }
@@ -7259,7 +7264,7 @@ var getSettingsConfig = function () {
                         padding: 0,
                         range: {
                             min: 0,
-                            max: 110,
+                            max: 150,
                         },
                     },
                     type: 'slider',

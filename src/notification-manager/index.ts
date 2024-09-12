@@ -364,8 +364,8 @@ class NotificationManager {
     notif: Notif<NotifDrawAndRevealTravellerCardArgs>
   ) {
     const { card } = notif.args;
-    // card.location = TRAVELLERS_DECK;
-    // await this.game.cardArea.stocks.travellersDeck.addCard(card);
+    card.location = TRAVELLERS_DECK;
+    await this.game.cardArea.stocks.travellersDeck.addCard(card);
     card.location = TRAVELLER_ROBBED;
     // this.game.cardArea.incTravellerInDeckCounterValue(
     //   card.id.split('_')[1],

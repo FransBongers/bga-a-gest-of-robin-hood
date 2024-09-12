@@ -4,8 +4,8 @@
 
 .gest_card_side {
   box-sizing: border-box;
-  width: calc(var(--gestCardScale) * 206px);
-  height: calc(var(--gestCardScale) * 355px);
+  width: calc(var(--gestCardScale) * 150px);
+  height: calc(var(--gestCardScale) * 259px);
   background-repeat: no-repeat;
   border: calc(var(--gestCardScale) * 1px) black solid;
   border-radius: calc(var(--gestCardScale) * 5px);

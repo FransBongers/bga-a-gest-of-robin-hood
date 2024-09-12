@@ -12,7 +12,7 @@ class CardArea {
   public stocks: {
     eventsDeck: ManualPositionStock<GestCard>;
     eventsDiscard: ManualPositionStock<GestCard>;
-    // travellersDeck: ManualPositionStock<GestCard>;
+    travellersDeck: ManualPositionStock<GestCard>;
     // travellersDiscard: ManualPositionStock<GestCard>;
     // travellersVictimsPile: ManualPositionStock<GestCard>;
     travellerRobbed: ManualPositionStock<GestCard>;
@@ -76,12 +76,12 @@ class CardArea {
         {},
         this.game.cardManager.updateDisplay
       ),
-      // travellersDeck: new ManualPositionStock(
-      //   this.game.cardManager,
-      //   document.getElementById('gest_travellers_deck'),
-      //   {},
-      //   this.game.cardManager.updateDisplay
-      // ),
+      travellersDeck: new ManualPositionStock(
+        this.game.cardManager,
+        document.getElementById('gest_travellers_deck'),
+        {},
+        this.game.cardManager.updateDisplay
+      ),
       // travellersDiscard: new ManualPositionStock(
       //   this.game.cardManager,
       //   document.getElementById('gest_travellers_discard'),

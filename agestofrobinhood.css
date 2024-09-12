@@ -53,8 +53,8 @@
  */
 .gest_card_side {
   box-sizing: border-box;
-  width: calc(var(--gestCardScale) * 206px);
-  height: calc(var(--gestCardScale) * 355px);
+  width: calc(var(--gestCardScale) * 150px);
+  height: calc(var(--gestCardScale) * 259px);
   background-repeat: no-repeat;
   border: calc(var(--gestCardScale) * 1px) black solid;
   border-radius: calc(var(--gestCardScale) * 5px);
@@ -426,7 +426,7 @@
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 20px;
 }
 #gest_card_area #gest_decks .gest_title {
   font-weight: bold;
@@ -439,114 +439,17 @@
   gap: 8px;
   margin-bottom: 8px;
 }
-#gest_card_area #gest_decks .gest_card_row #gest_travellers_decks_info {
-  display: flex;
-  flex-direction: column;
-  gap: calc(var(--gestCardScale) * 4px);
-  padding-right: calc(var(--gestCardScale) * 12px);
-}
-#gest_card_area #gest_decks .gest_card_row #gest_travellers_decks_info .gest_traveller_counter_row {
-  cursor: default;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  gap: calc(var(--gestCardScale) * 4px);
-  align-items: center;
-}
-#gest_card_area #gest_decks .gest_card_row #gest_travellers_decks_info .gest_traveller_counter_row.gest_none {
-  opacity: 0.5;
-}
-#gest_card_area #gest_decks .gest_card_row #gest_travellers_decks_info #gest_travellers_deck_composition {
-  display: flex;
-  flex-direction: column;
-  gap: calc(var(--gestCardScale) * 4px);
-}
-#gest_card_area #gest_decks .gest_card_row #gest_travellers_decks_info #gest_travellers_deck_composition .gest_traveller_image {
-  width: calc(var(--gestCardScale) * 30px);
-  height: calc(var(--gestCardScale) * 28px);
-}
 #gest_card_area #gest_decks .gest_card_row .gest_card_stock {
   box-sizing: border-box;
   position: relative;
-  height: calc(var(--gestCardScale) * 355px);
-  width: calc(var(--gestCardScale) * 206px);
+  height: calc(var(--gestCardScale) * 259px);
+  width: calc(var(--gestCardScale) * 150px);
   border-radius: calc(var(--gestCardScale) * 5px);
 }
 #gest_card_area #gest_decks .gest_card_row .gest_deck_counter_text {
   cursor: default;
   font-weight: bold;
   font-size: calc(var(--gestCardScale) * 30px);
-}
-#gest_card_area #gest_decks .gest_card_row #gest_travellers_deck_container {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: center;
-  position: relative;
-  height: calc(var(--gestCardScale) * 355px);
-  width: calc(var(--gestCardScale) * 206px);
-  box-sizing: border-box;
-}
-#gest_card_area #gest_decks .gest_card_row #gest_travellers_deck_container #gest_travellers_deck {
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-#gest_card_area #gest_decks .gest_card_row #gest_travellers_deck_container #gest_travellers_deck_counters {
-  min-height: calc(var(--gestCardScale) * 33px);
-  padding: calc(var(--gestCardScale) * 4px);
-  width: calc(var(--gestCardScale) * 190px);
-  background-color: #f8f8f8;
-  border: calc(var(--gestCardScale) * 1px) solid black;
-  border-radius: calc(var(--gestCardScale) * 5px);
-  margin-bottom: calc(var(--gestCardScale) * -16px);
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  z-index: 1;
-}
-#gest_card_area #gest_decks .gest_card_row #gest_travellers_vicitimsPile_container {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: center;
-  position: relative;
-  height: calc(var(--gestCardScale) * 355px);
-  width: calc(var(--gestCardScale) * 206px);
-  box-sizing: border-box;
-}
-#gest_card_area #gest_decks .gest_card_row #gest_travellers_vicitimsPile_container #gest_travellers_vicitimsPile_placeholder {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: calc(var(--gestCardScale) * 355px);
-  width: calc(var(--gestCardScale) * 206px);
-  box-sizing: border-box;
-  border: calc(var(--gestCardScale) * 2px) dashed black;
-  border-radius: calc(var(--gestCardScale) * 5px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-#gest_card_area #gest_decks .gest_card_row #gest_travellers_vicitimsPile_container #gest_travellers_vicitimsPile {
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-#gest_card_area #gest_decks .gest_card_row #gest_travellers_vicitimsPile_container #gest_victims_pile_counter_container {
-  min-height: calc(var(--gestCardScale) * 33px);
-  padding: calc(var(--gestCardScale) * 4px);
-  width: calc(var(--gestCardScale) * 50px);
-  background-color: #f8f8f8;
-  border: calc(var(--gestCardScale) * 1px) solid black;
-  border-radius: calc(var(--gestCardScale) * 5px);
-  margin-bottom: calc(var(--gestCardScale) * -16px);
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  z-index: 1;
 }
 
 /**
@@ -1137,7 +1040,7 @@
   max-height: 75vh;
   overflow-y: auto;
   padding: 16px;
-  --gestCardScale: 0.77;
+  --gestCardScale: 1.05;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -1326,7 +1229,7 @@
   max-height: 75vh;
   overflow-y: auto;
   padding: 16px;
-  --gestCardScale: 0.9;
+  --gestCardScale: 1.23;
 }
 .information_modal #information_modal_content #gest_cardsInfo .gest_section_title {
   font-weight: bold;
@@ -2255,11 +2158,11 @@ span[style*="color:#c0c0c0"] {
   min-height: 372px;
 }
 .gest_card_tooltip .gest_card_side {
-  min-width: calc(var(--gestCardScale) * 206px);
-  min-height: calc(var(--gestCardScale) * 355px);
-  max-width: calc(var(--gestCardScale) * 206px);
-  max-height: calc(var(--gestCardScale) * 355px);
-  --gestCardScale: 1;
+  min-width: calc(var(--gestCardScale) * 150px);
+  min-height: calc(var(--gestCardScale) * 259px);
+  max-width: calc(var(--gestCardScale) * 150px);
+  max-height: calc(var(--gestCardScale) * 259px);
+  --gestCardScale: 1.37;
 }
 .gest_card_tooltip .gest_card_tooltip_inner_container {
   flex-grow: 1;
@@ -2308,10 +2211,10 @@ span[style*="color:#c0c0c0"] {
   --gestCardScale: 1.5;
 }
 .gest_card_only_tooltip .gest_card_side {
-  min-width: calc(var(--gestCardScale) * 206px);
-  min-height: calc(var(--gestCardScale) * 355px);
-  max-width: calc(var(--gestCardScale) * 206px);
-  max-height: calc(var(--gestCardScale) * 355px);
+  min-width: calc(var(--gestCardScale) * 150px);
+  min-height: calc(var(--gestCardScale) * 259px);
+  max-width: calc(var(--gestCardScale) * 150px);
+  max-height: calc(var(--gestCardScale) * 259px);
 }
 
 .gest_traveller_tooltip {

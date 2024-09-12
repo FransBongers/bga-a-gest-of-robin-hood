@@ -13,8 +13,8 @@ class GestCardManager extends CardManager<GestCard> {
   clearInterface() {}
 
   setupDiv(card: GestCard, div: HTMLElement) {
-    div.style.height = 'calc(var(--gestCardScale) * 355px)';
-    div.style.width = 'calc(var(--gestCardScale) * 206px)';
+    div.style.height = 'calc(var(--gestCardScale) * 259px)';
+    div.style.width = 'calc(var(--gestCardScale) * 150px)';
 
     div.style.position = 'relative';
     div.classList.add('gest_card');
@@ -23,8 +23,8 @@ class GestCardManager extends CardManager<GestCard> {
   setupFrontDiv(card: GestCard, div: HTMLElement) {
     div.classList.add('gest_card_side');
 
-    div.style.height = 'calc(var(--gestCardScale) * 355px)';
-    div.style.width = 'calc(var(--gestCardScale) * 206px)';
+    div.style.height = 'calc(var(--gestCardScale) * 259px)';
+    div.style.width = 'calc(var(--gestCardScale) * 150px)';
     div.setAttribute('data-card-id', card.id.split('_')[0]);
 
     const cardId = card.id.split('_')[0];
@@ -37,8 +37,8 @@ class GestCardManager extends CardManager<GestCard> {
   setupBackDiv(card: GestCard, div: HTMLElement) {
     div.classList.add('gest_card_side');
 
-    div.style.height = 'calc(var(--gestCardScale) * 355px)';
-    div.style.width = 'calc(var(--gestCardScale) * 206px)';
+    div.style.height = 'calc(var(--gestCardScale) * 259px)';
+    div.style.width = 'calc(var(--gestCardScale) * 150px)';
     const cardId = card.id.split('_')[0];
     div.setAttribute(
       'data-card-id',
