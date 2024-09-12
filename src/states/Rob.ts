@@ -1,7 +1,15 @@
+type RobTarget =
+  | 'traveller'
+  | 'treasury'
+  | 'HiddenCarriage'
+  | 'TallageCarriage'
+  | 'TrapCarriage'
+  | 'TributeCarriage';
+
 class RobState implements State {
   private game: AGestOfRobinHoodGame;
   private args: OnEnteringRobStateArgs;
-  private selectedMerryMenIds: string[] = [];
+  private selectedMerryMen: GestForce[] = [];
 
   constructor(game: AGestOfRobinHoodGame) {
     this.game = game;
@@ -10,7 +18,7 @@ class RobState implements State {
   onEnteringState(args: OnEnteringRobStateArgs) {
     debug('Entering RobState');
     this.args = args;
-    this.selectedMerryMenIds = [];
+    this.selectedMerryMen = [];
     this.updateInterfaceInitialStep();
   }
 
@@ -81,18 +89,7 @@ class RobState implements State {
       },
     });
 
-    targets.forEach((target) => {
-      this.game.addPrimaryActionButton({
-        id: `${target}_btn`,
-        text: _(this.getTargetName({ target })),
-        callback: () =>
-          this.updateInterfaceSelectMerryMen({
-            space: option.space,
-            target: target,
-            merryMen: option.merryMen,
-          }),
-      });
-    });
+    targets.forEach((target) => this.addTargetButton({ option, target }));
 
     this.game.addCancelButton();
   }
@@ -109,7 +106,7 @@ class RobState implements State {
     this.game.clearPossible();
 
     if (merryMen.length === 1) {
-      this.selectedMerryMenIds.push(merryMen[0].id);
+      this.selectedMerryMen.push(merryMen[0]);
       this.updateInterfaceConfirm({
         space,
         target,
@@ -128,24 +125,42 @@ class RobState implements State {
     merryMen.forEach((merryMan) =>
       this.game.setElementSelectable({
         id: merryMan.id,
-        callback: () => this.handleMerryManClick({ merryMan }),
+        callback: () => {
+          if (
+            this.selectedMerryMen.some(
+              (selectedMerryMan) => selectedMerryMan.id === merryMan.id
+            )
+          ) {
+            this.selectedMerryMen = this.selectedMerryMen.filter(
+              (selectedMerryMan) => selectedMerryMan.id !== merryMan.id
+            );
+          } else {
+            this.selectedMerryMen.push(merryMan);
+          }
+          this.updateInterfaceSelectMerryMen({ space, target, merryMen });
+        },
       })
+    );
+    this.selectedMerryMen.forEach(({ id }) =>
+      this.game.setElementSelected({ id })
     );
 
     this.game.addPrimaryActionButton({
       id: 'done_btn',
       text: _('Done'),
       callback: () => this.updateInterfaceConfirm({ space, target }),
-      extraClasses: DISABLED,
+      extraClasses: this.selectedMerryMen.length === 0 ? DISABLED : '',
     });
-    this.game.addSecondaryActionButton({
-      id: 'select_all_btn',
-      text: _('Select all'),
-      callback: () => {
-        this.selectedMerryMenIds = merryMen.map((merryMan) => merryMan.id);
-        this.updateInterfaceConfirm({ space, target });
-      },
-    });
+    if (this.selectedMerryMen.length < merryMen.length) {
+      this.game.addSecondaryActionButton({
+        id: 'select_all_btn',
+        text: _('Select all'),
+        callback: () => {
+          this.selectedMerryMen = [...merryMen];
+          this.updateInterfaceConfirm({ space, target });
+        },
+      });
+    }
 
     this.game.addCancelButton();
   }
@@ -160,15 +175,16 @@ class RobState implements State {
     this.game.clearPossible();
 
     this.game.clientUpdatePageTitle({
-      text: _('Rob ${target} in ${spaceName} with ${count} Merry Men?'),
+      text: _('Rob ${target} in ${spaceName} with ${merryMenLog}'),
       args: {
         spaceName: _(space.name),
-        target: this.getTargetName({ target }),
-        count: this.selectedMerryMenIds.length,
+        target: this.getTargetLog(target),
+        // count: this.selectedMerryMenIds.length,
+        merryMenLog: createForcesLog(this.selectedMerryMen),
       },
     });
 
-    this.selectedMerryMenIds.forEach((id) =>
+    this.selectedMerryMen.forEach(({ id }) =>
       this.game.setElementSelected({ id })
     );
 
@@ -179,7 +195,7 @@ class RobState implements State {
         args: {
           target,
           spaceId: space.id,
-          merryMenIds: this.selectedMerryMenIds,
+          merryMenIds: this.selectedMerryMen.map((merryMan) => merryMan.id),
         },
       });
     };
@@ -215,6 +231,66 @@ class RobState implements State {
   //  .##....##.##........##..##....##.##...##.
   //  ..######..########.####..######..##....##
 
+  private addTargetButton({
+    option,
+    target,
+  }: {
+    target: RobTarget;
+    option: RobOption;
+  }) {
+    if (CARRIAGE_TYPES.includes(target)) {
+      this.game.addSecondaryActionButton({
+        id: `${target}_btn`,
+        text: this.game.format_string_recursive('${tkn_carriage}', {
+          tkn_carriage: `${REVEALED}:${target}`,
+        }),
+        callback: () =>
+          this.updateInterfaceSelectMerryMen({
+            space: option.space,
+            target: target,
+            merryMen: option.merryMen,
+          }),
+      });
+    } else if (target === HIDDEN_CARRIAGE) {
+      this.game.addSecondaryActionButton({
+        id: `${target}_btn`,
+        text: this.game.format_string_recursive('${tkn_carriage}', {
+          tkn_carriage: `${HIDDEN}:${CARRIAGE}`,
+        }),
+        callback: () =>
+          this.updateInterfaceSelectMerryMen({
+            space: option.space,
+            target: target,
+            merryMen: option.merryMen,
+          }),
+      });
+    } else if (target === 'traveller') {
+      this.game.addSecondaryActionButton({
+        id: `${target}_btn`,
+        text: this.game.format_string_recursive('${tkn_travellerBack}', {
+          tkn_travellerBack: 'TravellerBack',
+        }),
+        callback: () =>
+          this.updateInterfaceSelectMerryMen({
+            space: option.space,
+            target: target,
+            merryMen: option.merryMen,
+          }),
+      });
+    } else {
+      this.game.addPrimaryActionButton({
+        id: `${target}_btn`,
+        text: _("Sheriff's Treasury"),
+        callback: () =>
+          this.updateInterfaceSelectMerryMen({
+            space: option.space,
+            target: target,
+            merryMen: option.merryMen,
+          }),
+      });
+    }
+  }
+
   private getTargets({ option }: { option: RobOption }): RobTargetId[] {
     const targets: RobTargetId[] = [];
 
@@ -233,30 +309,40 @@ class RobState implements State {
     return targets;
   }
 
-  private getTargetName({
-    target,
-  }: {
-    target:
-      | 'traveller'
-      | 'treasury'
-      | 'HiddenCarriage'
-      | 'TallageCarriage'
-      | 'TrapCarriage'
-      | 'TributeCarriage';
-  }): string {
+  private getTargetLog(target: RobTarget) {
     switch (target) {
       case 'treasury':
         return _("the Sheriff's Treasury");
       case 'traveller':
-        return _('a random Traveller');
-        return;
+        return this.game.format_string_recursive('${tkn_travellerBack}', {
+          tkn_travellerBack: 'TravellerBack',
+        });
       case 'HiddenCarriage':
+        return this.game.format_string_recursive('${tkn_carriage}', {
+          tkn_carriage: `${HIDDEN}:${CARRIAGE}`,
+        });
       case 'TallageCarriage':
       case 'TrapCarriage':
       case 'TributeCarriage':
-        return _(target);
+        return this.game.format_string_recursive('${tkn_carriage}', {
+          tkn_carriage: `${REVEALED}:${target}`,
+        });
     }
   }
+
+  // private getTargetName({ target }: { target: RobTarget }): string {
+  //   switch (target) {
+  //     case 'treasury':
+  //       return _("the Sheriff's Treasury");
+  //     case 'traveller':
+  //       return _('a random Traveller');
+  //     case 'HiddenCarriage':
+  //     case 'TallageCarriage':
+  //     case 'TrapCarriage':
+  //     case 'TributeCarriage':
+  //       return _(target);
+  //   }
+  // }
 
   // .##.....##....###....##....##.########..##.......########..######.
   // .##.....##...##.##...###...##.##.....##.##.......##.......##....##
@@ -266,19 +352,19 @@ class RobState implements State {
   // .##.....##.##.....##.##...###.##.....##.##.......##.......##....##
   // .##.....##.##.....##.##....##.########..########.########..######.
 
-  private handleMerryManClick({ merryMan }: { merryMan: GestForce }) {
-    if (this.selectedMerryMenIds.includes(merryMan.id)) {
-      this.game.removeSelectedFromElement({ id: merryMan.id });
-      this.selectedMerryMenIds = this.selectedMerryMenIds.filter(
-        (id) => id !== merryMan.id
-      );
-      if (this.selectedMerryMenIds.length === 0) {
-        document.getElementById('done_btn').classList.add(DISABLED);
-      }
-    } else {
-      this.game.setElementSelected({ id: merryMan.id });
-      this.selectedMerryMenIds.push(merryMan.id);
-      document.getElementById('done_btn').classList.remove(DISABLED);
-    }
-  }
+  // private handleMerryManClick({ merryMan }: { merryMan: GestForce }) {
+  //   if (this.selectedMerryMen.some((selectedMerryMan) => selectedMerryMan.id === merryMan.id)) {
+  //     this.game.removeSelectedFromElement({ id: merryMan.id });
+  //     this.selectedMerryMenIds = this.selectedMerryMenIds.filter(
+  //       (id) => id !== merryMan.id
+  //     );
+  //     if (this.selectedMerryMenIds.length === 0) {
+  //       document.getElementById('done_btn').classList.add(DISABLED);
+  //     }
+  //   } else {
+  //     this.game.setElementSelected({ id: merryMan.id });
+  //     this.selectedMerryMenIds.push(merryMan.id);
+  //     document.getElementById('done_btn').classList.remove(DISABLED);
+  //   }
+  // }
 }

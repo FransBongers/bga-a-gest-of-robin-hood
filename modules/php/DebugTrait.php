@@ -28,14 +28,15 @@ trait DebugTrait
     // foreach($parishes as $spaceId => $space) {
     //   $space->revolt($player);
     // }
+
     // $deckCount = Cards::countInLocation(EVENTS_DECK);
     // Notifications::log('Traveller01_RichMerchant', Cards::get('Traveller01_RichMerchant'));
-    Forces::get('camp_5')->returnToSupply(Players::get());
+    // Forces::get('camp_5')->returnToSupply(Players::get());
     // Stats::checkExistence();
     // Players::getRobinHoodPlayer()->incShillings(-7);
-    Spaces::get(RETFORD)->setToSubmissive(Players::get());
+    // Spaces::get(RETFORD)->setToSubmissive(Players::get());
     // Forces::get(ROBIN_HOOD)->setLocation(PRISON);
-    // Forces::get(ROBIN_HOOD)->setHidden(0);
+    Forces::get(ROBIN_HOOD)->setHidden(0);
     // Globals::setBridgeLocation('Blyth_Retford_border');
     // Forces::moveAllInLocation(CARRIAGE_SUPPLY,USED_CARRIAGES);
     // Forces::moveAllInLocation(BLYTH,NOTTINGHAM);
@@ -53,7 +54,13 @@ trait DebugTrait
     // Spaces::get(RETFORD)->setStatus(REVOLTING);
     // // Forces::get('camp_1')->setLocation(BLYTH);
     // $this->debugPlaceForces(ROBIN_HOOD,TUXFORD,1);
-    // $this->debugPlaceForces(TRAP_CARRIAGE,NOTTINGHAM,1);
+    // $this->debugPlaceForces(TRAP_CARRIAGE,REMSTON,1);
+    // foreach(['carriage_1', 'carriage_3', 'carriage_4', 'carriage_5'] as $forceId) {
+    //   Forces::get($forceId)->setHidden(0);
+    // }
+    // $this->debugPlaceForces(TRIBUTE_CARRIAGE,REMSTON,1);
+    // $this->debugPlaceForces(TALLAGE_CARRIAGE,REMSTON,1);
+    // $this->debugPlaceForces(TRAP_CARRIAGE,REMSTON,1);
     // $this->debugPlaceForces(HENCHMEN,NOTTINGHAM,13);
     // $this->debugPlaceForces(MERRY_MEN,PRISON,7);
     // $this->debugPlaceForces(HENCHMEN,RETFORD,1);
@@ -65,7 +72,7 @@ trait DebugTrait
 
     // Cards::get('Event25_WeaponsOfTheWeak')->insertOnTop(EVENTS_DECK);
     // Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_VICTIMS_PILE);
-    Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_DECK);
+    // Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_DECK);
 
   }
 

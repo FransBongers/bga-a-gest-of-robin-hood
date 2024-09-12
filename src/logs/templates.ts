@@ -23,10 +23,10 @@ const tplLogTokenPlayerName = ({
 
 /* ------- GAME SPECIFIC LOG TOKENS ------- */
 
-const tplLogTokenCard = (cardId: string, nodeId?: string) => {
+const tplLogTokenCard = (cardId: string, nodeId?: string, extraClasses?: string,) => {
   return `<div ${
     nodeId ? `id="${nodeId}"` : ''
-  } class="gest_log_card gest_card gest_card_side" data-card-id="${cardId}"></div>`;
+  } class="gest_log_card gest_card gest_card_side${extraClasses ? ` ${extraClasses}` : ''}" data-card-id="${cardId}"></div>`;
 };
 
 const tplLogTokenDieResult = (dieResult: string) => {

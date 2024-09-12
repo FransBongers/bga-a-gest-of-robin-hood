@@ -12,6 +12,7 @@ const LOG_TOKEN_FORCE = 'force';
 const LOG_TOKEN_HENCHMAN = 'henchman';
 const LOG_TOKEN_MERRY_MEN = 'merryMan';
 const LOG_TOKEN_SHILLING = 'shilling';
+const LOG_TOKEN_TRAVELLER_BACK = 'travellerBack';
 
 let tooltipIdCounter = 0;
 
@@ -67,6 +68,8 @@ const getTokenDiv = ({
             color: player.getColor(),
           })
         : value;
+    case LOG_TOKEN_TRAVELLER_BACK:
+      return tplLogTokenCard(value, undefined, 'gest_traveller_back_log');
     default:
       return value;
   }

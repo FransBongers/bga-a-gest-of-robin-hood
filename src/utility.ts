@@ -8,3 +8,18 @@ const capitalizeFirstLetter = (string: string) => {
 const lowerCaseFirstLetter = (string: string) => {
   return string.charAt(0).toLowerCase() + string.slice(1);
 };
+
+const createForcesLog = (forces: GestForce[]) => {
+  let log = '';
+  const args = {};
+  forces.forEach((force, index) => {
+    const key = `tkn_force_${index}`;
+    log = log + '${' + key + '}';
+    args[key] = `${force.hidden ? HIDDEN : REVEALED}:${force.type}`
+  });
+
+  return {
+    log,
+    args
+  }
+}

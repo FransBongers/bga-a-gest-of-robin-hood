@@ -2416,6 +2416,19 @@ var capitalizeFirstLetter = function (string) {
 var lowerCaseFirstLetter = function (string) {
     return string.charAt(0).toLowerCase() + string.slice(1);
 };
+var createForcesLog = function (forces) {
+    var log = '';
+    var args = {};
+    forces.forEach(function (force, index) {
+        var key = "tkn_force_".concat(index);
+        log = log + '${' + key + '}';
+        args[key] = "".concat(force.hidden ? HIDDEN : REVEALED, ":").concat(force.type);
+    });
+    return {
+        log: log,
+        args: args
+    };
+};
 var GestManualPositionStock = (function (_super) {
     __extends(GestManualPositionStock, _super);
     function GestManualPositionStock(manager, element, settings, updateDisplay) {
@@ -5641,6 +5654,7 @@ var LOG_TOKEN_FORCE = 'force';
 var LOG_TOKEN_HENCHMAN = 'henchman';
 var LOG_TOKEN_MERRY_MEN = 'merryMan';
 var LOG_TOKEN_SHILLING = 'shilling';
+var LOG_TOKEN_TRAVELLER_BACK = 'travellerBack';
 var tooltipIdCounter = 0;
 var getTokenDiv = function (_a) {
     var key = _a.key, value = _a.value, game = _a.game;
@@ -5687,6 +5701,8 @@ var getTokenDiv = function (_a) {
                     color: player.getColor(),
                 })
                 : value;
+        case LOG_TOKEN_TRAVELLER_BACK:
+            return tplLogTokenCard(value, undefined, 'gest_traveller_back_log');
         default:
             return value;
     }
@@ -5699,8 +5715,8 @@ var tplLogTokenPlayerName = function (_a) {
     var name = _a.name, color = _a.color;
     return "<span class=\"playername\" style=\"color:#".concat(color, ";\">").concat(name, "</span>");
 };
-var tplLogTokenCard = function (cardId, nodeId) {
-    return "<div ".concat(nodeId ? "id=\"".concat(nodeId, "\"") : '', " class=\"gest_log_card gest_card gest_card_side\" data-card-id=\"").concat(cardId, "\"></div>");
+var tplLogTokenCard = function (cardId, nodeId, extraClasses) {
+    return "<div ".concat(nodeId ? "id=\"".concat(nodeId, "\"") : '', " class=\"gest_log_card gest_card gest_card_side").concat(extraClasses ? " ".concat(extraClasses) : '', "\" data-card-id=\"").concat(cardId, "\"></div>");
 };
 var tplLogTokenDieResult = function (dieResult) {
     var _a = dieResult.split(':'), color = _a[0], result = _a[1];
@@ -11275,13 +11291,13 @@ var RideState = (function () {
 }());
 var RobState = (function () {
     function RobState(game) {
-        this.selectedMerryMenIds = [];
+        this.selectedMerryMen = [];
         this.game = game;
     }
     RobState.prototype.onEnteringState = function (args) {
         debug('Entering RobState');
         this.args = args;
-        this.selectedMerryMenIds = [];
+        this.selectedMerryMen = [];
         this.updateInterfaceInitialStep();
     };
     RobState.prototype.onLeavingState = function () {
@@ -11329,19 +11345,7 @@ var RobState = (function () {
                 you: '${you}',
             },
         });
-        targets.forEach(function (target) {
-            _this.game.addPrimaryActionButton({
-                id: "".concat(target, "_btn"),
-                text: _(_this.getTargetName({ target: target })),
-                callback: function () {
-                    return _this.updateInterfaceSelectMerryMen({
-                        space: option.space,
-                        target: target,
-                        merryMen: option.merryMen,
-                    });
-                },
-            });
-        });
+        targets.forEach(function (target) { return _this.addTargetButton({ option: option, target: target }); });
         this.game.addCancelButton();
     };
     RobState.prototype.updateInterfaceSelectMerryMen = function (_a) {
@@ -11349,7 +11353,7 @@ var RobState = (function () {
         var space = _a.space, target = _a.target, merryMen = _a.merryMen;
         this.game.clearPossible();
         if (merryMen.length === 1) {
-            this.selectedMerryMenIds.push(merryMen[0].id);
+            this.selectedMerryMen.push(merryMen[0]);
             this.updateInterfaceConfirm({
                 space: space,
                 target: target,
@@ -11366,23 +11370,37 @@ var RobState = (function () {
         merryMen.forEach(function (merryMan) {
             return _this.game.setElementSelectable({
                 id: merryMan.id,
-                callback: function () { return _this.handleMerryManClick({ merryMan: merryMan }); },
+                callback: function () {
+                    if (_this.selectedMerryMen.some(function (selectedMerryMan) { return selectedMerryMan.id === merryMan.id; })) {
+                        _this.selectedMerryMen = _this.selectedMerryMen.filter(function (selectedMerryMan) { return selectedMerryMan.id !== merryMan.id; });
+                    }
+                    else {
+                        _this.selectedMerryMen.push(merryMan);
+                    }
+                    _this.updateInterfaceSelectMerryMen({ space: space, target: target, merryMen: merryMen });
+                },
             });
+        });
+        this.selectedMerryMen.forEach(function (_a) {
+            var id = _a.id;
+            return _this.game.setElementSelected({ id: id });
         });
         this.game.addPrimaryActionButton({
             id: 'done_btn',
             text: _('Done'),
             callback: function () { return _this.updateInterfaceConfirm({ space: space, target: target }); },
-            extraClasses: DISABLED,
+            extraClasses: this.selectedMerryMen.length === 0 ? DISABLED : '',
         });
-        this.game.addSecondaryActionButton({
-            id: 'select_all_btn',
-            text: _('Select all'),
-            callback: function () {
-                _this.selectedMerryMenIds = merryMen.map(function (merryMan) { return merryMan.id; });
-                _this.updateInterfaceConfirm({ space: space, target: target });
-            },
-        });
+        if (this.selectedMerryMen.length < merryMen.length) {
+            this.game.addSecondaryActionButton({
+                id: 'select_all_btn',
+                text: _('Select all'),
+                callback: function () {
+                    _this.selectedMerryMen = __spreadArray([], merryMen, true);
+                    _this.updateInterfaceConfirm({ space: space, target: target });
+                },
+            });
+        }
         this.game.addCancelButton();
     };
     RobState.prototype.updateInterfaceConfirm = function (_a) {
@@ -11390,14 +11408,15 @@ var RobState = (function () {
         var space = _a.space, target = _a.target;
         this.game.clearPossible();
         this.game.clientUpdatePageTitle({
-            text: _('Rob ${target} in ${spaceName} with ${count} Merry Men?'),
+            text: _('Rob ${target} in ${spaceName} with ${merryMenLog}'),
             args: {
                 spaceName: _(space.name),
-                target: this.getTargetName({ target: target }),
-                count: this.selectedMerryMenIds.length,
+                target: this.getTargetLog(target),
+                merryMenLog: createForcesLog(this.selectedMerryMen),
             },
         });
-        this.selectedMerryMenIds.forEach(function (id) {
+        this.selectedMerryMen.forEach(function (_a) {
+            var id = _a.id;
             return _this.game.setElementSelected({ id: id });
         });
         var callback = function () {
@@ -11407,7 +11426,7 @@ var RobState = (function () {
                 args: {
                     target: target,
                     spaceId: space.id,
-                    merryMenIds: _this.selectedMerryMenIds,
+                    merryMenIds: _this.selectedMerryMen.map(function (merryMan) { return merryMan.id; }),
                 },
             });
         };
@@ -11422,6 +11441,68 @@ var RobState = (function () {
             });
         }
         this.game.addCancelButton();
+    };
+    RobState.prototype.addTargetButton = function (_a) {
+        var _this = this;
+        var option = _a.option, target = _a.target;
+        if (CARRIAGE_TYPES.includes(target)) {
+            this.game.addSecondaryActionButton({
+                id: "".concat(target, "_btn"),
+                text: this.game.format_string_recursive('${tkn_carriage}', {
+                    tkn_carriage: "".concat(REVEALED, ":").concat(target),
+                }),
+                callback: function () {
+                    return _this.updateInterfaceSelectMerryMen({
+                        space: option.space,
+                        target: target,
+                        merryMen: option.merryMen,
+                    });
+                },
+            });
+        }
+        else if (target === HIDDEN_CARRIAGE) {
+            this.game.addSecondaryActionButton({
+                id: "".concat(target, "_btn"),
+                text: this.game.format_string_recursive('${tkn_carriage}', {
+                    tkn_carriage: "".concat(HIDDEN, ":").concat(CARRIAGE),
+                }),
+                callback: function () {
+                    return _this.updateInterfaceSelectMerryMen({
+                        space: option.space,
+                        target: target,
+                        merryMen: option.merryMen,
+                    });
+                },
+            });
+        }
+        else if (target === 'traveller') {
+            this.game.addSecondaryActionButton({
+                id: "".concat(target, "_btn"),
+                text: this.game.format_string_recursive('${tkn_travellerBack}', {
+                    tkn_travellerBack: 'TravellerBack',
+                }),
+                callback: function () {
+                    return _this.updateInterfaceSelectMerryMen({
+                        space: option.space,
+                        target: target,
+                        merryMen: option.merryMen,
+                    });
+                },
+            });
+        }
+        else {
+            this.game.addPrimaryActionButton({
+                id: "".concat(target, "_btn"),
+                text: _("Sheriff's Treasury"),
+                callback: function () {
+                    return _this.updateInterfaceSelectMerryMen({
+                        space: option.space,
+                        target: target,
+                        merryMen: option.merryMen,
+                    });
+                },
+            });
+        }
     };
     RobState.prototype.getTargets = function (_a) {
         var option = _a.option;
@@ -11440,34 +11521,24 @@ var RobState = (function () {
         });
         return targets;
     };
-    RobState.prototype.getTargetName = function (_a) {
-        var target = _a.target;
+    RobState.prototype.getTargetLog = function (target) {
         switch (target) {
             case 'treasury':
                 return _("the Sheriff's Treasury");
             case 'traveller':
-                return _('a random Traveller');
-                return;
+                return this.game.format_string_recursive('${tkn_travellerBack}', {
+                    tkn_travellerBack: 'TravellerBack',
+                });
             case 'HiddenCarriage':
+                return this.game.format_string_recursive('${tkn_carriage}', {
+                    tkn_carriage: "".concat(HIDDEN, ":").concat(CARRIAGE),
+                });
             case 'TallageCarriage':
             case 'TrapCarriage':
             case 'TributeCarriage':
-                return _(target);
-        }
-    };
-    RobState.prototype.handleMerryManClick = function (_a) {
-        var merryMan = _a.merryMan;
-        if (this.selectedMerryMenIds.includes(merryMan.id)) {
-            this.game.removeSelectedFromElement({ id: merryMan.id });
-            this.selectedMerryMenIds = this.selectedMerryMenIds.filter(function (id) { return id !== merryMan.id; });
-            if (this.selectedMerryMenIds.length === 0) {
-                document.getElementById('done_btn').classList.add(DISABLED);
-            }
-        }
-        else {
-            this.game.setElementSelected({ id: merryMan.id });
-            this.selectedMerryMenIds.push(merryMan.id);
-            document.getElementById('done_btn').classList.remove(DISABLED);
+                return this.game.format_string_recursive('${tkn_carriage}', {
+                    tkn_carriage: "".concat(REVEALED, ":").concat(target),
+                });
         }
     };
     return RobState;
