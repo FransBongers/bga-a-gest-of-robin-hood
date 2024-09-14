@@ -52,6 +52,7 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
   private _notif_uid_to_log_id = {};
   private _notif_uid_to_mobile_log_id = {};
   private _selectableNodes = []; // TODO: use to keep track of selectable classed?
+  public mobileVersion: boolean = false;
 
   // Game specific
   public cardArea: CardArea;
@@ -125,6 +126,8 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
   // .##....##.##..........##....##.....##.##.......
   // ..######..########....##.....#######..##.......
   public setup(gamedatas: AGestOfRobinHoodGamedatas) {
+    const body = document.getElementById('ebd-body');
+    this.mobileVersion = body && body.classList.contains('mobile_version');
     // Create a new div for buttons to avoid BGA auto clearing it
     dojo.place(
       "<div id='customActions' style='display:inline-block'></div>",
@@ -1026,10 +1029,18 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     // TODO: Update for mobile mode
     const container = document.getElementById('player_boards');
     const infoPanel = document.getElementById('info_panel');
+    
+    
     if (!container) {
       return;
     }
     container.insertAdjacentElement('afterbegin', infoPanel);
+
+    if (this.mobileVersion) {
+      const travellersInfo = document.getElementById('travellers_info_panel');
+      console.log('travellersInfo', this.mobileVersion, travellersInfo);
+      container.insertBefore(travellersInfo, container.childNodes[2]);
+    }
   }
 
   setAlwaysFixTopActions(alwaysFixed = true, maximum = 30) {

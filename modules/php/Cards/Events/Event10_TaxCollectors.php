@@ -65,7 +65,7 @@ class Event10_TaxCollectors extends \AGestOfRobinHood\Cards\Events\RegularEvent
 
   public function canPerformLightEffect($player)
   {
-    return $this->getLightOptions() > 0 || Utils::array_some(Spaces::get(NOTTINGHAM)->getForces(), function ($force) {
+    return count($this->getLightOptions()) > 0 || Utils::array_some(Spaces::get(NOTTINGHAM)->getForces(), function ($force) {
       return $force->isMerryMan() && $force->isHidden();
     });
   }
@@ -146,7 +146,7 @@ class Event10_TaxCollectors extends \AGestOfRobinHood\Cards\Events\RegularEvent
     return false;
   }
 
-  private function getLightOptions()
+  public function getLightOptions()
   {
     $nottingham = Spaces::get(NOTTINGHAM);
     $adjacentSpaceIds = $nottingham->getAdjacentSpaceIds();

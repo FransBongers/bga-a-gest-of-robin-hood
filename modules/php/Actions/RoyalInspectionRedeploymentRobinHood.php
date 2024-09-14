@@ -90,7 +90,12 @@ class RoyalInspectionRedeploymentRobinHood extends \AGestOfRobinHood\Models\Atom
 
   public function actPassRoyalInspectionRedeploymentRobinHood()
   {
-    // $player = self::getPlayer();
+    $player = self::getPlayer();
+    $info = $this->ctx->getInfo();
+
+    if (isset($info['source']) && $info['source'] === 'Event14_TemporaryTruce') {
+      Notifications::message(clienttranslate('${player_name} does not move their Merry Men'), ['player' => $player]);
+    }
     // Stats::incPassActionCount($player->getId(), 1);
     $this->resolveAction(PASS);
   }

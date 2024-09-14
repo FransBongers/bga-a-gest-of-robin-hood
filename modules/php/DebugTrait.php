@@ -17,12 +17,14 @@ use AGestOfRobinHood\Managers\Players;
 use AGestOfRobinHood\Managers\Spaces;
 use AGestOfRobinHood\Models\AtomicAction;
 use AGestOfRobinHood\Helpers\Utils;
+use AGestOfRobinHood\Spaces\Nottingham;
 
 trait DebugTrait
 {
 
   function debug_test()
   {
+    Notifications::log('canPerform', Cards::get('Event10_TaxCollectors')->canPerformLightEffect(Players::get()));
     // $parishes = Spaces::get(PARISHES);
     // $player = Players::get();
     // foreach($parishes as $spaceId => $space) {
@@ -36,7 +38,7 @@ trait DebugTrait
     // Players::getRobinHoodPlayer()->incShillings(-7);
     // Spaces::get(RETFORD)->setToSubmissive(Players::get());
     // Forces::get(ROBIN_HOOD)->setLocation(PRISON);
-    Forces::get(ROBIN_HOOD)->setHidden(0);
+    // Forces::get(ROBIN_HOOD)->setHidden(0);
     // Globals::setBridgeLocation('Blyth_Retford_border');
     // Forces::moveAllInLocation(CARRIAGE_SUPPLY,USED_CARRIAGES);
     // Forces::moveAllInLocation(BLYTH,NOTTINGHAM);
@@ -55,22 +57,22 @@ trait DebugTrait
     // // Forces::get('camp_1')->setLocation(BLYTH);
     // $this->debugPlaceForces(ROBIN_HOOD,TUXFORD,1);
     // $this->debugPlaceForces(TRAP_CARRIAGE,REMSTON,1);
-    // foreach(['carriage_1', 'carriage_3', 'carriage_4', 'carriage_5'] as $forceId) {
-    //   Forces::get($forceId)->setHidden(0);
+    // foreach(['merryMen_7', 'merryMen_2', 'merryMen_10', 'RobinHood'] as $forceId) {
+    //   Forces::get($forceId)->setLocation(RETFORD);
     // }
     // $this->debugPlaceForces(TRIBUTE_CARRIAGE,REMSTON,1);
     // $this->debugPlaceForces(TALLAGE_CARRIAGE,REMSTON,1);
     // $this->debugPlaceForces(TRAP_CARRIAGE,REMSTON,1);
-    // $this->debugPlaceForces(HENCHMEN,NOTTINGHAM,13);
+    // $this->debugPlaceForces(HENCHMEN,REMSTON,1);
     // $this->debugPlaceForces(MERRY_MEN,PRISON,7);
     // $this->debugPlaceForces(HENCHMEN,RETFORD,1);
-    // $this->debugPlaceForces(MERRY_MEN,TUXFORD,4);
+    // $this->debugPlaceForces(MERRY_MEN,TUXFORD,1);
     // $this->debugPlaceForces(TRAP_CARRIAGE,SHIRE_WOOD,1);
     // $this->debugPlaceForces(CAMP,RETFORD,1);
     // $this->debugPlaceForces(CAMP,NEWARK,1);
 
 
-    // Cards::get('Event25_WeaponsOfTheWeak')->insertOnTop(EVENTS_DECK);
+    // Cards::get('Event10_TaxCollectors')->insertOnTop(EVENTS_DECK);
     // Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_VICTIMS_PILE);
     // Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_DECK);
 

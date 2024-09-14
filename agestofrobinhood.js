@@ -1777,9 +1777,12 @@ var AGestOfRobinHood = (function () {
         this._notif_uid_to_log_id = {};
         this._notif_uid_to_mobile_log_id = {};
         this._selectableNodes = [];
+        this.mobileVersion = false;
         console.log('agestofrobinhood constructor');
     }
     AGestOfRobinHood.prototype.setup = function (gamedatas) {
+        var body = document.getElementById('ebd-body');
+        this.mobileVersion = body && body.classList.contains('mobile_version');
         dojo.place("<div id='customActions' style='display:inline-block'></div>", $('generalactions'), 'after');
         this.setAlwaysFixTopActions();
         this.setupDontPreloadImages();
@@ -2355,6 +2358,11 @@ var AGestOfRobinHood = (function () {
             return;
         }
         container.insertAdjacentElement('afterbegin', infoPanel);
+        if (this.mobileVersion) {
+            var travellersInfo = document.getElementById('travellers_info_panel');
+            console.log('travellersInfo', this.mobileVersion, travellersInfo);
+            container.insertBefore(travellersInfo, container.childNodes[2]);
+        }
     };
     AGestOfRobinHood.prototype.setAlwaysFixTopActions = function (alwaysFixed, maximum) {
         if (alwaysFixed === void 0) { alwaysFixed = true; }
@@ -10071,10 +10079,10 @@ var HireState = (function () {
         var max = _a.max, space = _a.space, action = _a.action;
         this.game.clearPossible();
         this.game.clientUpdatePageTitle({
-            text: _('${you} must select the number of ${tkn_henchman} to place'),
+            text: _('${you} must select the number of ${tkn_force} to place'),
             args: {
                 you: '${you}',
-                tkn_henchman: _('Henchmmen')
+                tkn_force: "".concat(REVEALED, ":").concat(HENCHMEN),
             },
         });
         var _loop_4 = function (i) {

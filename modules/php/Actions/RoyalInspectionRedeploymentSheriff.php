@@ -83,6 +83,11 @@ class RoyalInspectionRedeploymentSheriff extends \AGestOfRobinHood\Models\Atomic
   public function actPassRoyalInspectionRedeploymentSheriff()
   {
     $player = self::getPlayer();
+    $info = $this->ctx->getInfo();
+
+    if (isset($info['source']) && $info['source'] === 'Event14_TemporaryTruce') {
+      Notifications::message(clienttranslate('${player_name} does not move their Henchmen'), ['player' => $player]);
+    }
     // Stats::incPassActionCount($player->getId(), 1);
     Engine::resolve(PASS);
   }
