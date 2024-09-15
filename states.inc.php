@@ -699,5 +699,12 @@ $machinestates = array(
         'type' => 'game',
         'action' => 'stAtomicAction',
         'transitions' => [],
-    ]
+    ],
+    ST_MESSAGE => [
+        'name' => 'message',
+        'description' => '',
+        'type' => 'game',
+        'action' => 'stAtomicAction',
+        'transitions' => [],
+    ],
 );

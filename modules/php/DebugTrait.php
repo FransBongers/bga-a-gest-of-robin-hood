@@ -24,7 +24,7 @@ trait DebugTrait
 
   function debug_test()
   {
-    Notifications::log('canPerform', Cards::get('Event10_TaxCollectors')->canPerformLightEffect(Players::get()));
+    // Notifications::log('canPerform', Cards::get('Event10_TaxCollectors')->canPerformLightEffect(Players::get()));
     // $parishes = Spaces::get(PARISHES);
     // $player = Players::get();
     // foreach($parishes as $spaceId => $space) {
@@ -72,7 +72,7 @@ trait DebugTrait
     // $this->debugPlaceForces(CAMP,NEWARK,1);
 
 
-    // Cards::get('Event10_TaxCollectors')->insertOnTop(EVENTS_DECK);
+    Cards::get('Event08_WardenOfTheForest')->insertOnTop(EVENTS_DECK);
     // Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_VICTIMS_PILE);
     // Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_DECK);
 

@@ -41,6 +41,13 @@ class Event08_WardenOfTheForest extends \AGestOfRobinHood\Models\EventCard
         'optional' => true,
         'source' => $this->id,
       ];
+    } else {
+      $nodes['children'][] = [
+        'action' => MESSAGE,
+        'playerId' => $sheriffId,
+        'source' => $this->id,
+        'messageType' => MESSAGE_CANNOT_PERFORM_EVENT,
+      ];
     }
 
     $donate = AtomicActions::get(DONATE);
@@ -52,6 +59,13 @@ class Event08_WardenOfTheForest extends \AGestOfRobinHood\Models\EventCard
         'playerId' => $robinHoodId,
         'optional' => true,
         'source' => $this->id,
+      ];
+    } else {
+      $nodes['children'][] = [
+        'action' => MESSAGE,
+        'playerId' => $robinHoodId,
+        'source' => $this->id,
+        'messageType' => MESSAGE_CANNOT_PERFORM_EVENT,
       ];
     }
 

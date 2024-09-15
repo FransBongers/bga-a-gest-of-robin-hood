@@ -36,6 +36,7 @@ class AtomicActions
     DONATE => 'Donate',
     HIRE => 'Hire',
     INSPIRE => 'Inspire',
+    MESSAGE => 'Message',
     MOVE_CARRIAGE => 'MoveCarriage',
     PATROL => 'Patrol',
     PRE_END_GAME => 'PreEndGame',
