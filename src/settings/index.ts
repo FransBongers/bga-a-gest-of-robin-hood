@@ -216,12 +216,24 @@ class Settings {
   }
 
   public onChangeTwoColumnsLayoutSetting(value: string) {
+    // console.log('onChangeTwoColumnsLayoutSetting', value);
     this.checkColumnSizesVisisble();
     const node = document.getElementById("play_area_container");
     if (node) {
       node.setAttribute("data-two-columns", value);
     }
     this.game.updateLayout();
+    // if (value === ENABLED) {
+
+    // } else {
+    //   const playAreaContainer = document.getElementById('play_area_container');
+    //   const decks = document.getElementById('gest_decks');
+    //   console.log('playAreaContainer', playAreaContainer);
+    //   console.log('decks', decks);
+    //   if (playAreaContainer && decks) {
+    //     playAreaContainer.insertAdjacentElement('afterbegin', decks);
+    //   }
+    // }
     // document.documentElement.setAttribute("data-background-pref", value);
   }
 
@@ -234,6 +246,7 @@ class Settings {
   }
 
   public onChangeCardSizeSetting(value: number) {
+    // TODO: make this working with single and two column
     const node = document.getElementById("gest_card_area");
     if (node) {
       node.style.setProperty(

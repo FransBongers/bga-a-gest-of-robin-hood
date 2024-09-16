@@ -106,9 +106,11 @@ trait TurnTrait
     $markers = Markers::get([ROBIN_HOOD_ELIGIBILITY_MARKER, SHERIFF_ELIGIBILITY_MARKER])->toArray();
 
     $locationValues = [
+      Locations::initiativeTrack(FIRST_ELIGIBLE) => -1, // Only here because a cylinder can stay on the track in zombie mode
       Locations::initiativeTrack(SINGLE_PLOT) => 0,
       Locations::initiativeTrack(EVENT) => 1,
       Locations::initiativeTrack(PLOTS_AND_DEEDS) => 2,
+      Locations::initiativeTrack(SECOND_ELIGIBLE) => 3, // Only here because a cylinder can stay on the track in zombie mode
     ];
 
     usort($markers, function ($a, $b) use ($locationValues) {

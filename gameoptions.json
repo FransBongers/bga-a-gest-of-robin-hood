@@ -13,6 +13,24 @@
         "name": "Table admin plays Sheriff",
         "tmdisplay": "Table admin plays Sheriff"
       }
+    },
+    "startcondition": {
+      "1": [
+        {
+          "type": "otheroption",
+          "id": 201,
+          "value": 1,
+          "message": "Table admin plays Robin Hood available only in friendly mode"
+        }
+      ],
+      "2": [
+        {
+          "type": "otheroption",
+          "id": 201,
+          "value": 1,
+          "message": "Table admin plays Sheriff available only in friendly mode"
+        }
+      ]
     }
   }
 }

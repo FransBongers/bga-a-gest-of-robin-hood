@@ -422,31 +422,32 @@
 #gest_card_area {
   --gestCardScale: var(--rightColumnScale) * var(--gestCardSizeScale);
 }
-#gest_card_area #gest_decks {
+
+#gest_decks {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   gap: 20px;
 }
-#gest_card_area #gest_decks .gest_title {
+#gest_decks .gest_title {
   font-weight: bold;
   font-size: large;
 }
-#gest_card_area #gest_decks .gest_card_row {
+#gest_decks .gest_card_row {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 8px;
 }
-#gest_card_area #gest_decks .gest_card_row .gest_card_stock {
+#gest_decks .gest_card_row .gest_card_stock {
   box-sizing: border-box;
   position: relative;
   height: calc(var(--gestCardScale) * 259px);
   width: calc(var(--gestCardScale) * 150px);
   border-radius: calc(var(--gestCardScale) * 5px);
 }
-#gest_card_area #gest_decks .gest_card_row .gest_deck_counter_text {
+#gest_decks .gest_card_row .gest_deck_counter_text {
   cursor: default;
   font-weight: bold;
   font-size: calc(var(--gestCardScale) * 30px);
