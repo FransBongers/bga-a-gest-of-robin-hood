@@ -2171,6 +2171,7 @@ span[style*="color:#c0c0c0"] {
   padding-bottom: 8px;
   width: 440px;
   min-height: 372px;
+  gap: 4px;
 }
 .gest_card_tooltip .gest_card_side {
   min-width: calc(var(--gestCardScale) * 150px);

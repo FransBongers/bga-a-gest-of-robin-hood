@@ -25,6 +25,9 @@ class Event06_PrioressOfKirklees extends \AGestOfRobinHood\Cards\Events\RegularE
     $this->textLight = clienttranslate('Flip all Merry Men in one Parish to Hidden and shift one step towards Justice.');
     $this->titleDark = clienttranslate('Weakens Robin with poison');
     $this->textDark = clienttranslate('Remove Robin Hood and any one Merry Man in the same space to Available.');
+    $this->clarificationDark = [
+      clienttranslate('This will reveal Robin Hood if he is Hidden.')
+    ];
     $this->carriageMoves = 1;
     $this->setupLocation = REGULAR_EVENTS_POOL;
   }

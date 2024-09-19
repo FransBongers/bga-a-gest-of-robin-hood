@@ -20,6 +20,9 @@ class Event08_WardenOfTheForest extends \AGestOfRobinHood\Models\EventCard
     $this->title = clienttranslate('Warden of the Forest');
     $this->titleLight = clienttranslate('Surprise inspection');
     $this->textLight = clienttranslate('The Sheriff may Hire in up to two Revolting Parishes, then Robin Hood may Donate once. Shift one step towards Order if there are now five or more Submissive Parishes, otherwise shift one step towards Justice.');
+    $this->clarificationLight = [
+      clienttranslate('The Sheriff can use this to flip Revolting Parishes to Submissive.')
+    ];
     $this->carriageMoves = 0;
     $this->eventType = FORTUNE_EVENT;
     $this->setupLocation = FORTUNE_EVENTS_POOL;

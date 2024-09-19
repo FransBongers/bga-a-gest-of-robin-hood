@@ -23,6 +23,9 @@ class Event12_BoatsAndBridges extends \AGestOfRobinHood\Cards\Events\RegularEven
     $this->textLight = clienttranslate('Move any number of Merry Men from one space adjacent to a River to one other space adjacent to a River, then hide all moved Merry Men.');
     $this->titleDark = clienttranslate('Building bridges');
     $this->textDark = clienttranslate('Place the Bridge across any River border, which is now treated as a regular border. Shift one step towards Order.');
+    $this->clarificationDark = [
+      clienttranslate('Carriages may not move across the Bridge counter, as they need to follow the paved tracks printed on the board.')
+    ];
     $this->carriageMoves = 1;
     $this->setupLocation = REGULAR_EVENTS_POOL;
   }
