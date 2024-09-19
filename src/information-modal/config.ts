@@ -41,7 +41,7 @@ const getTravellersConfig = (): TravellerInfo[] => [
   },
   {
     name: _('Bishop of Hereford'),
-    inDeck: '(x1 added by Event)',
+    inDeck: _('(x1 added by Event)'),
     defense: 1,
     success: _('3 Shillings / 6 Shillings (Victim)'),
     failure: _('No effect / 3 Shillings to Sheriff and Submissive'),
@@ -49,7 +49,7 @@ const getTravellersConfig = (): TravellerInfo[] => [
   },
   {
     name: _('Guy of Gisborne'),
-    inDeck: '(x1 added by Event)',
+    inDeck: _('(x1 added by Event)'),
     defense: 3,
     success: _('Remove'),
     failure: _('Captured'),

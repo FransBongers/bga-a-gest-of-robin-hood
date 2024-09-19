@@ -145,16 +145,6 @@
       border-right: none;
     }
 
-    .gest_arrow {
-      background-image: url('img/arrow.svg');
-      min-width: 52.7px;
-      max-width: 52.7px;
-      min-height: 7.33px;
-      max-height: 7.33px;
-      background-repeat: no-repeat;
-      margin-top: 6px;
-    }
-
     #gest_cardsInfo {
       max-height: 75vh;
       overflow-y: auto;
@@ -347,4 +337,14 @@
       margin-left: 8px;
     }
   }
+}
+
+.gest_arrow {
+  background-image: url('img/arrow.svg');
+  min-width: 52.7px;
+  max-width: 52.7px;
+  min-height: 7.33px;
+  max-height: 7.33px;
+  background-repeat: no-repeat;
+  margin-top: 6px;
 }

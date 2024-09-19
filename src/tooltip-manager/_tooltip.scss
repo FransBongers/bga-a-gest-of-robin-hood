@@ -72,6 +72,17 @@
       // padding-top: 4px;
       margin-bottom: 8px;
     }
+
+    .gest_card_clarification {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      margin-top: 6px;
+
+      .gest_arrow {
+        margin-right: 4px;
+      }
+    }
   }
 }
 

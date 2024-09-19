@@ -78,7 +78,7 @@ interface AGestOfRobinHoodGame extends Game {
   markerManager: MarkerManager;
   notificationManager: NotificationManager;
   playerManager: PlayerManager;
-  playerOrder: number[]
+  playerOrder: number[];
   settings: Settings;
   tooltipManager: TooltipManager;
   _last_tooltip_id: number; // generic
@@ -89,6 +89,8 @@ interface AGestOfRobinHoodGame extends Game {
 
 interface GestCardStaticData {
   carriageMoves: number;
+  clarificationDark: string[];
+  clarificationLight: string[];
   eventType: 'regularEvent' | 'fortuneEvent' | 'royalInspection' | null;
   id: string;
   setupLocation: string;
@@ -160,7 +162,7 @@ interface AGestOfRobinHoodGamedatas extends Gamedatas {
       travellersVictimsPile: GestTravellerCard[];
       travellersPool: GestTravellerCard[];
       travellerRobbed: GestTravellerCard | null;
-    }
+    };
   };
   forces: Record<
     string,

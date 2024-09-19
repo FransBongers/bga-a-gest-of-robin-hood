@@ -24,8 +24,10 @@ class Card extends \AGestOfRobinHood\Helpers\DB_Model
   protected $title = '';
   protected $titleLight = '';
   protected $textLight = '';
+  protected $clarificationLight = [];
   protected $titleDark = '';
   protected $textDark = '';
+  protected $clarificationDark = [];
   protected $type = null;
   protected $carriageMoves = 0;
   protected $strength = 0;
@@ -41,6 +43,8 @@ class Card extends \AGestOfRobinHood\Helpers\DB_Model
   protected $staticAttributes = [
     'id',
     'carriageMoves',
+    'clarificationDark',
+    'clarificationLight',
     'eventType',
     'setupLocation',
     'strength',

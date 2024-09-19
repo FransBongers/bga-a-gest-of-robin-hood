@@ -5406,7 +5406,7 @@ var getTravellersConfig = function () { return [
     },
     {
         name: _('Bishop of Hereford'),
-        inDeck: '(x1 added by Event)',
+        inDeck: _('(x1 added by Event)'),
         defense: 1,
         success: _('3 Shillings / 6 Shillings (Victim)'),
         failure: _('No effect / 3 Shillings to Sheriff and Submissive'),
@@ -5414,7 +5414,7 @@ var getTravellersConfig = function () { return [
     },
     {
         name: _('Guy of Gisborne'),
-        inDeck: '(x1 added by Event)',
+        inDeck: _('(x1 added by Event)'),
         defense: 3,
         success: _('Remove'),
         failure: _('Captured'),
@@ -13177,6 +13177,7 @@ var tplCardTooltipContainer = function (_a) {
     var card = _a.card, content = _a.content;
     return "<div class=\"gest_card_tooltip\">\n  <div class=\"gest_card_tooltip_inner_container\">\n    ".concat(content, "\n  </div>\n  ").concat(card, "\n</div>");
 };
+var tplGestCardTooltipClarification = function (text) { return "\n  <div class=\"gest_card_clarification\">\n    <div class=\"gest_arrow\"></div>\n    <span class=\"gest_tooltip_text\">".concat(_(text), "</span>\n  </div>\n"); };
 var tplGestCardTooltip = function (_a) {
     var card = _a.card, game = _a.game, _b = _a.imageOnly, imageOnly = _b === void 0 ? false : _b;
     var cardHtml = "<div class=\"gest_card_side\" data-card-id=\"".concat(card.id.split('_')[0], "\"></div>");
@@ -13191,7 +13192,7 @@ var tplGestCardTooltip = function (_a) {
             })
             : game.format_string_recursive(_('Carriages: ${carriages}'), {
                 carriages: card.carriageMoves,
-            }), "</span>\n    <span class=\"gest_section_title\">").concat(_(card.titleLight), "</span>\n    <span class=\"gest_tooltip_text\">").concat(_(card.textLight), "</span>\n    <span class=\"gest_section_title\">").concat(_(card.titleDark), "</span>\n    <span class=\"gest_tooltip_text\">").concat(_(card.textDark), "</span>\n    "),
+            }), "</span>\n    <span class=\"gest_section_title\">").concat(_(card.titleLight), "</span>\n    <span class=\"gest_tooltip_text\">").concat(_(card.textLight), "</span>\n    ").concat(card.clarificationLight.map(function (text) { return tplGestCardTooltipClarification(text); }).join(''), "\n    <span class=\"gest_section_title\">").concat(_(card.titleDark), "</span>\n    <span class=\"gest_tooltip_text\">").concat(_(card.textDark), "</span>\n    ").concat(card.clarificationDark.map(function (text) { return tplGestCardTooltipClarification(text); }).join(''), "\n    "),
     });
 };
 var tplTravellerTooltip = function (info) {

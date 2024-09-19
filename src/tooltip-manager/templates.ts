@@ -13,6 +13,13 @@ const tplCardTooltipContainer = ({
 </div>`;
 };
 
+const tplGestCardTooltipClarification = (text: string) => `
+  <div class="gest_card_clarification">
+    <div class="gest_arrow"></div>
+    <span class="gest_tooltip_text">${_(text)}</span>
+  </div>
+`
+
 const tplGestCardTooltip = ({
   card,
   game,
@@ -45,8 +52,10 @@ const tplGestCardTooltip = ({
     }</span>
     <span class="gest_section_title">${_(card.titleLight)}</span>
     <span class="gest_tooltip_text">${_(card.textLight)}</span>
+    ${card.clarificationLight.map((text) => tplGestCardTooltipClarification(text)).join('')}
     <span class="gest_section_title">${_(card.titleDark)}</span>
     <span class="gest_tooltip_text">${_(card.textDark)}</span>
+    ${card.clarificationDark.map((text) => tplGestCardTooltipClarification(text)).join('')}
     `,
   });
 };

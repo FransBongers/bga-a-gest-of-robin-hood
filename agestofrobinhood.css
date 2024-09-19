@@ -1217,15 +1217,6 @@
 .information_modal #information_modal_content .information_modal_tab:last-child {
   border-right: none;
 }
-.information_modal #information_modal_content .gest_arrow {
-  background-image: url("img/arrow.svg");
-  min-width: 52.7px;
-  max-width: 52.7px;
-  min-height: 7.33px;
-  max-height: 7.33px;
-  background-repeat: no-repeat;
-  margin-top: 6px;
-}
 .information_modal #information_modal_content #gest_cardsInfo {
   max-height: 75vh;
   overflow-y: auto;
@@ -1380,6 +1371,16 @@
 .gest_royal_inspection_info .gest_row .gest_list_item {
   font-weight: bold;
   margin-left: 8px;
+}
+
+.gest_arrow {
+  background-image: url("img/arrow.svg");
+  min-width: 52.7px;
+  max-width: 52.7px;
+  min-height: 7.33px;
+  max-height: 7.33px;
+  background-repeat: no-repeat;
+  margin-top: 6px;
 }
 
 /* ------- UNDO TURN ------- */
@@ -2219,6 +2220,15 @@ span[style*="color:#c0c0c0"] {
   font-size: small;
   font-style: italic;
   margin-bottom: 8px;
+}
+.gest_card_tooltip .gest_card_tooltip_inner_container .gest_card_clarification {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  margin-top: 6px;
+}
+.gest_card_tooltip .gest_card_tooltip_inner_container .gest_card_clarification .gest_arrow {
+  margin-right: 4px;
 }
 
 .gest_card_only_tooltip {
