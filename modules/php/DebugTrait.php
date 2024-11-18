@@ -38,7 +38,7 @@ trait DebugTrait
     // Players::getRobinHoodPlayer()->incShillings(-7);
     // Spaces::get(RETFORD)->setToSubmissive(Players::get());
     // Forces::get(ROBIN_HOOD)->setLocation(PRISON);
-    // Forces::get(ROBIN_HOOD)->setHidden(0);
+    Forces::get(ROBIN_HOOD)->setHidden(1);
     // Globals::setBridgeLocation('Blyth_Retford_border');
     // Forces::moveAllInLocation(CARRIAGE_SUPPLY,USED_CARRIAGES);
     // Forces::moveAllInLocation(BLYTH,NOTTINGHAM);
@@ -72,7 +72,7 @@ trait DebugTrait
     // $this->debugPlaceForces(CAMP,NEWARK,1);
 
 
-    Cards::get('Event12_BoatsAndBridges')->insertOnTop(EVENTS_DECK);
+    // Cards::get('Event06_PrioressOfKirklees')->insertOnTop(EVENTS_DECK);
     // Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_VICTIMS_PILE);
     // Cards::get('Traveller09_ThePotter')->insertOnTop(TRAVELLERS_DECK);
 

@@ -151,7 +151,7 @@ class Patrol extends \AGestOfRobinHood\Actions\Plot
     }
 
     $this->insertPlotAction($player);
-    Notifications::log('checkpoint arg', $checkpoint);
+    
     $this->resolveAction($args, $checkpoint);
   }
 

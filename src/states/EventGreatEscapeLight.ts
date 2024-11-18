@@ -63,14 +63,14 @@ class EventGreatEscapeLightState extends MoveForcesState implements State {
         });
       });
 
-    this.game.addPrimaryActionButton({
-      id: 'done_btn',
-      text: _('Done'),
-      callback: () => this.updateInterfaceConfirm(),
-      extraClasses: movedMerryMen.length === 0 ? DISABLED : '',
-    });
-
-    this.addCancelButton();
+    if (Object.keys(this.moves).length === 0) {
+      this.game.addPassButton({
+        optionalAction: this.args.optionalAction,
+      });
+      this.game.addUndoButtons(this.args);
+    } else {
+      this.addCancelButton();
+    }
   }
 
   private updateInterfaceSelectAdjacentSpace({

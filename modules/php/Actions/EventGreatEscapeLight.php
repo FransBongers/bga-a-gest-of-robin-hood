@@ -149,10 +149,6 @@ class EventGreatEscapeLight extends \AGestOfRobinHood\Actions\Plot
     }
 
     if (count($forces) !== $requiredCount) {
-      Notifications::log('forces', $forces);
-      Notifications::log('requiredCount', $requiredCount);
-      Notifications::log('robinHoodFromLocation', $robinHoodFromLocation);
-      
       throw new \feException("ERROR 106");
     }
 

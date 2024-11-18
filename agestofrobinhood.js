@@ -8887,13 +8887,15 @@ var EventGreatEscapeLightState = (function (_super) {
                 callback: function () { return _this.updateInterfaceSelectAdjacentSpace({ merryMan: merryMan }); },
             });
         });
-        this.game.addPrimaryActionButton({
-            id: 'done_btn',
-            text: _('Done'),
-            callback: function () { return _this.updateInterfaceConfirm(); },
-            extraClasses: movedMerryMen.length === 0 ? DISABLED : '',
-        });
-        this.addCancelButton();
+        if (Object.keys(this.moves).length === 0) {
+            this.game.addPassButton({
+                optionalAction: this.args.optionalAction,
+            });
+            this.game.addUndoButtons(this.args);
+        }
+        else {
+            this.addCancelButton();
+        }
     };
     EventGreatEscapeLightState.prototype.updateInterfaceSelectAdjacentSpace = function (_a) {
         var _this = this;
