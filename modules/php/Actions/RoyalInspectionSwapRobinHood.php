@@ -42,7 +42,7 @@ class RoyalInspectionSwapRobinHood extends \AGestOfRobinHood\Models\AtomicAction
 
   public function stRoyalInspectionSwapRobinHood()
   {
-    if (Forces::get(ROBIN_HOOD)->getLocation() === PRISON) {
+    if (in_array(Forces::get(ROBIN_HOOD)->getLocation(), [PRISON, REMOVED_FROM_GAME])) {
       $this->resolveAction(['automatic' => true]);
     }
   }

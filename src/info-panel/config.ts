@@ -8,7 +8,7 @@ const getRobinHoodPlotsAndDeeds = (): {
       id: 'recruit',
       title: _('Recruit'),
       cost: _('1 Shilling per space.'),
-      location: _('Up to 3 non-Submissive spaces.'),
+      location: _('Up to 3 non-Submissive spaces (1 for Single Plot).'),
       procedure: _(
         'Place 1 Merry Man, or replace a Merry Man (not Robin Hood) with a Camp (+1 Justice). If there is already a Camp, instead place up to 2 Merry Men or flip all Hidden.'
       ),
@@ -17,7 +17,7 @@ const getRobinHoodPlotsAndDeeds = (): {
       id: 'sneak',
       title: _('Sneak'),
       cost: _('1 Shilling per origin.'),
-      location: _('Up to 3 origin spaces with Merry Men.'),
+      location: _('Up to 3 origin spaces with Merry Men (1 for Single Plot).'),
       procedure: _(
         'Move any Merry Men to adjacent spaces. If a destination is Submissive and moving Merry Men plus Henchmen there exceeds 3, Reveal them; otherwise Hide all moving Merry Men.'
       ),
@@ -26,7 +26,7 @@ const getRobinHoodPlotsAndDeeds = (): {
       id: 'rob',
       title: _('Rob'),
       cost: _('0 Shillings.'),
-      location: _('Up to 3 spaces with Hidden Merry Men and/or Robin Hood.'),
+      location: _('Up to 3 spaces with Hidden Merry Men and/or Robin Hood (1 for Single Plot).'),
       procedure: _(
         "Select target and Reveal any number of Merry Men, then roll against target's Defense Value."
       ),
@@ -79,7 +79,7 @@ const getSheriffPlotsAndDeeds = (): {
       id: 'hire',
       title: _('Hire'),
       cost: _('2 Shilling per space.'),
-      location: _('Up to 3 spaces (see Procedure for details).'),
+      location: _('Up to 3 spaces (see Procedure for details, 1 for Single Plot).'),
       procedure: _(
         'Place up to 2 Henchmen in Submissive Parishes, up to 4 Henchmen in Nottingham, and set Revolting Parishes with more Henchmen than Merry Men to Submissive.'
       ),
@@ -88,7 +88,7 @@ const getSheriffPlotsAndDeeds = (): {
       id: 'patrol',
       title: _('Patrol'),
       cost: _('2 Shillings per destination.'),
-      location: _('Up to 3 destination spaces.'),
+      location: _('Up to 3 destination spaces (1 for Single Plot).'),
       procedure: _(
         'Move in any number of Henchmen from adjacent spaces, then reveal 1 Merry Man per Henchmen now there (or per 2 Henchmen in Forest).'
       ),
@@ -97,7 +97,7 @@ const getSheriffPlotsAndDeeds = (): {
       id: 'capture',
       title: _('Capture'),
       cost: _('0 Shillings.'),
-      location: _('Up to 3 spaces with Henchmen.'),
+      location: _('Up to 3 spaces with Henchmen (1 for Single Plot).'),
       procedure: _(
         'Remove 1 Revealed enemy piece per Henchmen (or per 2 Henchmen in Revolting Parishes). Remove Merry Men to Prison (Robin Hood then Camps last).'
       ),

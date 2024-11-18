@@ -2,6 +2,7 @@
 
 namespace AGestOfRobinHood\Forces;
 
+use AGestOfRobinHood\Core\Globals;
 use AGestOfRobinHood\Core\Notifications;
 use AGestOfRobinHood\Helpers\Locations;
 use AGestOfRobinHood\Managers\Forces;
@@ -29,12 +30,14 @@ class RobinHood extends \AGestOfRobinHood\Models\Force
   public function eventRevealBySheriff($player)
   {
     $robinHoodPlayer = Players::getRobinHoodPlayer();
-    if ($this->getLocation() === ROBIN_HOOD_SUPPLY) {
+    if (in_array($this->getLocation(), [ROBIN_HOOD_SUPPLY, REMOVED_FROM_GAME])) {
       Notifications::unableToRevealRobinHood($robinHoodPlayer);
+      Globals::setCheckpoint(true);
       return;
     }
     if ($this->isHidden()) {
       $this->reveal($player);
+      Globals::setCheckpoint(true);
     }
   }
 }

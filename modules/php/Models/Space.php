@@ -122,14 +122,18 @@ class Space extends \AGestOfRobinHood\Helpers\DB_Model
 
   public function revolt($player)
   {
-    $this->setStatus(REVOLTING);
-    Notifications::parishStatus($player, $this, REVOLTING);
+    if ($this->getStatus() !== PASSIVE) {
+      $this->setStatus(REVOLTING);
+      Notifications::parishStatus($player, $this, REVOLTING);
+    }
   }
 
   public function setToSubmissive($player)
   {
-    $this->setStatus(SUBMISSIVE);
-    Notifications::parishStatus($player, $this, SUBMISSIVE);
+    if ($this->getStatus() !== PASSIVE) {
+      $this->setStatus(SUBMISSIVE);
+      Notifications::parishStatus($player, $this, SUBMISSIVE);
+    }
   }
 
   public function isParish()

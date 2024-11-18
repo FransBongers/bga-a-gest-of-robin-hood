@@ -111,14 +111,14 @@ class CardArea {
       );
     }
 
-    this.game.tooltipManager.addTextToolTip({
-      nodeId: 'gest_events_deck',
-      text: _('Events deck'),
-    });
-    this.game.tooltipManager.addTextToolTip({
-      nodeId: 'gest_travellers_deck',
-      text: _('Travellers deck'),
-    });
+    // this.game.tooltipManager.addTextToolTip({
+    //   nodeId: 'gest_events_deck',
+    //   text: _('Events deck'),
+    // });
+    // this.game.tooltipManager.addTextToolTip({
+    //   nodeId: 'gest_travellers_deck',
+    //   text: _('Travellers deck'),
+    // });
 
     this.setupStocks({ gamedatas });
     // this.setupCounters({ gamedatas });
