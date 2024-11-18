@@ -22,7 +22,7 @@ class Event10_TaxCollectors extends \AGestOfRobinHood\Cards\Events\RegularEvent
     $this->titleLight = clienttranslate('Incompetent administrators');
     $this->textLight = clienttranslate('Move up to 4 Merry Men from adjacent spaces into Nottingham, flip them Hidden, then may attempt a Rob there.');
     $this->titleDark = clienttranslate('Brutal enforcement');
-    $this->textDark = clienttranslate('Confiscate in up to two Parishes, even if Revolting.');
+    $this->textDark = clienttranslate('Confiscate in up to two Parishes, even if not Submissive.');
     $this->carriageMoves = 1;
     $this->setupLocation = REGULAR_EVENTS_POOL;
   }

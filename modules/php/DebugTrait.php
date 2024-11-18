@@ -24,55 +24,35 @@ trait DebugTrait
 
   function debug_test()
   {
-    // Notifications::log('canPerform', Cards::get('Event10_TaxCollectors')->canPerformLightEffect(Players::get()));
-    // $parishes = Spaces::get(PARISHES);
-    // $player = Players::get();
-    // foreach($parishes as $spaceId => $space) {
-    //   $space->revolt($player);
-    // }
+    // Players::getSheriffPlayer()->incShillings(-2);
+
+    // $hire = AtomicActions::get(HIRE);
+    // $sheriff = Players::getSheriffPlayer();
+    // $sheriffId = $sheriff->getId();
+    // Notifications::log('options', $hire->getOptions('Event08_WardenOfTheForest'));
 
     // $deckCount = Cards::countInLocation(EVENTS_DECK);
     // Notifications::log('Traveller01_RichMerchant', Cards::get('Traveller01_RichMerchant'));
     // Forces::get('camp_5')->returnToSupply(Players::get());
     // Stats::checkExistence();
     // Players::getRobinHoodPlayer()->incShillings(-7);
-    // Spaces::get(RETFORD)->setToSubmissive(Players::get());
+    // Spaces::get(BLYTH)->setToSubmissive(Players::get());
+    // Spaces::get(BLYTH)->removeSubmissiveMarker(Players::get());
     // Forces::get(ROBIN_HOOD)->setLocation(TUXFORD);
-    Forces::get(ROBIN_HOOD)->setHidden(1);
+    // Forces::get(ROBIN_HOOD)->setHidden(1);
     // Globals::setBridgeLocation('Blyth_Retford_border');
     // Forces::moveAllInLocation(CARRIAGE_SUPPLY,USED_CARRIAGES);
     // Forces::moveAllInLocation(BLYTH,NOTTINGHAM);
     // Forces::moveAllInLocation(BINGHAM,REMSTON);
     // Forces::moveAllInLocation(SHIRE_WOOD,TUXFORD);
-    // Forces::moveAllInLocation(REMSTON,NOTTINGHAM);
-    // Forces::moveAllInLocation(OLLERTON_HILL,MANSFIELD);
-    // Forces::moveAllInLocation(BINGHAM,BLYTH);
-    // Forces::moveAllInLocation(NOTTINGHAM,BLYTH);
-    // Forces::moveAllInLocation(REMSTON,TUXFORD);
-    // Forces::move('camp_2', OLLERTON_HILL);
 
-    // Spaces::get(BLYTH)->revolt(Players::get());
-    // Forces::get(ROBIN_HOOD)->setLocation(ROBIN_HOOD_SUPPLY);
-    // Spaces::get(RETFORD)->setStatus(REVOLTING);
-    // // Forces::get('camp_1')->setLocation(BLYTH);
-    // $this->debugPlaceForces(ROBIN_HOOD,TUXFORD,1);
-    // $this->debugPlaceForces(TRAP_CARRIAGE,REMSTON,1);
-    // foreach(['merryMen_7', 'merryMen_2', 'merryMen_10', 'RobinHood'] as $forceId) {
-    //   Forces::get($forceId)->setLocation(RETFORD);
-    // }
-    // $this->debugPlaceForces(TRIBUTE_CARRIAGE,REMSTON,1);
-    // $this->debugPlaceForces(TALLAGE_CARRIAGE,REMSTON,1);
-    // $this->debugPlaceForces(TRAP_CARRIAGE,REMSTON,1);
-    // $this->debugPlaceForces(HENCHMEN,REMSTON,1);
-    // $this->debugPlaceForces(MERRY_MEN,PRISON,7);
-    // $this->debugPlaceForces(HENCHMEN,RETFORD,1);
     // $this->debugPlaceForces(MERRY_MEN,TUXFORD,1);
     // $this->debugPlaceForces(TRAP_CARRIAGE,SHIRE_WOOD,1);
     // $this->debugPlaceForces(CAMP,RETFORD,1);
     // $this->debugPlaceForces(CAMP,NEWARK,1);
 
 
-    // Cards::get('Event15_WillScarlet')->insertOnTop(EVENTS_DECK);
+    Cards::get('Event29_ATaleOfTwoLovers')->insertOnTop(EVENTS_DECK);
     // Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_VICTIMS_PILE);
     // Cards::get('Traveller09_ThePotter')->insertOnTop(TRAVELLERS_DECK);
 

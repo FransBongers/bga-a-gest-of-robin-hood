@@ -40,7 +40,8 @@ class Event29_ATaleOfTwoLovers extends \AGestOfRobinHood\Cards\Events\RegularEve
       'maxNumber' => 2,
       'locationIds' => PARISHES,
       'cardId' => $this->id,
-      'conditions' => [ONE_SPACE]
+      'conditions' => [ONE_SPACE],
+      'optional' => true,
     ]));
   }
 

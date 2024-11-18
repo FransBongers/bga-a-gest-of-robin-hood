@@ -7797,6 +7797,9 @@ var ChooseActionState = (function () {
             if (action === EVENT && !_this.args.canResolveEvent && !pass) {
                 return;
             }
+            if (action === SINGLE_PLOT && !_this.args.canChooseSinglePlot && !pass) {
+                return;
+            }
             _this.game.addPrimaryActionButton({
                 id: "".concat(action, "_select"),
                 text: _this.getActionName({ action: action }),

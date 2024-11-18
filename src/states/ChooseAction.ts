@@ -149,6 +149,9 @@ class ChooseActionState implements State {
       if (action === EVENT && !this.args.canResolveEvent && !pass) {
         return;
       }
+      if (action === SINGLE_PLOT && !this.args.canChooseSinglePlot && !pass) {
+        return;
+      }
       this.game.addPrimaryActionButton({
         id: `${action}_select`,
         text: this.getActionName({ action }),

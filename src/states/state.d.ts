@@ -25,6 +25,7 @@ interface OnEnteringChooseActionStateArgs extends CommonArgs {
     singlePlot: boolean;
     plotsAndDeeds: boolean;
   };
+  canChooseSinglePlot: boolean;
   canResolveEvent: boolean;
 }
 

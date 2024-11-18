@@ -9,6 +9,7 @@ use AGestOfRobinHood\Core\Globals;
 use AGestOfRobinHood\Core\Stats;
 use AGestOfRobinHood\Helpers\Locations;
 use AGestOfRobinHood\Helpers\Utils;
+use AGestOfRobinHood\Managers\AtomicActions;
 use AGestOfRobinHood\Managers\Cards;
 use AGestOfRobinHood\Managers\Markers;
 use AGestOfRobinHood\Managers\Players;
@@ -39,8 +40,11 @@ class ChooseAction extends \AGestOfRobinHood\Models\AtomicAction
         EVENT => $eventAvailable,
         PLOTS_AND_DEEDS => Markers::getTopOf(Locations::initiativeTrack(PLOTS_AND_DEEDS)) === null,
       ],
-      'canResolveEvent' => $eventAvailable
+      'canResolveEvent' => $eventAvailable,
     ];
+
+    $selectPlotOptions = AtomicActions::get(SELECT_PLOT)->getOptions(self::getPlayer());
+    $data['canChooseSinglePlot'] = count($selectPlotOptions) > 0;
 
     if ($data['track'][EVENT]) {
       $player = self::getPlayer();
