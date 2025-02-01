@@ -161,6 +161,9 @@ class TooltipManager {
     html: string | Function,
     config: { delay?: number; midSize?: boolean; forceRecreate?: boolean } = {}
   ) {
+    if(!document.getElementById(id)) {
+      return;
+    }
     config = Object.assign(
       {
         delay: 400,

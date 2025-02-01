@@ -13387,6 +13387,9 @@ var TooltipManager = (function () {
     TooltipManager.prototype.addCustomTooltip = function (id, html, config) {
         var _this = this;
         if (config === void 0) { config = {}; }
+        if (!document.getElementById(id)) {
+            return;
+        }
         config = Object.assign({
             delay: 400,
             midSize: true,
