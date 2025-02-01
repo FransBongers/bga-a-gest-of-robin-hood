@@ -62,7 +62,7 @@ class InformationModal {
       closeIcon: 'fa-times',
       // titleTpl:
       //   '<h2 id="popin_${id}_title" class="${class}_title">${title}</h2>',
-      // title: _("Info"),
+      title: _("Player Aid"),
       contents: tplInformationModalContent({
         tabs: this.tabs,
         game: this.game,

@@ -18,6 +18,7 @@
 declare const define; // TODO: check if we comment here or in bga-animations module?
 declare const ebg;
 declare const $;
+declare const dijit;
 declare const dojo: Dojo;
 declare const _: (stringToTranslate: string) => string;
 declare const g_gamethemeurl;
@@ -46,7 +47,9 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
   private alwaysFixTopActionsMaximum: number;
   public tooltipsToMap: [tooltipId: number, card_id: string][] = [];
   public _connections: unknown[];
-  private _helpMode = false; // Use to implement help mode
+  public _displayedTooltip = null;
+  public _dragndropMode = false; // Not used but present in boiler plate code
+  public _helpMode = false; // Use to implement help mode
   private _last_notif = null;
   public _last_tooltip_id = 0;
   private _notif_uid_to_log_id = {};
@@ -329,6 +332,59 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     // console.log('onUpdateActionButtons: ' + stateName);
   }
 
+  // .##.....##.########.##.......########.....##.....##..#######..########..########
+  // .##.....##.##.......##.......##.....##....###...###.##.....##.##.....##.##......
+  // .##.....##.##.......##.......##.....##....####.####.##.....##.##.....##.##......
+  // .#########.######...##.......########.....##.###.##.##.....##.##.....##.######..
+  // .##.....##.##.......##.......##...........##.....##.##.....##.##.....##.##......
+  // .##.....##.##.......##.......##...........##.....##.##.....##.##.....##.##......
+  // .##.....##.########.########.##...........##.....##..#######..########..########
+
+  public toggleHelpMode(b: boolean) {
+    console.log('toggleHelpMode', this.framework().defaultTooltipPosition);
+    if (b) this.activateHelpMode();
+    else this.deactivateHelpMode();
+  }
+
+  activateHelpMode() {
+    this._helpMode = true;
+    dojo.addClass('ebd-body', 'help-mode');
+    this._displayedTooltip = null;
+    document.body.addEventListener(
+      'click',
+      this.closeCurrentTooltip.bind(this)
+    );
+  }
+
+  deactivateHelpMode() {
+    this.closeCurrentTooltip();
+    this._helpMode = false;
+    dojo.removeClass('ebd-body', 'help-mode');
+    document.body.removeEventListener(
+      'click',
+      this.closeCurrentTooltip.bind(this)
+    );
+  }
+
+  closeCurrentTooltip() {
+    if (!this._helpMode) return;
+
+    if (this._displayedTooltip == null) return;
+    else {
+      this._displayedTooltip.close();
+      this._displayedTooltip = null;
+    }
+  }
+
+  destroy(elem: HTMLElement) {
+    if (this.framework().tooltips[elem.id]) {
+      this.framework().tooltips[elem.id].destroy();
+      delete this.framework().tooltips[elem.id];
+    }
+
+    elem.remove();
+  }
+
   //  .##.....##.########.####.##.......####.########.##....##
   //  .##.....##....##.....##..##........##.....##.....##..##.
   //  .##.....##....##.....##..##........##.....##......####..
@@ -554,10 +610,14 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     dojo.forEach(this._connections, dojo.disconnect);
     this._connections = [];
     this._selectableNodes.forEach((node) => {
-      if ($(node)) dojo.removeClass(node, 'selectable selected');
+      if ($(node)) {
+        dojo.removeClass(node, GEST_SELECTABLE);
+        dojo.removeClass(node, GEST_SELECTED);
+      }
     });
     this._selectableNodes = [];
 
+    // TODO: remove this and handle via _selectableNodes
     dojo.query(`.${GEST_SELECTABLE}`).removeClass(GEST_SELECTABLE);
     dojo.query(`.${GEST_SELECTED}`).removeClass(GEST_SELECTED);
 
@@ -614,11 +674,7 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
       return;
     }
     node.classList.add(GEST_SELECTABLE);
-    this._connections.push(
-      dojo.connect(node, 'onclick', this, (event: PointerEvent) =>
-        callback(event)
-      )
-    );
+    this.onClick(node, (event: PointerEvent) => callback(event));
   }
 
   setCardSelected({ id }: { id: string }) {
@@ -642,11 +698,7 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
       return;
     }
     node.classList.add(GEST_SELECTABLE);
-    this._connections.push(
-      dojo.connect(node, 'onclick', this, (event: PointerEvent) =>
-        callback(event)
-      )
-    );
+    this.onClick(node, (event: PointerEvent) => callback(event));
   }
 
   setLocationSelected({ id }: { id: string }) {
@@ -673,11 +725,8 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
       return;
     }
     node.classList.add(GEST_SELECTABLE);
-    this._connections.push(
-      dojo.connect(node, 'onclick', this, (event: PointerEvent) =>
-        callback(event)
-      )
-    );
+
+    this.onClick(node, (event: PointerEvent) => callback(event));
   }
 
   setSpaceSelected({ id }: { id: string }) {
@@ -695,16 +744,12 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     id: string;
     callback: (event: PointerEvent) => void;
   }) {
-    const node = $(id);
+    const node: HTMLElement | null = $(id);
     if (node === null) {
       return;
     }
     node.classList.add(GEST_SELECTABLE);
-    this._connections.push(
-      dojo.connect(node, 'onclick', this, (event: PointerEvent) =>
-        callback(event)
-      )
-    );
+    this.onClick(node, (event: PointerEvent) => callback(event));
   }
 
   setElementSelected({ id }: { id: string }) {
@@ -722,7 +767,7 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     }
     node.classList.remove(GEST_SELECTED);
   }
-  Ì;
+
   getStaticCardData(cardId: string): GestCardStaticData {
     return this.gamedatas.staticData.cards[cardId.split('_')[0]];
   }
@@ -765,8 +810,8 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
 
     if (temporary) {
       this.connect($(node), 'click', safeCallback);
-      dojo.removeClass(node, 'unselectable'); // replace with pr_selectable / pr_selected
-      dojo.addClass(node, 'selectable');
+      // dojo.removeClass(node, 'unselectable'); // replace with pr_selectable / pr_selected
+      // dojo.addClass(node, 'selectable');
       this._selectableNodes.push(node);
     } else {
       dojo.connect($(node), 'click', safeCallback);
@@ -1029,8 +1074,7 @@ class AGestOfRobinHood implements AGestOfRobinHoodGame {
     // TODO: Update for mobile mode
     const container = document.getElementById('player_boards');
     const infoPanel = document.getElementById('info_panel');
-    
-    
+
     if (!container) {
       return;
     }

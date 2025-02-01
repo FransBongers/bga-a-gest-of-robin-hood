@@ -33,6 +33,7 @@ interface AGestOfRobinHoodGame extends Game {
     args: Record<string, unknown>;
     nonActivePlayers?: boolean;
   }) => void;
+  closeCurrentTooltip: () => void;
   format_string_recursive: (
     log: string,
     args: Record<string, unknown>
@@ -67,6 +68,7 @@ interface AGestOfRobinHoodGame extends Game {
     args?: Record<string, unknown>;
     checkAction?: string; // Action used in checkAction
   }) => void;
+  toggleHelpMode: (b: boolean) => void;
   updateLayout: () => void;
   updateLogTooltips: () => void;
   animationManager: AnimationManager;
@@ -81,6 +83,9 @@ interface AGestOfRobinHoodGame extends Game {
   playerOrder: number[];
   settings: Settings;
   tooltipManager: TooltipManager;
+  _displayedTooltip: null | Tooltip;
+  _dragndropMode: boolean;
+  _helpMode: boolean;
   _last_tooltip_id: number; // generic
   tooltipsToMap: [tooltipId: number, card_id: string][]; // generic
   travellerManager: TravellerManager;

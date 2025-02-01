@@ -19,18 +19,39 @@ class TooltipManager {
   // This can't be used since some versions of safari don't support it
   // private idRegex = /(?<=id=")[a-z]*_[0-9]*_[0-9]*(?=")/;
   private idRegex = /id="[a-z]*_[0-9]*_[0-9]*"/;
+
+  private _customTooltipIdCounter: number = 0;
+  private _registeredCustomTooltips = {};
+
   constructor(game: AGestOfRobinHoodGame) {
     this.game = game;
   }
 
-  public addTextToolTip({ nodeId, text }: { nodeId: string; text: string }) {
-    this.game.framework().addTooltipHtml(
-      nodeId,
-      tplTextTooltip({
-        text,
-      }),
-      500
-    );
+  public addTextToolTip({
+    nodeId,
+    text,
+    custom = true,
+  }: {
+    nodeId: string;
+    text: string;
+    custom?: boolean;
+  }) {
+    if (custom) {
+      this.addCustomTooltip(
+        nodeId,
+        tplTextTooltip({
+          text,
+        })
+      );
+    } else {
+      this.game.framework().addTooltipHtml(
+        nodeId,
+        tplTextTooltip({
+          text,
+        }),
+        400
+      );
+    }
   }
 
   public removeTooltip(nodeId: string) {
@@ -53,7 +74,7 @@ class TooltipManager {
       imageOnly:
         this.game.settings.get({ id: PREF_CARD_INFO_IN_TOOLTIP }) === DISABLED,
     });
-    this.game.framework().addTooltipHtml(nodeId, html, 500);
+    this.addCustomTooltip(nodeId, html);
   }
 
   public addCarriageTooltip({
@@ -63,9 +84,7 @@ class TooltipManager {
     type: string;
     nodeId: string;
   }) {
-    this.game
-      .framework()
-      .addTooltipHtml(nodeId, tplCarriageTooltip(this.game, type), 500);
+    this.addCustomTooltip(nodeId, tplCarriageTooltip(this.game, type));
   }
 
   // ..######..########.########.##.....##.########.
@@ -78,63 +97,142 @@ class TooltipManager {
 
   public addTravellersTooltip(nodeId: string, imageId: string) {
     const config = getTravellersConfig();
-    this.game
-      .framework()
-      .addTooltipHtml(
-        nodeId,
-        tplTravellerTooltip(config.find((data) => data.image === imageId)),
-        500
-      );
+    this.addCustomTooltip(
+      nodeId,
+      tplTravellerTooltip(config.find((data) => data.image === imageId))
+    );
   }
 
-  // public addTravellersTooltips() {
-  //   const config = getTravellersConfig();
-  //   TRAVELLERS.forEach((traveller) => {
-  //     this.game
-  //       .framework()
-  //       .addTooltipHtml(
-  //         `gest_traveller_${traveller}_counter_row`,
-  //         tplTravellerTooltip(config.find((data) => data.image === traveller)),
-  //         500
-  //       );
-  //   });
-  // }
-
   public addGameMapTooltips() {
-    this.game
-      .framework()
-      .addTooltipHtml(
-        'royalInspectionTrack_unrest',
-        royalInspectionUnrest({ game: this.game }),
-        500
-      );
-    this.game
-      .framework()
-      .addTooltipHtml(
-        'royalInspectionTrack_mischief',
-        royalInspectionMischief({ game: this.game }),
-        500
-      );
-    this.game
-      .framework()
-      .addTooltipHtml(
-        'royalInspectionTrack_governance',
-        royalInspectionGovernance({ game: this.game }),
-        500
-      );
-    this.game
-      .framework()
-      .addTooltipHtml(
-        'royalInspectionTrack_redeployment',
-        royalInspectionRedployment({ game: this.game }),
-        500
-      );
-    this.game
-      .framework()
-      .addTooltipHtml(
-        'royalInspectionTrack_reset',
-        royalInspectionReset({ game: this.game }),
-        500
-      );
+    this.addCustomTooltip(
+      'royalInspectionTrack_unrest',
+      royalInspectionUnrest({ game: this.game })
+    );
+    this.addCustomTooltip(
+      'royalInspectionTrack_mischief',
+      royalInspectionMischief({ game: this.game })
+    );
+    this.addCustomTooltip(
+      'royalInspectionTrack_governance',
+      royalInspectionGovernance({ game: this.game })
+    );
+    this.addCustomTooltip(
+      'royalInspectionTrack_redeployment',
+      royalInspectionRedployment({ game: this.game })
+    );
+    this.addCustomTooltip(
+      'royalInspectionTrack_reset',
+      royalInspectionReset({ game: this.game })
+    );
+  }
+
+  // .##.....##.########.##.......########.....##.....##..#######..########..########
+  // .##.....##.##.......##.......##.....##....###...###.##.....##.##.....##.##......
+  // .##.....##.##.......##.......##.....##....####.####.##.....##.##.....##.##......
+  // .#########.######...##.......########.....##.###.##.##.....##.##.....##.######..
+  // .##.....##.##.......##.......##...........##.....##.##.....##.##.....##.##......
+  // .##.....##.##.......##.......##...........##.....##.##.....##.##.....##.##......
+  // .##.....##.########.########.##...........##.....##..#######..########..########
+
+  /**
+   * Tooltip to work with help mode
+   */
+  registerCustomTooltip(html, id = null) {
+    id =
+      id ||
+      this.game.framework().game_name +
+        '-tooltipable-' +
+        this._customTooltipIdCounter++;
+    this._registeredCustomTooltips[id] = html;
+    return id;
+  }
+  public attachRegisteredTooltips() {
+    Object.keys(this._registeredCustomTooltips).forEach((id) => {
+      if ($(id)) {
+        this.addCustomTooltip(id, this._registeredCustomTooltips[id], {
+          forceRecreate: true,
+        });
+      }
+    });
+    this._registeredCustomTooltips = {};
+  }
+  public addCustomTooltip(
+    id: string,
+    html: string | Function,
+    config: { delay?: number; midSize?: boolean; forceRecreate?: boolean } = {}
+  ) {
+    config = Object.assign(
+      {
+        delay: 400,
+        midSize: true,
+        forceRecreate: false,
+      },
+      config
+    ) as { delay: 400; midSize: boolean; forceRecreate: boolean };
+
+    // Handle dynamic content out of the box
+    let getContent = () => {
+      let content = typeof html === 'function' ? html() : html;
+      if (config.midSize) {
+        content = '<div class="midSizeDialog">' + content + '</div>';
+      }
+      return content;
+    };
+
+    if (this.game.framework().tooltips[id] && !config.forceRecreate) {
+      this.game.framework().tooltips[id].getContent = getContent;
+      return;
+    }
+
+    let tooltip = new dijit.Tooltip({
+      //        connectId: [id],
+      getContent,
+      position: this.game.framework().defaultTooltipPosition,
+      showDelay: config.delay,
+    });
+    this.game.framework().tooltips[id] = tooltip;
+    dojo.addClass(id, 'tooltipable');
+    dojo.place(
+      `<div class='help-marker'>
+            <svg><use href="#help-marker-svg" /></svg>
+          </div>`,
+      id
+    );
+
+    dojo.connect($(id), 'click', (evt) => {
+      if (!this.game._helpMode) {
+        tooltip.close();
+      } else {
+        evt.stopPropagation();
+
+        if (tooltip.state == 'SHOWING') {
+          this.game.closeCurrentTooltip();
+        } else {
+          this.game.closeCurrentTooltip();
+          tooltip.open($(id));
+          this.game._displayedTooltip = tooltip;
+        }
+      }
+    });
+
+    tooltip.showTimeout = null;
+    dojo.connect($(id), 'mouseenter', (evt) => {
+      evt.stopPropagation();
+      if (!this.game._helpMode && !this.game._dragndropMode) {
+        if (tooltip.showTimeout != null) clearTimeout(tooltip.showTimeout);
+
+        tooltip.showTimeout = setTimeout(() => {
+          if ($(id)) tooltip.open($(id));
+        }, config.delay);
+      }
+    });
+
+    dojo.connect($(id), 'mouseleave', (evt) => {
+      evt.stopPropagation();
+      if (!this.game._helpMode && !this.game._dragndropMode) {
+        tooltip.close();
+        if (tooltip.showTimeout != null) clearTimeout(tooltip.showTimeout);
+      }
+    });
   }
 }

@@ -1,4 +1,5 @@
 @use 'sass:math';
+@use '../base';
 
 #information_button {
   // border: 1px solid #777;
@@ -40,14 +41,13 @@
 }
 
 .information_modal {
-  // background-image: url("img/background_paper.jpg");
-  background-color: white;
+  background-color: ivory;
   background-size: cover;
   border-radius: 8px;
   box-shadow: rgb(0, 0, 0) 1px 1px 5px;
   border: 1px solid black;
   // width: 95%;
-  max-width: 1200px;
+  max-width: min(1200px, 90%);
   // margin: 50px 0px;
   min-width: 640px;
 
@@ -85,6 +85,11 @@
     margin: 0px;
     padding: 7px 0px;
     border-bottom: 1px solid black;
+    // background-color: rgb(132,148,110);
+    background-color: base.$player-aid-green;
+    color: ivory;
+    border-top-left-radius: 7px;
+    // background-color: rgb(80,105,89);
   }
 
   #information_modal_content {
@@ -98,7 +103,7 @@
       .information_modal_tab {
         flex-grow: 1;
         width: 20%;
-        background-color: rgb(30, 20, 17, 0.5);
+        background-color: base.$tab-color;
         border-bottom: 1px solid black;
         border-left: 1px solid black;
         padding: 4px;
@@ -163,7 +168,7 @@
         gap: 8px;
       }
 
-      .gest_card_side[data-resolved=true] {
+      .gest_card_side[data-resolved='true'] {
         opacity: 0.7;
       }
     }

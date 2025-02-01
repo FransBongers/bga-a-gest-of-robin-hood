@@ -52,7 +52,7 @@ trait DebugTrait
     // $this->debugPlaceForces(CAMP,NEWARK,1);
 
 
-    Cards::get('Event29_ATaleOfTwoLovers')->insertOnTop(EVENTS_DECK);
+    Cards::get('Event03_QueenEleanor')->insertOnTop(EVENTS_DECK);
     // Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_VICTIMS_PILE);
     // Cards::get('Traveller09_ThePotter')->insertOnTop(TRAVELLERS_DECK);
 

@@ -1611,6 +1611,48 @@ var CardManager = (function () {
     };
     return CardManager;
 }());
+var _this = this;
+var moveToAnimation = function (_a) { return __awaiter(_this, [_a], void 0, function (_b) {
+    var toElement, fromRect, toRect, top, left, originalPositionStyle;
+    var game = _b.game, element = _b.element, toId = _b.toId, _c = _b.remove, remove = _c === void 0 ? false : _c;
+    return __generator(this, function (_d) {
+        switch (_d.label) {
+            case 0:
+                console.log('move to animation');
+                toElement = document.getElementById(toId);
+                fromRect = element.getBoundingClientRect();
+                toRect = toElement.getBoundingClientRect();
+                top = toRect.top - fromRect.top;
+                left = toRect.left - fromRect.left;
+                originalPositionStyle = element.style.position;
+                element.style.top = "".concat(pxNumber(element.style.top) + top, "px");
+                element.style.left = "".concat(pxNumber(element.style.left) + left, "px");
+                element.style.position = 'relative';
+                return [4, game.animationManager.play(new BgaSlideAnimation({
+                        element: element,
+                        transitionTimingFunction: 'ease-in-out',
+                        fromRect: fromRect,
+                    }))];
+            case 1:
+                _d.sent();
+                if (remove) {
+                    element.remove();
+                }
+                else {
+                    element.style.position = originalPositionStyle;
+                }
+                return [2];
+        }
+    });
+}); };
+var pxNumber = function (px) {
+    if ((px || '').endsWith('px')) {
+        return Number(px.slice(0, -2));
+    }
+    else {
+        return 0;
+    }
+};
 var PlaceForcesState = (function () {
     function PlaceForcesState(game) {
         this.game = game;
@@ -1771,6 +1813,8 @@ function sleep(ms) {
 var AGestOfRobinHood = (function () {
     function AGestOfRobinHood() {
         this.tooltipsToMap = [];
+        this._displayedTooltip = null;
+        this._dragndropMode = false;
         this._helpMode = false;
         this._last_notif = null;
         this._last_tooltip_id = 0;
@@ -1904,6 +1948,42 @@ var AGestOfRobinHood = (function () {
     };
     AGestOfRobinHood.prototype.onUpdateActionButtons = function (stateName, args) {
     };
+    AGestOfRobinHood.prototype.toggleHelpMode = function (b) {
+        console.log('toggleHelpMode', this.framework().defaultTooltipPosition);
+        if (b)
+            this.activateHelpMode();
+        else
+            this.deactivateHelpMode();
+    };
+    AGestOfRobinHood.prototype.activateHelpMode = function () {
+        this._helpMode = true;
+        dojo.addClass('ebd-body', 'help-mode');
+        this._displayedTooltip = null;
+        document.body.addEventListener('click', this.closeCurrentTooltip.bind(this));
+    };
+    AGestOfRobinHood.prototype.deactivateHelpMode = function () {
+        this.closeCurrentTooltip();
+        this._helpMode = false;
+        dojo.removeClass('ebd-body', 'help-mode');
+        document.body.removeEventListener('click', this.closeCurrentTooltip.bind(this));
+    };
+    AGestOfRobinHood.prototype.closeCurrentTooltip = function () {
+        if (!this._helpMode)
+            return;
+        if (this._displayedTooltip == null)
+            return;
+        else {
+            this._displayedTooltip.close();
+            this._displayedTooltip = null;
+        }
+    };
+    AGestOfRobinHood.prototype.destroy = function (elem) {
+        if (this.framework().tooltips[elem.id]) {
+            this.framework().tooltips[elem.id].destroy();
+            delete this.framework().tooltips[elem.id];
+        }
+        elem.remove();
+    };
     AGestOfRobinHood.prototype.addActionButtonClient = function (_a) {
         var id = _a.id, text = _a.text, callback = _a.callback, extraClasses = _a.extraClasses, _b = _a.color, color = _b === void 0 ? 'none' : _b;
         if ($(id)) {
@@ -2033,8 +2113,10 @@ var AGestOfRobinHood = (function () {
         dojo.forEach(this._connections, dojo.disconnect);
         this._connections = [];
         this._selectableNodes.forEach(function (node) {
-            if ($(node))
-                dojo.removeClass(node, 'selectable selected');
+            if ($(node)) {
+                dojo.removeClass(node, GEST_SELECTABLE);
+                dojo.removeClass(node, GEST_SELECTED);
+            }
         });
         this._selectableNodes = [];
         dojo.query(".".concat(GEST_SELECTABLE)).removeClass(GEST_SELECTABLE);
@@ -2072,9 +2154,7 @@ var AGestOfRobinHood = (function () {
             return;
         }
         node.classList.add(GEST_SELECTABLE);
-        this._connections.push(dojo.connect(node, 'onclick', this, function (event) {
-            return callback(event);
-        }));
+        this.onClick(node, function (event) { return callback(event); });
     };
     AGestOfRobinHood.prototype.setCardSelected = function (_a) {
         var id = _a.id;
@@ -2091,9 +2171,7 @@ var AGestOfRobinHood = (function () {
             return;
         }
         node.classList.add(GEST_SELECTABLE);
-        this._connections.push(dojo.connect(node, 'onclick', this, function (event) {
-            return callback(event);
-        }));
+        this.onClick(node, function (event) { return callback(event); });
     };
     AGestOfRobinHood.prototype.setLocationSelected = function (_a) {
         var id = _a.id;
@@ -2112,9 +2190,7 @@ var AGestOfRobinHood = (function () {
             return;
         }
         node.classList.add(GEST_SELECTABLE);
-        this._connections.push(dojo.connect(node, 'onclick', this, function (event) {
-            return callback(event);
-        }));
+        this.onClick(node, function (event) { return callback(event); });
     };
     AGestOfRobinHood.prototype.setSpaceSelected = function (_a) {
         var id = _a.id;
@@ -2131,9 +2207,7 @@ var AGestOfRobinHood = (function () {
             return;
         }
         node.classList.add(GEST_SELECTABLE);
-        this._connections.push(dojo.connect(node, 'onclick', this, function (event) {
-            return callback(event);
-        }));
+        this.onClick(node, function (event) { return callback(event); });
     };
     AGestOfRobinHood.prototype.setElementSelected = function (_a) {
         var id = _a.id;
@@ -2172,8 +2246,6 @@ var AGestOfRobinHood = (function () {
         };
         if (temporary) {
             this.connect($(node), 'click', safeCallback);
-            dojo.removeClass(node, 'unselectable');
-            dojo.addClass(node, 'selectable');
             this._selectableNodes.push(node);
         }
         else {
@@ -5192,6 +5264,7 @@ var InfoPanel = (function () {
         this.modal = new Modal("ballad_modal", {
             class: 'ballad_modal',
             closeIcon: 'fa-times',
+            title: _('Played Cards'),
             contents: tplBalladModalContent({
                 tabs: this.tabs,
                 game: this.game,
@@ -5251,6 +5324,7 @@ var InfoPanel = (function () {
             return;
         }
         node.insertAdjacentHTML('afterbegin', tplInfoPanel());
+        this.setupHelpModeSwitch();
         this.updateBalladInfo(gamedatas.ballad);
         var tabId = "ballad".concat(gamedatas.ballad.balladNumber || 1);
         console.log('tabId', tabId);
@@ -5275,6 +5349,21 @@ var InfoPanel = (function () {
                 nodeId: "balladInfo_".concat(card.id),
                 cardId: card.id.split('_')[0],
             });
+        });
+    };
+    InfoPanel.prototype.setupHelpModeSwitch = function () {
+        var _this = this;
+        document
+            .getElementById('info_panel_buttons')
+            .insertAdjacentHTML('afterbegin', tplHelpModeSwitch());
+        var checkBox = document.getElementById('help-mode-chk');
+        dojo.connect(checkBox, 'onchange', function () {
+            return _this.game.toggleHelpMode(checkBox.checked);
+        });
+        this.game.tooltipManager.addTextToolTip({
+            nodeId: 'help-mode-switch',
+            text: _('Toggle help/safe mode'),
+            custom: false,
         });
     };
     InfoPanel.prototype.updateModalContent = function (card) {
@@ -5355,6 +5444,7 @@ var tplBalladModalContent = function (_a) {
     })
         .join(''), "\n    </div>\n      <div id=\"gest_ballad1\" class=\"gest_ballad_info\" style=\"display: none;\">\n        ").concat(tplBalladModalBalladInfo(game, cards.filter(function (card, index) { return index <= 6; })), "\n      </div>\n      <div id=\"gest_ballad2\" class=\"gest_ballad_info\" style=\"display: none;\">\n      ").concat(tplBalladModalBalladInfo(game, cards.filter(function (card, index) { return index > 7 && index <= 14; })), "\n      </div>\n      <div id=\"gest_ballad3\" class=\"gest_ballad_info\" style=\"display: none;\">\n      ").concat(tplBalladModalBalladInfo(game, cards.filter(function (card, index) { return index > 15 && index <= 23; })), "\n    </div>\n  </div>");
 };
+var tplHelpModeSwitch = function () { return "<div id=\"help-mode-switch\">\n           <input type=\"checkbox\" class=\"checkbox\" id=\"help-mode-chk\" />\n           <label class=\"label\" for=\"help-mode-chk\">\n             <div class=\"ball\"></div>\n           </label><svg aria-hidden=\"true\" focusable=\"false\" data-prefix=\"fad\" data-icon=\"question-circle\" class=\"svg-inline--fa fa-question-circle fa-w-16\" role=\"img\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 512 512\"><g class=\"fa-group\"><path class=\"fa-secondary\" fill=\"currentColor\" d=\"M256 8C119 8 8 119.08 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm0 422a46 46 0 1 1 46-46 46.05 46.05 0 0 1-46 46zm40-131.33V300a12 12 0 0 1-12 12h-56a12 12 0 0 1-12-12v-4c0-41.06 31.13-57.47 54.65-70.66 20.17-11.31 32.54-19 32.54-34 0-19.82-25.27-33-45.7-33-27.19 0-39.44 13.14-57.3 35.79a12 12 0 0 1-16.67 2.13L148.82 170a12 12 0 0 1-2.71-16.26C173.4 113 208.16 90 262.66 90c56.34 0 116.53 44 116.53 102 0 77-83.19 78.21-83.19 106.67z\" opacity=\"0.4\"></path><path class=\"fa-primary\" fill=\"currentColor\" d=\"M256 338a46 46 0 1 0 46 46 46 46 0 0 0-46-46zm6.66-248c-54.5 0-89.26 23-116.55 63.76a12 12 0 0 0 2.71 16.24l34.7 26.31a12 12 0 0 0 16.67-2.13c17.86-22.65 30.11-35.79 57.3-35.79 20.43 0 45.7 13.14 45.7 33 0 15-12.37 22.66-32.54 34C247.13 238.53 216 254.94 216 296v4a12 12 0 0 0 12 12h56a12 12 0 0 0 12-12v-1.33c0-28.46 83.19-29.67 83.19-106.67 0-58-60.19-102-116.53-102z\"></path></g></svg>\n         </div>"; };
 var getTravellersConfig = function () { return [
     {
         name: _('Rich Merchant'),
@@ -5502,6 +5592,7 @@ var InformationModal = (function () {
         this.modal = new Modal("information_modal", {
             class: 'information_modal',
             closeIcon: 'fa-times',
+            title: _("Player Aid"),
             contents: tplInformationModalContent({
                 tabs: this.tabs,
                 game: this.game,
@@ -5709,7 +5800,7 @@ var getTokenDiv = function (_a) {
 };
 var tlpLogTokenBoldText = function (_a) {
     var text = _a.text, tooltipId = _a.tooltipId, _b = _a.italic, italic = _b === void 0 ? false : _b;
-    return "<span ".concat(tooltipId ? "id=\"".concat(tooltipId, "\"") : '', " style=\"font-weight: 700;").concat(italic ? ' font-style: italic;' : '', "\">").concat(_(text), "</span>");
+    return "<span ".concat(tooltipId ? "id=\"".concat(tooltipId, "\" class=\"log_tooltip\"") : '', " style=\"font-weight: 700;").concat(italic ? ' font-style: italic;' : '', "\">").concat(_(text), "</span>");
 };
 var tplLogTokenPlayerName = function (_a) {
     var name = _a.name, color = _a.color;
@@ -7050,6 +7141,10 @@ var GestPlayer = (function () {
                     },
                 ],
             });
+            this.game.tooltipManager.addCarriageTooltip({
+                nodeId: "gest_tallageCarriage_counter_".concat(this.playerId),
+                type: TALLAGE_CARRIAGE,
+            });
             this.counters.Sheriff[TRIBUTE_CARRIAGE] = new IconCounter({
                 containerId: "gest_player_panel_".concat(this.playerId),
                 extraIconClasses: 'gest_force_side',
@@ -7067,6 +7162,10 @@ var GestPlayer = (function () {
                     },
                 ],
             });
+            this.game.tooltipManager.addCarriageTooltip({
+                nodeId: "gest_tributeCarriage_counter_".concat(this.playerId),
+                type: TRIBUTE_CARRIAGE,
+            });
             this.counters.Sheriff[TRAP_CARRIAGE] = new IconCounter({
                 containerId: "gest_player_panel_".concat(this.playerId),
                 extraIconClasses: 'gest_force_side',
@@ -7083,6 +7182,10 @@ var GestPlayer = (function () {
                         value: TRAP_CARRIAGE,
                     },
                 ],
+            });
+            this.game.tooltipManager.addCarriageTooltip({
+                nodeId: "gest_trapCarriage_counter_".concat(this.playerId),
+                type: TRAP_CARRIAGE,
             });
             this.counters.Sheriff[HENCHMEN] = new IconCounter({
                 containerId: "gest_player_panel_".concat(this.playerId),
@@ -13214,13 +13317,22 @@ var tplTextTooltip = function (_a) {
 var TooltipManager = (function () {
     function TooltipManager(game) {
         this.idRegex = /id="[a-z]*_[0-9]*_[0-9]*"/;
+        this._customTooltipIdCounter = 0;
+        this._registeredCustomTooltips = {};
         this.game = game;
     }
     TooltipManager.prototype.addTextToolTip = function (_a) {
-        var nodeId = _a.nodeId, text = _a.text;
-        this.game.framework().addTooltipHtml(nodeId, tplTextTooltip({
-            text: text,
-        }), 500);
+        var nodeId = _a.nodeId, text = _a.text, _b = _a.custom, custom = _b === void 0 ? true : _b;
+        if (custom) {
+            this.addCustomTooltip(nodeId, tplTextTooltip({
+                text: text,
+            }));
+        }
+        else {
+            this.game.framework().addTooltipHtml(nodeId, tplTextTooltip({
+                text: text,
+            }), 400);
+        }
     };
     TooltipManager.prototype.removeTooltip = function (nodeId) {
         this.game.framework().removeTooltip(nodeId);
@@ -13234,36 +13346,107 @@ var TooltipManager = (function () {
             game: this.game,
             imageOnly: this.game.settings.get({ id: PREF_CARD_INFO_IN_TOOLTIP }) === DISABLED,
         });
-        this.game.framework().addTooltipHtml(nodeId, html, 500);
+        this.addCustomTooltip(nodeId, html);
     };
     TooltipManager.prototype.addCarriageTooltip = function (_a) {
         var nodeId = _a.nodeId, type = _a.type;
-        this.game
-            .framework()
-            .addTooltipHtml(nodeId, tplCarriageTooltip(this.game, type), 500);
+        this.addCustomTooltip(nodeId, tplCarriageTooltip(this.game, type));
     };
     TooltipManager.prototype.addTravellersTooltip = function (nodeId, imageId) {
         var config = getTravellersConfig();
-        this.game
-            .framework()
-            .addTooltipHtml(nodeId, tplTravellerTooltip(config.find(function (data) { return data.image === imageId; })), 500);
+        this.addCustomTooltip(nodeId, tplTravellerTooltip(config.find(function (data) { return data.image === imageId; })));
     };
     TooltipManager.prototype.addGameMapTooltips = function () {
-        this.game
-            .framework()
-            .addTooltipHtml('royalInspectionTrack_unrest', royalInspectionUnrest({ game: this.game }), 500);
-        this.game
-            .framework()
-            .addTooltipHtml('royalInspectionTrack_mischief', royalInspectionMischief({ game: this.game }), 500);
-        this.game
-            .framework()
-            .addTooltipHtml('royalInspectionTrack_governance', royalInspectionGovernance({ game: this.game }), 500);
-        this.game
-            .framework()
-            .addTooltipHtml('royalInspectionTrack_redeployment', royalInspectionRedployment({ game: this.game }), 500);
-        this.game
-            .framework()
-            .addTooltipHtml('royalInspectionTrack_reset', royalInspectionReset({ game: this.game }), 500);
+        this.addCustomTooltip('royalInspectionTrack_unrest', royalInspectionUnrest({ game: this.game }));
+        this.addCustomTooltip('royalInspectionTrack_mischief', royalInspectionMischief({ game: this.game }));
+        this.addCustomTooltip('royalInspectionTrack_governance', royalInspectionGovernance({ game: this.game }));
+        this.addCustomTooltip('royalInspectionTrack_redeployment', royalInspectionRedployment({ game: this.game }));
+        this.addCustomTooltip('royalInspectionTrack_reset', royalInspectionReset({ game: this.game }));
+    };
+    TooltipManager.prototype.registerCustomTooltip = function (html, id) {
+        if (id === void 0) { id = null; }
+        id =
+            id ||
+                this.game.framework().game_name +
+                    '-tooltipable-' +
+                    this._customTooltipIdCounter++;
+        this._registeredCustomTooltips[id] = html;
+        return id;
+    };
+    TooltipManager.prototype.attachRegisteredTooltips = function () {
+        var _this = this;
+        Object.keys(this._registeredCustomTooltips).forEach(function (id) {
+            if ($(id)) {
+                _this.addCustomTooltip(id, _this._registeredCustomTooltips[id], {
+                    forceRecreate: true,
+                });
+            }
+        });
+        this._registeredCustomTooltips = {};
+    };
+    TooltipManager.prototype.addCustomTooltip = function (id, html, config) {
+        var _this = this;
+        if (config === void 0) { config = {}; }
+        config = Object.assign({
+            delay: 400,
+            midSize: true,
+            forceRecreate: false,
+        }, config);
+        var getContent = function () {
+            var content = typeof html === 'function' ? html() : html;
+            if (config.midSize) {
+                content = '<div class="midSizeDialog">' + content + '</div>';
+            }
+            return content;
+        };
+        if (this.game.framework().tooltips[id] && !config.forceRecreate) {
+            this.game.framework().tooltips[id].getContent = getContent;
+            return;
+        }
+        var tooltip = new dijit.Tooltip({
+            getContent: getContent,
+            position: this.game.framework().defaultTooltipPosition,
+            showDelay: config.delay,
+        });
+        this.game.framework().tooltips[id] = tooltip;
+        dojo.addClass(id, 'tooltipable');
+        dojo.place("<div class='help-marker'>\n            <svg><use href=\"#help-marker-svg\" /></svg>\n          </div>", id);
+        dojo.connect($(id), 'click', function (evt) {
+            if (!_this.game._helpMode) {
+                tooltip.close();
+            }
+            else {
+                evt.stopPropagation();
+                if (tooltip.state == 'SHOWING') {
+                    _this.game.closeCurrentTooltip();
+                }
+                else {
+                    _this.game.closeCurrentTooltip();
+                    tooltip.open($(id));
+                    _this.game._displayedTooltip = tooltip;
+                }
+            }
+        });
+        tooltip.showTimeout = null;
+        dojo.connect($(id), 'mouseenter', function (evt) {
+            evt.stopPropagation();
+            if (!_this.game._helpMode && !_this.game._dragndropMode) {
+                if (tooltip.showTimeout != null)
+                    clearTimeout(tooltip.showTimeout);
+                tooltip.showTimeout = setTimeout(function () {
+                    if ($(id))
+                        tooltip.open($(id));
+                }, config.delay);
+            }
+        });
+        dojo.connect($(id), 'mouseleave', function (evt) {
+            evt.stopPropagation();
+            if (!_this.game._helpMode && !_this.game._dragndropMode) {
+                tooltip.close();
+                if (tooltip.showTimeout != null)
+                    clearTimeout(tooltip.showTimeout);
+            }
+        });
     };
     return TooltipManager;
 }());

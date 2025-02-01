@@ -1,3 +1,5 @@
+@use '../base';
+
 #show_settings {
   height: 40px;
   width: 50px;
@@ -33,7 +35,7 @@
 
 .settings_modal {
   // background-image: url("img/background_paper.webp");
-  background-color: white;
+  background-color: ivory;
   background-size: cover;
   border-radius: 8px;
   box-shadow: rgb(0, 0, 0) 1px 1px 5px;
@@ -70,15 +72,18 @@
   }
 
   h2 {
+    
     text-align: center;
     font-size: large;
     font-weight: bold;
     margin: 0px;
     padding: 7px 0px;
     border-bottom: 1px solid black;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-    background-color: rgb(248, 248, 248, 0.5);
+    border-top-left-radius: 7px;
+    // border-top-right-radius: 8px;
+    // background-color: rgb(145, 173, 186);
+    color: ivory;
+    background-color: base.$player-aid-blue;
   }
 
   #setting_modal_content {
@@ -92,7 +97,8 @@
       .settings_modal_tab {
         flex-grow: 1;
         width: 50%;
-        background-color: rgb(30, 20, 17, 0.5);
+        // background-color: rgb(145, 173, 186);
+        background-color: base.$tab-color;
         border-bottom: 1px solid black;
         border-left: 1px solid black;
         border-radius: 1px solid black;

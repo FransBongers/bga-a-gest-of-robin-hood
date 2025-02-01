@@ -99,7 +99,7 @@ class InfoPanel {
       closeIcon: 'fa-times',
       // titleTpl:
       //   '<h2 id="popin_${id}_title" class="${class}_title">${title}</h2>',
-      // title: _("Info"),
+      title: _('Played Cards'),
       contents: tplBalladModalContent({
         tabs: this.tabs,
         game: this.game,
@@ -178,6 +178,8 @@ class InfoPanel {
     }
     node.insertAdjacentHTML('afterbegin', tplInfoPanel());
 
+    this.setupHelpModeSwitch();
+
     this.updateBalladInfo(gamedatas.ballad);
 
     const tabId = `ballad${
@@ -217,6 +219,23 @@ class InfoPanel {
     });
   }
 
+  private setupHelpModeSwitch() {
+    document
+      .getElementById('info_panel_buttons')
+      .insertAdjacentHTML('afterbegin', tplHelpModeSwitch());
+
+    let checkBox = document.getElementById('help-mode-chk') as HTMLInputElement;
+    dojo.connect(checkBox, 'onchange', () =>
+      this.game.toggleHelpMode(checkBox.checked)
+    );
+
+    this.game.tooltipManager.addTextToolTip({
+      nodeId: 'help-mode-switch',
+      text: _('Toggle help/safe mode'),
+      custom: false,
+    });
+  }
+
   // ..######...########.########.########.########.########...######.
   // .##....##..##..........##.......##....##.......##.....##.##....##
   // .##........##..........##.......##....##.......##.....##.##......
@@ -253,7 +272,6 @@ class InfoPanel {
       nodeId: `balladInfo_${card.id}`,
       cardId: card.id.split('_')[0],
     });
-
   }
 
   //  .##.....##.########.####.##.......####.########.##....##

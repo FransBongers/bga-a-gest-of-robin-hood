@@ -14,6 +14,12 @@ interface Game {
   framework: () => Framework; // Function just to have TS casting in one place, should return this
 }
 
+interface Tooltip {
+  id: string;
+  destroy: Function;
+  getContent: Function;
+}
+
 // TODO (Frans): check if thre is a better way to define these so we don't need to cast.
 interface Framework {
   addActionButton: (id: string, label: string, method: string | Function, destination?: string, blinking?: boolean, color?: string) => void;
@@ -30,6 +36,7 @@ interface Framework {
   ) => void;
   attachToNewParent: (mobile_obj: string | Element, target_obj: string | Element) => void;
   checkAction: (action: string) => boolean;
+  defaultTooltipPosition: string[];
   dontPreloadImage: (filename: string) => void;
   format_block: (jstpl: string, args: Record<string, unknown>) => string;
   game_name: string;
@@ -64,6 +71,7 @@ interface Framework {
     duration?: number,
     delay?: number
   ) => Animation;
+  tooltips: Record<string, Tooltip>
   updatePageTitle: () => void;
 }
 

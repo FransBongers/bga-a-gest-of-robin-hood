@@ -80,6 +80,15 @@ span[style*='color:#c0c0c0'] {
 
 /* ------- LOG TOKENS ------- */
 
+.log_tooltip {
+  position: relative;
+  .help-marker {
+    top: -11px;
+    left: auto;
+    right: -18px;
+}
+}
+
 .gest_log_die {
   min-height: calc(var(--gestTokenScale) * 40px);
   min-width: calc(var(--gestTokenScale) * 40px);
