@@ -2727,6 +2727,9 @@ var ForceManager = (function (_super) {
         if (CARRIAGE_TYPES.includes(force.type)) {
             this.game.tooltipManager.addCarriageTooltip({ nodeId: force.id, type: force.type });
         }
+        else if (force.type === CARRIAGE) {
+            this.game.tooltipManager.addCarriageTooltip({ nodeId: force.id, type: CARRIAGE });
+        }
     };
     ForceManager.prototype.isCardVisible = function (force) {
         return !force.hidden;
@@ -6911,7 +6914,7 @@ var IconCounter = (function () {
 }());
 var tplIconCounter = function (_a) {
     var icon = _a.icon, iconCounterId = _a.iconCounterId, value = _a.value, extraIconClasses = _a.extraIconClasses, dataAttributes = _a.dataAttributes;
-    return "\n  <div id=\"".concat(iconCounterId, "\" class=\"gest_icon_counter_container").concat(value === 0 ? ' gest_none' : '', "\">\n    <span id=\"").concat(iconCounterId, "_counter\" class=\"gest_counter\"></span>\n    <div id=\"").concat(iconCounterId, "_icon\" class=\"gest_icon").concat(extraIconClasses ? " ".concat(extraIconClasses) : '', "\" ").concat(icon ? "data-icon=\"".concat(icon, "\"") : '').concat((dataAttributes || [])
+    return "\n  <div id=\"".concat(iconCounterId, "\" class=\"gest_icon_counter_container").concat(value === 0 ? ' gest_none' : '', "\">\n    <span id=\"").concat(iconCounterId, "_counter\" class=\"gest_counter\"></span>\n    <div id=\"").concat(iconCounterId, "_icon\" style=\"position: relative;\" class=\"gest_icon").concat(extraIconClasses ? " ".concat(extraIconClasses) : '', "\" ").concat(icon ? "data-icon=\"".concat(icon, "\"") : '').concat((dataAttributes || [])
         .map(function (dataAttribute) { return " ".concat(dataAttribute.key, "=\"").concat(dataAttribute.value, "\""); })
         .join(''), "></div>\n  </div>");
 };
@@ -7142,7 +7145,7 @@ var GestPlayer = (function () {
                 ],
             });
             this.game.tooltipManager.addCarriageTooltip({
-                nodeId: "gest_tallageCarriage_counter_".concat(this.playerId),
+                nodeId: "gest_tallageCarriage_counter_".concat(this.playerId, "_icon"),
                 type: TALLAGE_CARRIAGE,
             });
             this.counters.Sheriff[TRIBUTE_CARRIAGE] = new IconCounter({
@@ -7163,7 +7166,7 @@ var GestPlayer = (function () {
                 ],
             });
             this.game.tooltipManager.addCarriageTooltip({
-                nodeId: "gest_tributeCarriage_counter_".concat(this.playerId),
+                nodeId: "gest_tributeCarriage_counter_".concat(this.playerId, "_icon"),
                 type: TRIBUTE_CARRIAGE,
             });
             this.counters.Sheriff[TRAP_CARRIAGE] = new IconCounter({
@@ -7184,7 +7187,7 @@ var GestPlayer = (function () {
                 ],
             });
             this.game.tooltipManager.addCarriageTooltip({
-                nodeId: "gest_trapCarriage_counter_".concat(this.playerId),
+                nodeId: "gest_trapCarriage_counter_".concat(this.playerId, "_icon"),
                 type: TRAP_CARRIAGE,
             });
             this.counters.Sheriff[HENCHMEN] = new IconCounter({
@@ -7222,6 +7225,10 @@ var GestPlayer = (function () {
                         value: CARRIAGE,
                     },
                 ],
+            });
+            this.game.tooltipManager.addCarriageTooltip({
+                nodeId: "gest_carriage_counter_".concat(this.playerId, "_icon"),
+                type: CARRIAGE,
             });
             this.counters.Sheriff[HENCHMEN] = new IconCounter({
                 containerId: "gest_player_panel_".concat(this.playerId),
@@ -13298,6 +13305,9 @@ var tplGestCardTooltip = function (_a) {
 var tplTravellerTooltip = function (info) {
     return "\n  <div class=\"gest_traveller_tooltip\">\n    <div class=\"gest_traveller_image\" data-image=\"".concat(info.image, "\"></div>\n    <div class=\"gest_traveller_stats_container\">\n      <span class=\"gest_traveller_name\">").concat(_(info.name), "</span>\n      <div class=\"gest_row\">\n        <span class=\"gest_traveller_defense\">").concat(_('Defense'), ": ").concat(info.defense, "</span>\n      </div>\n      <div class=\"gest_row\">\n        <span class=\"gest_rob_result\">").concat(_('Success: '), "</span>\n        <span>").concat(_(info.success), "</span>\n      </div>\n      <div class=\"gest_row\">\n        <span class=\"gest_rob_result\">").concat(_('Failure: '), "</span>\n        <span>").concat(_(info.failure), "</span>\n      </div>\n    </div>\n  </div>");
 };
+var tplCarriageTypesTooltip = function (game) {
+    return "\n    <div class=\"gest_carriage_types_tooltip\">\n    <span class=\"gest_carriage_types_title\">".concat(_('Carriage types'), "</span>\n    ").concat(tplCarriageTooltip(game, TALLAGE_CARRIAGE), "\n    ").concat(tplCarriageTooltip(game, TRIBUTE_CARRIAGE), "\n    ").concat(tplCarriageTooltip(game, TRAP_CARRIAGE), "\n    </div>\n  ");
+};
 var tplCarriageTooltip = function (game, type) {
     var info = carriagesRobInfo().find(function (data) { return data.image === type; });
     return "\n          <div class=\"gest_carriage_tooltip gest_row\">\n            <div class=\"gest_force_side\" data-type=\"".concat(info.image, "\" data-revealed=\"true\"></div>\n            <div>\n              <span class=\"gest_title\">").concat(_(info.name), "</span>\n              <div><span class=\"gest_section_title\">").concat(_('Defense'), ": ").concat(info.defense, "</span></div>\n              <div style=\"margin-top: 8px;\">\n                <span class=\"gest_section_title\">").concat(_('If reaches Nottingham:'), "</span>\n              </div>\n              <div>\n                <span>").concat(_(info.nottingham), "</span>\n              </div>\n              <div style=\"margin-top: 8px;\">\n                <span class=\"gest_section_title\">").concat(_('If Robbed:'), "</span>\n              </div>\n              <div><span>").concat(game.format_string_recursive(_(info.success), {
@@ -13350,7 +13360,12 @@ var TooltipManager = (function () {
     };
     TooltipManager.prototype.addCarriageTooltip = function (_a) {
         var nodeId = _a.nodeId, type = _a.type;
-        this.addCustomTooltip(nodeId, tplCarriageTooltip(this.game, type));
+        if (type === CARRIAGE) {
+            this.addCustomTooltip(nodeId, tplCarriageTypesTooltip(this.game));
+        }
+        else {
+            this.addCustomTooltip(nodeId, tplCarriageTooltip(this.game, type));
+        }
     };
     TooltipManager.prototype.addTravellersTooltip = function (nodeId, imageId) {
         var config = getTravellersConfig();

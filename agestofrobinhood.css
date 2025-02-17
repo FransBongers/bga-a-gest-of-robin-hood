@@ -921,9 +921,11 @@
   width: calc(var(--rightColumnScale) * 634px);
   height: calc(var(--rightColumnScale) * 416px);
   margin-bottom: 8px;
+  position: relative;
 }
 
 .gest_plots_and_deeds_container {
+  position: relative;
   width: 634px;
   height: 416px;
   background-size: 100% 100%;
@@ -1286,6 +1288,9 @@
 }
 .information_modal #information_modal_content #gest_cardsInfo .gest_card_side[data-resolved=true] {
   opacity: 0.7;
+}
+.information_modal #information_modal_content #gest_cardsInfo .gest_log_card {
+  position: relative;
 }
 .information_modal #information_modal_content #gest_orderJustice {
   padding: 16px;
@@ -2210,6 +2215,9 @@ span[style*="color:#c0c0c0"] {
   font-weight: bold;
   font-size: 20px;
 }
+.gest_icon_counter_container .gest_counter .gest_icon {
+  position: relative;
+}
 .gest_icon_counter_container .gest_force_side[data-type=Camp] {
   --gestForceScale: 0.75;
 }
@@ -2416,6 +2424,33 @@ span[style*="color:#c0c0c0"] {
 }
 .dijitTooltipContainer .gest_carriage_tooltip .gest_section_title {
   font-weight: 700;
+}
+.dijitTooltipContainer .gest_carriage_types_tooltip {
+  display: flex;
+  flex-direction: column;
+}
+.dijitTooltipContainer .gest_carriage_types_tooltip .gest_carriage_types_title {
+  font-size: large;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.dijitTooltipContainer .gest_carriage_types_tooltip .gest_carriage_tooltip {
+  font-size: small !important;
+}
+.dijitTooltipContainer .gest_carriage_types_tooltip .gest_carriage_tooltip .gest_title {
+  font-size: medium !important;
+}
+.dijitTooltipContainer .gest_carriage_types_tooltip .gest_carriage_tooltip:nth-child(2) {
+  padding-bottom: 8px;
+  border-bottom: 1px solid black;
+}
+.dijitTooltipContainer .gest_carriage_types_tooltip .gest_carriage_tooltip:nth-child(3) {
+  padding-bottom: 8px;
+  padding-top: 8px;
+  border-bottom: 1px solid black;
+}
+.dijitTooltipContainer .gest_carriage_types_tooltip .gest_carriage_tooltip:nth-child(4) {
+  padding-top: 8px;
 }
 
 #travellers_info_panel {

@@ -15,7 +15,7 @@ const tplIconCounter = ({
   value === 0 ? ' gest_none' : ''
 }">
     <span id="${iconCounterId}_counter" class="gest_counter"></span>
-    <div id="${iconCounterId}_icon" class="gest_icon${
+    <div id="${iconCounterId}_icon" style="position: relative;" class="gest_icon${
   extraIconClasses ? ` ${extraIconClasses}` : ''
 }" ${icon ? `data-icon="${icon}"` : ''}${(dataAttributes || [])
   .map((dataAttribute) => ` ${dataAttribute.key}="${dataAttribute.value}"`)

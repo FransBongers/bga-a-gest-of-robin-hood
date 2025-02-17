@@ -43,6 +43,8 @@ class ForceManager extends CardManager<GestForce> {
     // }
     if (CARRIAGE_TYPES.includes(force.type)) {
       this.game.tooltipManager.addCarriageTooltip({nodeId: force.id, type: force.type});
+    } else if (force.type === CARRIAGE) {
+      this.game.tooltipManager.addCarriageTooltip({nodeId: force.id, type: CARRIAGE});
     }
   }
 

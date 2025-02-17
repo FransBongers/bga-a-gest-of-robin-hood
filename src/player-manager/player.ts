@@ -260,7 +260,7 @@ class GestPlayer {
         ],
       });
       this.game.tooltipManager.addCarriageTooltip({
-        nodeId: `gest_tallageCarriage_counter_${this.playerId}`,
+        nodeId: `gest_tallageCarriage_counter_${this.playerId}_icon`,
         type: TALLAGE_CARRIAGE,
       });
       this.counters.Sheriff[TRIBUTE_CARRIAGE] = new IconCounter({
@@ -281,7 +281,7 @@ class GestPlayer {
         ],
       });
       this.game.tooltipManager.addCarriageTooltip({
-        nodeId: `gest_tributeCarriage_counter_${this.playerId}`,
+        nodeId: `gest_tributeCarriage_counter_${this.playerId}_icon`,
         type: TRIBUTE_CARRIAGE,
       });
       this.counters.Sheriff[TRAP_CARRIAGE] = new IconCounter({
@@ -302,7 +302,7 @@ class GestPlayer {
         ],
       });
       this.game.tooltipManager.addCarriageTooltip({
-        nodeId: `gest_trapCarriage_counter_${this.playerId}`,
+        nodeId: `gest_trapCarriage_counter_${this.playerId}_icon`,
         type: TRAP_CARRIAGE,
       });
       this.counters.Sheriff[HENCHMEN] = new IconCounter({
@@ -339,6 +339,10 @@ class GestPlayer {
             value: CARRIAGE,
           },
         ],
+      });
+      this.game.tooltipManager.addCarriageTooltip({
+        nodeId: `gest_carriage_counter_${this.playerId}_icon`,
+        type: CARRIAGE,
       });
       this.counters.Sheriff[HENCHMEN] = new IconCounter({
         containerId: `gest_player_panel_${this.playerId}`,

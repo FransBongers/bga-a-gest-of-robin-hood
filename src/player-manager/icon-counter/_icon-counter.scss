@@ -25,6 +25,10 @@
     cursor: default;
     font-weight: bold;
     font-size: 20px;
+
+    .gest_icon {
+      position: relative;
+    }
   }
 
   .gest_force_side[data-type=Camp] {

@@ -84,7 +84,12 @@ class TooltipManager {
     type: string;
     nodeId: string;
   }) {
-    this.addCustomTooltip(nodeId, tplCarriageTooltip(this.game, type));
+    if (type === CARRIAGE) {
+      this.addCustomTooltip(nodeId, tplCarriageTypesTooltip(this.game));
+    } else {
+      this.addCustomTooltip(nodeId, tplCarriageTooltip(this.game, type));
+    }
+    
   }
 
   // ..######..########.########.##.....##.########.

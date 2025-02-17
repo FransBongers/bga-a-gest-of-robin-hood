@@ -81,8 +81,18 @@ const tplTravellerTooltip = (info: TravellerInfo) => {
   </div>`
 }
 
-const tplCarriageTooltip = (game: AGestOfRobinHoodGame, type: string) => {
+const tplCarriageTypesTooltip = (game: AGestOfRobinHoodGame) => {
+  return `
+    <div class="gest_carriage_types_tooltip">
+    <span class="gest_carriage_types_title">${_('Carriage types')}</span>
+    ${tplCarriageTooltip(game, TALLAGE_CARRIAGE)}
+    ${tplCarriageTooltip(game, TRIBUTE_CARRIAGE)}
+    ${tplCarriageTooltip(game, TRAP_CARRIAGE)}
+    </div>
+  `
+}
 
+const tplCarriageTooltip = (game: AGestOfRobinHoodGame, type: string) => {
   const info = carriagesRobInfo().find((data) => data.image === type);
   return `
           <div class="gest_carriage_tooltip gest_row">

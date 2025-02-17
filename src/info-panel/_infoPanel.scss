@@ -108,9 +108,11 @@
   width: calc(var(--rightColumnScale) * 634px);
   height: calc(var(--rightColumnScale) * 416px);
   margin-bottom: 8px;
+  position: relative;
 }
 
 .gest_plots_and_deeds_container {
+  position: relative;
   width: 634px;// 940px;
   height: 416px; // 617px;
   background-size: 100% 100%;
