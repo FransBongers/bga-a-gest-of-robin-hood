@@ -62,6 +62,7 @@ class Event08_WardenOfTheForest extends \AGestOfRobinHood\Models\EventCard
         'playerId' => $robinHoodId,
         'optional' => true,
         'source' => $this->id,
+        'maxSpaces' => 1,
       ];
     } else {
       $nodes['children'][] = [
