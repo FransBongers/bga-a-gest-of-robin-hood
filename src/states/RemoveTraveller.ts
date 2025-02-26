@@ -100,6 +100,13 @@ class RemoveTravellerState implements State {
           you: '${you}',
         },
       });
+    } else {
+      this.game.clientUpdatePageTitle({
+        text: _('${you} must choose where to remove a Knight from'),
+        args: {
+          you: '${you}',
+        },
+      });
     }
   }
 
@@ -107,6 +114,13 @@ class RemoveTravellerState implements State {
     if (this.args.cardType === MONK) {
       this.game.clientUpdatePageTitle({
         text: _('Remove a Monk from the ${locationName}'),
+        args: {
+          locationName: this.getLocationName({ location }),
+        },
+      });
+    } else {
+      this.game.clientUpdatePageTitle({
+        text: _('Remove a Knight from the ${locationName}?'),
         args: {
           locationName: this.getLocationName({ location }),
         },

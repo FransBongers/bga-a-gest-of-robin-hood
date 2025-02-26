@@ -11253,12 +11253,28 @@ var RemoveTravellerState = (function () {
                 },
             });
         }
+        else {
+            this.game.clientUpdatePageTitle({
+                text: _('${you} must choose where to remove a Knight from'),
+                args: {
+                    you: '${you}',
+                },
+            });
+        }
     };
     RemoveTravellerState.prototype.updatePageTitleConfirm = function (_a) {
         var location = _a.location;
         if (this.args.cardType === MONK) {
             this.game.clientUpdatePageTitle({
                 text: _('Remove a Monk from the ${locationName}'),
+                args: {
+                    locationName: this.getLocationName({ location: location }),
+                },
+            });
+        }
+        else {
+            this.game.clientUpdatePageTitle({
+                text: _('Remove a Knight from the ${locationName}?'),
                 args: {
                     locationName: this.getLocationName({ location: location }),
                 },
