@@ -9880,9 +9880,8 @@ var EventWillStutelyLightState = (function () {
         });
         this.game.setElementSelected({ id: merryMan.id });
         adjacentParishIds.forEach(function (parishId) {
-            _this.game.addPrimaryActionButton({
-                id: "".concat(parishId, "_btn"),
-                text: _(_this.game.gamedatas.spaces[parishId].name),
+            _this.game.setSpaceSelectable({
+                id: parishId,
                 callback: function () { return _this.updateInterfaceConfirm({ merryMan: merryMan, parishId: parishId }); },
             });
         });
@@ -9899,6 +9898,7 @@ var EventWillStutelyLightState = (function () {
             },
         });
         this.game.setElementSelected({ id: merryMan.id });
+        this.game.setSpaceSelected({ id: parishId });
         var callback = function () {
             _this.game.clearPossible();
             _this.game.takeAction({

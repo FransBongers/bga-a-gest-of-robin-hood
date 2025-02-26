@@ -90,9 +90,8 @@ class EventWillStutelyLightState implements State {
     this.game.setElementSelected({ id: merryMan.id });
 
     adjacentParishIds.forEach((parishId) => {
-      this.game.addPrimaryActionButton({
-        id: `${parishId}_btn`,
-        text: _(this.game.gamedatas.spaces[parishId].name),
+      this.game.setSpaceSelectable({
+        id: parishId,
         callback: () => this.updateInterfaceConfirm({ merryMan, parishId }),
       });
     });
@@ -117,6 +116,7 @@ class EventWillStutelyLightState implements State {
     });
 
     this.game.setElementSelected({ id: merryMan.id });
+    this.game.setSpaceSelected({ id: parishId });
 
     const callback = () => {
       this.game.clearPossible();
