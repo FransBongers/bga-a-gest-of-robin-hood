@@ -191,6 +191,8 @@
 
     #gest_robSummary {
       padding: 16px;
+      max-height: 60vh;
+      overflow-y: auto;
       --gestForceScale: 0.857;
 
       .gest_row {
@@ -248,7 +250,7 @@
       flex-direction: row;
       gap: 8px;
       flex-wrap: wrap;
-      max-height: 75vh;
+      max-height: 60vh;
       overflow-y: auto;
 
       .gest_traveller_info_row {
