@@ -7,6 +7,7 @@ use AGestOfRobinHood\Core\Game;
 use AGestOfRobinHood\Core\Globals;
 use AGestOfRobinHood\Core\Notifications;
 use AGestOfRobinHood\Core\Stats;
+use AGestOfRobinHood\Forces\Henchmen;
 use AGestOfRobinHood\Helpers\GameMap;
 use AGestOfRobinHood\Helpers\Locations;
 use AGestOfRobinHood\Managers\AtomicActions;
@@ -24,6 +25,29 @@ trait DebugTrait
 
   function debug_test()
   {
+    // Spaces::get()
+    // $henchmenLocations = [
+    //   RETFORD,
+    //   RETFORD,
+    //   TUXFORD,
+    //   TUXFORD,
+    //   NEWARK,
+    //   NEWARK,
+    //   NOTTINGHAM,
+    //   NOTTINGHAM,
+    //   NOTTINGHAM,
+    //   NOTTINGHAM,
+    //   NOTTINGHAM,
+    //   NOTTINGHAM,
+    //   NOTTINGHAM,
+    // ];
+
+    // $henchmen = Forces::getInLocation(HENCHMEN_SUPPLY)->toArray();
+
+    // foreach($henchmen as $index => $henchman) {
+    //   $henchman->setLocation($henchmenLocations[$index]);
+    // }
+
     // Players::getSheriffPlayer()->incShillings(-2);
 
     // $hire = AtomicActions::get(HIRE);
@@ -41,9 +65,9 @@ trait DebugTrait
     // Forces::get(ROBIN_HOOD)->setLocation(TUXFORD);
     // Forces::get(ROBIN_HOOD)->setHidden(1);
     // Globals::setBridgeLocation('Blyth_Retford_border');
-    // Forces::moveAllInLocation(CARRIAGE_SUPPLY,USED_CARRIAGES);
-    // Forces::moveAllInLocation(BLYTH,NOTTINGHAM);
-    // Forces::moveAllInLocation(BINGHAM,REMSTON);
+    Forces::moveAllInLocation(RETFORD,HENCHMEN_SUPPLY);
+    Forces::moveAllInLocation(TUXFORD,HENCHMEN_SUPPLY);
+    // Forces::moveAllInLocation(BINGHAM,NOTTINGHAM);
     // Forces::moveAllInLocation(SHIRE_WOOD,TUXFORD);
 
     // $this->debugPlaceForces(MERRY_MEN,TUXFORD,1);
@@ -52,7 +76,7 @@ trait DebugTrait
     // $this->debugPlaceForces(CAMP,NEWARK,1);
 
 
-    Cards::get('Event08_WardenOfTheForest')->insertOnTop(EVENTS_DECK);
+    // Cards::get('Event08_WardenOfTheForest')->insertOnTop(EVENTS_DECK);
     // Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_VICTIMS_PILE);
     // Cards::get('Traveller09_ThePotter')->insertOnTop(TRAVELLERS_DECK);
 

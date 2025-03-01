@@ -84,6 +84,12 @@ trait TurnTrait
   {
     $card = Cards::getTopOf(EVENTS_DISCARD);
 
+    // Reset engine here because some event cards check resolved nodes
+    // to determine if an action can be done.
+    Engine::setup([
+      'children' => []
+    ], ['method' => 'stResolveEvent']);
+
     $node = $card->getFlow();
 
     if (count($node['children']) > 0) {
@@ -191,9 +197,7 @@ trait TurnTrait
     // return;
   }
 
-  function stPreEndOfGame()
-  {
-  }
+  function stPreEndOfGame() {}
 
   /*
   function stLaunchEndOfGame()
