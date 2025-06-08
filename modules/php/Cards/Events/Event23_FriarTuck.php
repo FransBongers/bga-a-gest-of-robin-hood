@@ -3,6 +3,7 @@
 namespace AGestOfRobinHood\Cards\Events;
 
 use AGestOfRobinHood\Core\Engine\LeafNode;
+use AGestOfRobinHood\Core\Globals;
 use AGestOfRobinHood\Core\Notifications;
 use AGestOfRobinHood\Helpers\GameMap;
 use AGestOfRobinHood\Helpers\Utils;
@@ -99,8 +100,12 @@ class Event23_FriarTuck extends \AGestOfRobinHood\Cards\Events\RegularEvent
     $hiddenMerryMen = Utils::filter(Forces::getInLocation($spaceId)->toArray(), function ($merryMan) use ($spaceId) {
       return $merryMan->isHidden() && $merryMan->isMerryMan();
     });
+    $checkpoint = Forces::get(ROBIN_HOOD)->isLocationUnknown();
     foreach ($hiddenMerryMen as $merryMan) {
       $merryMan->reveal($player);
+    }
+    if ($checkpoint) {
+      Globals::setCheckpoint(true);
     }
   }
 

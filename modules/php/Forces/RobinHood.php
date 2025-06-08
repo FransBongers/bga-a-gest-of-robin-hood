@@ -40,4 +40,10 @@ class RobinHood extends \AGestOfRobinHood\Models\Force
       Globals::setCheckpoint(true);
     }
   }
+
+  public function isLocationUnknown()
+  {
+    return $this->isHidden() || $$this->getLocation() === ROBIN_HOOD_SUPPLY;
+  }
+  
 }

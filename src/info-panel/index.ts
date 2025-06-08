@@ -185,7 +185,6 @@ class InfoPanel {
     const tabId = `ballad${
       gamedatas.ballad.balladNumber || 1
     }` as BalladModalTabId;
-    console.log('tabId', tabId);
     this.selectedTab = tabId;
 
     const fortuneEvents = gamedatas.cards.eventsDiscard.filter(

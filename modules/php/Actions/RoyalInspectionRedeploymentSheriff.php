@@ -89,7 +89,8 @@ class RoyalInspectionRedeploymentSheriff extends \AGestOfRobinHood\Models\Atomic
       Notifications::message(clienttranslate('${player_name} does not move their Henchmen'), ['player' => $player]);
     }
     // Stats::incPassActionCount($player->getId(), 1);
-    Engine::resolve(PASS);
+    // Engine::resolve(PASS);
+    $this->resolveAction(PASS);
   }
 
   public function actRoyalInspectionRedeploymentSheriff($args)

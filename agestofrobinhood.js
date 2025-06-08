@@ -5330,7 +5330,6 @@ var InfoPanel = (function () {
         this.setupHelpModeSwitch();
         this.updateBalladInfo(gamedatas.ballad);
         var tabId = "ballad".concat(gamedatas.ballad.balladNumber || 1);
-        console.log('tabId', tabId);
         this.selectedTab = tabId;
         var fortuneEvents = gamedatas.cards.eventsDiscard.filter(function (card) {
             return _this.game.getStaticCardData(card.id).eventType === 'fortuneEvent';

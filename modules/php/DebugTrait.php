@@ -60,13 +60,19 @@ trait DebugTrait
     // Forces::get('camp_5')->returnToSupply(Players::get());
     // Stats::checkExistence();
     // Players::getRobinHoodPlayer()->incShillings(-7);
-    // Spaces::get(BLYTH)->setToSubmissive(Players::get());
+    // Spaces::get(BLYTH)->revolt(Players::get());
     // Spaces::get(BLYTH)->removeSubmissiveMarker(Players::get());
-    // Forces::get(ROBIN_HOOD)->setLocation(TUXFORD);
-    // Forces::get(ROBIN_HOOD)->setHidden(1);
+    Forces::get(ROBIN_HOOD)->setLocation(PRISON);
+    Forces::get(ROBIN_HOOD)->setHidden(0);
     // Globals::setBridgeLocation('Blyth_Retford_border');
-    Forces::moveAllInLocation(RETFORD,HENCHMEN_SUPPLY);
-    Forces::moveAllInLocation(TUXFORD,HENCHMEN_SUPPLY);
+    // Forces::moveAllInLocation(SOUTHWELL_FOREST,NOTTINGHAM);
+    // Forces::get(ROBIN_HOOD)->setLocation(NOTTINGHAM);
+    // Forces::get(ROBIN_HOOD)->setHidden(0);
+    // Forces::get('merryMen_9')->setLocation(NOTTINGHAM);
+    // Forces::get('merryMen_2')->setHidden(0);
+    // Forces::get('merryMen_4')->setLocation(NOTTINGHAM);
+    // Forces::get('merryMen_4')->setHidden(0);
+    // Forces::moveAllInLocation(TUXFORD,HENCHMEN_SUPPLY);
     // Forces::moveAllInLocation(BINGHAM,NOTTINGHAM);
     // Forces::moveAllInLocation(SHIRE_WOOD,TUXFORD);
 
@@ -75,10 +81,13 @@ trait DebugTrait
     // $this->debugPlaceForces(CAMP,RETFORD,1);
     // $this->debugPlaceForces(CAMP,NEWARK,1);
 
+    // Notifications::log('card',Cards::get('Traveller06_Monks'));
 
-    // Cards::get('Event08_WardenOfTheForest')->insertOnTop(EVENTS_DECK);
-    // Cards::get('Traveller05_RichardAtTheLea')->insertOnTop(TRAVELLERS_VICTIMS_PILE);
-    // Cards::get('Traveller09_ThePotter')->insertOnTop(TRAVELLERS_DECK);
+    // Cards::get('Traveller06_Monks')->setLocation(TRAVELLERS_DISCARD);
+
+    // Cards::get('Event02_BishopOfHereford')->insertOnTop(EVENTS_DECK);
+    Cards::get('Traveller09_ThePotter')->insertOnTop(TRAVELLERS_DECK);
+    Cards::get('Traveller06_Monks')->insertOnTop(TRAVELLERS_DECK);
 
   }
 

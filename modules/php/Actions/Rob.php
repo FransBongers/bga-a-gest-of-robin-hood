@@ -141,6 +141,7 @@ class Rob extends \AGestOfRobinHood\Actions\Plot
     }
 
     // Insert plot first because resolution may insert more actions
+    // Note: is this causing issues with The Potters clever trick when RH is in prison?
     $this->insertPlotAction($player);
 
     $space = $option['space'];
