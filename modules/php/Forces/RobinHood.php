@@ -43,7 +43,7 @@ class RobinHood extends \AGestOfRobinHood\Models\Force
 
   public function isLocationUnknown()
   {
-    return $this->isHidden() || $$this->getLocation() === ROBIN_HOOD_SUPPLY;
+    return $this->isHidden() || $this->getLocation() === ROBIN_HOOD_SUPPLY;
   }
   
 }

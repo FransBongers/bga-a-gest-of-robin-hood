@@ -9765,7 +9765,7 @@ var EventSelectSpaceState = (function () {
             this.game.clientUpdatePageTitle({
                 text: _(args.titleOther),
                 args: {
-                    actplayer: '${actplayer}'
+                    actplayer: '${actplayer}',
                 },
                 nonActivePlayers: true,
             });
@@ -9795,6 +9795,7 @@ var EventSelectSpaceState = (function () {
         var _this = this;
         var space = _a.space;
         this.game.clearPossible();
+        this.game.setSpaceSelected({ id: space.id });
         this.game.clientUpdatePageTitle({
             text: _(this.args.confirmText),
             args: {

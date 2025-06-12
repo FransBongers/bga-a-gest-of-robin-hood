@@ -16,12 +16,15 @@ class EventSelectSpaceState implements State {
     debug('Leaving EventSelectSpaceState');
   }
 
-  setDescription(activePlayerId: number, args: OnEnteringEventSelectSpaceStateArgs) {
+  setDescription(
+    activePlayerId: number,
+    args: OnEnteringEventSelectSpaceStateArgs
+  ) {
     if (args.titleOther) {
       this.game.clientUpdatePageTitle({
         text: _(args.titleOther),
         args: {
-          actplayer: '${actplayer}'
+          actplayer: '${actplayer}',
         },
         nonActivePlayers: true,
       });
@@ -70,6 +73,7 @@ class EventSelectSpaceState implements State {
   private updateInterfaceConfirm({ space }: { space: GestSpace }) {
     this.game.clearPossible();
 
+    this.game.setSpaceSelected({ id: space.id });
     this.game.clientUpdatePageTitle({
       text: _(this.args.confirmText),
       args: {
