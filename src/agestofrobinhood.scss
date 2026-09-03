@@ -31,6 +31,7 @@
 @use 'tooltip-manager/tooltip';
 @use 'travellers-info-panel/travellersInfoPanel';
 @use 'travellers-info-panel/TravellersRow/travellersRow';
+@use './dark-mode';
 @import '../node_modules/bga-cards/bga-cards';
 
 html {
